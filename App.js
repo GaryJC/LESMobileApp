@@ -1,5 +1,5 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
+// import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, View, StatusBar } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -85,7 +85,7 @@ const BottomTabNavigation = () => (
 export default function App() {
   return (
     <>
-      <StatusBar style="light" />
+      <StatusBar barStyle={"light-content"} />
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="BottomTab"
