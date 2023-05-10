@@ -1,6 +1,5 @@
 import { View, Text, Button, ImageBackground, Image } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { windowHeight, windowWidth } from "../Modules/globals";
 import { useEffect, useState } from "react";
 import { GameDetailsData, GamesData } from "../Data/dummyData";
 

@@ -4,7 +4,7 @@ export default function Friends() {
   return (
     <View>
       <Text>Friends</Text>
-      <StatusBar style="auto" />
+      {/* <StatusBar style="auto" /> */}
     </View>
   );
 }

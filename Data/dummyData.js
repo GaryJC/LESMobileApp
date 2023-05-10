@@ -1,5 +1,8 @@
 import Games from "../Models/Games";
 import GameDetails from "../Models/GameDetails";
+import Activities from "../Models/Activities";
+import News from "../Models/News";
+import User from "../Models/User";
 
 export const GamesData = [
   new Games(1, "MetaVirus", "", "", ""),
@@ -19,4 +22,43 @@ export const GameDetailsData = new GameDetails(
   "",
   "",
   ""
+);
+
+export const ActivitiesData = [
+  new Activities(
+    1,
+    require("../assets/img/gameCardBg.jpg"),
+    "Friends Promotion",
+    "Invite Friends to"
+  ),
+  new Activities(
+    2,
+    require("../assets/img/gameCardBg.jpg"),
+    "Friends Promotion",
+    "Invite Friends to"
+  ),
+];
+
+export const NewsData = [
+  new News(
+    1,
+    "MetaVirus is coming",
+    "2 days ago",
+    require("../assets/img/userBg.jpg")
+  ),
+  new News(
+    2,
+    "MetaVirus is coming",
+    "2 days ago",
+    require("../assets/img/userBg.jpg")
+  ),
+];
+
+// 0->online, 1-offline, 3->leave
+export const UserData = new User(
+  1,
+  "Gary",
+  0,
+  require("../assets/img/userBg.jpg"),
+  require("../assets/img/gameCardBg.jpg")
 );

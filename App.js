@@ -1,5 +1,6 @@
 // import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, StatusBar } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -27,6 +28,7 @@ const BottomTabNavigation = () => (
         backgroundColor: "#080F14",
       },
       headerShadowVisible: false,
+      headerShown: false,
     }}
   >
     <BottomTab.Screen
@@ -36,6 +38,13 @@ const BottomTabNavigation = () => (
         tabBarIcon: ({ color, size }) => (
           <Ionicons name="home-outline" color={color} size={size} />
         ),
+        // headerTitleStyle: {
+        //   color: "#ffffff",
+        //   fontSize: 30,
+        //   marginLeft: 20,
+        // },
+        // title: "Light Esports",
+        // headerShown: true,
       }}
     />
     <BottomTab.Screen
@@ -68,6 +77,7 @@ const BottomTabNavigation = () => (
           fontWeight: "bold",
           fontSize: 40,
         },
+        headerShown: true,
       }}
     />
     <BottomTab.Screen
@@ -85,7 +95,7 @@ const BottomTabNavigation = () => (
 export default function App() {
   return (
     <>
-      <StatusBar barStyle={"light-content"} />
+      <StatusBar style="light" />
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="BottomTab"

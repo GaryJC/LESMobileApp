@@ -25,11 +25,11 @@ const GameCard = ({ gameId, gameImg, gameName }) => {
 
   return (
     <Pressable onPress={() => onPress(gameId)}>
-      <View className="rounded-2xl h-[250] w-[100%] my-[20] relative">
+      <View className="rounded-2xl h-[250] w-[100%] my-[20] relative overflow-hidden">
         <ImageBackground
           source={require("../assets/img/gameCardBg.jpg")}
           resizeMode="cover"
-          className="w-[100%] h-[100%] rounded-2xl overflow-hidden"
+          className="w-[100%] h-[100%] rounded-2xl"
         ></ImageBackground>
         <View className="absolute rounded-b-2xl bottom-0 h-[70] bg-[#131F2A] w-[100%] flex flex-row items-center justify-between">
           <Text className="text-white text-[20px] font-bold ml-[20]">
