@@ -96,9 +96,9 @@ export default function GameDetails() {
           <Text className="text-white text-[35px] font-bold absolute bottom-[-2.5vh] left-[5vw]">
             {gameName}
           </Text>
-          <View className="bg-[#49B05E] absolute bottom-[-2.5vh] right-[5vw] h-[5vh] flex justify-center rounded-lg">
+          <View className="bg-[#49B05E] p-[10px] absolute bottom-[-2.5vh] right-[5vw] h-[5vh] flex justify-center rounded-lg">
             {/* download or play */}
-            <Text className="p-[10px] text-white font-bold">Download</Text>
+            <Text className="text-white font-bold">Download</Text>
           </View>
         </ImageBackground>
       </View>

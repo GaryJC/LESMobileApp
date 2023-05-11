@@ -1,6 +1,18 @@
-import { View, Text, ImageBackground } from "react-native";
+import { View, Text, ImageBackground, ScrollView } from "react-native";
 import { UserData } from "../Data/dummyData";
 import { useEffect, useState } from "react";
+
+const userOptions = [
+  { id: 1, title: "Account", link: "" },
+  { id: 2, title: "Referral Code", link: "" },
+  { id: 3, title: "Settings", link: "" },
+];
+
+const UserOptionButton = (key, title, link) => (
+  <View key={key} className="py-[15px]">
+    <Text className="text-white text-[15px]">{title}</Text>
+  </View>
+);
 
 export default function User() {
   // const [userData, setUserData] = useState();
@@ -27,7 +39,7 @@ export default function User() {
         source={UserData.userBgImg}
         className="w-[100vw] h-[30vh] items-center relative"
       >
-        <View className="overflow-hidden rounded-full w-[100px] h-[100px] bg-[#ffffff] absolute bottom-[-50px]">
+        <View className="overflow-hidden rounded-full w-[100px] h-[100px] absolute bottom-[-50px]">
           <ImageBackground
             source={UserData.userAvatar}
             className="w-[100%] h-[100%]"
@@ -40,11 +52,21 @@ export default function User() {
           {UserData.username}
         </Text>
         <Text className="text-white text-[15px]">#{UserData.userId}</Text>
-        <View className="flex-row items-center justify-between mt-[5vh]">
+        <View className="flex-row items-center justify-between mt-[3vh]">
           <Text className="text-white text-[20px] pr-[20px]">Set Status:</Text>
           <View className="w-[25vw] h-[5vh] bg-[#7E5ED9] rounded-lg justify-center items-center">
             <Text className="text-white text-[20px]">{userStatus}</Text>
           </View>
+        </View>
+        <View className="bg-[#131F2B] rounded-lg w-[100%] mt-[3vh]">
+          <ScrollView className="divide-y-2 divide-[#5C5C5C] px-[10px]">
+            {userOptions.map((item, index) =>
+              UserOptionButton(item.id, item.title, item.link)
+            )}
+          </ScrollView>
+        </View>
+        <View className="bg-[#131F2B] rounded-lg w-[100%] mt-[3vh] items-center">
+          <Text className="py-[10px] text-[#FF0000] text-[15px]">Log Out</Text>
         </View>
       </View>
     </View>

@@ -3,6 +3,9 @@ import GameDetails from "../Models/GameDetails";
 import Activities from "../Models/Activities";
 import News from "../Models/News";
 import User from "../Models/User";
+import Friends from "../Models/Friends";
+import Message from "../Models/Message";
+import ChatList from "../Models/ChatList";
 
 export const GamesData = [
   new Games(1, "MetaVirus", "", "", ""),
@@ -54,7 +57,7 @@ export const NewsData = [
   ),
 ];
 
-// 0->online, 1-offline, 3->leave
+// 0->online, 1-offline, 2->idle
 export const UserData = new User(
   1,
   "Gary",
@@ -62,3 +65,31 @@ export const UserData = new User(
   require("../assets/img/userBg.jpg"),
   require("../assets/img/gameCardBg.jpg")
 );
+
+export const FriendsData = [
+  new Friends(1, "Tony", 0),
+  new Friends(1, "Michael", 1),
+  new Friends(1, "Bruce", 2),
+];
+
+export const MessageData = [
+  new Message(
+    1,
+    "Tony",
+    require("../assets/img/gameCardBg.jpg"),
+    "Hi, There",
+    "06/10"
+  ),
+  new Message(
+    2,
+    "Gary",
+    require("../assets/img/userBg.jpg"),
+    "Hi, There",
+    "06/10"
+  ),
+];
+
+export const ChatListData = [
+  new ChatList(1, require("../assets/img/gameCardBg.jpg")),
+  new ChatList(2, require("../assets/img/userBg.jpg")),
+];

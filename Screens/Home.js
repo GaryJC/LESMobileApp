@@ -11,12 +11,7 @@ import { ActivitiesData } from "../Data/dummyData";
 import { NewsData } from "../Data/dummyData";
 
 // add onPress event handler
-const Activity = ({
-  activityId,
-  activityImg,
-  activityIntro,
-  activityTitle,
-}) => (
+const Activity = ({ activityImg, activityIntro, activityTitle }) => (
   <Pressable className="w-[70vw] h-[25vh] bg-[#ffffff] rounded-2xl mr-[10vw] overflow-hidden">
     <ImageBackground
       source={activityImg}
@@ -34,7 +29,7 @@ const Activity = ({
 );
 
 // add onPress event handler
-const News = ({ newsId, newsTitle, newsDate, newsImg }) => (
+const News = ({ newsTitle, newsDate, newsImg }) => (
   <Pressable className="my-[5px] mx-[15px] border-b-2 border-[#5C5C5C] h-[10vh] flex-row justify-between items-center">
     <View>
       <Text className="text-white font-bold text-[16px]">{newsTitle}</Text>
@@ -58,7 +53,6 @@ export default function Home() {
           data={ActivitiesData}
           renderItem={({ item }) => (
             <Activity
-              activityId={item.activityId}
               activityImg={item.activityImg}
               activityTitle={item.activityTitle}
               activityIntro={item.activityIntro}
@@ -76,12 +70,12 @@ export default function Home() {
           data={NewsData}
           renderItem={({ item }) => (
             <News
-              newsId={item.newsId}
               newsTitle={item.newsTitle}
               newsDate={item.newsDate}
               newsImg={item.newsImg}
             />
           )}
+          keyExtractor={(item) => item.newsId}
         />
       </View>
     </View>

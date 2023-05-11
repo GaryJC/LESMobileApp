@@ -1,5 +1,5 @@
 // import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, KeyboardAvoidingView } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -29,6 +29,7 @@ const BottomTabNavigation = () => (
       },
       headerShadowVisible: false,
       headerShown: false,
+      tabBarHideOnKeyboard: true,
     }}
   >
     <BottomTab.Screen
