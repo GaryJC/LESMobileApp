@@ -11,9 +11,13 @@ import Chats from "./Screens/Chats";
 import User from "./Screens/User";
 import Games from "./Screens/Games";
 import GameDetails from "./Screens/GameDetails";
+import { Dimensions } from "react-native";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
+
+const deviceHeight = Dimensions.get("screen").height;
+const bottomTabHeight = deviceHeight * 0.08;
 
 const BottomTabNavigation = () => (
   <BottomTab.Navigator
@@ -21,6 +25,7 @@ const BottomTabNavigation = () => (
     screenOptions={{
       tabBarStyle: {
         backgroundColor: "#131F2A",
+        height: bottomTabHeight,
       },
       tabBarShowLabel: false,
       // headerTransparent: true,

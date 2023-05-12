@@ -87,6 +87,62 @@ export const MessageData = [
     "Hi, There",
     "06/10"
   ),
+  new Message(
+    3,
+    "Tony",
+    require("../assets/img/gameCardBg.jpg"),
+    "Hi, There",
+    "06/10"
+  ),
+  new Message(
+    4,
+    "Gary",
+    require("../assets/img/userBg.jpg"),
+    "Hi, There",
+    "06/10"
+  ),
+  new Message(
+    5,
+    "Tony",
+    require("../assets/img/gameCardBg.jpg"),
+    "Hi, There",
+    "06/10"
+  ),
+  new Message(
+    6,
+    "Gary",
+    require("../assets/img/userBg.jpg"),
+    "Hi, There",
+    "06/10"
+  ),
+  new Message(
+    7,
+    "Tony",
+    require("../assets/img/gameCardBg.jpg"),
+    "Hi, There",
+    "06/10"
+  ),
+  new Message(
+    8,
+    "Gary",
+    require("../assets/img/userBg.jpg"),
+    "Hi, Theressss",
+    "06/10"
+  ),
+  new Message(
+    9,
+    "Gary",
+    require("../assets/img/userBg.jpg"),
+    "Hi, Theressss",
+    "06/10"
+  ),
+  new Message(
+    10,
+    "Gary",
+    require("../assets/img/userBg.jpg"),
+    "Hi, Theressss",
+    "06/10"
+  ),
 ];
 
 export const ChatListData = [
