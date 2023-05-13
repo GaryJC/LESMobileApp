@@ -115,27 +115,7 @@ export const MessageData = [
     "Hi, There",
     "06/10"
   ),
-  new Message(
-    7,
-    "Tony",
-    require("../assets/img/gameCardBg.jpg"),
-    "Hi, There",
-    "06/10"
-  ),
-  new Message(
-    8,
-    "Gary",
-    require("../assets/img/userBg.jpg"),
-    "Hi, Theressss",
-    "06/10"
-  ),
-  new Message(
-    9,
-    "Gary",
-    require("../assets/img/userBg.jpg"),
-    "Hi, Theressss",
-    "06/10"
-  ),
+
   new Message(
     10,
     "Gary",

@@ -8,11 +8,13 @@ import {
   Image,
   Button,
   TouchableHighlight,
+  StyleSheet,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { GamesData } from "../Data/dummyData";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 // import GameCard from "../Components/GameCard";
 
 const GameCard = ({ gameId, gameImg, gameName }) => {
@@ -52,28 +54,45 @@ export default function Games() {
   const [searchText, setSearchText] = useState();
 
   return (
-    <View className="w-[90%] mx-auto">
+    <View className="w-[90%] mx-auto flex-1">
       {/* add event handler for submitting search */}
-      <TextInput
-        className="bg-[#414141] h-[45] rounded-full w-[100%] my-[20] px-[20]"
-        placeholder="Search for games"
-        placeholderTextColor="#CACACA"
-        value={searchText}
-      />
-      {/* <View> */}
-      <FlatList
-        data={GamesData}
-        renderItem={({ item }) => (
-          <GameCard
-            gameId={item.gameId}
-            gameImg={item.gameImg}
-            gameName={item.gameName}
-          />
-        )}
-        keyExtractor={(item) => item.gameId}
-        // className="flex justify-center"
-      />
-      {/* </View> */}
+      {/* <View>
+        <TextInput
+          className="bg-[#414141] h-[45] rounded-full w-[100%] my-[20] px-[20] text-[#CACACA]"
+          placeholder="Search for games"
+          placeholderTextColor="#CACACA"
+          value={searchText}
+        >
+          <Ionicons
+            name="search-outline"
+            color={"#CACACA"}
+            size={24}
+          ></Ionicons>
+        </TextInput>
+      </View> */}
+      <View className="flex-row items-center bg-[#414141] h-12 rounded-full w-full my-5 px-5">
+        <Ionicons name="search-outline" color="#CACACA" size={24} />
+        <TextInput
+          className="text-gray-300 ml-3 flex-1"
+          placeholder="Search for games"
+          placeholderTextColor="#CACACA"
+          value={searchText}
+          onChangeText={(text) => setSearchText(text)}
+        />
+      </View>
+      <View className="flex-1">
+        <FlatList
+          data={GamesData}
+          renderItem={({ item }) => (
+            <GameCard
+              gameId={item.gameId}
+              gameImg={item.gameImg}
+              gameName={item.gameName}
+            />
+          )}
+          keyExtractor={(item) => item.gameId}
+        />
+      </View>
     </View>
   );
 }
