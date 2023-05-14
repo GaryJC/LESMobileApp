@@ -67,9 +67,21 @@ export const UserData = new User(
 );
 
 export const FriendsData = [
-  new Friends(1, "Tony", 0),
-  new Friends(1, "Michael", 1),
-  new Friends(1, "Bruce", 2),
+  new Friends(1, "Tony", 0, "https://i.pravatar.cc"),
+  new Friends(2, "Michael", 1, "https://i.pravatar.cc"),
+  new Friends(3, "Bruce", 2, "https://i.pravatar.cc"),
+  new Friends(4, "Peter", 2, "https://i.pravatar.cc"),
+  new Friends(5, "Roy", 2, "https://i.pravatar.cc"),
+  new Friends(6, "Tony", 0, "https://i.pravatar.cc"),
+  new Friends(7, "Michael", 1, "https://i.pravatar.cc"),
+  new Friends(8, "Bruce", 2, "https://i.pravatar.cc"),
+  new Friends(9, "Peter", 2, "https://i.pravatar.cc"),
+  new Friends(10, "Roy", 2, "https://i.pravatar.cc"),
+];
+
+export const RecommendedFriendsData = [
+  new Friends(4, "Player1", 0, "https://i.pravatar.cc"),
+  new Friends(5, "Player2", 0, "https://i.pravatar.cc"),
 ];
 
 export const MessageData = [
@@ -115,7 +127,55 @@ export const MessageData = [
     "Hi, There",
     "06/10"
   ),
-
+  new Message(
+    6,
+    "Gary",
+    require("../assets/img/userBg.jpg"),
+    "Hi, There",
+    "06/10"
+  ),
+  new Message(
+    6,
+    "Gary",
+    require("../assets/img/userBg.jpg"),
+    "Hi, There",
+    "06/10"
+  ),
+  new Message(
+    6,
+    "Gary",
+    require("../assets/img/userBg.jpg"),
+    "Hi, There",
+    "06/10"
+  ),
+  new Message(
+    6,
+    "Gary",
+    require("../assets/img/userBg.jpg"),
+    "Hi, There",
+    "06/10"
+  ),
+  new Message(
+    6,
+    "Gary",
+    require("../assets/img/userBg.jpg"),
+    "Hi, There",
+    "06/10"
+  ),
+  new Message(
+    6,
+    "Gary",
+    require("../assets/img/userBg.jpg"),
+    "Hi, There",
+    "06/10"
+  ),
+  new Message(
+    6,
+    "Gary",
+    require("../assets/img/userBg.jpg"),
+    "Hi, There",
+    "06/10"
+  ),
   new Message(
     10,
     "Gary",

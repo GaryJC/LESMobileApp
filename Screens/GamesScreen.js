@@ -50,7 +50,7 @@ const GameCard = ({ gameId, gameImg, gameName }) => {
   );
 };
 
-export default function Games() {
+export default function GamesScreen() {
   const [searchText, setSearchText] = useState();
 
   return (
@@ -70,7 +70,10 @@ export default function Games() {
           ></Ionicons>
         </TextInput>
       </View> */}
-      <View className="flex-row items-center bg-[#414141] h-12 rounded-full w-full my-5 px-5">
+      <View
+        className="flex-row items-center bg-[#414141
+      ] h-12 rounded-full w-full my-5 px-5"
+      >
         <Ionicons name="search-outline" color="#CACACA" size={24} />
         <TextInput
           className="text-gray-300 ml-3 flex-1"

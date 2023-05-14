@@ -14,7 +14,7 @@ const UserOptionButton = (key, title, link) => (
   </View>
 );
 
-export default function User() {
+export default function UserScreen() {
   // const [userData, setUserData] = useState();
   const [userStatus, setUserStatus] = useState("Online");
   // const [username, setUsername] = useState();
@@ -34,7 +34,7 @@ export default function User() {
   console.log(userStatus);
 
   return (
-    <View>
+    <View className="flex-1">
       <ImageBackground
         source={UserData.userBgImg}
         className="w-[100vw] h-[30vh] items-center relative"

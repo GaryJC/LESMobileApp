@@ -39,13 +39,13 @@ const News = ({ newsTitle, newsDate, newsImg }) => (
   </Pressable>
 );
 
-export default function Home() {
+export default function HomeScreen() {
   return (
-    <View className="w-[90%] mx-auto mt-[3vh]">
+    <View className="w-[90%] mx-auto mt-[3vh] flex-1">
       {/* <Text>Home</Text> */}
       {/* <StatusBar style="auto" /> */}
-      <Text className="text-white text-[30px] font-bold">Light Esports</Text>
-      <Text className="text-white font-bold text-[20px] mt-[3vh] mb-[2vh]">
+      {/* <Text className="text-white text-[30px] font-bold">Light Esports</Text> */}
+      <Text className="text-white font-bold text-[20px] mb-[2vh]">
         Activities
       </Text>
       <View>

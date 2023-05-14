@@ -5,12 +5,12 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
-import Home from "./Screens/Home";
-import Friends from "./Screens/Friends";
-import Chats from "./Screens/Chats";
-import User from "./Screens/User";
-import Games from "./Screens/Games";
-import GameDetails from "./Screens/GameDetails";
+import HomeScreen from "./Screens/HomeScreen";
+import FriendsScreen from "./Screens/FriendsScreen";
+import ChatScreen from "./Screens/ChatScreen";
+import UserScreen from "./Screens/UserScreen";
+import GamesScreen from "./Screens/GamesScreen";
+import GameDetailsScreen from "./Screens/GameDetailsScreen";
 import { Dimensions } from "react-native";
 
 const BottomTab = createBottomTabNavigator();
@@ -39,23 +39,24 @@ const BottomTabNavigation = () => (
   >
     <BottomTab.Screen
       name="Home"
-      component={Home}
+      component={HomeScreen}
       options={{
         tabBarIcon: ({ color, size }) => (
           <Ionicons name="home-outline" color={color} size={size} />
         ),
-        // headerTitleStyle: {
-        //   color: "#ffffff",
-        //   fontSize: 30,
-        //   marginLeft: 20,
-        // },
-        // title: "Light Esports",
-        // headerShown: true,
+        headerTitleStyle: {
+          color: "#ffffff",
+          fontSize: 30,
+          fontWeight: "bold",
+          // marginLeft: 20,
+        },
+        title: "Light Esports",
+        headerShown: true,
       }}
     />
     <BottomTab.Screen
       name="Chats"
-      component={Chats}
+      component={ChatScreen}
       options={{
         tabBarIcon: ({ color, size }) => (
           <Ionicons name="chatbubbles-outline" color={color} size={size} />
@@ -64,16 +65,22 @@ const BottomTabNavigation = () => (
     />
     <BottomTab.Screen
       name="Friends"
-      component={Friends}
+      component={FriendsScreen}
       options={{
         tabBarIcon: ({ color, size }) => (
           <Ionicons name="people-outline" color={color} size={size} />
         ),
+        headerTitleStyle: {
+          color: "white",
+          fontWeight: "bold",
+          fontSize: 30,
+        },
+        headerShown: true,
       }}
     />
     <BottomTab.Screen
       name="Games"
-      component={Games}
+      component={GamesScreen}
       options={{
         tabBarIcon: ({ color, size }) => (
           <Ionicons name="game-controller-outline" color={color} size={size} />
@@ -88,7 +95,7 @@ const BottomTabNavigation = () => (
     />
     <BottomTab.Screen
       name="User"
-      component={User}
+      component={UserScreen}
       options={{
         tabBarIcon: ({ color, size }) => (
           <Ionicons name="person-outline" color={color} size={size} />
@@ -119,7 +126,7 @@ export default function App() {
           />
           <Stack.Screen
             name="GameDetails"
-            component={GameDetails}
+            component={GameDetailsScreen}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

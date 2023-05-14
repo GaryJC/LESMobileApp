@@ -1,18 +1,25 @@
 import { View, Text, Button, ImageBackground, Image } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { GameDetailsData, GamesData } from "../Data/dummyData";
+import { Ionicons } from "@expo/vector-icons";
 
 const PrimaryButton = (title, icon, key) => (
   <View
     key={key}
     className="bg-[#131F2A] rounded items-center justify-center h-[12vh] flex-[0.45]"
   >
-    <Image
+    {/* <Image
       source={icon}
-      className="w-[35px] h-[35px]"
+      className="w-[35px] h-[35px] mb-[10px]"
       // resizeMode="scale"
-    />
+    /> */}
+    <Ionicons
+      name={icon}
+      size={35}
+      color={"white"}
+      className="mb-[10px]"
+    ></Ionicons>
     <Text className="text-white font-bold ">{title}</Text>
   </View>
 );
@@ -31,16 +38,26 @@ const CommunityButton = (title, icon, key) => (
   </View>
 );
 
-export default function GameDetails() {
+export default function GameDetailsScreen() {
   const route = useRoute();
   const navigation = useNavigation();
 
+  // useEffect(() => {
+  //   navigation.setOptions({
+  //     title: () => {
+  //       return <Text className="text-white">Back</Text>;
+  //     },
+  //   });
+  // }, [navigation]);
+
   //   console.log(route.params.gameId);
   const [gameId, setGameId] = useState(route.params.gameId);
+
   const [primaryButtonContent, setPrimaryButtonContent] = useState([
-    { title: "Website", icon: require("../assets/img/website_icon.png") },
-    { title: "Patch Notes", icon: require("../assets/img/patch_icon.png") },
+    { title: "Website", icon: "browsers-outline" },
+    { title: "Patch Notes", icon: "bandage-outline" },
   ]);
+
   const [communityButtonContent, setCommunityButtonContent] = useState([
     { title: "Twitter", icon: require("../assets/img/twitter_icon.png") },
     { title: "Discord", icon: require("../assets/img/discord_icon.png") },
@@ -83,13 +100,21 @@ export default function GameDetails() {
   }, []);
 
   return (
-    <View>
+    <View className="flex-1">
       <View>
         <ImageBackground
           source={require("../assets/img/gameDetailsBg.jpg")}
           resizeMode="cover"
           className="h-[45vh] relative"
         >
+          <View className="absolute left-[5vw] top-[5vh]">
+            <Ionicons
+              name="chevron-back-outline"
+              color={"white"}
+              size={32}
+              onPress={() => navigation.goBack()}
+            ></Ionicons>
+          </View>
           {/* <View className="">
             <Button title="Back" onPress={() => navigation.goBack()} />
           </View> */}

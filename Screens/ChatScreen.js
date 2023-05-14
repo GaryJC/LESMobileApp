@@ -13,10 +13,14 @@ import {
 import { MessageData, ChatListData } from "../Data/dummyData";
 import { useState, useRef, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import {
+  KeyboardAwareFlatList,
+  KeyboardAwareScrollView,
+} from "react-native-keyboard-aware-scroll-view";
 
 // import { bottomTabHeight } from "../App";
 
-// const statusBarHeight = StatusBar.currentHeight;
+const statusBarHeight = StatusBar.currentHeight;
 // console.log(statusBarHeight);
 
 const ChatBubble = (
@@ -58,7 +62,7 @@ const ChatList = (chatId, chatAvatar) => (
   </View>
 );
 
-const Chats = () => {
+const ChatScreen = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const flatListRef = useRef();
@@ -94,17 +98,6 @@ const Chats = () => {
         // style={styles.container}
         className="flex-1 bg-[#262F38] rounded-lg"
       >
-        {/* <View style={styles.header}>
-        <Text style={styles.headerText}>Person's Name</Text>
-      </View> */}
-        {/* <View className="flex-col">
-        <FlatList
-          data={ChatListData}
-          renderItem={({ item }) => ChatList(item.chatId, item.chatAvatar)}
-          keyExtractor={(item) => item.chatId}
-        />
-      </View> */}
-
         <View className="flex-row justify-between p-[10px]">
           <Text className="text-white font-bold text-[20px]">
             Friend's name
@@ -117,8 +110,16 @@ const Chats = () => {
         </View>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
+          // behavior="position"
           className="flex-1 px-[10px]"
+          // keyboardVerticalOffset={-400}
+          // keyboardVerticalOffset={140}
         >
+          {/* <KeyboardAwareFlatList
+          className="flex-1"
+          // keyboardShouldPersistTaps="always"
+        > */}
+          {/* 这里的头像缓存起来 */}
           <FlatList
             ref={flatListRef}
             data={MessageData}
@@ -138,6 +139,7 @@ const Chats = () => {
               flatListRef.current?.scrollToEnd({ animated: true })
             }
           />
+
           <View className="flex-row items-center py-[10px] h-[50px]">
             <TextInput
               value={newMessage}
@@ -154,9 +156,10 @@ const Chats = () => {
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
+        {/* </KeyboardAwareFlatList> */}
       </View>
     </View>
   );
 };
 
-export default Chats;
+export default ChatScreen;
