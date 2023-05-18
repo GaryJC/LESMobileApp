@@ -1,8 +1,8 @@
 class Friends {
-  constructor(friendId, friendName, friendStatus, friendAvatar) {
+  constructor(friendId, friendName, friendState, friendAvatar) {
     this.friendId = friendId;
     this.friendName = friendName;
-    this.friendStatus = friendStatus;
+    this.friendState = friendState;
     this.friendAvatar = friendAvatar;
   }
 }

@@ -10,8 +10,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 //dummy data
-import { RecommendedFriendsData } from "../Data/dummyData";
-import { FriendsData } from "../Data/dummyData";
+import { RecomFriendsData } from "../Data/dummyData";
+// import { FriendsData } from "../Data/dummyData";
+// import { FriendListData } from "../modules/DataCenter";
+import DataCenter from "../modules/DataCenter";
+import JSEvent from "../utils/JSEvent";
+import { UIEvents } from "../modules/Events";
+import FriendService from "../services/FriendService";
+import MockServer from "../utils/MockServer";
 
 const primaryButtonContent = [
   { title: "Friends Request", icon: "emoji-people", link: "" },
@@ -90,15 +96,42 @@ export default function FriendsScreen() {
   const [friendsData, setFriendsData] = useState([]);
 
   useEffect(() => {
-    const online = FriendsData.filter(
-      (item) => item.friendStatus === 0 || item.friendStatus === 2
-    );
-    const offline = FriendsData.filter((item) => item.friendStatus === 1);
-    setFriendsData([
-      { title: "Recommended Friends", data: RecommendedFriendsData },
-      { title: "Online", data: online },
-      { title: "Offline", data: offline },
-    ]);
+    const onFriendStateUIUpdated = () => {
+      // console.log(FriendListData);
+      const online = DataCenter.friendListData.filter(
+        (item) => item.friendState === 0 || item.friendState === 2
+      );
+      const offline = DataCenter.friendListData.filter(
+        (item) => item.friendState === 1
+      );
+      setFriendsData([
+        { title: "Recommended Friends", data: RecomFriendsData },
+        { title: "Online", data: online },
+        { title: "Offline", data: offline },
+      ]);
+    };
+
+    onFriendStateUIUpdated();
+
+    // where should I call this functions? In login comp?
+    const friendService = new FriendService();
+    // 注册好友在线数据更新事件->触发UI刷新事件
+    friendService.addFriendStateListener();
+
+    // 注册好友在线状态UI更新事件
+    JSEvent.on(UIEvents.Friend.FriendState_UIRefresh, onFriendStateUIUpdated);
+
+    const mockServer = new MockServer();
+    // mock服务器发送好友状态改变事件
+    mockServer.sendMockFriendStateData();
+
+    return () => {
+      JSEvent.remove(
+        UIEvents.Friend.FriendState_UIRefresh,
+        onFriendStateUIUpdated
+      );
+    };
+
     // setOnlineFriends(online);
     // setOfflineFriends(offline);
   }, []);

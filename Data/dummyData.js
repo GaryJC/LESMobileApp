@@ -79,7 +79,7 @@ export const FriendsData = [
   new Friends(10, "Roy", 2, "https://i.pravatar.cc"),
 ];
 
-export const RecommendedFriendsData = [
+export const RecomFriendsData = [
   new Friends(4, "Player1", 0, "https://i.pravatar.cc"),
   new Friends(5, "Player2", 0, "https://i.pravatar.cc"),
 ];
