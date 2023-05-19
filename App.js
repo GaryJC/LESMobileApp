@@ -12,6 +12,8 @@ import UserScreen from "./Screens/UserScreen";
 import GamesScreen from "./Screens/GamesScreen";
 import GameDetailsScreen from "./Screens/GameDetailsScreen";
 import { Dimensions } from "react-native";
+import SignupScreen from "./Screens/SignupScreen";
+import LoginScreen from "./Screens/LoginScreen";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -111,7 +113,8 @@ export default function App() {
       <StatusBar style="light" />
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="BottomTab"
+          // initialRouteName="BottomTab"
+          initialRouteName="Signup"
           screenOptions={{
             headerStyle: {
               backgroundColor: "#080F14",
@@ -128,6 +131,26 @@ export default function App() {
             name="GameDetails"
             component={GameDetailsScreen}
             options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Signup"
+            component={SignupScreen}
+            options={{
+              headerShown: true,
+              headerTitleStyle: {
+                color: "white",
+              },
+            }}
+          />
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{
+              headerShown: true,
+              headerTitleStyle: {
+                color: "white",
+              },
+            }}
           />
         </Stack.Navigator>
         {/* <BottomTabNavigation /> */}
