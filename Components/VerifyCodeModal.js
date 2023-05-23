@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import axios from "axios";
 import { resendCodeRequest, signupRequest } from "../utils/auth";
+import AuthButton from "./AuthButton";
 
 export default function VerifyCodeModal({
   modalVisible,
@@ -26,19 +27,6 @@ export default function VerifyCodeModal({
   }
 
   //   console.log(setModalVisible);
-
-  async function resendCodeHandler() {
-    try {
-      const response = await resendCodeRequest(email, token);
-      const data = response.data;
-      if (data.code === 0) {
-        // 重新计时
-        console.log("resend");
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  }
 
   async function signupHandler() {
     try {
@@ -61,7 +49,7 @@ export default function VerifyCodeModal({
         className="flex-1 justify-center items-center bg-black/[0.6]"
         onPress={() => setModalVisible(false)}
       >
-        <View className="absolute w-[80%] h-[200px] p-[20px] bg-white justify-center items-center rounded-lg">
+        <View className="w-[80%] h-[200px] p-[20px] bg-white justify-center rounded-lg">
           <Text className="text-center">
             A verification code has been sent to email address.
           </Text>
@@ -81,7 +69,6 @@ export default function VerifyCodeModal({
                 <Text className="text-white font-bold">Resend{}</Text>
               </View>
             </TouchableHighlight> */}
-
             {sendCodeButton}
           </View>
           <TouchableHighlight
@@ -92,6 +79,7 @@ export default function VerifyCodeModal({
               <Text className="text-white font-bold">Sign up</Text>
             </View>
           </TouchableHighlight>
+          {/* <AuthButton onPressHandler={signupHandler} title="Sign up" /> */}
         </View>
       </Pressable>
     </Modal>

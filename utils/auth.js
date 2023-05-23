@@ -39,3 +39,16 @@ export const signupRequest = async (email, token, code) => {
     console.log(e);
   }
 };
+
+export const loginRequest = async (email, password) => {
+  try {
+    return await axios.post(API.loginRequest(), {
+      username: email,
+      password: password,
+      channel: "OFFICIAL-WEB",
+      serviceId: "",
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};

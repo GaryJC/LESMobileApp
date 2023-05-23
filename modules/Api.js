@@ -6,7 +6,7 @@ const API = {
   registerRequest: () => API.account + "registerRequest",
   verifyCode: () => API.account + "verifyCode",
   resendCode: () => API.account + "resendCode",
-  loginRequest: () => APIaccount + "loginRequest",
+  loginRequest: () => API.account + "loginRequest",
   tokenCheck: () => API.account + "loginCheck",
 };
 

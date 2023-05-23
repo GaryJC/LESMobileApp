@@ -4,16 +4,8 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import { GameDetailsData, GamesData } from "../Data/dummyData";
 import { Ionicons } from "@expo/vector-icons";
 
-const PrimaryButton = (title, icon, key) => (
-  <View
-    key={key}
-    className="bg-[#131F2A] rounded items-center justify-center h-[12vh] flex-[0.45]"
-  >
-    {/* <Image
-      source={icon}
-      className="w-[35px] h-[35px] mb-[10px]"
-      // resizeMode="scale"
-    /> */}
+const PrimaryButton = ({ title, icon }) => (
+  <View className="bg-[#131F2A] rounded items-center justify-center h-[12vh] flex-[0.45]">
     <Ionicons
       name={icon}
       size={35}
@@ -24,9 +16,9 @@ const PrimaryButton = (title, icon, key) => (
   </View>
 );
 
-const CommunityButton = (title, icon, key) => (
+const CommunityButton = ({ title, icon }) => (
   <View
-    key={key}
+    // key={key}
     className="bg-[#131F2A] rounded items-center justify-center h-[10vh] flex-[0.3]"
   >
     <Image
@@ -52,11 +44,6 @@ export default function GameDetailsScreen() {
 
   //   console.log(route.params.gameId);
   const [gameId, setGameId] = useState(route.params.gameId);
-
-  const [primaryButtonContent, setPrimaryButtonContent] = useState([
-    { title: "Website", icon: "browsers-outline" },
-    { title: "Patch Notes", icon: "bandage-outline" },
-  ]);
 
   const [communityButtonContent, setCommunityButtonContent] = useState([
     { title: "Twitter", icon: require("../assets/img/twitter_icon.png") },
@@ -87,16 +74,16 @@ export default function GameDetailsScreen() {
 
     setGameName(gameName);
     setAboutContent(aboutContent);
-    setPrimaryButtonContent((pre) => [
-      { ...pre[0], link: websiteLink },
-      { ...pre[1], link: [patchLink] },
-    ]);
+    // setPrimaryButtonContent((pre) => [
+    //   { ...pre[0], link: websiteLink },
+    //   { ...pre[1], link: [patchLink] },
+    // ]);
 
-    setCommunityButtonContent((pre) => [
-      { ...pre[0], link: twitterLink },
-      { ...pre[1], link: discordLink },
-      { ...pre[2], link: telegramLink },
-    ]);
+    // setCommunityButtonContent((pre) => [
+    //   { ...pre[0], link: twitterLink },
+    //   { ...pre[1], link: discordLink },
+    //   { ...pre[2], link: telegramLink },
+    // ]);
   }, []);
 
   return (
@@ -129,9 +116,8 @@ export default function GameDetailsScreen() {
       </View>
       <View className="w-[90vw] mx-auto mt-[5vh]">
         <View className="flex-row justify-between ">
-          {primaryButtonContent.map((item, index) =>
-            PrimaryButton(item.title, item.icon, index)
-          )}
+          <PrimaryButton title={"Website"} icon={"browsers-outline"} />
+          <PrimaryButton title={"Patch Notes"} icon={"bandage-outline"} />
         </View>
         <View className="mt-[3vh]">
           <Text className="text-white font-bold text-[20px]">About</Text>
@@ -141,12 +127,21 @@ export default function GameDetailsScreen() {
           Community
         </Text>
         <View className="flex-row justify-between flex-wrap mt-[1vh]">
-          {/* <Text className="basis-full">Community</Text> */}
-          {/* <View className="basis-full"> */}
-          {communityButtonContent.map((item, index) =>
+          {/* {communityButtonContent.map((item, index) =>
             CommunityButton(item.title, item.icon, index)
-          )}
-          {/* </View> */}
+          )} */}
+          <CommunityButton
+            title="Twitter"
+            icon={require("../assets/img/twitter_icon.png")}
+          />
+          <CommunityButton
+            title="Discord"
+            icon={require("../assets/img/discord_icon.png")}
+          />
+          <CommunityButton
+            title="Telegram"
+            icon={require("../assets/img/telegram_icon.png")}
+          />
         </View>
       </View>
       {/* <Text className="text-white">GameId: {route.params.gameId}</Text> */}

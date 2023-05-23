@@ -7,12 +7,9 @@ import {
   Modal,
 } from "react-native";
 import { useState, useEffect } from "react";
-import { post } from "../utils/request";
-import API from "../modules/Api";
-import axios from "axios";
 import InputLayout from "../components/InputLayout";
 import VerifyCodeModal from "../components/VerifyCodeModal";
-import { sendVerifyCodeRequest } from "../utils/auth";
+import { sendVerifyCodeRequest, resendCodeRequest } from "../utils/auth";
 
 export default function SignupScreen() {
   const [email, setEmail] = useState();
@@ -110,9 +107,25 @@ export default function SignupScreen() {
     }
   }
 
-  const SendCodeButton = ({ style, title }) => (
+  async function resendCodeHandler() {
+    // 不论请求是否成功，都应该重新计时吗？
+    setIsResendDisabled(true);
+    setCountdown(60);
+    try {
+      const response = await resendCodeRequest(email, token);
+      const data = response.data;
+      if (data.code === 0) {
+        // 重新计时
+        console.log("resend success");
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  const SendCodeButton = ({ style, title, onPressHandler }) => (
     <TouchableHighlight
-      onPress={sendVerifiCodeHandler}
+      onPress={onPressHandler}
       disabled={isResendDisabled}
       className={style}
     >
@@ -181,24 +194,6 @@ export default function SignupScreen() {
             />
           </View>
         </View>
-        {/* <TouchableHighlight
-          onPress={sendVerifiCodeHandler}
-          // className="items-center bg-[#6E56DB] rounded p-[10px] mx-[50px] mt-[20px]"
-          disabled={isResendDisabled}
-          className={
-            isResendDisabled
-              ? "items-center bg-[#565365] rounded p-[10px] mx-[50px] mt-[20px]"
-              : "items-center bg-[#6E56DB] rounded p-[10px] mx-[50px] mt-[20px]"
-          }
-        >
-          <View>
-            <Text className="text-white font-bold">
-              {isResendDisabled
-                ? "Retry after: " + countdown
-                : "Get verification code"}
-            </Text>
-          </View>
-        </TouchableHighlight> */}
         <SendCodeButton
           style={
             isResendDisabled
@@ -206,6 +201,7 @@ export default function SignupScreen() {
               : "items-center bg-[#6E56DB] rounded p-[10px] mx-[50px] mt-[20px]"
           }
           title="Get verification code"
+          onPressHandler={sendVerifiCodeHandler}
         />
       </View>
       <VerifyCodeModal
@@ -216,10 +212,11 @@ export default function SignupScreen() {
           <SendCodeButton
             style={
               isResendDisabled
-                ? "items-center bg-[#565365] rounded p-[10px]"
-                : "items-center bg-[#6E56DB] rounded p-[10px]"
+                ? "flex-1 items-center bg-[#565365] rounded p-[10px]"
+                : "flex-1 items-center bg-[#6E56DB] rounded p-[10px]"
             }
             title="Resend"
+            onPressHandler={resendCodeHandler}
           />
         }
       >
