@@ -9,6 +9,7 @@ import {
 // import { StatusBar } from "expo-status-bar";
 import { ActivitiesData } from "../Data/dummyData";
 import { NewsData } from "../Data/dummyData";
+import { useEffect, useState } from "react";
 
 // add onPress event handler
 const Activity = ({ activityImg, activityIntro, activityTitle }) => (
@@ -40,6 +41,14 @@ const News = ({ newsTitle, newsDate, newsImg }) => (
 );
 
 export default function HomeScreen() {
+  const [activitiesData, setActivitiesData] = useState([]);
+  const [newsData, setNewsData] = useState([]);
+
+  useEffect(() => {
+    setActivitiesData(ActivitiesData);
+    setNewsData(NewsData);
+  }, []);
+
   return (
     <View className="w-[90%] mx-auto mt-[3vh] flex-1">
       {/* <Text>Home</Text> */}
@@ -50,7 +59,8 @@ export default function HomeScreen() {
       </Text>
       <View>
         <FlatList
-          data={ActivitiesData}
+          // data={ActivitiesData}
+          data={activitiesData}
           renderItem={({ item }) => (
             <Activity
               activityImg={item.activityImg}
@@ -58,7 +68,7 @@ export default function HomeScreen() {
               activityIntro={item.activityIntro}
             />
           )}
-          keyExtractor={(item) => item.activityId}
+          keyExtractor={(item) => item.activityId.toString()}
           horizontal={true}
         />
       </View>
@@ -67,7 +77,8 @@ export default function HomeScreen() {
       </Text>
       <View className="bg-[#131F2B] rounded-lg">
         <FlatList
-          data={NewsData}
+          // data={NewsData}
+          data={newsData}
           renderItem={({ item }) => (
             <News
               newsTitle={item.newsTitle}
@@ -75,7 +86,7 @@ export default function HomeScreen() {
               newsImg={item.newsImg}
             />
           )}
-          keyExtractor={(item) => item.newsId}
+          keyExtractor={(item) => item.newsId.toString()}
         />
       </View>
     </View>

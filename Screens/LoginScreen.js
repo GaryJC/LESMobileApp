@@ -35,7 +35,8 @@ export default function LoginScreen() {
         try {
           await Promise.all(
             saveData("accountId", accountId),
-            saveData("loginKey", msg)
+            saveData("loginKey", msg),
+            saveData("email", email)
           );
         } catch (e) {
           console.log(e);

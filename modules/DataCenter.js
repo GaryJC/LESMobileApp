@@ -17,9 +17,9 @@ const DataCenter = {
     serviceId: "",
   },
 
-  setLogin(accountId, username, loginKey, serviceId) {
+  setLogin(accountId, email, loginKey, serviceId) {
     this.userInfo.accountId = accountId;
-    this.userInfo.username = username;
+    this.userInfo.email = email;
     this.userInfo.loginKey = loginKey;
     this.userInfo.serviceId = serviceId;
 

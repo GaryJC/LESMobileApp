@@ -59,8 +59,8 @@ export const loginCheck = async (accountId, loginKey, serviceId) => {
     return await axios.get(API.loginCheck(), {
       params: {
         accountId: accountId,
-        loginCheck: loginKey,
-        serviceId: serviceId,
+        loginKey: loginKey,
+        serviceId: "",
       },
     });
   } catch (e) {

@@ -128,12 +128,19 @@ export default function App() {
     Promise.all([retrieveData("accountId"), retrieveData("loginKey")])
       .then((res) => {
         console.log("id & key: ", res);
-        const [accountId, loginKey] = [res[0], res[1]];
+        const [accountId, loginKey, email] = [res[0], res[1], res[2]];
 
         if (accountId && loginKey) {
-          loginCheck(accountId, loginKey, "")
+          console.log(typeof parseInt(accountId));
+          loginCheck(parseInt(accountId), loginKey)
             .then((res) => {
-              console.log("loginCheck: ", res);
+              // console.log("loginCheck: ", res);
+              const data = res.data;
+              console.log("check data: ", data);
+              if (data.code === 0) {
+                console.log("correct");
+                DataCenter.setLogin(accountId, email, loginKey, "");
+              }
             })
             .catch((e) => {
               console.log("check error: ", e);
@@ -155,6 +162,7 @@ export default function App() {
     /*
       如果登陆成功，发送各个服务的事件
     */
+    console.log("loggedin? ", isLoggedin);
     if (isLoggedin) {
       // 模拟服务器发送数据
       const mockServer = new MockServer();
@@ -166,11 +174,11 @@ export default function App() {
   return (
     <>
       <StatusBar style="light" />
-      <NavigationContainer>
+      {/* <NavigationContainer>
         <Stack.Navigator
           // initialRouteName="BottomTab"
-          // initialRouteName="Login"
-          initialRouteName={isLoggedin ? "BottomTab" : "Login"}
+          initialRouteName="Login"
+          // initialRouteName={isLoggedin ? "BottomTab" : "Login"}
           screenOptions={{
             headerStyle: {
               backgroundColor: "#080F14",
@@ -209,6 +217,61 @@ export default function App() {
             }}
           />
         </Stack.Navigator>
+      </NavigationContainer> */}
+      <NavigationContainer>
+        {isLoggedin ? (
+          <Stack.Navigator
+            initialRouteName="BottomTab"
+            screenOptions={{
+              headerStyle: {
+                backgroundColor: "#080F14",
+              },
+              contentStyle: { backgroundColor: "#080F14" },
+            }}
+          >
+            <Stack.Screen
+              name="BottomTab"
+              component={BottomTabNavigation}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="GameDetails"
+              component={GameDetailsScreen}
+              options={{ headerShown: false }}
+            />
+          </Stack.Navigator>
+        ) : (
+          <Stack.Navigator
+            initialRouteName="Login"
+            screenOptions={{
+              headerStyle: {
+                backgroundColor: "#080F14",
+              },
+              contentStyle: { backgroundColor: "#080F14" },
+            }}
+          >
+            <Stack.Screen
+              name="Signup"
+              component={SignupScreen}
+              options={{
+                headerShown: true,
+                headerTitleStyle: {
+                  color: "white",
+                },
+              }}
+            />
+            <Stack.Screen
+              name="Login"
+              component={LoginScreen}
+              options={{
+                headerShown: true,
+                headerTitleStyle: {
+                  color: "white",
+                },
+              }}
+            />
+          </Stack.Navigator>
+        )}
       </NavigationContainer>
     </>
   );
