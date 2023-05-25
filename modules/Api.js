@@ -7,7 +7,7 @@ const API = {
   verifyCode: () => API.account + "verifyCode",
   resendCode: () => API.account + "resendCode",
   loginRequest: () => API.account + "loginRequest",
-  tokenCheck: () => API.account + "loginCheck",
+  loginCheck: () => API.account + "loginCheck",
 };
 
 export default API;

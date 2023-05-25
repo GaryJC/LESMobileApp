@@ -19,6 +19,8 @@ import MockServer from "./utils/MockServer";
 import JSEvent from "./utils/JSEvent";
 import { DataEvents } from "./modules/Events";
 import DataCenter from "./modules/DataCenter";
+import { loginCheck } from "./utils/auth";
+import { retrieveData } from "./utils/auth";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -123,7 +125,27 @@ export default function App() {
     // 注册监听是否登陆
     JSEvent.on(DataEvents.User.UserState_isLoggedin, setLogin);
     // 初始化所有服务
+    Promise.all([retrieveData("accountId"), retrieveData("loginKey")])
+      .then((res) => {
+        console.log("id & key: ", res);
+        const [accountId, loginKey] = [res[0], res[1]];
+
+        if (accountId && loginKey) {
+          loginCheck(accountId, loginKey, "")
+            .then((res) => {
+              console.log("loginCheck: ", res);
+            })
+            .catch((e) => {
+              console.log("check error: ", e);
+            });
+        }
+      })
+      .catch((e) => {
+        console.log("can't retrieve accountId and loginKey");
+      });
+
     DataCenter.initServices();
+
     return () => {
       JSEvent.remove(DataEvents.User.UserState_isLoggedin, setLogin);
     };
@@ -187,7 +209,6 @@ export default function App() {
             }}
           />
         </Stack.Navigator>
-        {/* <BottomTabNavigation /> */}
       </NavigationContainer>
     </>
   );

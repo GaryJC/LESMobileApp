@@ -1,5 +1,6 @@
 import API from "../modules/Api";
 import axios from "axios";
+import * as SecureStore from "expo-secure-store";
 
 export const sendVerifyCodeRequest = async (email, password, referCode) => {
   try {
@@ -52,3 +53,34 @@ export const loginRequest = async (email, password) => {
     console.log(e);
   }
 };
+
+export const loginCheck = async (accountId, loginKey, serviceId) => {
+  try {
+    return await axios.get(API.loginCheck(), {
+      params: {
+        accountId: accountId,
+        loginCheck: loginKey,
+        serviceId: serviceId,
+      },
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export async function saveData(key, value) {
+  try {
+    await SecureStore.setItemAsync(key, String(value));
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export async function retrieveData(key) {
+  try {
+    const value = await SecureStore.getItemAsync(key);
+    return value;
+  } catch (error) {
+    console.log("Error retrieving data", error);
+  }
+}

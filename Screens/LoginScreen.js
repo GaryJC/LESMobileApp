@@ -5,6 +5,7 @@ import AuthButton from "../components/AuthButton";
 import { loginRequest } from "../utils/auth";
 import { useNavigation } from "@react-navigation/native";
 import DataCenter from "../modules/DataCenter";
+import { saveData, retrieveData } from "../utils/auth";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState();
@@ -27,9 +28,18 @@ export default function LoginScreen() {
       const data = response.data;
       if (data.code === 0) {
         const { accountId, msg } = data.retObject;
-        // console.log(retObject);
+        console.log(accountId, msg);
         // 发送登陆成功事件
         DataCenter.setLogin(accountId, email, msg, "");
+
+        try {
+          await Promise.all(
+            saveData("accountId", accountId),
+            saveData("loginKey", msg)
+          );
+        } catch (e) {
+          console.log(e);
+        }
 
         navigation.navigate("BottomTab");
       }
