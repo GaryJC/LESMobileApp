@@ -30,8 +30,6 @@ export default function LoginScreen() {
         // console.log(retObject);
         // 发送登陆成功事件
         DataCenter.setLogin(accountId, email, msg, "");
-        // 模拟获取好友列表
-        DataCenter.getFriendListData();
 
         navigation.navigate("BottomTab");
       }

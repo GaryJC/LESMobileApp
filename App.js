@@ -18,6 +18,7 @@ import { useState, useEffect } from "react";
 import MockServer from "./utils/MockServer";
 import JSEvent from "./utils/JSEvent";
 import { DataEvents } from "./modules/Events";
+import DataCenter from "./modules/DataCenter";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -119,11 +120,10 @@ export default function App() {
   }
 
   useEffect(() => {
-    // DataCenter.getFriendListData();
     // 注册监听是否登陆
     JSEvent.on(DataEvents.User.UserState_isLoggedin, setLogin);
     // 初始化所有服务
-    // DataCenter.initServices();
+    DataCenter.initServices();
     return () => {
       JSEvent.remove(DataEvents.User.UserState_isLoggedin, setLogin);
     };
@@ -133,7 +133,6 @@ export default function App() {
     /*
       如果登陆成功，发送各个服务的事件
     */
-    // 如果登陆成功，则各个服务emit事件
     if (isLoggedin) {
       // 模拟服务器发送数据
       const mockServer = new MockServer();
@@ -148,7 +147,8 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator
           // initialRouteName="BottomTab"
-          initialRouteName="Login"
+          // initialRouteName="Login"
+          initialRouteName={isLoggedin ? "BottomTab" : "Login"}
           screenOptions={{
             headerStyle: {
               backgroundColor: "#080F14",
