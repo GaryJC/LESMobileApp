@@ -4,6 +4,7 @@ import { useState } from "react";
 import AuthButton from "../components/AuthButton";
 import { loginRequest } from "../utils/auth";
 import { useNavigation } from "@react-navigation/native";
+import DataCenter from "../modules/DataCenter";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState();
@@ -25,8 +26,13 @@ export default function LoginScreen() {
       // console.log(response);
       const data = response.data;
       if (data.code === 0) {
-        const retObject = data.retObject;
-        console.log(retObject);
+        const { accountId, msg } = data.retObject;
+        // console.log(retObject);
+        // 发送登陆成功事件
+        DataCenter.setLogin(accountId, email, msg, "");
+        // 模拟获取好友列表
+        DataCenter.getFriendListData();
+
         navigation.navigate("BottomTab");
       }
     } catch (e) {

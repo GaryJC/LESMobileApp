@@ -14,6 +14,10 @@ import GameDetailsScreen from "./Screens/GameDetailsScreen";
 import { Dimensions } from "react-native";
 import SignupScreen from "./Screens/SignupScreen";
 import LoginScreen from "./Screens/LoginScreen";
+import { useState, useEffect } from "react";
+import MockServer from "./utils/MockServer";
+import JSEvent from "./utils/JSEvent";
+import { DataEvents } from "./modules/Events";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -108,6 +112,36 @@ const BottomTabNavigation = () => (
 );
 
 export default function App() {
+  const [isLoggedin, setIsLoggedin] = useState(false);
+
+  function setLogin() {
+    setIsLoggedin(true);
+  }
+
+  useEffect(() => {
+    // DataCenter.getFriendListData();
+    // 注册监听是否登陆
+    JSEvent.on(DataEvents.User.UserState_isLoggedin, setLogin);
+    // 初始化所有服务
+    // DataCenter.initServices();
+    return () => {
+      JSEvent.remove(DataEvents.User.UserState_isLoggedin, setLogin);
+    };
+  }, []);
+
+  useEffect(() => {
+    /*
+      如果登陆成功，发送各个服务的事件
+    */
+    // 如果登陆成功，则各个服务emit事件
+    if (isLoggedin) {
+      // 模拟服务器发送数据
+      const mockServer = new MockServer();
+      // mock服务器发送好友状态改变事件;
+      mockServer.sendMockFriendStateData();
+    }
+  }, [isLoggedin]);
+
   return (
     <>
       <StatusBar style="light" />

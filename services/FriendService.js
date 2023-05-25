@@ -3,9 +3,28 @@ import JSEvent from "../utils/JSEvent";
 import DataCenter from "../modules/DataCenter";
 
 class FriendService {
-  constructor() {}
+  static #inst;
 
-  onFriendStateDataUpdated({ id, state }) {
+  static get inst() {
+    return FriendService.#inst ?? new FriendService();
+  }
+
+  constructor() {
+    if (new.target !== FriendService) return;
+    if (!FriendService.#inst) {
+      FriendService.#inst = this;
+      // this.friendListData = friendListData;
+      // this.friendListData = [];
+    }
+    return FriendService.#inst;
+  }
+
+  // setFriendListData(friendListData) {
+  //   this.friendListData = friendListData;
+  //   console.log(this.friendListData);
+  // }
+
+  #onFriendStateDataUpdated({ id, state }) {
     DataCenter.friendListData.forEach(({ friendId }, index) => {
       if (id === friendId) {
         DataCenter.friendListData[index].friendState = state;
@@ -14,12 +33,16 @@ class FriendService {
     JSEvent.emit(UIEvents.Friend.FriendState_UIRefresh);
   }
 
-  addFriendStateListener() {
+  #addFriendStateListener() {
     // console.log(this.onFriendStateDataUpdated);
     JSEvent.on(
       DataEvents.Friend.FriendState_Updated,
-      this.onFriendStateDataUpdated
+      this.#onFriendStateDataUpdated
     );
+  }
+
+  init() {
+    this.#addFriendStateListener();
   }
 }
 

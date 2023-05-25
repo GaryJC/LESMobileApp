@@ -114,16 +114,16 @@ export default function FriendsScreen() {
     onFriendStateUIUpdated();
 
     // where should I call this functions? In login comp?
-    const friendService = new FriendService();
+    // const friendService = new FriendService();
     // 注册好友在线数据更新事件->触发UI刷新事件
-    friendService.addFriendStateListener();
+    // friendService.addFriendStateListener();
 
     // 注册好友在线状态UI更新事件
     JSEvent.on(UIEvents.Friend.FriendState_UIRefresh, onFriendStateUIUpdated);
 
-    const mockServer = new MockServer();
+    // const mockServer = new MockServer();
     // mock服务器发送好友状态改变事件
-    mockServer.sendMockFriendStateData();
+    // mockServer.sendMockFriendStateData();
 
     return () => {
       JSEvent.remove(

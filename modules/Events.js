@@ -1,4 +1,7 @@
 export const DataEvents = {
+  User: {
+    UserState_isLoggedin: "DATA_EVENT_UserState_isLoggedin",
+  },
   /* 
     好友状态数据更新
     携带参数为 {id: 好友id, status:当前状态}
