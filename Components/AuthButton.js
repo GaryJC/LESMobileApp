@@ -1,13 +1,23 @@
-import { TouchableHighlight, View, Text } from "react-native";
+import {
+  TouchableHighlight,
+  View,
+  Text,
+  ActivityIndicator,
+} from "react-native";
 
-export default function AuthButton({ onPressHandler, title }) {
+export default function AuthButton({ onPressHandler, title, isLoading }) {
   return (
     <TouchableHighlight
       className="rounded-lg overflow-hidden"
       onPress={onPressHandler}
+      disabled={isLoading}
     >
       <View className="items-center bg-[#5EB857] p-[10px]">
-        <Text className="text-white font-bold">{title}</Text>
+        {isLoading ? (
+          <ActivityIndicator size="small" color="#0000ff" />
+        ) : (
+          <Text className="text-white font-bold">{title}</Text>
+        )}
       </View>
     </TouchableHighlight>
   );

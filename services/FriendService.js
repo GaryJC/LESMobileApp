@@ -46,6 +46,11 @@ class FriendService {
   //   );
   // }
 
+  pullData(data) {
+    // 这个方法我以前放在MockServer里， 现在应该被UpdateService调用
+    JSEvent.emit(DataEvents.Friend.FriendState_Updated, data);
+  }
+
   addFriendStateListener() {
     JSEvent.on(DataEvents.Friend.FriendState_Updated, ({ id, state }) =>
       this.onFriendStateDataUpdated({ id, state })

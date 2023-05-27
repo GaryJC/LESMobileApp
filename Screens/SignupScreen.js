@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Text,
   Modal,
+  ActivityIndicator,
 } from "react-native";
 import { useState, useEffect } from "react";
 import InputLayout from "../components/InputLayout";
@@ -19,11 +20,14 @@ export default function SignupScreen() {
 
   const [emailError, setEmailError] = useState(null);
   const [passwordError, setPasswordError] = useState(null);
+  const [error, setError] = useState(null);
 
   const [countdown, setCountdown] = useState(60);
   const [isResendDisabled, setIsResendDisabled] = useState(false);
 
   const [modalVisible, setModalVisible] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (countdown > 0) {
@@ -88,6 +92,7 @@ export default function SignupScreen() {
     } else {
       setIsResendDisabled(true);
       setCountdown(60);
+      setIsLoading(true);
       try {
         const response = await sendVerifyCodeRequest(
           email,
@@ -100,10 +105,14 @@ export default function SignupScreen() {
           console.log("success");
           setToken(data.msg);
           setModalVisible(true);
+          setError(null);
+        } else {
+          setError(data.msg);
         }
       } catch (e) {
         console.log(e);
       }
+      setIsLoading(false);
     }
   }
 
@@ -111,6 +120,7 @@ export default function SignupScreen() {
     // 不论请求是否成功，都应该重新计时吗？
     setIsResendDisabled(true);
     setCountdown(60);
+    setIsLoading(true);
     try {
       const response = await resendCodeRequest(email, token);
       const data = response.data;
@@ -121,6 +131,7 @@ export default function SignupScreen() {
     } catch (e) {
       console.log(e);
     }
+    setIsLoading(false);
   }
 
   const SendCodeButton = ({ style, title, onPressHandler }) => (
@@ -130,15 +141,24 @@ export default function SignupScreen() {
       className={style}
     >
       <View>
-        <Text className="text-white font-bold">
-          {isResendDisabled ? "Retry after: " + countdown : title}
-        </Text>
+        {isLoading ? (
+          <ActivityIndicator size="small" color="#0000ff" />
+        ) : (
+          <Text className="text-white font-bold">
+            {isResendDisabled ? "Retry after: " + countdown : title}
+          </Text>
+        )}
       </View>
     </TouchableHighlight>
   );
 
   return (
     <View className="flex-1 justify-center w-[70vw] mx-auto">
+      {error && (
+        <View>
+          <Text className="text-red-500 text-center">{error}</Text>
+        </View>
+      )}
       <View>
         <InputLayout label={"Email:"}>
           <TextInput

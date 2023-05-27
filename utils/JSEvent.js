@@ -48,6 +48,7 @@ const remove = (name, handler) => {
 
 const emit = (name, args) => {
   let event = events[name];
+  console.log("event: ", event);
   console.log(`emit event [${name}]`);
   if (event != null) {
     event.emit(args);

@@ -15,7 +15,7 @@ class MockServer {
         clearInterval(intervalId);
       }
     }, 1000);
-    JSEvent.emit(DataEvents.Friend.FriendState_Updated, { id: 1, state: 1 });
+    // JSEvent.emit(DataEvents.Friend.FriendState_Updated, { id: 1, state: 1 });
   }
 }
 

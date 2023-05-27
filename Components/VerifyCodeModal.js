@@ -11,6 +11,7 @@ import {
 import axios from "axios";
 import { resendCodeRequest, signupRequest } from "../utils/auth";
 import AuthButton from "./AuthButton";
+import { useNavigation } from "@react-navigation/native";
 
 export default function VerifyCodeModal({
   modalVisible,
@@ -21,6 +22,10 @@ export default function VerifyCodeModal({
 }) {
   //   console.log(modalVisible);
   const [verifyCode, setVerifyCode] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const navigation = useNavigation();
 
   function inputVerifyCodeHandler(value) {
     setVerifyCode(value);
@@ -29,15 +34,22 @@ export default function VerifyCodeModal({
   //   console.log(setModalVisible);
 
   async function signupHandler() {
+    setIsLoading(true);
     try {
       const response = await signupRequest(email, token, verifyCode);
       const data = response.data;
+      console.log(data);
       if (data.code === 0) {
         //成功后跳转到登陆界面
+        setError(null);
+        navigation.navigate("Login");
+      } else {
+        setError(data.msg);
       }
     } catch (e) {
       console.log(e);
     }
+    setIsLoading(false);
   }
 
   return (
@@ -50,6 +62,11 @@ export default function VerifyCodeModal({
         onPress={() => setModalVisible(false)}
       >
         <View className="w-[80%] h-[200px] p-[20px] bg-white justify-center rounded-lg">
+          {error && (
+            <View>
+              <Text className="text-red-500 text-center">{error}</Text>
+            </View>
+          )}
           <Text className="text-center">
             A verification code has been sent to email address.
           </Text>
@@ -61,25 +78,13 @@ export default function VerifyCodeModal({
                 onChangeText={inputVerifyCodeHandler}
               />
             </View>
-            {/* <TouchableHighlight
-              className="flex-1 rounded-lg overflow-hidden"
-              onPress={resendCodeHandler}
-            >
-              <View className="items-center bg-[#5EB857] p-[10px]">
-                <Text className="text-white font-bold">Resend{}</Text>
-              </View>
-            </TouchableHighlight> */}
             {sendCodeButton}
           </View>
-          <TouchableHighlight
-            className="rounded-lg overflow-hidden"
-            onPress={signupHandler}
-          >
-            <View className="items-center bg-[#5EB857] p-[10px]">
-              <Text className="text-white font-bold">Sign up</Text>
-            </View>
-          </TouchableHighlight>
-          {/* <AuthButton onPressHandler={signupHandler} title="Sign up" /> */}
+          <AuthButton
+            onPressHandler={signupHandler}
+            title="Sign up"
+            isLoading={isLoading}
+          />
         </View>
       </Pressable>
     </Modal>

@@ -114,6 +114,7 @@ export default function FriendsScreen() {
     onFriendStateUIUpdated();
 
     // 注册好友在线状态UI更新事件
+    // *** 这里的注册在触发之后才发生的
     JSEvent.on(UIEvents.Friend.FriendState_UIRefresh, onFriendStateUIUpdated);
 
     return () => {
@@ -122,9 +123,6 @@ export default function FriendsScreen() {
         onFriendStateUIUpdated
       );
     };
-
-    // setOnlineFriends(online);
-    // setOfflineFriends(offline);
   }, []);
 
   return (

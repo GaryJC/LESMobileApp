@@ -124,11 +124,12 @@ export default function App() {
   useEffect(() => {
     // 注册监听是否登陆
     JSEvent.on(DataEvents.User.UserState_isLoggedin, setLogin);
-    // 初始化所有服务
+
+    // 检测是缓存是否存在loginKey, 如果存在则自动登录
     Promise.all([retrieveData("accountId"), retrieveData("loginKey")])
       .then((res) => {
         console.log("id & key: ", res);
-        const [accountId, loginKey, email] = [res[0], res[1], res[2]];
+        const [accountId, loginKey] = [res[0], res[1]];
 
         if (accountId && loginKey) {
           console.log(typeof parseInt(accountId));
@@ -139,7 +140,7 @@ export default function App() {
               console.log("check data: ", data);
               if (data.code === 0) {
                 console.log("correct");
-                DataCenter.setLogin(accountId, email, loginKey, "");
+                DataCenter.setLogin(accountId, loginKey, "", "");
               }
             })
             .catch((e) => {
@@ -151,6 +152,7 @@ export default function App() {
         console.log("can't retrieve accountId and loginKey");
       });
 
+    // 初始化所有服务
     DataCenter.initServices();
 
     return () => {
