@@ -46,11 +46,20 @@ class FriendService {
   //   );
   // }
 
-  pullData(data) {
-    // 这个方法我以前放在MockServer里， 现在应该被UpdateService调用
-    JSEvent.emit(DataEvents.Friend.FriendState_Updated, data);
+  pullData() {
+    /* 
+      调用API拉取数据，发布pulldata事件
+      拉取结束后发布pulldata结束事件
+      这些事件被UpdateService所监听，并触发ui加载页面
+
+      发布对应的数据更新事件
+      JSEvent.emit(DataEvents.Friend.FriendState_Updated, args)
+    */
+    // JSEvent.emit(DataEvents.PullData.PullDataState_isStarted);
+    // JSEvent.emit(DataEvents.PullData.PullDataState_isFinished);
   }
 
+  // 这里的监听
   addFriendStateListener() {
     JSEvent.on(DataEvents.Friend.FriendState_Updated, ({ id, state }) =>
       this.onFriendStateDataUpdated({ id, state })

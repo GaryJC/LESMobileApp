@@ -21,6 +21,7 @@ import { DataEvents } from "./modules/Events";
 import DataCenter from "./modules/DataCenter";
 import { loginCheck } from "./utils/auth";
 import { retrieveData } from "./utils/auth";
+import { db, createTable } from "./modules/dataBase";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -122,8 +123,14 @@ export default function App() {
   }
 
   useEffect(() => {
+    // 如果没有数据库存在，创建一个数据库
+    createTable();
+
     // 注册监听是否登陆
     JSEvent.on(DataEvents.User.UserState_isLoggedin, setLogin);
+    // 识别设备平台
+    // DataCenter.deviceName = Platform.OS.toLocaleUpperCase();
+    console.log("Device Name: ", DataCenter.deviceName);
 
     // 检测是缓存是否存在loginKey, 如果存在则自动登录
     Promise.all([retrieveData("accountId"), retrieveData("loginKey")])
@@ -133,7 +140,7 @@ export default function App() {
 
         if (accountId && loginKey) {
           console.log(typeof parseInt(accountId));
-          loginCheck(parseInt(accountId), loginKey)
+          loginCheck(parseInt(accountId), loginKey, DataCenter.deviceName)
             .then((res) => {
               // console.log("loginCheck: ", res);
               const data = res.data;

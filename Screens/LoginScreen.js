@@ -5,6 +5,7 @@ import {
   Text,
   ActivityIndicator,
   TouchableWithoutFeedback,
+  Platform,
 } from "react-native";
 import InputLayout from "../components/InputLayout";
 import { useState } from "react";
@@ -32,16 +33,21 @@ export default function LoginScreen() {
 
   async function loginHandler() {
     setIsLoading(true);
+    console.log("Device Name: ", DataCenter.deviceName);
     try {
-      const response = await loginRequest(email, password);
-      // console.log(response);
+      const response = await loginRequest(
+        email,
+        password,
+        DataCenter.deviceName
+      );
+      console.log(response);
       const data = response.data;
       if (data.code === 0) {
         setError(null);
         const { accountId, msg } = data.retObject;
         console.log(accountId, msg);
         // 发送登陆成功事件
-        DataCenter.setLogin(accountId, email, msg, "");
+        DataCenter.setLogin(accountId, email, msg);
         try {
           await Promise.all(
             saveData("accountId", accountId),

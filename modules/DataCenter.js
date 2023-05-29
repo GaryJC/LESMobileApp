@@ -3,25 +3,30 @@ import FriendService from "../services/FriendService";
 
 import JSEvent from "../utils/JSEvent";
 import { DataEvents } from "./Events";
+import { Platform } from "react-native";
+
+import { db } from "./dataBase";
 
 const services = [];
 // services.push(new FriendService());
 
-//登录成功后初始化所有用户相关的数据
+// 程序启动的时候，从数Sqlite中读取并重建DataCenter的数据缓存
 const DataCenter = {
   isLoggedin: false,
+
+  deviceName: Platform.OS.toLocaleUpperCase(),
+
   userInfo: {
     accountId: "",
-    username: "",
+    email: "",
     loginKey: "",
-    serviceId: "",
   },
 
-  setLogin(accountId, loginKey, email, serviceId) {
+  setLogin(accountId, email, loginKey, serviceId) {
     this.userInfo.accountId = accountId;
     this.userInfo.email = email;
     this.userInfo.loginKey = loginKey;
-    this.userInfo.serviceId = serviceId;
+    // this.userInfo.serviceId = serviceId;
 
     JSEvent.emit(DataEvents.User.UserState_isLoggedin);
   },
@@ -45,6 +50,10 @@ const DataCenter = {
   },
 
   initServices() {
+    // 程序开始时就识别设备平台
+    // this.deviceName = Platform.OS.toLocaleUpperCase();
+    // console.log(this.deviceName);
+
     this.getFriendListData();
     services.push(new FriendService(this.friendListData));
 

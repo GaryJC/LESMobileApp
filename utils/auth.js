@@ -41,13 +41,13 @@ export const signupRequest = async (email, token, code) => {
   }
 };
 
-export const loginRequest = async (email, password) => {
+export const loginRequest = async (email, password, serviceId) => {
   try {
     return await axios.post(API.loginRequest(), {
       username: email,
       password: password,
       channel: "OFFICIAL-WEB",
-      serviceId: "",
+      serviceId: serviceId,
     });
   } catch (e) {
     console.log(e);
@@ -60,7 +60,7 @@ export const loginCheck = async (accountId, loginKey, serviceId) => {
       params: {
         accountId: accountId,
         loginKey: loginKey,
-        serviceId: "",
+        serviceId: serviceId,
       },
     });
   } catch (e) {
