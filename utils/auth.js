@@ -3,76 +3,60 @@ import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 
 export const sendVerifyCodeRequest = async (email, password, referCode) => {
-  try {
-    return await axios.post(API.registerRequest(), {
-      username: email,
-      password: password,
-      channel: "OFFICIAL-WEB",
-      serviceId: "",
-      referralCode: referCode,
-    });
-  } catch (e) {
-    console.log(e);
-  }
+  return await axios.post(API.registerRequest(), {
+    username: email,
+    password: password,
+    channel: "OFFICIAL-WEB",
+    serviceId: "",
+    referralCode: referCode,
+  });
 };
 
 export const resendCodeRequest = async (email, token) => {
-  try {
-    return await axios.get(API.resendCode(), {
-      params: {
-        username: email,
-        token: token,
-      },
-    });
-  } catch (e) {
-    console.log(e);
-  }
+  return await axios.get(API.resendCode(), {
+    params: {
+      username: email,
+      token: token,
+    },
+  });
 };
 
 export const signupRequest = async (email, token, code) => {
-  try {
-    return await axios.post(API.verifyCode(), {
-      username: email,
-      token: token,
-      code: code,
-    });
-  } catch (e) {
-    console.log(e);
-  }
+  return await axios.post(API.verifyCode(), {
+    username: email,
+    token: token,
+    code: code,
+  });
 };
 
 export const loginRequest = async (email, password, serviceId) => {
-  try {
-    return await axios.post(API.loginRequest(), {
-      username: email,
-      password: password,
-      channel: "OFFICIAL-WEB",
-      serviceId: serviceId,
-    });
-  } catch (e) {
-    console.log(e);
-  }
+  return await axios.post(API.loginRequest(), {
+    username: email,
+    password: password,
+    // channel: "OFFICIAL-WEB",
+    // serviceId: LesConstants.IMDevices[serviceId],
+    channel: "les-platform-im",
+    serviceId: "les-im-" + serviceId,
+  });
 };
 
 export const loginCheck = async (accountId, loginKey, serviceId) => {
-  try {
-    return await axios.get(API.loginCheck(), {
-      params: {
-        accountId: accountId,
-        loginKey: loginKey,
-        serviceId: serviceId,
-      },
-    });
-  } catch (e) {
-    console.log(e);
-  }
+  return await axios.get(API.loginCheck(), {
+    params: {
+      accountId: accountId,
+      loginKey: loginKey,
+      // serviceId: LesConstants.IMDevices[serviceId],
+      serviceId: "les-im-" + serviceId,
+    },
+  });
 };
 
 export async function saveData(key, value) {
   try {
     await SecureStore.setItemAsync(key, String(value));
   } catch (e) {
-    console.log(e);
+    // console.log(e);
+    throw e;
   }
 }
 
@@ -81,6 +65,7 @@ export async function retrieveData(key) {
     const value = await SecureStore.getItemAsync(key);
     return value;
   } catch (error) {
-    console.log("Error retrieving data", error);
+    // console.log("Error retrieving data", error)
+    throw e;
   }
 }

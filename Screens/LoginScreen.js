@@ -10,10 +10,13 @@ import {
 import InputLayout from "../components/InputLayout";
 import { useState } from "react";
 import AuthButton from "../components/AuthButton";
-import { loginRequest } from "../utils/auth";
+import { loginRequest, saveData } from "../utils/auth";
 import { useNavigation } from "@react-navigation/native";
 import DataCenter from "../modules/DataCenter";
-import { saveData, retrieveData } from "../utils/auth";
+import { LesPlatformCenter, LesConstants } from "les-im-components";
+import IMFunctions from "../utils/IMFunctions";
+
+console.log(LesPlatformCenter, LesConstants);
 
 export default function LoginScreen() {
   const [email, setEmail] = useState();
@@ -45,24 +48,40 @@ export default function LoginScreen() {
       if (data.code === 0) {
         setError(null);
         const { accountId, msg } = data.retObject;
-        console.log(accountId, msg);
-        // 发送登陆成功事件
-        DataCenter.setLogin(accountId, email, msg);
+        // console.log("token: ", msg, typeof msg);
+        /*
+          如果用户没有设置用户名
+          进入设置用户名界面
+          在设置名字之后再发送登陆成功事件
+        */
         try {
-          await Promise.all(
-            saveData("accountId", accountId),
-            saveData("loginKey", msg),
-            saveData("email", email)
+          const imResponse = await IMFunctions.connectIMServer(
+            accountId,
+            msg.toString(),
+            DataCenter.deviceName
           );
-        } catch (e) {
-          console.log(e);
+          console.log("im connect success response: ", imResponse);
+          if (imResponse.state == LesConstants.IMUserState.Init) {
+            navigation.navigate("CreateName");
+          } else {
+            //发送登陆成功事件, 进入主界面
+            DataCenter.setLogin(accountId, email, msg);
+
+            // 将accountId, Loginkey等存入secureStorage
+            await Promise.all(
+              saveData("accountId", accountId),
+              saveData("loginKey", msg),
+              saveData("email", email)
+            );
+          }
+        } catch {
+          console.log("im connect fail response: ", e);
         }
-        navigation.navigate("BottomTab");
       } else {
         setError(data.msg);
       }
     } catch (e) {
-      console.log(e);
+      console.log("login error: ", e);
     }
     setIsLoading(false);
   }

@@ -15,6 +15,7 @@ const DataCenter = {
   isLoggedin: false,
 
   deviceName: Platform.OS.toLocaleUpperCase(),
+  // deviceName: "IOS",
 
   userInfo: {
     accountId: "",
@@ -28,7 +29,7 @@ const DataCenter = {
     this.userInfo.loginKey = loginKey;
     // this.userInfo.serviceId = serviceId;
 
-    JSEvent.emit(DataEvents.User.UserState_isLoggedin);
+    JSEvent.emit(DataEvents.User.UserState_IsLoggedin);
   },
 
   // friendId, friendName, friendState, friendAvatar
@@ -48,6 +49,28 @@ const DataCenter = {
       new Friends(10, "Wendy", 2, "https://i.pravatar.cc"),
     ];
   },
+
+  // 消息记录缓存
+  /*
+    recipientId:{
+      messageId:{
+        content:
+        ...
+      }
+    }
+  */
+  /*
+    accountId-accountId:{
+    }
+    e.g. 
+      1-17:{
+        messageId:{
+          ...
+        }
+      }
+   */
+
+  messageCatches: {},
 
   initServices() {
     // 程序开始时就识别设备平台

@@ -1,5 +1,6 @@
 import { DataEvents, UIEvents } from "../modules/Events";
 import JSEvent from "../utils/JSEvent";
+import { LesPlatformCenter, LesConstants } from "les-im-components";
 // import DataCenter from "../modules/DataCenter";
 
 class FriendService {
@@ -55,8 +56,8 @@ class FriendService {
       发布对应的数据更新事件
       JSEvent.emit(DataEvents.Friend.FriendState_Updated, args)
     */
-    // JSEvent.emit(DataEvents.PullData.PullDataState_isStarted);
-    // JSEvent.emit(DataEvents.PullData.PullDataState_isFinished);
+    // JSEvent.emit(DataEvents.PullData.PullDataState_IsStarted);
+    // JSEvent.emit(DataEvents.PullData.PullDataState_IsFinished);
   }
 
   // 这里的监听
@@ -64,6 +65,17 @@ class FriendService {
     JSEvent.on(DataEvents.Friend.FriendState_Updated, ({ id, state }) =>
       this.onFriendStateDataUpdated({ id, state })
     );
+  }
+
+  //
+  onSendMessage(recipentId, message) {
+    LesPlatformCenter.IMFunctions.sendMessage(recipentId, message)
+      .then((message) => {
+        // 将发送的消息存入缓存
+      })
+      .catch((e) => {
+        console.log("messgae send error: ", e);
+      });
   }
 
   init() {

@@ -14,6 +14,7 @@ import GameDetailsScreen from "./Screens/GameDetailsScreen";
 import { Dimensions } from "react-native";
 import SignupScreen from "./Screens/SignupScreen";
 import LoginScreen from "./Screens/LoginScreen";
+import CreateNameScreen from "./Screens/CreateNameScreen";
 import { useState, useEffect } from "react";
 import MockServer from "./utils/MockServer";
 import JSEvent from "./utils/JSEvent";
@@ -22,6 +23,8 @@ import DataCenter from "./modules/DataCenter";
 import { loginCheck } from "./utils/auth";
 import { retrieveData } from "./utils/auth";
 import { db, createTable } from "./modules/dataBase";
+import IMFunctions from "./utils/IMFunctions";
+import { LesPlatformCenter, LesConstants } from "les-im-components";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -127,7 +130,7 @@ export default function App() {
     createTable();
 
     // 注册监听是否登陆
-    JSEvent.on(DataEvents.User.UserState_isLoggedin, setLogin);
+    JSEvent.on(DataEvents.User.UserState_IsLoggedin, setLogin);
     // 识别设备平台
     // DataCenter.deviceName = Platform.OS.toLocaleUpperCase();
     console.log("Device Name: ", DataCenter.deviceName);
@@ -139,19 +142,29 @@ export default function App() {
         const [accountId, loginKey] = [res[0], res[1]];
 
         if (accountId && loginKey) {
-          console.log(typeof parseInt(accountId));
           loginCheck(parseInt(accountId), loginKey, DataCenter.deviceName)
             .then((res) => {
-              // console.log("loginCheck: ", res);
               const data = res.data;
-              console.log("check data: ", data);
+              console.log("login check response: ", data);
               if (data.code === 0) {
                 console.log("correct");
-                DataCenter.setLogin(accountId, loginKey, "", "");
+                IMFunctions.connectIMServer(
+                  accountId,
+                  loginKey,
+                  DataCenter.deviceName
+                )
+                  .then((res) => {
+                    console.log("IM connect success response: ", res);
+                    /* 登陆事件的发送在setLogin里 */
+                    // DataCenter.setLogin(accountId, loginKey, "", "");
+                  })
+                  .catch((e) => {
+                    console.log("IM connect error: ", e);
+                  });
               }
             })
             .catch((e) => {
-              console.log("check error: ", e);
+              console.log("Login check error: ", e);
             });
         }
       })
@@ -180,53 +193,24 @@ export default function App() {
     }
   }, [isLoggedin]);
 
+  const ContentScreens = () => (
+    <>
+      <Stack.Screen
+        name="BottomTab"
+        component={BottomTabNavigation}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="GameDetails"
+        component={GameDetailsScreen}
+        options={{ headerShown: false }}
+      />
+    </>
+  );
+
   return (
     <>
       <StatusBar style="light" />
-      {/* <NavigationContainer>
-        <Stack.Navigator
-          // initialRouteName="BottomTab"
-          initialRouteName="Login"
-          // initialRouteName={isLoggedin ? "BottomTab" : "Login"}
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: "#080F14",
-            },
-            contentStyle: { backgroundColor: "#080F14" },
-          }}
-        >
-          <Stack.Screen
-            name="BottomTab"
-            component={BottomTabNavigation}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="GameDetails"
-            component={GameDetailsScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Signup"
-            component={SignupScreen}
-            options={{
-              headerShown: true,
-              headerTitleStyle: {
-                color: "white",
-              },
-            }}
-          />
-          <Stack.Screen
-            name="Login"
-            component={LoginScreen}
-            options={{
-              headerShown: true,
-              headerTitleStyle: {
-                color: "white",
-              },
-            }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer> */}
       <NavigationContainer>
         {isLoggedin ? (
           <Stack.Navigator
@@ -238,16 +222,7 @@ export default function App() {
               contentStyle: { backgroundColor: "#080F14" },
             }}
           >
-            <Stack.Screen
-              name="BottomTab"
-              component={BottomTabNavigation}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="GameDetails"
-              component={GameDetailsScreen}
-              options={{ headerShown: false }}
-            />
+            {ContentScreens()}
           </Stack.Navigator>
         ) : (
           <Stack.Navigator
@@ -279,6 +254,17 @@ export default function App() {
                 },
               }}
             />
+            <Stack.Screen
+              name="CreateName"
+              component={CreateNameScreen}
+              options={{
+                headerShown: true,
+                headerTitleStyle: {
+                  color: "white",
+                },
+              }}
+            />
+            {ContentScreens()}
           </Stack.Navigator>
         )}
       </NavigationContainer>

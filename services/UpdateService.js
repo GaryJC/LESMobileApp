@@ -9,12 +9,6 @@ import FriendService from "./FriendService";
   监听这个事件，并发布一个UI结束事件告诉UI读取数据结束，关闭loading界面
 */
 
-/*
-  一个service接入所有IMListener的回调
-  当收到数据时发送对应的事件
-  其他的服务监听对应的事件
-*/
-
 class UpdateService {
   static #inst;
 
@@ -32,10 +26,10 @@ class UpdateService {
 
   // 监听pullData事件开始和结束的事件
   addPullDataStateListenter() {
-    JSEvent.on(DataEvents.PullData.PullDataState_isStarted, () =>
+    JSEvent.on(DataEvents.PullData.PullDataState_IsStarted, () =>
       JSEvent.emit(UIEvents.PullData.PullDataState_UILoading)
     );
-    JSEvent.on(DataEvents.PullData.PullDataState_isFinished, () =>
+    JSEvent.on(DataEvents.PullData.PullDataState_IsFinished, () =>
       JSEvent.emit(UIEvents.PullData.PullDataState_UINotLoading)
     );
   }

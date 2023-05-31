@@ -3,8 +3,8 @@ export const DataEvents = {
     拉取数据的状态更新
   */
   PullData: {
-    PullDataState_isStarted: "DATA_EVENT_PullData_isStarted",
-    PullDataState_isFinished: "DATA_EVENT_PullData_isFinished",
+    PullDataState_IsStarted: "DATA_EVENT_PullData_IsStarted",
+    PullDataState_IsFinished: "DATA_EVENT_PullData_IsFinished",
   },
 
   /*
@@ -12,7 +12,7 @@ export const DataEvents = {
     无携带参数
   */
   User: {
-    UserState_isLoggedin: "DATA_EVENT_UserState_isLoggedin",
+    UserState_IsLoggedin: "DATA_EVENT_UserState_IsLoggedin",
   },
 
   /* 
@@ -21,6 +21,31 @@ export const DataEvents = {
   */
   Friend: {
     FriendState_Updated: "DATA_EVENT_FriendState_Updated",
+  },
+
+  /*
+    消息状态数据更新
+    携带参数为 PBLesIMTimelineData
+  */
+  Message: {
+    MessageState_Sent: "DATA_EVENT_MessageState_Sent",
+    TimelineState_Updated: "DATA_EVENT_Message_Received",
+  },
+
+  /*
+    通知状态数据更新
+    携带参数为 LesIMUserNotificationData
+  */
+  Notification: {
+    NotificationState_Invoked: "DATA_EVENT_NotificationState_Invoked",
+  },
+
+  /*
+    存储数据更新
+    携带参数为 PBLesIMTimelineData
+   */
+  Saving: {
+    SavingState_Message: "DATA_EVENT_SavingState_Message",
   },
 };
 
@@ -40,5 +65,9 @@ export const UIEvents = {
   PullData: {
     PullDataState_UILoading: "UI_EVENT_PullDataState_UILoading",
     PullDataState_UINotLoading: "UI_EVENT_PullDataState_UIIsNotLoading",
+  },
+
+  Message: {
+    MessageState_UIRefresh: "UI_EVENT_MessageState_UIRefresh",
   },
 };
