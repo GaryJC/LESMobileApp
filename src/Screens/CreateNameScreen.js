@@ -1,7 +1,7 @@
 import { View, Text, TextInput } from "react-native";
-import InputLayout from "../components/InputLayout";
+import InputLayout from "../Components/InputLayout";
 import { useState } from "react";
-import AuthButton from "../components/AuthButton";
+import AuthButton from "../Components/AuthButton";
 import IMFunctions from "../utils/IMFunctions";
 import { useNavigation } from "@react-navigation/native";
 

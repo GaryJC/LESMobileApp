@@ -8,8 +8,8 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useState, useEffect } from "react";
-import InputLayout from "../components/InputLayout";
-import VerifyCodeModal from "../components/VerifyCodeModal";
+import InputLayout from "../Components/InputLayout";
+import VerifyCodeModal from "../Components/VerifyCodeModal";
 import { sendVerifyCodeRequest, resendCodeRequest } from "../utils/auth";
 
 export default function SignupScreen() {
