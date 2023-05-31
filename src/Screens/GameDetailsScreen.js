@@ -46,9 +46,9 @@ export default function GameDetailsScreen() {
   const [gameId, setGameId] = useState(route.params.gameId);
 
   const [communityButtonContent, setCommunityButtonContent] = useState([
-    { title: "Twitter", icon: require("../assets/img/twitter_icon.png") },
-    { title: "Discord", icon: require("../assets/img/discord_icon.png") },
-    { title: "Telegram", icon: require("../assets/img/telegram_icon.png") },
+    { title: "Twitter", icon: require("../../assets/img/twitter_icon.png") },
+    { title: "Discord", icon: require("../../assets/img/discord_icon.png") },
+    { title: "Telegram", icon: require("../../assets/img/telegram_icon.png") },
   ]);
   const [gameName, setGameName] = useState();
   const [aboutContent, setAboutContent] = useState();
@@ -90,7 +90,7 @@ export default function GameDetailsScreen() {
     <View className="flex-1">
       <View>
         <ImageBackground
-          source={require("../assets/img/gameDetailsBg.jpg")}
+          source={require("../../assets/img/gameDetailsBg.jpg")}
           resizeMode="cover"
           className="h-[45vh] relative"
         >
@@ -132,15 +132,15 @@ export default function GameDetailsScreen() {
           )} */}
           <CommunityButton
             title="Twitter"
-            icon={require("../assets/img/twitter_icon.png")}
+            icon={require("../../assets/img/twitter_icon.png")}
           />
           <CommunityButton
             title="Discord"
-            icon={require("../assets/img/discord_icon.png")}
+            icon={require("../../assets/img/discord_icon.png")}
           />
           <CommunityButton
             title="Telegram"
-            icon={require("../assets/img/telegram_icon.png")}
+            icon={require("../../assets/img/telegram_icon.png")}
           />
         </View>
       </View>

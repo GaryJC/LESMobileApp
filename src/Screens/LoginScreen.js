@@ -7,9 +7,9 @@ import {
   TouchableWithoutFeedback,
   Platform,
 } from "react-native";
-import InputLayout from "../components/InputLayout";
+import InputLayout from "../Components/InputLayout";
 import { useState } from "react";
-import AuthButton from "../components/AuthButton";
+import AuthButton from "../Components/AuthButton";
 import { loginRequest, saveData } from "../utils/auth";
 import { useNavigation } from "@react-navigation/native";
 import DataCenter from "../modules/DataCenter";

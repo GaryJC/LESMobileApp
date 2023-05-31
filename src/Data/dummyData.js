@@ -30,13 +30,13 @@ export const GameDetailsData = new GameDetails(
 export const ActivitiesData = [
   new Activities(
     1,
-    require("../assets/img/gameCardBg.jpg"),
+    require("../../assets/img/gameCardBg.jpg"),
     "Friends Promotion",
     "Invite Friends to"
   ),
   new Activities(
     2,
-    require("../assets/img/gameCardBg.jpg"),
+    require("../../assets/img/gameCardBg.jpg"),
     "Friends Promotion",
     "Invite Friends to"
   ),
@@ -47,13 +47,13 @@ export const NewsData = [
     1,
     "MetaVirus is coming",
     "2 days ago",
-    require("../assets/img/userBg.jpg")
+    require("../../assets/img/userBg.jpg")
   ),
   new News(
     2,
     "MetaVirus is coming",
     "2 days ago",
-    require("../assets/img/userBg.jpg")
+    require("../../assets/img/userBg.jpg")
   ),
 ];
 
@@ -62,8 +62,8 @@ export const UserData = new User(
   1,
   "Gary",
   0,
-  require("../assets/img/userBg.jpg"),
-  require("../assets/img/gameCardBg.jpg")
+  require("../../assets/img/userBg.jpg"),
+  require("../../assets/img/gameCardBg.jpg")
 );
 
 export const FriendsData = [
@@ -88,104 +88,104 @@ export const MessageData = [
   new Message(
     1,
     "Tony",
-    require("../assets/img/gameCardBg.jpg"),
+    require("../../assets/img/gameCardBg.jpg"),
     "Hi, There",
     "06/10"
   ),
   new Message(
     2,
     "Gary",
-    require("../assets/img/userBg.jpg"),
+    require("../../assets/img/userBg.jpg"),
     "Hi, There",
     "06/10"
   ),
   new Message(
     3,
     "Tony",
-    require("../assets/img/gameCardBg.jpg"),
+    require("../../assets/img/gameCardBg.jpg"),
     "Hi, There",
     "06/10"
   ),
   new Message(
     4,
     "Gary",
-    require("../assets/img/userBg.jpg"),
+    require("../../assets/img/userBg.jpg"),
     "Hi, There",
     "06/10"
   ),
   new Message(
     5,
     "Tony",
-    require("../assets/img/gameCardBg.jpg"),
+    require("../../assets/img/gameCardBg.jpg"),
     "Hi, There",
     "06/10"
   ),
   new Message(
     6,
     "Gary",
-    require("../assets/img/userBg.jpg"),
+    require("../../assets/img/userBg.jpg"),
     "Hi, There",
     "06/10"
   ),
   new Message(
     6,
     "Gary",
-    require("../assets/img/userBg.jpg"),
+    require("../../assets/img/userBg.jpg"),
     "Hi, There",
     "06/10"
   ),
   new Message(
     6,
     "Gary",
-    require("../assets/img/userBg.jpg"),
+    require("../../assets/img/userBg.jpg"),
     "Hi, There",
     "06/10"
   ),
   new Message(
     6,
     "Gary",
-    require("../assets/img/userBg.jpg"),
+    require("../../assets/img/userBg.jpg"),
     "Hi, There",
     "06/10"
   ),
   new Message(
     6,
     "Gary",
-    require("../assets/img/userBg.jpg"),
+    require("../../assets/img/userBg.jpg"),
     "Hi, There",
     "06/10"
   ),
   new Message(
     6,
     "Gary",
-    require("../assets/img/userBg.jpg"),
+    require("../../assets/img/userBg.jpg"),
     "Hi, There",
     "06/10"
   ),
   new Message(
     6,
     "Gary",
-    require("../assets/img/userBg.jpg"),
+    require("../../assets/img/userBg.jpg"),
     "Hi, There",
     "06/10"
   ),
   new Message(
     6,
     "Gary",
-    require("../assets/img/userBg.jpg"),
+    require("../../assets/img/userBg.jpg"),
     "Hi, There",
     "06/10"
   ),
   new Message(
     10,
     "Gary",
-    require("../assets/img/userBg.jpg"),
+    require("../../assets/img/userBg.jpg"),
     "Hi, Theressss",
     "06/10"
   ),
 ];
 
 export const ChatListData = [
-  new ChatList(1, require("../assets/img/gameCardBg.jpg")),
-  new ChatList(2, require("../assets/img/userBg.jpg")),
+  new ChatList(1, require("../../assets/img/gameCardBg.jpg")),
+  new ChatList(2, require("../../assets/img/userBg.jpg")),
 ];
