@@ -14,7 +14,14 @@ const services = [];
 const DataCenter = {
   isLoggedin: false,
 
-  deviceName: Platform.OS.toLocaleUpperCase(),
+  deviceName:
+    Platform.OS === "ios"
+      ? "IOS"
+      : Platform.OS === "android"
+      ? "Android"
+      : Platform.OS === "web"
+      ? "Web"
+      : "PC",
   // deviceName: "IOS",
 
   userInfo: {
