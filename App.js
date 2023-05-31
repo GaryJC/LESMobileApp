@@ -156,7 +156,7 @@ export default function App() {
                   .then((res) => {
                     console.log("IM connect success response: ", res);
                     /* 登陆事件的发送在setLogin里 */
-                    // DataCenter.setLogin(accountId, loginKey, "", "");
+                    DataCenter.setLogin(accountId, loginKey, "", "");
                   })
                   .catch((e) => {
                     console.log("IM connect error: ", e);

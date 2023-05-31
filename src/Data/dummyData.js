@@ -85,107 +85,119 @@ export const RecomFriendsData = [
 ];
 
 export const MessageData = [
-  new Message(
-    1,
-    "Tony",
-    require("../../assets/img/gameCardBg.jpg"),
-    "Hi, There",
-    "06/10"
-  ),
-  new Message(
-    2,
-    "Gary",
-    require("../../assets/img/userBg.jpg"),
-    "Hi, There",
-    "06/10"
-  ),
-  new Message(
-    3,
-    "Tony",
-    require("../../assets/img/gameCardBg.jpg"),
-    "Hi, There",
-    "06/10"
-  ),
-  new Message(
-    4,
-    "Gary",
-    require("../../assets/img/userBg.jpg"),
-    "Hi, There",
-    "06/10"
-  ),
-  new Message(
-    5,
-    "Tony",
-    require("../../assets/img/gameCardBg.jpg"),
-    "Hi, There",
-    "06/10"
-  ),
-  new Message(
-    6,
-    "Gary",
-    require("../../assets/img/userBg.jpg"),
-    "Hi, There",
-    "06/10"
-  ),
-  new Message(
-    6,
-    "Gary",
-    require("../../assets/img/userBg.jpg"),
-    "Hi, There",
-    "06/10"
-  ),
-  new Message(
-    6,
-    "Gary",
-    require("../../assets/img/userBg.jpg"),
-    "Hi, There",
-    "06/10"
-  ),
-  new Message(
-    6,
-    "Gary",
-    require("../../assets/img/userBg.jpg"),
-    "Hi, There",
-    "06/10"
-  ),
-  new Message(
-    6,
-    "Gary",
-    require("../../assets/img/userBg.jpg"),
-    "Hi, There",
-    "06/10"
-  ),
-  new Message(
-    6,
-    "Gary",
-    require("../../assets/img/userBg.jpg"),
-    "Hi, There",
-    "06/10"
-  ),
-  new Message(
-    6,
-    "Gary",
-    require("../../assets/img/userBg.jpg"),
-    "Hi, There",
-    "06/10"
-  ),
-  new Message(
-    6,
-    "Gary",
-    require("../../assets/img/userBg.jpg"),
-    "Hi, There",
-    "06/10"
-  ),
-  new Message(
-    10,
-    "Gary",
-    require("../../assets/img/userBg.jpg"),
-    "Hi, Theressss",
-    "06/10"
-  ),
+  {
+    recipientId: 2,
+    recipientName: "Tony",
+    messages: [
+      new Message(
+        1,
+        "Tony",
+        require("../../assets/img/gameCardBg.jpg"),
+        "Hi, There",
+        "06/10"
+      ),
+      new Message(
+        2,
+        "Gary",
+        require("../../assets/img/userBg.jpg"),
+        "Hi, There",
+        "06/10"
+      ),
+      new Message(
+        3,
+        "Tony",
+        require("../../assets/img/gameCardBg.jpg"),
+        "Hi, There",
+        "06/10"
+      ),
+      new Message(
+        4,
+        "Gary",
+        require("../../assets/img/userBg.jpg"),
+        "Hi, There",
+        "06/10"
+      ),
+      new Message(
+        5,
+        "Tony",
+        require("../../assets/img/gameCardBg.jpg"),
+        "Hi, There",
+        "06/10"
+      ),
+      new Message(
+        6,
+        "Gary",
+        require("../../assets/img/userBg.jpg"),
+        "Hi, There",
+        "06/10"
+      ),
+      new Message(
+        10,
+        "Gary",
+        require("../../assets/img/userBg.jpg"),
+        "Hi, Theressss",
+        "06/10"
+      ),
+    ],
+  },
+  {
+    recipientId: 3,
+    recipientName: "Bruce",
+    messages: [
+      new Message(
+        1,
+        "Bruce",
+        require("../../assets/img/gameCardBg.jpg"),
+        "Hi, There",
+        "06/10"
+      ),
+      new Message(
+        2,
+        "Gary",
+        require("../../assets/img/userBg.jpg"),
+        "Hi, There",
+        "06/10"
+      ),
+      new Message(
+        3,
+        "Bruce",
+        require("../../assets/img/gameCardBg.jpg"),
+        "Hi, There",
+        "06/10"
+      ),
+      new Message(
+        4,
+        "Gary",
+        require("../../assets/img/userBg.jpg"),
+        "Hi, There",
+        "06/10"
+      ),
+      new Message(
+        5,
+        "Bruce",
+        require("../../assets/img/gameCardBg.jpg"),
+        "Hi, There",
+        "06/10"
+      ),
+      new Message(
+        6,
+        "Gary",
+        require("../../assets/img/userBg.jpg"),
+        "Hi, There",
+        "06/10"
+      ),
+      new Message(
+        10,
+        "Gary",
+        require("../../assets/img/userBg.jpg"),
+        "Hi, Theressss",
+        "06/10"
+      ),
+    ],
+  },
 ];
 
 export const ChatListData = [
-  new ChatList(1, require("../../assets/img/gameCardBg.jpg")),
-  new ChatList(2, require("../../assets/img/userBg.jpg")),
+  new ChatList(2, require("../../assets/img/gameCardBg.jpg")),
+  new ChatList(3, require("../../assets/img/userBg.jpg")),
 ];
