@@ -1,6 +1,6 @@
 class ChatList {
-  constructor(chatId, chatAvatar) {
-    this.chatId = chatId;
+  constructor(recipientId, chatAvatar) {
+    this.recipientId = recipientId;
     this.chatAvatar = chatAvatar;
   }
 }

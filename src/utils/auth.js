@@ -33,8 +33,6 @@ export const loginRequest = async (email, password, serviceId) => {
   return await axios.post(API.loginRequest(), {
     username: email,
     password: password,
-    // channel: "OFFICIAL-WEB",
-    // serviceId: LesConstants.IMDevices[serviceId],
     channel: "les-platform-im",
     serviceId: "les-im-" + serviceId,
   });

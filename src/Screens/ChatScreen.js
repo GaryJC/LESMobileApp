@@ -3,6 +3,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableHighlight,
   FlatList,
   KeyboardAvoidingView,
   Platform,
@@ -51,21 +52,29 @@ const ChatBubble = (
   </View>
 );
 
-const ChatList = (chatId, chatAvatar) => (
-  // add onPress handler
-  <View className="overflow-hidden rounded-full w-[55px] h-[55px] mb-[15px]">
-    <ImageBackground
-      source={chatAvatar}
-      className="w-[100%] h-[100%]"
-      resizeMode="cover"
-    />
-  </View>
-);
-
 const ChatScreen = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  // 当前选择的聊天对象的id
+  const [curRecipientId, setCurRecipientId] = useState(2);
+  const [curRecipientName, setCurRecipientName] = useState();
+
+  useEffect(() => {
+    const curChatData = MessageData.find(
+      (item) => item.recipientId === curRecipientId
+    );
+    // console.log(curChatData);
+    setMessages(curChatData.messages);
+    setCurRecipientName(curChatData.recipientName);
+  }, [curRecipientId]);
+
   const flatListRef = useRef();
+
+  const onClickChatHandler = (recipentId) => {
+    setCurRecipientId(recipentId);
+    console.log(curRecipientId);
+    // 切换到指定的窗口
+  };
 
   const sendMessage = () => {
     if (newMessage) {
@@ -74,14 +83,29 @@ const ChatScreen = () => {
     }
   };
 
+  const ChatList = (recipientId, chatAvatar) => (
+    // add onPress handler to switch chat recipient
+    <TouchableHighlight onPress={() => onClickChatHandler(recipientId)}>
+      <View className="overflow-hidden rounded-full w-[55px] h-[55px] mb-[15px]">
+        <ImageBackground
+          source={chatAvatar}
+          className="w-[100%] h-[100%]"
+          resizeMode="cover"
+        />
+      </View>
+    </TouchableHighlight>
+  );
+
   return (
     <View className="flex-1 flex-row pt-[5vh]">
       <View className="w-[20%] items-center flex-col">
         <View className="flex-1">
           <FlatList
             data={ChatListData}
-            renderItem={({ item }) => ChatList(item.chatId, item.chatAvatar)}
-            keyExtractor={(item) => item.chatId}
+            renderItem={({ item }) =>
+              ChatList(item.recipientId, item.chatAvatar)
+            }
+            keyExtractor={(item) => item.recipientId}
           />
         </View>
         <View className="flex-2 justify-evenly border-t-2 border-[#575757] p-[5px]">
@@ -100,7 +124,7 @@ const ChatScreen = () => {
       >
         <View className="flex-row justify-between p-[10px]">
           <Text className="text-white font-bold text-[20px]">
-            Friend's name
+            {curRecipientName}
           </Text>
           <Ionicons
             name="ellipsis-horizontal"
@@ -122,7 +146,8 @@ const ChatScreen = () => {
           {/* 这里的头像缓存起来 */}
           <FlatList
             ref={flatListRef}
-            data={MessageData}
+            // data={MessageData}
+            data={messages}
             renderItem={({ item }) =>
               ChatBubble(
                 item.messageSenderName,
