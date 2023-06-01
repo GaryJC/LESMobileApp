@@ -45,7 +45,7 @@ export default function LoginScreen() {
       );
       console.log(response);
       const data = response.data;
-      if (data.code === 0) {
+      if (data.code === 0) { 
         setError(null);
         const { accountId, msg } = data.retObject;
         // console.log("token: ", msg, typeof msg);
