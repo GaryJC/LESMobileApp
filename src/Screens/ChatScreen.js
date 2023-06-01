@@ -22,6 +22,7 @@ import FriendService from "../services/FriendService";
 import MessageService from "../services/MessageService";
 import JSEvent from "../utils/JSEvent";
 import { UIEvents } from "../modules/Events";
+import Constants from "../modules/Constants";
 import DataCenter from "../modules/DataCenter";
 
 // import { bottomTabHeight } from "../App";
@@ -54,7 +55,9 @@ const ChatBubble = (
         </Text>
       </View>
       <Text className="text-[13px] text-white">{messageContent}</Text>
-      {messageStatus === "delivering" && <Text>Loading</Text>}
+      {messageStatus === Constants.deliveryState.delivering && (
+        <Text>Loading</Text>
+      )}
     </View>
   </View>
 );
@@ -92,7 +95,10 @@ const messageReducer = (state, action) => {
         (message) => message.messageId === action.payload.messageId
       );
       // If message with the 'delivered' status does not exist in the state, add it
-      if (!messageExists && action.payload.status === "delivered") {
+      if (
+        !messageExists &&
+        action.payload.status === Constants.deliveryState.delivered
+      ) {
         updatedState = [...updatedState, action.payload];
       }
       console.log("updatedState: ", updatedState);
@@ -117,7 +123,7 @@ const ChatScreen = () => {
     JSEvent.on(UIEvents.Message.MessageState_UIRefresh, (messageData) => {
       // assuming messageData contains status
       console.log("message recived in chat: ", messageData);
-      if (messageData.status === "delivered") {
+      if (messageData.status === Constants.deliveryState.delivered) {
         dispatchMessages({
           type: "UPDATE_MESSAGE_STATUS",
           payload: messageData,

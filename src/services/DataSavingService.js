@@ -11,6 +11,7 @@
 import DataCenter from "../modules/DataCenter";
 import { DataEvents, UIEvents } from "../modules/Events";
 import JSEvent from "../utils/JSEvent";
+import Constants from "../modules/Constants";
 
 class DataSavingService {
   static #inst;
@@ -38,11 +39,11 @@ class DataSavingService {
     const content = message.getContent();
     const timelineId = message.getTimelineid();
     // 信息的投递状态
-    let status = "delivering";
+    let status = Constants.deliveryState.delivering;
 
     // 如果有timelineId, 则设置为投递成功
     if (timelineId !== 0) {
-      status = "delivered";
+      status = Constants.deliveryState.delivered;
     }
 
     console.log("status: ", status);
@@ -64,8 +65,6 @@ class DataSavingService {
     };
 
     console.log("messageData: ", messageData);
-    // Deep copy of messageData
-    // const copiedMessageData = JSON.parse(JSON.stringify(messageData));
 
     // 如果缓存中已经存在次对话窗口
     if (DataCenter.messageCaches[chatId]) {
