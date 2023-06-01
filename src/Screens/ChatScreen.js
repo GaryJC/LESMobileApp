@@ -54,7 +54,7 @@ const ChatBubble = (
         </Text>
       </View>
       <Text className="text-[13px] text-white">{messageContent}</Text>
-      {messageStatus === "delievering" && <Text>Loading</Text>}
+      {messageStatus === "delivering" && <Text>Loading</Text>}
     </View>
   </View>
 );
@@ -147,9 +147,9 @@ const ChatScreen = () => {
   const flatListRef = useRef();
 
   const onClickChatHandler = (recipentId) => {
+    // 切换到指定的窗口
     setCurRecipientId(recipentId);
     console.log(curRecipientId);
-    // 切换到指定的窗口
   };
 
   const ChatList = (recipientId, chatAvatar) => (

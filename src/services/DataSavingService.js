@@ -87,7 +87,6 @@ class DataSavingService {
     }
     console.log("sended message arg: ", messageData);
     // 发送UI更新事件
-    // 事件的参数应该只是这次发送的信息而不是全部的缓存，现在是为了方便测试
     JSEvent.emit(UIEvents.Message.MessageState_UIRefresh, messageData);
   }
 
