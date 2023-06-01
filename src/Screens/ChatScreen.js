@@ -12,7 +12,7 @@ import {
   StatusBar,
 } from "react-native";
 import { MessageData, ChatListData } from "../Data/dummyData";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useReducer } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import {
   KeyboardAwareFlatList,
@@ -57,19 +57,54 @@ const ChatBubble = (
   </View>
 );
 
+const messageReducer = (state, action) => {
+  switch (action.type) {
+    case "ADD_MESSAGE":
+      return [...state, action.payload];
+    case "UPDATE_MESSAGE_STATUS":
+      return state.map((message) =>
+        message.messageId === action.payload.messageId
+          ? { ...message, status: action.payload.status }
+          : message
+      );
+    default:
+      throw new Error();
+  }
+};
+
 const ChatScreen = () => {
   // 消息列表
-  const [messages, setMessages] = useState([]);
+  // const [messages, setMessages] = useState([]);
   // 收到的最新消息
   const [newMessage, setNewMessage] = useState("");
   // 当前选择的聊天对象的id
   const [curRecipientId, setCurRecipientId] = useState(2);
   const [curRecipientName, setCurRecipientName] = useState();
 
-  const [updateMessage, setUpdateMessage] = useState([]);
+  const [messages, dispatchMessages] = useReducer(messageReducer, []);
 
   useEffect(() => {
-    JSEvent.on(UIEvents.Message.MessageState_UIRefresh, updateMessages);
+    JSEvent.on(UIEvents.Message.MessageState_UIRefresh, (messageData) => {
+      // assuming messageData contains status
+      console.log("status: ", messageData.status);
+      if (messageData.status === "delivered") {
+        dispatchMessages({
+          type: "UPDATE_MESSAGE_STATUS",
+          payload: {
+            messageId: messageData.messageId,
+            status: messageData.status,
+          },
+        });
+      } else {
+        dispatchMessages({
+          type: "ADD_MESSAGE",
+          payload: messageData,
+        });
+      }
+    });
+
+    // Don't forget to remove the listener when the component unmounts
+    return () => JSEvent.remove(UIEvents.Message.MessageState_UIRefresh);
   }, []);
 
   useEffect(() => {
@@ -88,24 +123,6 @@ const ChatScreen = () => {
     setCurRecipientId(recipentId);
     console.log(curRecipientId);
     // 切换到指定的窗口
-  };
-
-  const sendMessage = () => {
-    if (newMessage) {
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-      setNewMessage("");
-    }
-  };
-
-  useEffect(() => {
-    setMessages((prevMessages) => [...prevMessages, updateMessage]);
-    // setMessages(updateMessage);
-    console.log("update message: ", updateMessage);
-  }, [updateMessage]);
-
-  const updateMessages = (messageData) => {
-    console.log("send message: ", messageData);
-    setUpdateMessage(messageData);
   };
 
   const ChatList = (recipientId, chatAvatar) => (
@@ -190,12 +207,14 @@ const ChatScreen = () => {
                 "6/10"
               );
             }}
-            ListEmptyComponent={<Text>No items to display</Text>}
+            ListEmptyComponent={<Text>No messages to display</Text>}
             keyExtractor={(item, index) => index.toString()}
             onContentSizeChange={() =>
+              messages.length > 0 &&
               flatListRef.current?.scrollToEnd({ animated: true })
             }
             onLayout={() =>
+              messages.length > 0 &&
               flatListRef.current?.scrollToEnd({ animated: true })
             }
           />

@@ -58,9 +58,9 @@ class MessageService {
   // 监听消息接受事件
   onReciveMessage() {
     // 收到事件后发布信息缓存事件
-    JSEvent.on(DataEvents.Message.TimelineState_Updated, (message) =>
-      JSEvent.emit(DataEvents.Saving.SavingState_Message, message)
-    );
+    // JSEvent.on(DataEvents.Message.TimelineState_Updated, (message) =>
+    //   JSEvent.emit(DataEvents.Saving.SavingState_Message, message)
+    // );
   }
 
   init() {

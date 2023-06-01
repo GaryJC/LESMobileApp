@@ -176,7 +176,7 @@ export default function App() {
     DataCenter.initServices();
 
     return () => {
-      JSEvent.remove(DataEvents.User.UserState_isLoggedin, setLogin);
+      JSEvent.remove(DataEvents.User.UserState_IsLoggedin, setLogin);
     };
   }, []);
 
@@ -189,7 +189,7 @@ export default function App() {
       // 模拟服务器发送数据
       const mockServer = new MockServer();
       // mock服务器发送好友状态改变事件;
-      mockServer.sendMockFriendStateData();
+      // mockServer.sendMockFriendStateData();
     }
   }, [isLoggedin]);
 

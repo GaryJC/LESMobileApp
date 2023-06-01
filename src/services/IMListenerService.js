@@ -30,8 +30,8 @@ class IMListenerService {
       );
       timelineStartId = message.getTimelineid();
       // 收到消息发送事件->发布缓存消息事件
+      console.log("onsend timelineid: ", timelineStartId);
       JSEvent.emit(DataEvents.Saving.SavingState_Message, message);
-      // JSEvent.emit(DataEvents.Message.MessageState_Sent, message);
     };
 
     LesPlatformCenter.IMListeners.onIMTimelineUpdated = (message) => {
@@ -43,7 +43,6 @@ class IMListenerService {
       );
       timelineStartId = lastTimelineId;
       // 收到消息接受事件->发布缓存消息事件
-      // JSEvent.emit(DataEvents.Message.TimelineState_Updated, message);
       JSEvent.emit(DataEvents.Saving.SavingState_Message, message);
     };
 

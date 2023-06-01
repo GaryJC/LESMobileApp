@@ -31,7 +31,7 @@ class DataSavingService {
   onSavingMessage(message) {
     // 缓存消息
     // 发布消息UI更新事件
-    console.log("message saving: ", message);
+    console.log("timelineId: ", message.getTimelineid());
     const senderId = message.getSenderid();
     const recipentId = message.getRecipientid();
     const messageId = message.getMessageid();
@@ -41,9 +41,11 @@ class DataSavingService {
     let status = "delievering";
 
     // 如果有timelineId, 则设置为投递成功
-    if (timelineId) {
+    if (timelineId !== 0) {
       status = "delievered";
     }
+
+    console.log("status: ", status);
 
     // 对话窗口的id
     const chatId =
@@ -61,6 +63,10 @@ class DataSavingService {
       status: status,
     };
 
+    console.log("messageData: ", messageData);
+    // Deep copy of messageData
+    const copiedMessageData = JSON.parse(JSON.stringify(messageData));
+
     // 如果缓存中已经存在次对话窗口
     if (DataCenter.messageCaches[chatId]) {
       // 找这个对话的具体的messageId
@@ -70,22 +76,18 @@ class DataSavingService {
       console.log("index: ", index);
       // 如果存在这个信息，更新这个信息
       if (index !== -1) {
-        DataCenter.messageCaches[chatId][index] = messageData;
+        DataCenter.messageCaches[chatId][index] = copiedMessageData;
       } else {
         // 如果不存在，则缓存这个信息
-        DataCenter.messageCaches[chatId].push(messageData);
+        DataCenter.messageCaches[chatId].push(copiedMessageData);
       }
     } else {
       // 如果缓存中不存在次对话窗口，将值设置为array
-      DataCenter.messageCaches[chatId] = [messageData];
+      DataCenter.messageCaches[chatId] = [copiedMessageData];
     }
-    console.log("message caches: ", DataCenter.messageCaches[chatId]);
+    console.log("sended message arg: ", messageData);
     // 发送UI更新事件
     // 事件的参数应该只是这次发送的信息而不是全部的缓存，现在是为了方便测试
-    // JSEvent.emit(
-    //   UIEvents.Message.MessageState_UIRefresh,
-    //   DataCenter.messageCaches[chatId]
-    // );
     JSEvent.emit(UIEvents.Message.MessageState_UIRefresh, messageData);
   }
 

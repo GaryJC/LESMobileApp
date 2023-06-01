@@ -70,15 +70,15 @@ class FriendService {
 
   //在FriendScreen里调用这个方法
   onSendMessage(recipentId, message) {
-    LesPlatformCenter.IMFunctions.sendMessage(recipentId, message)
-      .then((message) => {
-        // 将发送的消息存入缓存
-        console.log("send message: ", message);
-        DataSavingService.Inst.onSavingMessage(message);
-      })
-      .catch((e) => {
-        console.log("messgae send error: ", e);
-      });
+    // LesPlatformCenter.IMFunctions.sendMessage(recipentId, message)
+    //   .then((message) => {
+    //     // 将发送的消息存入缓存
+    //     console.log("send message: ", message);
+    //     DataSavingService.Inst.onSavingMessage(message);
+    //   })
+    //   .catch((e) => {
+    //     console.log("messgae send error: ", e);
+    //   });
   }
 
   init() {
