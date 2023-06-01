@@ -38,11 +38,11 @@ class DataSavingService {
     const content = message.getContent();
     const timelineId = message.getTimelineid();
     // 信息的投递状态
-    let status = "delievering";
+    let status = "delivering";
 
     // 如果有timelineId, 则设置为投递成功
     if (timelineId !== 0) {
-      status = "delievered";
+      status = "delivered";
     }
 
     console.log("status: ", status);
@@ -65,7 +65,7 @@ class DataSavingService {
 
     console.log("messageData: ", messageData);
     // Deep copy of messageData
-    const copiedMessageData = JSON.parse(JSON.stringify(messageData));
+    // const copiedMessageData = JSON.parse(JSON.stringify(messageData));
 
     // 如果缓存中已经存在次对话窗口
     if (DataCenter.messageCaches[chatId]) {
@@ -76,14 +76,14 @@ class DataSavingService {
       console.log("index: ", index);
       // 如果存在这个信息，更新这个信息
       if (index !== -1) {
-        DataCenter.messageCaches[chatId][index] = copiedMessageData;
+        DataCenter.messageCaches[chatId][index] = messageData;
       } else {
         // 如果不存在，则缓存这个信息
-        DataCenter.messageCaches[chatId].push(copiedMessageData);
+        DataCenter.messageCaches[chatId].push(messageData);
       }
     } else {
       // 如果缓存中不存在次对话窗口，将值设置为array
-      DataCenter.messageCaches[chatId] = [copiedMessageData];
+      DataCenter.messageCaches[chatId] = [messageData];
     }
     console.log("sended message arg: ", messageData);
     // 发送UI更新事件

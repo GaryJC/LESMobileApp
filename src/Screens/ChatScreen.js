@@ -33,7 +33,8 @@ const ChatBubble = (
   messageSenderName,
   messageSenderAvatar,
   messageContent,
-  messageDate
+  messageDate,
+  messageStatus
 ) => (
   <View className="flex-row py-[10px]">
     <View className="overflow-hidden rounded-full w-[50px] h-[50px]">
@@ -53,20 +54,49 @@ const ChatBubble = (
         </Text>
       </View>
       <Text className="text-[13px] text-white">{messageContent}</Text>
+      {messageStatus === "delievering" && <Text>Loading</Text>}
     </View>
   </View>
 );
 
+// const messageReducer = (state, action) => {
+//   switch (action.type) {
+//     case "ADD_MESSAGE":
+//       console.log("add message:", [...state, action.payload]);
+//       return [...state, action.payload];
+//     case "UPDATE_MESSAGE_STATUS":
+//       return state.map((message) =>
+//         message.messageId === action.payload.messageId
+//           ? { ...message, status: action.payload.status }
+//           : message
+//       );
+//     default:
+//       throw new Error();
+//   }
+// };
+
 const messageReducer = (state, action) => {
   switch (action.type) {
     case "ADD_MESSAGE":
+      console.log("add message:", [...state, action.payload]);
       return [...state, action.payload];
     case "UPDATE_MESSAGE_STATUS":
-      return state.map((message) =>
+      console.log(state);
+      let updatedState = state.map((message) =>
         message.messageId === action.payload.messageId
           ? { ...message, status: action.payload.status }
           : message
       );
+      // Check if the message already exists in the state using find
+      let messageExists = state.find(
+        (message) => message.messageId === action.payload.messageId
+      );
+      // If message with the 'delivered' status does not exist in the state, add it
+      if (!messageExists && action.payload.status === "delivered") {
+        updatedState = [...updatedState, action.payload];
+      }
+      console.log("updatedState: ", updatedState);
+      return updatedState;
     default:
       throw new Error();
   }
@@ -86,14 +116,11 @@ const ChatScreen = () => {
   useEffect(() => {
     JSEvent.on(UIEvents.Message.MessageState_UIRefresh, (messageData) => {
       // assuming messageData contains status
-      console.log("status: ", messageData.status);
+      console.log("message recived in chat: ", messageData);
       if (messageData.status === "delivered") {
         dispatchMessages({
           type: "UPDATE_MESSAGE_STATUS",
-          payload: {
-            messageId: messageData.messageId,
-            status: messageData.status,
-          },
+          payload: messageData,
         });
       } else {
         dispatchMessages({
@@ -204,7 +231,8 @@ const ChatScreen = () => {
                 item.senderId,
                 require("../../assets/img/gameCardBg.jpg"),
                 item.content,
-                "6/10"
+                "6/10",
+                item.status
               );
             }}
             ListEmptyComponent={<Text>No messages to display</Text>}
