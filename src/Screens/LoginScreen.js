@@ -10,7 +10,7 @@ import {
 import InputLayout from "../Components/InputLayout";
 import { useState } from "react";
 import AuthButton from "../Components/AuthButton";
-import { loginRequest, saveData } from "../utils/auth";
+import { loginRequest, saveData, loginCheck } from "../utils/auth";
 import { useNavigation } from "@react-navigation/native";
 import DataCenter from "../modules/DataCenter";
 import { LesPlatformCenter, LesConstants } from "les-im-components";
@@ -45,7 +45,7 @@ export default function LoginScreen() {
       );
       console.log(response);
       const data = response.data;
-      if (data.code === 0) { 
+      if (data.code === 0) {
         setError(null);
         const { accountId, msg } = data.retObject;
         // console.log("token: ", msg, typeof msg);
@@ -75,7 +75,9 @@ export default function LoginScreen() {
             );
           }
         } catch {
-          console.log("im connect fail response: ", e);
+          (e) => {
+            console.log("im connect fail response: ", e);
+          };
         }
       } else {
         setError(data.msg);

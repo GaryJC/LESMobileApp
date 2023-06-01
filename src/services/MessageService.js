@@ -6,7 +6,7 @@ import { LesPlatformCenter, LesConstants } from "les-im-components";
 class MessageService {
   static #inst;
 
-  static get inst() {
+  static get Inst() {
     return MessageService.#inst ?? new MessageService();
   }
 
@@ -44,7 +44,9 @@ class MessageService {
       .then((message) => {
         // 如果服务器成功处理
         // 将发送的消息存入缓存(发布信息缓存事件)
+        console.log("send message: ", message);
         JSEvent.emit(DataEvents.Saving.SavingState_Message, message);
+        // DataSavingService.Inst.onSavingMessage(message);
       })
       .catch((e) => {
         // 如果处理失败

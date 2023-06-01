@@ -1,6 +1,7 @@
 import { DataEvents, UIEvents } from "../modules/Events";
 import JSEvent from "../utils/JSEvent";
 import { LesPlatformCenter, LesConstants } from "les-im-components";
+import DataSavingService from "./DataSavingService";
 // import DataCenter from "../modules/DataCenter";
 
 class FriendService {
@@ -67,11 +68,13 @@ class FriendService {
     );
   }
 
-  //
+  //在FriendScreen里调用这个方法
   onSendMessage(recipentId, message) {
     LesPlatformCenter.IMFunctions.sendMessage(recipentId, message)
       .then((message) => {
         // 将发送的消息存入缓存
+        console.log("send message: ", message);
+        DataSavingService.Inst.onSavingMessage(message);
       })
       .catch((e) => {
         console.log("messgae send error: ", e);

@@ -18,6 +18,11 @@ import {
   KeyboardAwareFlatList,
   KeyboardAwareScrollView,
 } from "react-native-keyboard-aware-scroll-view";
+import FriendService from "../services/FriendService";
+import MessageService from "../services/MessageService";
+import JSEvent from "../utils/JSEvent";
+import { UIEvents } from "../modules/Events";
+import DataCenter from "../modules/DataCenter";
 
 // import { bottomTabHeight } from "../App";
 
@@ -53,18 +58,27 @@ const ChatBubble = (
 );
 
 const ChatScreen = () => {
+  // 消息列表
   const [messages, setMessages] = useState([]);
+  // 收到的最新消息
   const [newMessage, setNewMessage] = useState("");
   // 当前选择的聊天对象的id
   const [curRecipientId, setCurRecipientId] = useState(2);
   const [curRecipientName, setCurRecipientName] = useState();
+
+  const [updateMessage, setUpdateMessage] = useState([]);
+
+  useEffect(() => {
+    JSEvent.on(UIEvents.Message.MessageState_UIRefresh, updateMessages);
+  }, []);
 
   useEffect(() => {
     const curChatData = MessageData.find(
       (item) => item.recipientId === curRecipientId
     );
     // console.log(curChatData);
-    setMessages(curChatData.messages);
+    // setMessages(curChatData.messages);
+    // setMessages(DataCenter.messageCaches["1-17"]);
     setCurRecipientName(curChatData.recipientName);
   }, [curRecipientId]);
 
@@ -81,6 +95,17 @@ const ChatScreen = () => {
       setMessages((prevMessages) => [...prevMessages, newMessage]);
       setNewMessage("");
     }
+  };
+
+  useEffect(() => {
+    setMessages((prevMessages) => [...prevMessages, updateMessage]);
+    // setMessages(updateMessage);
+    console.log("update message: ", updateMessage);
+  }, [updateMessage]);
+
+  const updateMessages = (messageData) => {
+    console.log("send message: ", messageData);
+    setUpdateMessage(messageData);
   };
 
   const ChatList = (recipientId, chatAvatar) => (
@@ -144,18 +169,28 @@ const ChatScreen = () => {
           // keyboardShouldPersistTaps="always"
         > */}
           {/* 这里的头像缓存起来 */}
+
           <FlatList
             ref={flatListRef}
             // data={MessageData}
             data={messages}
-            renderItem={({ item }) =>
-              ChatBubble(
-                item.messageSenderName,
-                item.messageSenderAvatar,
-                item.messageContent,
-                item.messageDate
-              )
-            }
+            // renderItem={({ item }) =>
+            //   ChatBubble(
+            //     item.messageSenderName,
+            //     item.messageSenderAvatar,
+            //     item.messageContent,
+            //     item.messageDate
+            //   )
+            // }
+            renderItem={({ item }) => {
+              return ChatBubble(
+                item.senderId,
+                require("../../assets/img/gameCardBg.jpg"),
+                item.content,
+                "6/10"
+              );
+            }}
+            ListEmptyComponent={<Text>No items to display</Text>}
             keyExtractor={(item, index) => index.toString()}
             onContentSizeChange={() =>
               flatListRef.current?.scrollToEnd({ animated: true })
@@ -174,7 +209,8 @@ const ChatScreen = () => {
               placeholderTextColor="#CACACA"
             />
             <TouchableOpacity
-              onPress={sendMessage}
+              // onPress={sendMessage}
+              onPress={() => MessageService.Inst.onSendMessage(1, newMessage)}
               className="bg-[#5EB857] p-[5px] rounded"
             >
               <Text className="text-white font-bold">Send</Text>

@@ -7,9 +7,14 @@ const IMFunctions = {
     console.log("para: ", accountId, token, LesConstants.IMDevices[deviceId]);
     return await LesPlatformCenter.Inst.connect(
       websocket,
-      accountId,
-      token,
-      LesConstants.IMDevices[deviceId]
+      // accountId,
+      // token,
+      // LesConstants.IMDevices[deviceId],
+      // 1,
+      // "fabf6210-a7b2-4e99-9e2b-4d289d9fa0ef",
+      17,
+      "1468fbe7-82c7-48ec-8622-a50bc929e18c",
+      1
     );
   },
 

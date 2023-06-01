@@ -29,8 +29,9 @@ class IMListenerService {
         `消息[${message.getMessageid()}] from [${message.getSenderid()}] to [${message.getRecipientid()}], content: ${message.getContent()} , 状态 已投递 time(${message.getTimestamp()}), 最新timelineId (${message.getTimelineid()})`
       );
       timelineStartId = message.getTimelineid();
-      // 发布消息发送事件
-      JSEvent.emit(DataEvents.Message.MessageState_Sent, message);
+      // 收到消息发送事件->发布缓存消息事件
+      JSEvent.emit(DataEvents.Saving.SavingState_Message, message);
+      // JSEvent.emit(DataEvents.Message.MessageState_Sent, message);
     };
 
     LesPlatformCenter.IMListeners.onIMTimelineUpdated = (message) => {
@@ -41,8 +42,9 @@ class IMListenerService {
         `收到消息[${data.getMessageid()}] from [${data.getSenderid()}] to [${data.getRecipientid()}], content: ${data.getContent()}`
       );
       timelineStartId = lastTimelineId;
-      // 发布消息接受事件
-      JSEvent.emit(DataEvents.Message.TimelineState_Updated, message);
+      // 收到消息接受事件->发布缓存消息事件
+      // JSEvent.emit(DataEvents.Message.TimelineState_Updated, message);
+      JSEvent.emit(DataEvents.Saving.SavingState_Message, message);
     };
 
     LesPlatformCenter.IMListeners.onIMUserNotification = (notification) => {
@@ -81,6 +83,10 @@ class IMListenerService {
         }`
       );
     };
+  }
+
+  init() {
+    this.addIMListeners();
   }
 }
 

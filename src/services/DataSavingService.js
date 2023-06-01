@@ -8,13 +8,14 @@
     发布对应的UI更新事件
 */
 
-import { DataEvents } from "../modules/Events";
+import DataCenter from "../modules/DataCenter";
+import { DataEvents, UIEvents } from "../modules/Events";
 import JSEvent from "../utils/JSEvent";
 
 class DataSavingService {
   static #inst;
 
-  static get inst() {
+  static get Inst() {
     return DataSavingService.#inst ?? new DataSavingService();
   }
 
@@ -28,12 +29,72 @@ class DataSavingService {
   }
 
   onSavingMessage(message) {
-    const senderId = message.getSenderId();
-    const recipentId = message.getRecipientId();
+    // 缓存消息
+    // 发布消息UI更新事件
+    console.log("message saving: ", message);
+    const senderId = message.getSenderid();
+    const recipentId = message.getRecipientid();
+    const messageId = message.getMessageid();
+    const content = message.getContent();
+    const timelineId = message.getTimelineid();
+    // 信息的投递状态
+    let status = "delievering";
+
+    // 如果有timelineId, 则设置为投递成功
+    if (timelineId) {
+      status = "delievered";
+    }
+
+    // 对话窗口的id
+    const chatId =
+      senderId < recipentId
+        ? senderId + "-" + recipentId
+        : recipentId + "-" + senderId;
+
+    // 缓存信息的格式
+    const messageData = {
+      messageId: messageId,
+      senderId: senderId,
+      recipentId: recipentId,
+      timelineId: timelineId,
+      content: content,
+      status: status,
+    };
+
+    // 如果缓存中已经存在次对话窗口
+    if (DataCenter.messageCaches[chatId]) {
+      // 找这个对话的具体的messageId
+      const index = DataCenter.messageCaches[chatId].findIndex(
+        (item) => item.messageId === messageId
+      );
+      console.log("index: ", index);
+      // 如果存在这个信息，更新这个信息
+      if (index !== -1) {
+        DataCenter.messageCaches[chatId][index] = messageData;
+      } else {
+        // 如果不存在，则缓存这个信息
+        DataCenter.messageCaches[chatId].push(messageData);
+      }
+    } else {
+      // 如果缓存中不存在次对话窗口，将值设置为array
+      DataCenter.messageCaches[chatId] = [messageData];
+    }
+    console.log("message caches: ", DataCenter.messageCaches[chatId]);
+    // 发送UI更新事件
+    // 事件的参数应该只是这次发送的信息而不是全部的缓存，现在是为了方便测试
+    // JSEvent.emit(
+    //   UIEvents.Message.MessageState_UIRefresh,
+    //   DataCenter.messageCaches[chatId]
+    // );
+    JSEvent.emit(UIEvents.Message.MessageState_UIRefresh, messageData);
   }
 
   addDataSavingStateListener() {
     JSEvent.on(DataEvents.Saving.SavingState_Message, this.onSavingMessage);
+  }
+
+  init() {
+    this.addDataSavingStateListener();
   }
 }
 

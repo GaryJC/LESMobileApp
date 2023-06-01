@@ -6,6 +6,8 @@ import { DataEvents } from "./Events";
 import { Platform } from "react-native";
 
 import { db } from "./dataBase";
+import DataSavingService from "../services/DataSavingService";
+import IMListenerService from "../services/IMListenerService";
 
 const services = [];
 // services.push(new FriendService());
@@ -70,14 +72,18 @@ const DataCenter = {
     accountId-accountId:{
     }
     e.g. 
-      1-17:{
-        messageId:{
-          ...
+    {
+      1-17:[
+        {
+          messageId:
+          timelineId:
+          content:
         }
-      }
+      ]
+    }
    */
 
-  messageCatches: {},
+  messageCaches: {},
 
   initServices() {
     // 程序开始时就识别设备平台
@@ -86,6 +92,8 @@ const DataCenter = {
 
     this.getFriendListData();
     services.push(new FriendService(this.friendListData));
+    services.push(new IMListenerService());
+    services.push(new DataSavingService());
 
     services.forEach((service) => {
       if (service.init) {
