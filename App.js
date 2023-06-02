@@ -1,36 +1,34 @@
 // import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, KeyboardAvoidingView } from "react-native";
-import { StatusBar } from "expo-status-bar";
-import { NavigationContainer } from "@react-navigation/native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
-import HomeScreen from "./src/Screens/HomeScreen";
-import FriendsScreen from "./src/Screens/FriendsScreen";
-import ChatScreen from "./src/Screens/ChatScreen";
-import UserScreen from "./src/Screens/UserScreen";
-import GamesScreen from "./src/Screens/GamesScreen";
-import GameDetailsScreen from "./src/Screens/GameDetailsScreen";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { StatusBar } from "expo-status-bar";
+import { LesConstants } from "les-im-components";
+import { useEffect, useState } from "react";
 import { Dimensions } from "react-native";
-import SignupScreen from "./src/Screens/SignupScreen";
-import LoginScreen from "./src/Screens/LoginScreen";
+import ChatScreen from "./src/Screens/ChatScreen";
 import CreateNameScreen from "./src/Screens/CreateNameScreen";
-import { useState, useEffect } from "react";
-import MockServer from "./src/utils/MockServer";
-import JSEvent from "./src/utils/JSEvent";
-import { DataEvents } from "./src/modules/Events";
-import DataCenter from "./src/modules/DataCenter";
-import { loginCheck } from "./src/utils/auth";
-import { retrieveData } from "./src/utils/auth";
-import { db, createTable } from "./src/modules/dataBase";
-import IMFunctions from "./src/utils/IMFunctions";
-import { LesPlatformCenter, LesConstants } from "les-im-components";
+import FriendsScreen from "./src/Screens/FriendsScreen";
+import GameDetailsScreen from "./src/Screens/GameDetailsScreen";
+import GamesScreen from "./src/Screens/GamesScreen";
+import HomeScreen from "./src/Screens/HomeScreen";
+import LoginScreen from "./src/Screens/LoginScreen";
+import SignupScreen from "./src/Screens/SignupScreen";
+import UserScreen from "./src/Screens/UserScreen";
+
+import LoginService from "./src/services/LoginService";
+import ServiceCenter from "./src/services/ServiceCenter";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 const deviceHeight = Dimensions.get("screen").height;
 const bottomTabHeight = deviceHeight * 0.08;
+
+const onAppInit = async () => {
+  await ServiceCenter.Inst.loadAllServices();
+}
 
 const BottomTabNavigation = () => (
   <BottomTab.Navigator
@@ -126,8 +124,38 @@ export default function App() {
   }
 
   useEffect(() => {
+    async function asyncInit() {
+
+      //等待所有服务装载完毕
+      await onAppInit();
+
+      const loginService = LoginService.Inst;
+      const quickLogin = loginService.canQuickLogin();
+
+      if (quickLogin) {
+        //缓存中有登录信息，可以快速登录
+        const result = await loginService.quickLogin();
+        console.log("result:", result)
+        if (result == LesConstants.ErrorCodes.Success) {
+          //TODO 登陆成功了，跳转到主界面
+          setLogin();
+        } else {
+          //TODO 快速登陆失败了，跳转到LoginScreen
+        }
+      } else {
+        //TODO 没有登录信息，跳转到LoginScreen
+      }
+    }
+
+    asyncInit();
+    return () => { }
+  }, [])
+
+  /* 旧版本的登陆部分，弃用 
+  useEffect(() => {
     // 如果没有数据库存在，创建一个数据库
-    createTable();
+    // 数据库服务移动到单独的服务中了
+    //createTable();
 
     // 注册监听是否登陆
     JSEvent.on(DataEvents.User.UserState_IsLoggedin, setLogin);
@@ -155,7 +183,7 @@ export default function App() {
                 )
                   .then((res) => {
                     console.log("IM connect success response: ", res);
-                    /* 登陆事件的发送在setLogin里 */
+                    // 登陆事件的发送在setLogin里 
                     DataCenter.setLogin(accountId, loginKey, "", "");
                   })
                   .catch((e) => {
@@ -173,17 +201,20 @@ export default function App() {
       });
 
     // 初始化所有服务
-    DataCenter.initServices();
+    // 服务初始化功能移动到了ServiceCenter.js中，并改为在app加载时调用
+    // DataCenter.initServices();
 
     return () => {
       JSEvent.remove(DataEvents.User.UserState_IsLoggedin, setLogin);
     };
   }, []);
 
+
+
   useEffect(() => {
-    /*
-      如果登陆成功，发送各个服务的事件
-    */
+    
+     // 如果登陆成功，发送各个服务的事件
+    
     console.log("loggedin? ", isLoggedin);
     if (isLoggedin) {
       // 模拟服务器发送数据
@@ -192,6 +223,7 @@ export default function App() {
       // mockServer.sendMockFriendStateData();
     }
   }, [isLoggedin]);
+*/
 
   const ContentScreens = () => (
     <>
