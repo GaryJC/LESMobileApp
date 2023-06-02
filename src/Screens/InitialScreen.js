@@ -1,19 +1,6 @@
 import { View, Image, ActivityIndicator } from "react-native";
-import { useRoute, useNavigation } from "@react-navigation/native";
-import { useEffect } from "react";
 
-export default function InitialScreen({}) {
-  // const route = useRoute();
-  // const navigation = useNavigation();
-  // const { isLoading } = route.params;
-
-  // useEffect(() => {
-  //   console.log("isLoading: ", isLoading);
-  //   if (!isLoading) {
-  //     // navigation.navigate("BottomTab");
-  //   }
-  // }, [isLoading]);
-
+export default function InitialScreen() {
   return (
     <View className="flex-1 justify-center items-center bg-[#080F14]">
       <Image
