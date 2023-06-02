@@ -13,12 +13,12 @@ import FriendsScreen from "./src/Screens/FriendsScreen";
 import GameDetailsScreen from "./src/Screens/GameDetailsScreen";
 import GamesScreen from "./src/Screens/GamesScreen";
 import HomeScreen from "./src/Screens/HomeScreen";
-import LoginScreen from "./src/Screens/LoginScreen";
 import SignupScreen from "./src/Screens/SignupScreen";
 import UserScreen from "./src/Screens/UserScreen";
-
-import LoginService from "./src/services/LoginService";
+import LoginScreen from "./src/Screens/LoginScreen";
+import InitialScreen from "./src/Screens/InitialScreen";
 import ServiceCenter from "./src/services/ServiceCenter";
+import LoginService from "./src/services/LoginService";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -28,7 +28,7 @@ const bottomTabHeight = deviceHeight * 0.08;
 
 const onAppInit = async () => {
   await ServiceCenter.Inst.loadAllServices();
-}
+};
 
 const BottomTabNavigation = () => (
   <BottomTab.Navigator
@@ -118,6 +118,7 @@ const BottomTabNavigation = () => (
 
 export default function App() {
   const [isLoggedin, setIsLoggedin] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(false);
 
   function setLogin() {
     setIsLoggedin(true);
@@ -125,17 +126,20 @@ export default function App() {
 
   useEffect(() => {
     async function asyncInit() {
-
       //等待所有服务装载完毕
       await onAppInit();
 
       const loginService = LoginService.Inst;
       const quickLogin = loginService.canQuickLogin();
+      // const quickLogin = false
+      // console.log("quickLogin: ", quickLogin);
 
+      //缓存中有登录信息，可以快速登录
       if (quickLogin) {
-        //缓存中有登录信息，可以快速登录
+        setIsInitializing(true);
         const result = await loginService.quickLogin();
-        console.log("result:", result)
+        console.log("result:", result);
+        setIsInitializing(false);
         if (result == LesConstants.ErrorCodes.Success) {
           //TODO 登陆成功了，跳转到主界面
           setLogin();
@@ -148,82 +152,8 @@ export default function App() {
     }
 
     asyncInit();
-    return () => { }
-  }, [])
-
-  /* 旧版本的登陆部分，弃用 
-  useEffect(() => {
-    // 如果没有数据库存在，创建一个数据库
-    // 数据库服务移动到单独的服务中了
-    //createTable();
-
-    // 注册监听是否登陆
-    JSEvent.on(DataEvents.User.UserState_IsLoggedin, setLogin);
-    // 识别设备平台
-    // DataCenter.deviceName = Platform.OS.toLocaleUpperCase();
-    console.log("Device Name: ", DataCenter.deviceName);
-
-    // 检测是缓存是否存在loginKey, 如果存在则自动登录
-    Promise.all([retrieveData("accountId"), retrieveData("loginKey")])
-      .then((res) => {
-        console.log("id & key: ", res);
-        const [accountId, loginKey] = [res[0], res[1]];
-
-        if (accountId && loginKey) {
-          loginCheck(parseInt(accountId), loginKey, DataCenter.deviceName)
-            .then((res) => {
-              const data = res.data;
-              console.log("login check response: ", data);
-              if (data.code === 0) {
-                console.log("correct");
-                IMFunctions.connectIMServer(
-                  accountId,
-                  loginKey,
-                  DataCenter.deviceName
-                )
-                  .then((res) => {
-                    console.log("IM connect success response: ", res);
-                    // 登陆事件的发送在setLogin里 
-                    DataCenter.setLogin(accountId, loginKey, "", "");
-                  })
-                  .catch((e) => {
-                    console.log("IM connect error: ", e);
-                  });
-              }
-            })
-            .catch((e) => {
-              console.log("Login check error: ", e);
-            });
-        }
-      })
-      .catch((e) => {
-        console.log("can't retrieve accountId and loginKey");
-      });
-
-    // 初始化所有服务
-    // 服务初始化功能移动到了ServiceCenter.js中，并改为在app加载时调用
-    // DataCenter.initServices();
-
-    return () => {
-      JSEvent.remove(DataEvents.User.UserState_IsLoggedin, setLogin);
-    };
+    return () => {};
   }, []);
-
-
-
-  useEffect(() => {
-    
-     // 如果登陆成功，发送各个服务的事件
-    
-    console.log("loggedin? ", isLoggedin);
-    if (isLoggedin) {
-      // 模拟服务器发送数据
-      const mockServer = new MockServer();
-      // mock服务器发送好友状态改变事件;
-      // mockServer.sendMockFriendStateData();
-    }
-  }, [isLoggedin]);
-*/
 
   const ContentScreens = () => (
     <>
@@ -243,63 +173,36 @@ export default function App() {
   return (
     <>
       <StatusBar style="light" />
-      <NavigationContainer>
-        {isLoggedin ? (
-          <Stack.Navigator
-            initialRouteName="BottomTab"
-            screenOptions={{
-              headerStyle: {
-                backgroundColor: "#080F14",
-              },
-              contentStyle: { backgroundColor: "#080F14" },
-            }}
-          >
-            {ContentScreens()}
-          </Stack.Navigator>
-        ) : (
-          <Stack.Navigator
-            initialRouteName="Login"
-            screenOptions={{
-              headerStyle: {
-                backgroundColor: "#080F14",
-              },
-              contentStyle: { backgroundColor: "#080F14" },
-            }}
-          >
-            <Stack.Screen
-              name="Signup"
-              component={SignupScreen}
-              options={{
-                headerShown: true,
+      {isInitializing ? (
+        <InitialScreen />
+      ) : (
+        <NavigationContainer>
+          {isLoggedin ? (
+            <Stack.Navigator initialRouteName="BottomTab">
+              {ContentScreens()}
+            </Stack.Navigator>
+          ) : (
+            <Stack.Navigator
+              initialRouteName="Login"
+              screenOptions={{
+                headerStyle: {
+                  backgroundColor: "#080F14",
+                },
                 headerTitleStyle: {
                   color: "white",
                 },
+
+                contentStyle: { backgroundColor: "#080F14" },
               }}
-            />
-            <Stack.Screen
-              name="Login"
-              component={LoginScreen}
-              options={{
-                headerShown: true,
-                headerTitleStyle: {
-                  color: "white",
-                },
-              }}
-            />
-            <Stack.Screen
-              name="CreateName"
-              component={CreateNameScreen}
-              options={{
-                headerShown: true,
-                headerTitleStyle: {
-                  color: "white",
-                },
-              }}
-            />
-            {ContentScreens()}
-          </Stack.Navigator>
-        )}
-      </NavigationContainer>
+            >
+              <Stack.Screen name="Signup" component={SignupScreen} />
+              <Stack.Screen name="Login" component={LoginScreen} />
+              <Stack.Screen name="CreateName" component={CreateNameScreen} />
+              {ContentScreens()}
+            </Stack.Navigator>
+          )}
+        </NavigationContainer>
+      )}
     </>
   );
 }

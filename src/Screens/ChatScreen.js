@@ -62,26 +62,10 @@ const ChatBubble = (
   </View>
 );
 
-// const messageReducer = (state, action) => {
-//   switch (action.type) {
-//     case "ADD_MESSAGE":
-//       console.log("add message:", [...state, action.payload]);
-//       return [...state, action.payload];
-//     case "UPDATE_MESSAGE_STATUS":
-//       return state.map((message) =>
-//         message.messageId === action.payload.messageId
-//           ? { ...message, status: action.payload.status }
-//           : message
-//       );
-//     default:
-//       throw new Error();
-//   }
-// };
-
 const messageReducer = (state, action) => {
   switch (action.type) {
     case "ADD_MESSAGE":
-      console.log("add message:", [...state, action.payload]);
+      // console.log("add message:", [...state, action.payload]);
       return [...state, action.payload];
     case "UPDATE_MESSAGE_STATUS":
       console.log(state);
@@ -179,6 +163,10 @@ const ChatScreen = () => {
             data={ChatListData}
             renderItem={({ item }) =>
               ChatList(item.recipientId, item.chatAvatar)
+              // <ChatList
+              //   recipientId={item.recipentId}
+              //   chatAvatar={item.chatAvatar}
+              // />
             }
             keyExtractor={(item) => item.recipientId}
           />
@@ -256,7 +244,7 @@ const ChatScreen = () => {
           <View className="flex-row items-center py-[10px] h-[50px]">
             <TextInput
               value={newMessage}
-              onChangeText={(text) => setNewMessage(text)}
+              // onChangeText={(text) => setNewMessage(text)}ne
               className="flex-1 bg-[#1B1B1B] rounded h-[100%] mr-[10px] p-[5px] text-[#CACACA]"
               // onSubmitEditing={sendMessage}
               placeholderTextColor="#CACACA"
