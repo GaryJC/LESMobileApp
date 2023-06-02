@@ -1,13 +1,9 @@
 import Friends from "../Models/Friends";
-import FriendService from "../services/FriendService";
 
+import { Platform } from "react-native";
 import JSEvent from "../utils/JSEvent";
 import { DataEvents } from "./Events";
-import { Platform } from "react-native";
 
-import { db } from "./dataBase";
-import DataSavingService from "../services/DataSavingService";
-import IMListenerService from "../services/IMListenerService";
 
 const services = [];
 // services.push(new FriendService());
