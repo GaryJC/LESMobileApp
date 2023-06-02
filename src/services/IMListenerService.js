@@ -1,8 +1,8 @@
-/*
-  这个个service需要接入所有IMListener的回调?
-  当收到数据时发送对应的事件
-  其他的服务监听对应的事件
-*/
+/**
+ * 这个服务负责接受所有的服务器回调
+ * 并将回调的数据通过事件发送出去
+ * 本服务只负责回调转事件，不做任何逻辑处理
+ */
 
 import { LesPlatformCenter, LesConstants } from "les-im-components";
 import JSEvent from "../utils/JSEvent";
@@ -17,7 +17,7 @@ class IMListenerService {
 
   constructor() {
     if (new.target !== IMListenerService) return;
-    if (!IMListenerService.#inst) {
+    if (!IMListenerService.#inst == null) {
       IMListenerService.#inst = this;
     }
     return IMListenerService.#inst;

@@ -15,6 +15,8 @@ import { useNavigation } from "@react-navigation/native";
 import DataCenter from "../modules/DataCenter";
 import { LesPlatformCenter, LesConstants } from "les-im-components";
 import IMFunctions from "../utils/IMFunctions";
+import LoginService from "../services/LoginService";
+import Constants from "../modules/Constants";
 
 console.log(LesPlatformCenter, LesConstants);
 
@@ -35,6 +37,33 @@ export default function LoginScreen() {
   }
 
   async function loginHandler() {
+    setIsLoading(true);
+    const loginService = LoginService.Inst;
+    try {
+      //尝试用户名密码登陆
+      const result = await loginService.login(email, password, DataCenter.deviceName);
+      if (result.state == LesConstants.IMUserState.Init) {
+        navigation.navigate("CreateName");
+      } else {
+        //TODO 跳转到主界面
+
+      }
+      setError(null);
+    } catch (e) {
+      if (e.type == null) {
+        //TODO 处理未知错误
+      } else if (e.type == Constants.LoginExceptionType.AccountCenterError) {
+        setError(e.msg);
+      } else if (e.type == Constants.LoginExceptionType.IMServerError) {
+        //TODO 根据e.code进行提示，e.code = LesConstants.ErrorCodes
+        console.log("im connect fail response: ", e);
+      }
+    }
+    setIsLoading(false);
+  }
+
+  //没用了
+  async function loginHandler_old() {
     setIsLoading(true);
     console.log("Device Name: ", DataCenter.deviceName);
     try {

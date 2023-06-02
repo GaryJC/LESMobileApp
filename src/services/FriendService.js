@@ -13,7 +13,7 @@ class FriendService {
 
   constructor(friendListData) {
     if (new.target !== FriendService) return;
-    if (!FriendService.#inst) {
+    if (!FriendService.#inst == null) {
       FriendService.#inst = this;
       this.friendListData = friendListData;
     }

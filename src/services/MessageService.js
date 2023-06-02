@@ -12,7 +12,7 @@ class MessageService {
 
   constructor(friendListData) {
     if (new.target !== MessageService) return;
-    if (MessageService.#inst) {
+    if (MessageService.#inst == null) {
       MessageService.#inst = this;
       //   this.friendListData = friendListData;
     }
