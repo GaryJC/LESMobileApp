@@ -6,11 +6,20 @@ import { DataEvents } from "./Events";
 import { Platform } from "react-native";
 
 import { db } from "./dataBase";
+import DataSavingService from "../services/DataSavingService";
+import IMListenerService from "../services/IMListenerService";
 
 const services = [];
 // services.push(new FriendService());
 
 // 程序启动的时候，从数Sqlite中读取并重建DataCenter的数据缓存
+
+/**
+ * DataCenter作为数据中心，负责app中所有数据的缓存
+ * UI部分读取数据时可以直接从DataCenter读取
+ * 
+ * DataSavingService用于DataCenter数据的写入，其他服务和ui不要直接将数据写入DataCenter，可调用DataSavingService提供的方法进行数据保存
+ */
 const DataCenter = {
   isLoggedin: false,
 
@@ -18,17 +27,28 @@ const DataCenter = {
     Platform.OS === "ios"
       ? "IOS"
       : Platform.OS === "android"
-      ? "Android"
-      : Platform.OS === "web"
-      ? "Web"
-      : "PC",
+        ? "Android"
+        : Platform.OS === "web"
+          ? "Web"
+          : "PC",
   // deviceName: "IOS",
 
+  /**
+   * 当前登录的用户数据，
+   */
   userInfo: {
     accountId: "",
     email: "",
     loginKey: "",
+
+    /**
+     * im用户信息
+     */
+    imUserInfo: {
+      name: "", tag: 0, state: 0
+    }
   },
+
 
   setLogin(accountId, email, loginKey, serviceId) {
     this.userInfo.accountId = accountId;
@@ -70,14 +90,18 @@ const DataCenter = {
     accountId-accountId:{
     }
     e.g. 
-      1-17:{
-        messageId:{
-          ...
+    {
+      1-17:[
+        {
+          messageId:
+          timelineId:
+          content:
         }
-      }
+      ]
+    }
    */
 
-  messageCatches: {},
+  messageCaches: {},
 
   initServices() {
     // 程序开始时就识别设备平台
@@ -85,13 +109,6 @@ const DataCenter = {
     // console.log(this.deviceName);
 
     this.getFriendListData();
-    services.push(new FriendService(this.friendListData));
-
-    services.forEach((service) => {
-      if (service.init) {
-        service.init();
-      }
-    });
   },
 };
 

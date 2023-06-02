@@ -1,8 +1,8 @@
-/*
-  这个个service需要接入所有IMListener的回调?
-  当收到数据时发送对应的事件
-  其他的服务监听对应的事件
-*/
+/**
+ * 这个服务负责接受所有的服务器回调
+ * 并将回调的数据通过事件发送出去
+ * 本服务只负责回调转事件，不做任何逻辑处理
+ */
 
 import { LesPlatformCenter, LesConstants } from "les-im-components";
 import JSEvent from "../utils/JSEvent";
@@ -17,7 +17,7 @@ class IMListenerService {
 
   constructor() {
     if (new.target !== IMListenerService) return;
-    if (!IMListenerService.#inst) {
+    if (!IMListenerService.#inst == null) {
       IMListenerService.#inst = this;
     }
     return IMListenerService.#inst;
@@ -29,8 +29,9 @@ class IMListenerService {
         `消息[${message.getMessageid()}] from [${message.getSenderid()}] to [${message.getRecipientid()}], content: ${message.getContent()} , 状态 已投递 time(${message.getTimestamp()}), 最新timelineId (${message.getTimelineid()})`
       );
       timelineStartId = message.getTimelineid();
-      // 发布消息发送事件
-      JSEvent.emit(DataEvents.Message.MessageState_Sent, message);
+      // 收到消息发送事件->发布缓存消息事件
+      console.log("onsend timelineid: ", timelineStartId);
+      JSEvent.emit(DataEvents.Saving.SavingState_Message, message);
     };
 
     LesPlatformCenter.IMListeners.onIMTimelineUpdated = (message) => {
@@ -41,8 +42,8 @@ class IMListenerService {
         `收到消息[${data.getMessageid()}] from [${data.getSenderid()}] to [${data.getRecipientid()}], content: ${data.getContent()}`
       );
       timelineStartId = lastTimelineId;
-      // 发布消息接受事件
-      JSEvent.emit(DataEvents.Message.TimelineState_Updated, message);
+      // 收到消息接受事件->发布缓存消息事件
+      JSEvent.emit(DataEvents.Saving.SavingState_Message, message);
     };
 
     LesPlatformCenter.IMListeners.onIMUserNotification = (notification) => {
@@ -81,6 +82,10 @@ class IMListenerService {
         }`
       );
     };
+  }
+
+  init() {
+    this.addIMListeners();
   }
 }
 

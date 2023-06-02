@@ -12,12 +12,18 @@ import {
   StatusBar,
 } from "react-native";
 import { MessageData, ChatListData } from "../Data/dummyData";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useReducer } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import {
   KeyboardAwareFlatList,
   KeyboardAwareScrollView,
 } from "react-native-keyboard-aware-scroll-view";
+import FriendService from "../services/FriendService";
+import MessageService from "../services/MessageService";
+import JSEvent from "../utils/JSEvent";
+import { UIEvents } from "../modules/Events";
+import Constants from "../modules/Constants";
+import DataCenter from "../modules/DataCenter";
 
 // import { bottomTabHeight } from "../App";
 
@@ -28,7 +34,8 @@ const ChatBubble = (
   messageSenderName,
   messageSenderAvatar,
   messageContent,
-  messageDate
+  messageDate,
+  messageStatus
 ) => (
   <View className="flex-row py-[10px]">
     <View className="overflow-hidden rounded-full w-[50px] h-[50px]">
@@ -48,39 +55,107 @@ const ChatBubble = (
         </Text>
       </View>
       <Text className="text-[13px] text-white">{messageContent}</Text>
+      {messageStatus === Constants.deliveryState.delivering && (
+        <Text>Loading</Text>
+      )}
     </View>
   </View>
 );
 
+// const messageReducer = (state, action) => {
+//   switch (action.type) {
+//     case "ADD_MESSAGE":
+//       console.log("add message:", [...state, action.payload]);
+//       return [...state, action.payload];
+//     case "UPDATE_MESSAGE_STATUS":
+//       return state.map((message) =>
+//         message.messageId === action.payload.messageId
+//           ? { ...message, status: action.payload.status }
+//           : message
+//       );
+//     default:
+//       throw new Error();
+//   }
+// };
+
+const messageReducer = (state, action) => {
+  switch (action.type) {
+    case "ADD_MESSAGE":
+      console.log("add message:", [...state, action.payload]);
+      return [...state, action.payload];
+    case "UPDATE_MESSAGE_STATUS":
+      console.log(state);
+      let updatedState = state.map((message) =>
+        message.messageId === action.payload.messageId
+          ? { ...message, status: action.payload.status }
+          : message
+      );
+      // Check if the message already exists in the state using find
+      let messageExists = state.find(
+        (message) => message.messageId === action.payload.messageId
+      );
+      // If message with the 'delivered' status does not exist in the state, add it
+      if (
+        !messageExists &&
+        action.payload.status === Constants.deliveryState.delivered
+      ) {
+        updatedState = [...updatedState, action.payload];
+      }
+      console.log("updatedState: ", updatedState);
+      return updatedState;
+    default:
+      throw new Error();
+  }
+};
+
 const ChatScreen = () => {
-  const [messages, setMessages] = useState([]);
+  // 消息列表
+  // const [messages, setMessages] = useState([]);
+  // 收到的最新消息
   const [newMessage, setNewMessage] = useState("");
   // 当前选择的聊天对象的id
   const [curRecipientId, setCurRecipientId] = useState(2);
   const [curRecipientName, setCurRecipientName] = useState();
+
+  const [messages, dispatchMessages] = useReducer(messageReducer, []);
+
+  useEffect(() => {
+    JSEvent.on(UIEvents.Message.MessageState_UIRefresh, (messageData) => {
+      // assuming messageData contains status
+      console.log("message recived in chat: ", messageData);
+      if (messageData.status === Constants.deliveryState.delivered) {
+        dispatchMessages({
+          type: "UPDATE_MESSAGE_STATUS",
+          payload: messageData,
+        });
+      } else {
+        dispatchMessages({
+          type: "ADD_MESSAGE",
+          payload: messageData,
+        });
+      }
+    });
+
+    // Don't forget to remove the listener when the component unmounts
+    return () => JSEvent.remove(UIEvents.Message.MessageState_UIRefresh);
+  }, []);
 
   useEffect(() => {
     const curChatData = MessageData.find(
       (item) => item.recipientId === curRecipientId
     );
     // console.log(curChatData);
-    setMessages(curChatData.messages);
+    // setMessages(curChatData.messages);
+    // setMessages(DataCenter.messageCaches["1-17"]);
     setCurRecipientName(curChatData.recipientName);
   }, [curRecipientId]);
 
   const flatListRef = useRef();
 
   const onClickChatHandler = (recipentId) => {
+    // 切换到指定的窗口
     setCurRecipientId(recipentId);
     console.log(curRecipientId);
-    // 切换到指定的窗口
-  };
-
-  const sendMessage = () => {
-    if (newMessage) {
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-      setNewMessage("");
-    }
   };
 
   const ChatList = (recipientId, chatAvatar) => (
@@ -144,23 +219,36 @@ const ChatScreen = () => {
           // keyboardShouldPersistTaps="always"
         > */}
           {/* 这里的头像缓存起来 */}
+
           <FlatList
             ref={flatListRef}
             // data={MessageData}
             data={messages}
-            renderItem={({ item }) =>
-              ChatBubble(
-                item.messageSenderName,
-                item.messageSenderAvatar,
-                item.messageContent,
-                item.messageDate
-              )
-            }
+            // renderItem={({ item }) =>
+            //   ChatBubble(
+            //     item.messageSenderName,
+            //     item.messageSenderAvatar,
+            //     item.messageContent,
+            //     item.messageDate
+            //   )
+            // }
+            renderItem={({ item }) => {
+              return ChatBubble(
+                item.senderId,
+                require("../../assets/img/gameCardBg.jpg"),
+                item.content,
+                "6/10",
+                item.status
+              );
+            }}
+            ListEmptyComponent={<Text>No messages to display</Text>}
             keyExtractor={(item, index) => index.toString()}
             onContentSizeChange={() =>
+              messages.length > 0 &&
               flatListRef.current?.scrollToEnd({ animated: true })
             }
             onLayout={() =>
+              messages.length > 0 &&
               flatListRef.current?.scrollToEnd({ animated: true })
             }
           />
@@ -174,7 +262,8 @@ const ChatScreen = () => {
               placeholderTextColor="#CACACA"
             />
             <TouchableOpacity
-              onPress={sendMessage}
+              // onPress={sendMessage}
+              onPress={() => MessageService.Inst.onSendMessage(1, newMessage)}
               className="bg-[#5EB857] p-[5px] rounded"
             >
               <Text className="text-white font-bold">Send</Text>

@@ -6,13 +6,13 @@ import { LesPlatformCenter, LesConstants } from "les-im-components";
 class MessageService {
   static #inst;
 
-  static get inst() {
+  static get Inst() {
     return MessageService.#inst ?? new MessageService();
   }
 
   constructor(friendListData) {
     if (new.target !== MessageService) return;
-    if (MessageService.#inst) {
+    if (MessageService.#inst == null) {
       MessageService.#inst = this;
       //   this.friendListData = friendListData;
     }
@@ -44,7 +44,9 @@ class MessageService {
       .then((message) => {
         // 如果服务器成功处理
         // 将发送的消息存入缓存(发布信息缓存事件)
+        console.log("send message: ", message);
         JSEvent.emit(DataEvents.Saving.SavingState_Message, message);
+        // DataSavingService.Inst.onSavingMessage(message);
       })
       .catch((e) => {
         // 如果处理失败
@@ -56,9 +58,9 @@ class MessageService {
   // 监听消息接受事件
   onReciveMessage() {
     // 收到事件后发布信息缓存事件
-    JSEvent.on(DataEvents.Message.TimelineState_Updated, (message) =>
-      JSEvent.emit(DataEvents.Saving.SavingState_Message, message)
-    );
+    // JSEvent.on(DataEvents.Message.TimelineState_Updated, (message) =>
+    //   JSEvent.emit(DataEvents.Saving.SavingState_Message, message)
+    // );
   }
 
   init() {
