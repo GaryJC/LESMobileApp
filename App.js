@@ -127,6 +127,7 @@ export default function App() {
   useEffect(() => {
     async function asyncInit() {
       //等待所有服务装载完毕
+      setIsInitializing(true);
       await onAppInit();
 
       const loginService = LoginService.Inst;
@@ -136,10 +137,8 @@ export default function App() {
 
       //缓存中有登录信息，可以快速登录
       if (quickLogin) {
-        setIsInitializing(true);
         const result = await loginService.quickLogin();
         console.log("result:", result);
-        setIsInitializing(false);
         if (result == LesConstants.ErrorCodes.Success) {
           //TODO 登陆成功了，跳转到主界面
           setLogin();
@@ -149,6 +148,8 @@ export default function App() {
       } else {
         //TODO 没有登录信息，跳转到LoginScreen
       }
+
+      setIsInitializing(false);
     }
 
     asyncInit();
