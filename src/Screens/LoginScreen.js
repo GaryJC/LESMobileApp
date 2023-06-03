@@ -18,8 +18,6 @@ import IMFunctions from "../utils/IMFunctions";
 import LoginService from "../services/LoginService";
 import Constants from "../modules/Constants";
 
-console.log(LesPlatformCenter, LesConstants);
-
 export default function LoginScreen() {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
@@ -41,12 +39,16 @@ export default function LoginScreen() {
     const loginService = LoginService.Inst;
     try {
       //尝试用户名密码登陆
-      const result = await loginService.login(email, password, DataCenter.deviceName);
+      const result = await loginService.login(
+        email,
+        password,
+        DataCenter.deviceName
+      );
       if (result.state == LesConstants.IMUserState.Init) {
         navigation.navigate("CreateName");
       } else {
         //TODO 跳转到主界面
-
+        navigation.navigate("BottomTab");
       }
       setError(null);
     } catch (e) {
