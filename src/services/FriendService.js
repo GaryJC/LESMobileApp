@@ -13,23 +13,13 @@ class FriendService {
 
   constructor(friendListData) {
     if (new.target !== FriendService) return;
-    if (!FriendService.#inst == null) {
+    if (FriendService.#inst == null) {
       FriendService.#inst = this;
       this.friendListData = friendListData;
     }
     return FriendService.#inst;
   }
 
-  // #onFriendStateDataUpdated({ id, state }) {
-  //   if (this.friendListData) {
-  //     this.friendListData.forEach(({ friendId }, index) => {
-  //       if (id === friendId) {
-  //         this.friendListData[index].friendState = state;
-  //       }
-  //     });
-  //     JSEvent.emit(UIEvents.Friend.FriendState_UIRefresh);
-  //   }
-  // }
 
   onFriendStateDataUpdated({ id, state }) {
     if (this.friendListData) {
@@ -41,12 +31,6 @@ class FriendService {
       JSEvent.emit(UIEvents.Friend.FriendState_UIRefresh);
     }
   }
-
-  // #addFriendStateListener() {
-  //   JSEvent.on(DataEvents.Friend.FriendState_Updated, ({ id, state }) =>
-  //     this.#onFriendStateDataUpdated({ id, state })
-  //   );
-  // }
 
   pullData() {
     /* 

@@ -1,3 +1,5 @@
+import { LesConstants } from "les-im-components";
+const { IMUserState, IMUserOnlineState } = LesConstants;
 export const DataEvents = {
   /*
     拉取数据的状态更新
@@ -13,9 +15,17 @@ export const DataEvents = {
   */
   User: {
     UserState_IsLoggedin: "DATA_EVENT_UserState_IsLoggedin",
+    /**
+     * 用户状态变化事件
+     * @type {{id:number, state:IMUserState, onlineState:IMUserOnlineState}}
+     * 用户的详细数据，可通过IMUserInfoService.getUser(id)获取
+     */
+    UserState_Changed: "DATA_EVENT_UserState_Changed"
   },
 
-  /* 
+  /**
+   * @deprecated 这个事件废弃了，使用UserState_Changed事件监听用户状态变化 
+  
     好友状态数据更新
     携带参数为 {id: 好友id, status:当前状态}
   */

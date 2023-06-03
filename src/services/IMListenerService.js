@@ -17,7 +17,7 @@ class IMListenerService {
 
   constructor() {
     if (new.target !== IMListenerService) return;
-    if (!IMListenerService.#inst == null) {
+    if (IMListenerService.#inst == null) {
       IMListenerService.#inst = this;
     }
     return IMListenerService.#inst;
@@ -50,17 +50,18 @@ class IMListenerService {
       console.log(`收到通知消息`, notification);
     };
 
-    LesPlatformCenter.IMListeners.onIMUserStateChanged = (
-      user,
-      onlineState,
-      state
-    ) => {
-      console.log(
-        `Friend[${user.getId()}] ${user.getName()}#${user.getTag()} State[${
-          UserState[state]
-        }] Online[${OnlineState[onlineState]}]`
-      );
-    };
+    //onIMUserStateChanged在UserDataService中进行监听
+    // LesPlatformCenter.IMListeners.onIMUserStateChanged = (
+    //   user,
+    //   onlineState,
+    //   state
+    // ) => {
+    //   console.log(
+    //     `Friend[${user.getId()}] ${user.getName()}#${user.getTag()} State[${
+    //       UserState[state]
+    //     }] Online[${OnlineState[onlineState]}]`
+    //   );
+    // };
 
     LesPlatformCenter.IMListeners.onFriendRemoved = (friendId) => {
       console.log(`被好友 ${friendId} 从列表中移除`);
@@ -77,8 +78,7 @@ class IMListenerService {
     LesPlatformCenter.IMListeners.onUserInfoUpdated = (user, state) => {
       console.log(
         "状态更新：",
-        `[${user.getId()}]${user.getName()}#${user.getTag()} ${
-          UserState[state]
+        `[${user.getId()}]${user.getName()}#${user.getTag()} ${UserState[state]
         }`
       );
     };

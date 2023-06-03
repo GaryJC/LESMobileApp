@@ -2,6 +2,7 @@ import FriendService from "./FriendService";
 import IMListenerService from "./IMListenerService";
 import DataSavingService from "./DataSavingService";
 import LoginService from "./LoginService";
+import IMUserinfoService from "./IMUserInfoService";
 
 /**
  * 负责载入所有的service，并依次执行init方法
@@ -35,9 +36,10 @@ export default class ServiceCenter {
         services.push(new IMListenerService());
         services.push(new DataSavingService());
         services.push(new LoginService());
+        services.push(new IMUserinfoService());
 
         this.#services = services;
-        
+
         let promises = [];
 
         services.forEach((service) => {

@@ -18,7 +18,7 @@ class UpdateService {
 
   constructor() {
     if (new.target !== UpdateService) return;
-    if (!UpdateService.#inst == null) {
+    if (UpdateService.#inst == null) {
       UpdateService.#inst = this;
     }
     return UpdateService.#inst;
