@@ -24,27 +24,34 @@ class IMListenerService {
   }
 
   addIMListeners() {
-    LesPlatformCenter.IMListeners.onIMMessageSent = (message) => {
-      console.log(
-        `消息[${message.getMessageid()}] from [${message.getSenderid()}] to [${message.getRecipientid()}], content: ${message.getContent()} , 状态 已投递 time(${message.getTimestamp()}), 最新timelineId (${message.getTimelineid()})`
-      );
-      timelineStartId = message.getTimelineid();
-      // 收到消息发送事件->发布缓存消息事件
-      console.log("onsend timelineid: ", timelineStartId);
-      JSEvent.emit(DataEvents.Saving.SavingState_Message, message);
-    };
 
-    LesPlatformCenter.IMListeners.onIMTimelineUpdated = (message) => {
-      const lastTimelineId = message.getTimelineid();
-      console.log(`lastTimelineId更新： ${lastTimelineId}`);
-      const data = message;
-      console.log(
-        `收到消息[${data.getMessageid()}] from [${data.getSenderid()}] to [${data.getRecipientid()}], content: ${data.getContent()}`
-      );
-      timelineStartId = lastTimelineId;
-      // 收到消息接受事件->发布缓存消息事件
-      JSEvent.emit(DataEvents.Saving.SavingState_Message, message);
-    };
+
+    //onIMMessageSent和onIMTimelineUpdated的监听，移动到MessageService中了
+    //之前设计的统一在一个serivce中监听所有的im服务器回调，好像是没有什么必要
+    //各个service负责自己需要监听的回调就可以了，一般情况下一个回调不会被多个服务需要
+
+
+    // LesPlatformCenter.IMListeners.onIMMessageSent = (message) => {
+    //   console.log(
+    //     `消息[${message.getMessageid()}] from [${message.getSenderid()}] to [${message.getRecipientid()}], content: ${message.getContent()} , 状态 已投递 time(${message.getTimestamp()}), 最新timelineId (${message.getTimelineid()})`
+    //   );
+    //   timelineStartId = message.getTimelineid();
+    //   // 收到消息发送事件->发布缓存消息事件
+    //   console.log("onsend timelineid: ", timelineStartId);
+    //   JSEvent.emit(DataEvents.Saving.SavingState_Message, message);
+    // };
+
+    // LesPlatformCenter.IMListeners.onIMTimelineUpdated = (message) => {
+    //   const lastTimelineId = message.getTimelineid();
+    //   console.log(`lastTimelineId更新： ${lastTimelineId}`);
+    //   const data = message;
+    //   console.log(
+    //     `收到消息[${data.getMessageid()}] from [${data.getSenderid()}] to [${data.getRecipientid()}], content: ${data.getContent()}`
+    //   );
+    //   timelineStartId = lastTimelineId;
+    //   // 收到消息接受事件->发布缓存消息事件
+    //   JSEvent.emit(DataEvents.Saving.SavingState_Message, message);
+    // };
 
     LesPlatformCenter.IMListeners.onIMUserNotification = (notification) => {
       console.log(`收到通知消息`, notification);

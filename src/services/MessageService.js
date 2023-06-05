@@ -1,11 +1,27 @@
+import MessageData from "../Models/MessageData";
+import Constants from "../modules/Constants";
 import { DataEvents, UIEvents } from "../modules/Events";
 import JSEvent from "../utils/JSEvent";
 import { LesPlatformCenter, LesConstants } from "les-im-components";
+import DatabaseService from "./DatabaseService";
+import DataCenter from "../modules/DataCenter";
+import { ChatListItem, MessageCaches } from "../Models/MessageCaches";
+import { AppStateStatus } from "react-native";
 // import DataCenter from "../modules/DataCenter";
 
+/**
+ * MessageService 负责发送和接受消息
+ * 收到的消息会存储到DataCenter.messageCache中
+ * 并发送相应的事件
+ */
 class MessageService {
   static #inst;
 
+  #latestTimelineId;
+
+  /**
+   * @returns {MessageService}
+   */
   static get Inst() {
     return MessageService.#inst ?? new MessageService();
   }
@@ -32,39 +48,183 @@ class MessageService {
     // JSEvent.emit(DataEvents.PullData.PullDataState_IsFinished);
   }
 
-  // 这里的监听
-  addMessageStateListener() {
-    this.onReciveMessage();
-  }
-
   // 发送消息功能
-  onSendMessage(recipentId, message) {
-    LesPlatformCenter.IMFunctions.sendMessage(recipentId, message)
-      // 发布UI加载事件？
-      .then((message) => {
-        // 如果服务器成功处理
-        // 将发送的消息存入缓存(发布信息缓存事件)
-        console.log("send message: ", message);
-        JSEvent.emit(DataEvents.Saving.SavingState_Message, message);
-        // DataSavingService.Inst.onSavingMessage(message);
-      })
-      .catch((e) => {
-        // 如果处理失败
-        // 设置重新发送按钮
-        console.log("messgae send error: ", e);
-      });
+  sendMessage(recipentId, message) {
+    return new Promise((resolve, reject) => {
+      LesPlatformCenter.IMFunctions.sendMessage(recipentId, message)
+        // 发布UI加载事件？
+        .then((message) => {
+          //如果服务器成功处理
+
+          //存入缓存并发布事件
+          const msgData = this.#onTimelineUpdated(message);
+
+          // console.log("send message: ", message);
+          // JSEvent.emit(DataEvents.Saving.SavingState_Message, message);
+
+          // DataSavingService.Inst.onSavingMessage(message);
+          resolve(msgData)
+        })
+        .catch((e) => {
+          // 如果处理失败
+          // 设置重新发送按钮
+          console.log("messgae send error: ", e);
+          reject(e);
+        });
+    })
   }
 
-  // 监听消息接受事件
-  onReciveMessage() {
-    // 收到事件后发布信息缓存事件
-    // JSEvent.on(DataEvents.Message.TimelineState_Updated, (message) =>
-    //   JSEvent.emit(DataEvents.Saving.SavingState_Message, message)
-    // );
+
+
+  /**
+   * 
+   * @param {PBLesIMTimelineData} timelineData 
+   * @returns {MessageData}
+   */
+  #onMessageSent(timelineData) {
+    //转化为  MessageData 
+    const msgData = this.#pbTimelineDataToMessageData(timelineData);
+
+    //存入messageCaches
+    DataCenter.messageCache.pushMessage(msgData);
+
+    //更新当前timelinId
+    this.#updateTimelineId(msgData.timelineId);
+
+    //发布消息送达事件，给系统使用
+    JSEvent.emit(DataEvents.Message.MessageState_Sent, msgData);
+
+    const chatId = MessageCaches.MakeChatIDByMsgData(msgData);
+
+    //发布UI事件，通知ui指定对话有更新
+    JSEvent.emit(UIEvents.Message.Message_Chat_Updated, chatId)
+
+    return msgData;
+  }
+
+  /**
+   * @param {PBLesIMTimelineData} timelineData 
+   * @returns {MessageData}
+   */
+  #onTimelineUpdated(timelineData) {
+    //转化为  MessageData 
+    const msgData = this.#pbTimelineDataToMessageData(timelineData);
+
+    if (msgData.timelineId == 0) {
+      //新消息，先赋予一个当前timelineId的最大值，方便排序使用
+      msgData.timelineId = this.#latestTimelineId + 1;
+    } else {
+      //更新当前timelinId
+      this.#updateTimelineId(msgData.timelineId);
+    }
+
+    //存入messageCaches
+    DataCenter.messageCache.pushMessage(msgData);
+
+    const chatId = MessageCaches.MakeChatIDByMsgData(msgData);
+
+    //发布新消息事件，供service使用
+    JSEvent.emit(DataEvents.Message.TimelineState_Updated, msgData);
+
+    //发布UI事件，通知ui指定对话有更新
+    JSEvent.emit(UIEvents.Message.Message_Chat_Updated, chatId)
+    //更新对话列表，携带有更新的chatId
+    JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, chatId)
+
+    return msgData;
+  }
+
+  /**
+   * @param {PBLesIMTimelineData} timelineData 
+   * @returns {MessageData}
+   */
+  #pbTimelineDataToMessageData(timelineData) {
+    const timelineId = timelineData.getTimelineid();
+    const senderId = timelineData.getSenderid();
+    const recipentId = timelineData.getRecipientid();
+    const messageId = timelineData.getMessageid();
+    const content = timelineData.getContent();
+    const messageType = timelineData.getMessagetype();
+    const groupId = timelineData.getGroupid();
+    const contentType = timelineData.getContenttype();
+    const timestamp = timelineData.getTimestamp();
+
+    // 信息的投递状态
+    let status = timelineId == 0 ? Constants.deliveryState.delivering : Constants.deliveryState.delivered;
+
+    const messageData = new MessageData();
+    messageData.messageId = messageId;
+    messageData.senderId = senderId;
+    messageData.recipentId = recipentId;
+    messageData.timelineId = timelineId;
+    messageData.content = content;
+    messageData.status = status;
+    messageData.messageType = messageType;
+    messageData.groupId = groupId;
+    messageData.contentType = contentType;
+    messageData.timestamp = timestamp;
+
+    return messageData;
+  }
+
+
+  #updateTimelineId(timelineId) {
+    const newTimelineId = Math.max(this.#latestTimelineId, timelineId);
+    this.#latestTimelineId = newTimelineId;
+    JSEvent.emit(DataEvents.Message.TimelineId_Updated, this.#latestTimelineId);
   }
 
   init() {
-    this.addMessageStateListener();
+
+    //监听onIMMessageSent
+    LesPlatformCenter.IMListeners.onIMMessageSent = (message) => {
+      console.log(
+        `消息[${message.getMessageid()}] from [${message.getSenderid()}] to [${message.getRecipientid()}], content: ${message.getContent()} , 状态 已投递 time(${message.getTimestamp()}), 最新timelineId (${message.getTimelineid()})`
+      );
+      this.#onMessageSent(message);
+    };
+
+    //onIMTimelineUpdated
+    LesPlatformCenter.IMListeners.onIMTimelineUpdated = (message) => {
+      console.log(
+        `收到消息[${message.getMessageid()}] from [${message.getSenderid()}] to [${message.getRecipientid()}], content: ${message.getContent()}`
+      );
+      this.#onTimelineUpdated(message);
+    };
+
+    JSEvent.on(DataEvents.User.UserState_DataReady, () => {
+      this.#onUserLogin();
+    })
+
+  }
+
+  #onUserLogin() {
+    //为新用户创建messageCache
+    DataCenter.messageCache = new MessageCaches(DataCenter.userInfo.accountId);
+    //从数据库中读取对话列表缓存
+    DatabaseService.Inst.loadChatList().then(list => {
+      DataCenter.messageCache.setChatList(list);
+      //更新对话列表事件
+      JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, null)
+    }).catch(_ => { });
+
+    DatabaseService.Inst.loadTimelineId().then(id => this.#latestTimelineId = id);
+  }
+
+  /**
+   * 
+   * @param {AppStateStatus} fromState 
+   * @param {AppStateStatus} toState 
+   */
+  onAppStateChanged(fromState, toState) {
+    if (toState == 'active' && fromState != null) {
+      //app被重新唤醒
+      LesPlatformCenter.IMFunctions.requestTimeline(this.#latestTimelineId, -1).then(({ startId, endId, datas }) => {
+        datas.forEach(data => {
+          this.#onTimelineUpdated(data);
+        })
+      }).catch(e => { console.error("request timeline failed: ", e) })
+    }
   }
 }
 

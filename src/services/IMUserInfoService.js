@@ -43,8 +43,9 @@ export default class IMUserInfoService {
      * @param {num} tag tag
      * @param {IMUserState} state state
      * @param {IMUserOnlineState} onlineState 
+     * @returns {IMUserInfo}
      */
-    #updateUser(id, name, tag, state, onlineState) {
+    updateUser(id, name, tag, state, onlineState) {
         let userInfo = this.userList[id];
         let changed = false;
         if (userInfo == null) {
@@ -63,8 +64,7 @@ export default class IMUserInfoService {
             this.#updateUserToDb(userInfo);
         }
 
-        this.getUser(id);
-        this.getUser([17, 17]);
+        return userInfo;
     }
 
     /**
@@ -77,13 +77,14 @@ export default class IMUserInfoService {
 
     init() {
         LesPlatformCenter.IMListeners.onIMUserStateChanged = (user, onlineState, state) => {
-            this.#updateUser(user.getId(), user.getName(), user.getTag(), state, onlineState);
+            this.updateUser(user.getId(), user.getName(), user.getTag(), state, onlineState);
         }
     }
 
 
     /**
      * 获取指定id的用户数据
+     * 不会返回本地缓存中不存在的用户数据
      * @param {number|number[]} userId 可以是一个或多个id
      * @returns {IMUserInfo[]} 返回值一定是一个数组，如果没找到则返回空数组
      */

@@ -3,7 +3,7 @@ import GameDetails from "../Models/GameDetails";
 import Activities from "../Models/Activities";
 import News from "../Models/News";
 import User from "../Models/User";
-import Friends from "../Models/Friends";
+import FriendData from "../Models/Friends";
 import Message from "../Models/Message";
 import ChatList from "../Models/ChatList";
 
@@ -31,14 +31,14 @@ export const ActivitiesData = [
   new Activities(
     1,
     require("../../assets/img/gameCardBg.jpg"),
-    "Friends Promotion",
-    "Invite Friends to"
+    "FriendData Promotion",
+    "Invite FriendData to"
   ),
   new Activities(
     2,
     require("../../assets/img/gameCardBg.jpg"),
-    "Friends Promotion",
-    "Invite Friends to"
+    "FriendData Promotion",
+    "Invite FriendData to"
   ),
 ];
 
@@ -66,22 +66,22 @@ export const UserData = new User(
   require("../../assets/img/gameCardBg.jpg")
 );
 
-export const FriendsData = [
-  new Friends(1, "Tony", 0, "https://i.pravatar.cc"),
-  new Friends(2, "Michael", 1, "https://i.pravatar.cc"),
-  new Friends(3, "Bruce", 2, "https://i.pravatar.cc"),
-  new Friends(4, "Peter", 2, "https://i.pravatar.cc"),
-  new Friends(5, "Roy", 2, "https://i.pravatar.cc"),
-  new Friends(6, "Tony", 0, "https://i.pravatar.cc"),
-  new Friends(7, "Michael", 1, "https://i.pravatar.cc"),
-  new Friends(8, "Bruce", 2, "https://i.pravatar.cc"),
-  new Friends(9, "Peter", 2, "https://i.pravatar.cc"),
-  new Friends(10, "Roy", 2, "https://i.pravatar.cc"),
+export const FriendDataData = [
+  new FriendData(1, "Tony", 0, "https://i.pravatar.cc"),
+  new FriendData(2, "Michael", 1, "https://i.pravatar.cc"),
+  new FriendData(3, "Bruce", 2, "https://i.pravatar.cc"),
+  new FriendData(4, "Peter", 2, "https://i.pravatar.cc"),
+  new FriendData(5, "Roy", 2, "https://i.pravatar.cc"),
+  new FriendData(6, "Tony", 0, "https://i.pravatar.cc"),
+  new FriendData(7, "Michael", 1, "https://i.pravatar.cc"),
+  new FriendData(8, "Bruce", 2, "https://i.pravatar.cc"),
+  new FriendData(9, "Peter", 2, "https://i.pravatar.cc"),
+  new FriendData(10, "Roy", 2, "https://i.pravatar.cc"),
 ];
 
-export const RecomFriendsData = [
-  new Friends(4, "Player1", 0, "https://i.pravatar.cc"),
-  new Friends(5, "Player2", 0, "https://i.pravatar.cc"),
+export const RecomFriendDataData = [
+  new FriendData(4, "Player1", 0, "https://i.pravatar.cc"),
+  new FriendData(5, "Player2", 0, "https://i.pravatar.cc"),
 ];
 
 export const MessageData = [

@@ -1,8 +1,9 @@
-import Friends from "../Models/Friends";
-
 import { Platform } from "react-native";
 import JSEvent from "../utils/JSEvent";
 import { DataEvents } from "./Events";
+import FriendData from "../Models/Friends";
+import MessageData from "../Models/MessageData";
+import { MessageCaches } from "../Models/MessageCaches";
 
 
 const services = [];
@@ -45,7 +46,9 @@ const DataCenter = {
     }
   },
 
-
+  /**
+   * @deprecated 登录操作都移动到了LoginService中
+   */
   setLogin(accountId, email, loginKey, serviceId) {
     this.userInfo.accountId = accountId;
     this.userInfo.email = email;
@@ -56,22 +59,26 @@ const DataCenter = {
   },
 
   // friendId, friendName, friendState, friendAvatar
+  /**
+   * 好友列表
+   * @type {FriendData[]}
+   */
   friendListData: [],
 
-  getFriendListData() {
-    this.friendListData = [
-      new Friends(1, "Tony", 0, "https://i.pravatar.cc"),
-      new Friends(2, "Michael", 1, "https://i.pravatar.cc"),
-      new Friends(3, "Bruce", 2, "https://i.pravatar.cc"),
-      new Friends(4, "Peter", 2, "https://i.pravatar.cc"),
-      new Friends(5, "Roy", 2, "https://i.pravatar.cc"),
-      new Friends(6, "Devin", 0, "https://i.pravatar.cc"),
-      new Friends(7, "Kevin", 1, "https://i.pravatar.cc"),
-      new Friends(8, "Mike", 2, "https://i.pravatar.cc"),
-      new Friends(9, "Jack", 2, "https://i.pravatar.cc"),
-      new Friends(10, "Wendy", 2, "https://i.pravatar.cc"),
-    ];
-  },
+  // getFriendListData() {
+  //   this.friendListData = [
+  //     new Friends(1, "Tony", 0, "https://i.pravatar.cc"),
+  //     new Friends(2, "Michael", 1, "https://i.pravatar.cc"),
+  //     new Friends(3, "Bruce", 2, "https://i.pravatar.cc"),
+  //     new Friends(4, "Peter", 2, "https://i.pravatar.cc"),
+  //     new Friends(5, "Roy", 2, "https://i.pravatar.cc"),
+  //     new Friends(6, "Devin", 0, "https://i.pravatar.cc"),
+  //     new Friends(7, "Kevin", 1, "https://i.pravatar.cc"),
+  //     new Friends(8, "Mike", 2, "https://i.pravatar.cc"),
+  //     new Friends(9, "Jack", 2, "https://i.pravatar.cc"),
+  //     new Friends(10, "Wendy", 2, "https://i.pravatar.cc"),
+  //   ];
+  // },
 
   // 消息记录缓存
   /*
@@ -97,15 +104,21 @@ const DataCenter = {
     }
    */
 
+  /**
+   * 消息缓存
+   * key = chat id
+   * value = MessageData[]
+   * @deprecated 改用messageCache了
+   * @type {Map<string, MessageData[]>}
+   */
   messageCaches: {},
 
-  initServices() {
-    // 程序开始时就识别设备平台
-    // this.deviceName = Platform.OS.toLocaleUpperCase();
-    // console.log(this.deviceName);
+  /**
+   * 消息缓存
+   * @type {MessageCaches}
+   */
+  messageCache: null,
 
-    this.getFriendListData();
-  },
 };
 
 export default DataCenter;

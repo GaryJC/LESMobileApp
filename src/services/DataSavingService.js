@@ -14,6 +14,9 @@ import JSEvent from "../utils/JSEvent";
 import Constants from "../modules/Constants";
 import * as SecureStore from "expo-secure-store";
 import { LesConstants } from "les-im-components";
+import MessageData from "../Models/MessageData";
+import DatabaseService from "./DatabaseService";
+import { MessageCaches } from "../Models/MessageCaches";
 const IMUserState = LesConstants.IMUserState;
 
 class DataSavingService {
@@ -35,6 +38,10 @@ class DataSavingService {
     return DataSavingService.#inst;
   }
 
+  /**
+   * @deprecated 这个方法不再使用
+   * @param {} message 
+   */
   onSavingMessage(message) {
     // 缓存消息
     // 发布消息UI更新事件
@@ -44,6 +51,11 @@ class DataSavingService {
     const messageId = message.getMessageid();
     const content = message.getContent();
     const timelineId = message.getTimelineid();
+    const messageType = message.getMessagetype();
+    const groupId = message.getGroupid();
+    const contentType = message.getContenttype();
+    const timestamp = message.getTimestamp();
+
     // 信息的投递状态
     let status = Constants.deliveryState.delivering;
 
@@ -60,15 +72,18 @@ class DataSavingService {
         ? senderId + "-" + recipentId
         : recipentId + "-" + senderId;
 
-    // 缓存信息的格式
-    const messageData = {
-      messageId: messageId,
-      senderId: senderId,
-      recipentId: recipentId,
-      timelineId: timelineId,
-      content: content,
-      status: status,
-    };
+
+    const messageData = new MessageData();
+    messageData.messageId = messageId;
+    messageData.senderId = senderId;
+    messageData.recipentId = recipentId;
+    messageData.timelineId = timelineId;
+    messageData.content = content;
+    messageData.status = status;
+    messageData.messageType = messageType;
+    messageData.groupId = groupId;
+    messageData.contentType = contentType;
+    messageData.timestamp = timestamp;
 
     console.log("messageData: ", messageData);
 
@@ -96,7 +111,7 @@ class DataSavingService {
   }
 
   addDataSavingStateListener() {
-    JSEvent.on(DataEvents.Saving.SavingState_Message, this.onSavingMessage);
+    //JSEvent.on(DataEvents.Saving.SavingState_Message, this.onSavingMessage);
   }
 
   /**
@@ -170,7 +185,29 @@ class DataSavingService {
   }
 
   init() {
-    this.addDataSavingStateListener();
+    //this.addDataSavingStateListener();
+    JSEvent.on(DataEvents.Message.MessageState_Sent, msg => this.#onReceiveMessage(msg));
+    JSEvent.on(DataEvents.Message.TimelineState_Updated, msg => this.#onReceiveMessage(msg));
+    JSEvent.on(DataEvents.Message.TimelineId_Updated, timelineId => this.#onTimelineIdUpdated(timelineId));
+  }
+
+  #onTimelineIdUpdated(timelineId){
+    DatabaseService.Inst.saveTimelineId(timelineId);
+  }
+
+  #onReceiveMessage(msgData) {
+    //将收到的消息异步存库
+    DatabaseService.Inst.saveMessage(msgData)
+      .then(succ =>
+        console.log(succ))
+      .catch(error => console.log(error));
+
+    const chatId = MessageCaches.MakeChatIDByMsgData(msgData);
+    //保存chatlist
+    const item = DataCenter.messageCache.getChatListItem(chatId);
+    if (item != null) {
+      DatabaseService.Inst.saveChatListItem(item);
+    }
   }
 }
 
