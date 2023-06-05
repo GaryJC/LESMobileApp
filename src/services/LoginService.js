@@ -5,9 +5,10 @@ import { LesConstants, LesPlatformCenter } from "les-im-components";
 import JSEvent from "../utils/JSEvent";
 import { DataEvents } from "../modules/Events";
 import { loginRequest } from "../utils/auth";
+import { AppStateStatus } from "react-native";
 
 const LoginExceptionType = Constants.LoginExceptionType;
-const ErrorCodes = LesConstants.ErrorCodes;
+const { ErrorCodes, WebsocketState } = LesConstants;
 /**
  * Login服务，用于登陆，连接IM服务器
  */
@@ -36,12 +37,45 @@ export default class LoginService {
 
   async init() {
     await this.#loadLoginData();
+    LesPlatformCenter.IMListeners.onWebsocketStateChanged = state => {
+      if (state == WebsocketState.Disconnected) {
+        //连接断开了
+      }
+    }
     return this;
   }
 
 
+  /**
+   * 
+   * @param {AppStateStatus} fromState 
+   * @param {AppStateStatus} toState 
+   */
+  async onAppStateChanged(fromState, toState) {
+
+    if (toState == 'background') {
+      //ios切换到后台以后会断开socket，android需要手动断开
+      LesPlatformCenter.Inst.disconnect();
+    }
+
+    if (toState == 'active' && fromState != null) {
+      //应用被重新激活了
+      //检测连接是否正常
+
+      if (LesPlatformCenter.Inst.ConnectState != WebsocketState.Connected) {
+        //重新连接
+        JSEvent.emit(DataEvents.User.UserState_Relogin, Constants.ReloginState.ReloginStarted);
+        //开始连接
+        await this.quickLogin(true);
+        
+      }
+
+    }
+  }
+
+
   onDestroy() {
-    LesPlatformCenter.Inst.disconnect();
+    //LesPlatformCenter.Inst.disconnect();
   }
 
   /**
@@ -95,7 +129,7 @@ export default class LoginService {
    * 快速登录，直接使用当前已有的id和token连接IM服务器
    * @returns {ErrorCodes}
    */
-  async quickLogin() {
+  async quickLogin(isReconnect = false) {
     const loginInfo = this.#loginData.getLoginInfo();
     const device = LesConstants.IMDevices[DataCenter.deviceName];
 
@@ -130,7 +164,11 @@ export default class LoginService {
       this.#saveLoginData();
 
       //发送登陆成功事件
-      JSEvent.emit(DataEvents.User.UserState_IsLoggedin);
+      if (isReconnect) {
+        JSEvent.emit(DataEvents.User.UserState_Relogin, Constants.ReloginState.ReloginSuccessful);
+      } else {
+        JSEvent.emit(DataEvents.User.UserState_IsLoggedin);
+      }
       return LesConstants.ErrorCodes.Success;
     } catch (e) {
       //错误，返回错误码
