@@ -5,6 +5,21 @@ const Constants = {
     deliveredyFailed: 3,
   },
 
+  ReloginState: {
+    /**
+     * 开始尝试重新登陆
+     */
+    ReloginStarted: 1,
+    /**
+     * 重新登陆成功
+     */
+    ReloginSuccessful: 2,
+    /**
+     * 重新登陆失败
+     */
+    ReloginFailed: 3
+  },
+
   /**
    * 所有存入Secure Store的key
    */
@@ -19,7 +34,7 @@ const Constants = {
   LoginExceptionType: {
     AccountCenterError: "AccountCenterError",
     IMServerError: "IMServerError"
-  }
+  },
 
 };
 

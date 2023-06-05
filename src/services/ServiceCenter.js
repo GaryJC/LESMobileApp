@@ -58,40 +58,46 @@ export default class ServiceCenter {
 
         this.#appStateSubscribtion = AppState.addEventListener('change', state => this.#handleAppStateChanged(state))
 
+        const serviceList = [
+            DatabaseService,
+            FriendService,
+            IMListenerService,
+            DataSavingService,
+            LoginService,
+            IMUserinfoService,
+            MessageService
+        ]
+
+
         let services = [];
-        services.push(new DatabaseService());
-        services.push(new FriendService());
-        services.push(new IMListenerService());
-        services.push(new DataSavingService());
-        services.push(new LoginService());
-        services.push(new IMUserinfoService());
-        services.push(new MessageService());
+
+        serviceList.forEach(service => {
+            const inst = new service();
+            inst.className = service.name;
+            services.push(inst);
+        })
 
         this.#services = services;
 
-        let promises = [];
-
         //依次调用service的init方法
         //init方法可以是异步方法，不依赖其他服务的数据载入，应该在init中完成
-        services.forEach((service) => {
-            if (service.init) {
-                promises.push(service.init());
-            }
-        });
 
-        await Promise.all(promises);
+        for (let i = 0; i < services.length; i++) {
+            const service = services[i];
+            if (service.init) {
+                await service.init();
+            }
+        }
 
         //所有service的init执行完毕后，再依次调用service的onServiceReady方法
         //依赖其他服务的数据载入，可以在onServiceReady方法中执行
 
-        promises = [];
-        services.forEach(service => {
+        for (let i = 0; i < services.length; i++) {
+            const service = services[i];
             if (service.onServiceReady) {
-                promises.push(service.onServiceReady());
+                await service.onServiceReady();
             }
-        });
-
-        await Promise.all(promises);
+        }
 
     }
 
@@ -109,7 +115,6 @@ export default class ServiceCenter {
      * @param {AppStateStatus} state 
      */
     #handleAppStateChanged(state) {
-        console.log("curr app state:" + state);
         this.#onAppStateChanged(state);
     }
 
@@ -121,15 +126,22 @@ export default class ServiceCenter {
         //active 前台
         //background 后台
         //inactive ios特有，处于多任务视图，或者来电状态中
+        console.log(`app is changing state from [${this.#currentAppState}] to [${state}]`);
 
-        const promises = [];
-        this.#services.forEach(service => {
+        for (let i = 0; i < this.#services.length; i++) {
+            const service = this.#services[i];
             if (service.onAppStateChanged) {
-                promises.push(service.onAppStateChanged(this.#currentAppState, state))
+                try {
+                    await service.onAppStateChanged(this.#currentAppState, state);
+                } catch (e) {
+                    console.log(`Service[${service.className}] onAppStateChanged`, e)
+                }
             }
-        })
-        await Promise.all(promises);
+        }
+
+        //Promise.all(promises);
         this.#currentAppState = state;
+        console.log(`app changed state to [${state}]`);
     }
 
 }

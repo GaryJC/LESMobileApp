@@ -216,14 +216,17 @@ class MessageService {
    * @param {AppStateStatus} fromState 
    * @param {AppStateStatus} toState 
    */
-  onAppStateChanged(fromState, toState) {
+  async onAppStateChanged(fromState, toState) {
     if (toState == 'active' && fromState != null) {
       //app被重新唤醒
-      LesPlatformCenter.IMFunctions.requestTimeline(this.#latestTimelineId, -1).then(({ startId, endId, datas }) => {
+      try {
+        const { startId, endId, datas } = await LesPlatformCenter.IMFunctions.requestTimeline(this.#latestTimelineId, -1);
         datas.forEach(data => {
           this.#onTimelineUpdated(data);
-        })
-      }).catch(e => { console.error("request timeline failed: ", e) })
+        });
+      } catch (e) {
+        console.error("request timeline failed: ", e);
+      }
     }
   }
 }
