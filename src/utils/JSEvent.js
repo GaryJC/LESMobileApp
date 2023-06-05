@@ -22,7 +22,11 @@ class JSEventObj {
 
   emit(arg) {
     this.handlers.forEach((h) => {
-      h(arg);
+      try {
+        h(arg);
+      } catch (e) {
+        console.error(`call event[${this.name}] handler[${h}] error`, e);
+      }
     });
   }
 }
@@ -48,7 +52,6 @@ const remove = (name, handler) => {
 
 const emit = (name, args) => {
   let event = events[name];
-  console.log("event: ", event);
   console.log(`emit event [${name}]`);
   if (event != null) {
     event.emit(args);
@@ -61,6 +64,7 @@ const JSEvent = {
   on: on,
   remove: remove,
   emit: emit,
+  reset: () => events = {}
 };
 
 export default JSEvent;

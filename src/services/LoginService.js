@@ -39,6 +39,11 @@ export default class LoginService {
     return this;
   }
 
+
+  onDestroy() {
+    LesPlatformCenter.Inst.disconnect();
+  }
+
   /**
    * 从SecureStore中读取登录信息
    * 登录信息数据格式为

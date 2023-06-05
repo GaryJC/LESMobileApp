@@ -19,6 +19,7 @@ import LoginScreen from "./src/Screens/LoginScreen";
 import InitialScreen from "./src/Screens/InitialScreen";
 import ServiceCenter from "./src/services/ServiceCenter";
 import LoginService from "./src/services/LoginService";
+import JSEvent from "./src/utils/JSEvent";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -29,6 +30,11 @@ const bottomTabHeight = deviceHeight * 0.08;
 const onAppInit = async () => {
   await ServiceCenter.Inst.loadAllServices();
 };
+const onAppDestroyed = async () => {
+  //保存页面会刷新app，此处重置event，否则会出现重复监听问题
+  JSEvent.reset();
+  ServiceCenter.Inst.onAppDestroyed();
+}
 
 const BottomTabNavigation = () => (
   <BottomTab.Navigator
@@ -153,7 +159,7 @@ export default function App() {
     }
 
     asyncInit();
-    return () => {};
+    return () => { onAppDestroyed() };
   }, []);
 
   const ContentScreens = () => (

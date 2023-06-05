@@ -1,6 +1,10 @@
 import * as SQLite from "expo-sqlite";
 import { Platform } from "react-native";
 
+/**
+ * 
+ * @deprecated 数据库方法都转移到DatabaseService中了，这里的弃用
+ */
 function openDatabase() {
   if (Platform.OS === "web") {
     console.log("SQLite is not supported on web");
@@ -14,6 +18,10 @@ function openDatabase() {
 
 export const db = openDatabase();
 
+/**
+ * 
+ * @deprecated 数据库方法都转移到DatabaseService中了，这里的弃用
+ */
 export const createTable = () => {
   db.transaction((tx) => {
     // creata a table that stores messages

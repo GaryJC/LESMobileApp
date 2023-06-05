@@ -26,6 +26,9 @@ export default class IMUserInfo {
     bgImage;
     avatar;
 
+    get isOnline() {
+        return this.onlineState != IMUserOnlineState.Offline;
+    }
     /**
      * 
      * @param {number} id 用户id

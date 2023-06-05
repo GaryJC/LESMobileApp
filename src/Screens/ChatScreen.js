@@ -104,7 +104,8 @@ const ChatScreen = () => {
   const [messages, dispatchMessages] = useReducer(messageReducer, []);
 
   useEffect(() => {
-    JSEvent.on(UIEvents.Message.MessageState_UIRefresh, (messageData) => {
+
+    const msgListener = (messageData) => {
       // assuming messageData contains status
       console.log("message recived in chat: ", messageData);
       if (messageData.status === Constants.deliveryState.delivered) {
@@ -118,10 +119,12 @@ const ChatScreen = () => {
           payload: messageData,
         });
       }
-    });
+    }
+
+    JSEvent.on(UIEvents.Message.MessageState_UIRefresh, msgListener);
 
     // Don't forget to remove the listener when the component unmounts
-    return () => JSEvent.remove(UIEvents.Message.MessageState_UIRefresh);
+    return () => JSEvent.remove(UIEvents.Message.MessageState_UIRefresh, msgListener);
   }, []);
 
   useEffect(() => {
@@ -199,8 +202,8 @@ const ChatScreen = () => {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           // behavior="position"
           className="flex-1 px-[10px]"
-          // keyboardVerticalOffset={-400}
-          // keyboardVerticalOffset={140}
+        // keyboardVerticalOffset={-400}
+        // keyboardVerticalOffset={140}
         >
           {/* <KeyboardAwareFlatList
           className="flex-1"
@@ -244,14 +247,14 @@ const ChatScreen = () => {
           <View className="flex-row items-center py-[10px] h-[50px]">
             <TextInput
               value={newMessage}
-              // onChangeText={(text) => setNewMessage(text)}ne
+              onChangeText={(text) => setNewMessage(text)}
               className="flex-1 bg-[#1B1B1B] rounded h-[100%] mr-[10px] p-[5px] text-[#CACACA]"
               // onSubmitEditing={sendMessage}
               placeholderTextColor="#CACACA"
             />
             <TouchableOpacity
               // onPress={sendMessage}
-              onPress={() => MessageService.Inst.onSendMessage(1, newMessage)}
+              onPress={() => MessageService.Inst.sendMessage(17, newMessage)}
               className="bg-[#5EB857] p-[5px] rounded"
             >
               <Text className="text-white font-bold">Send</Text>

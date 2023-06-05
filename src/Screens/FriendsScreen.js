@@ -98,14 +98,17 @@ export default function FriendsScreen() {
   useEffect(() => {
     const onFriendStateUIUpdated = () => {
       // console.log(FriendListData);
-      const online = DataCenter.friendListData.filter(
-        (item) => item.friendState === 0 || item.friendState === 2
-      );
-      const offline = DataCenter.friendListData.filter(
-        (item) => item.friendState === 1
-      );
+      const online = FriendService.Inst.getFriendList(f => f.isOnline)
+      const offline = FriendService.Inst.getFriendList(f => !f.isOnline)
+
+      // const online = DataCenter.friendListData.filter(
+      //   (item) => item.friendState === 0 || item.friendState === 2
+      // );
+      // const offline = DataCenter.friendListData.filter(
+      //   (item) => item.friendState === 1
+      // );
       setFriendsData([
-        { title: "Recommended Friends", data: RecomFriendsData },
+        { title: "Recommended Friends", data: [] },
         { title: "Online", data: online },
         { title: "Offline", data: offline },
       ]);
@@ -140,15 +143,15 @@ export default function FriendsScreen() {
           <SectionList
             stickySectionHeadersEnabled={false}
             sections={friendsData}
-            keyExtractor={(item, index) => item.friendId + index}
+            keyExtractor={(item, index) => item.id + index}
             renderItem={({ item, section }) =>
               section.title === "Recommended Friends"
                 ? RecommendedFriend(
-                    item.friendId,
-                    item.friendName,
-                    item.friendAvatar
-                  )
-                : Friend(item.friendId, item.friendName, item.friendAvatar)
+                  item.id,
+                  item.name,
+                  item.avatar
+                )
+                : Friend(item.id, item.name, item.avatar)
             }
             renderSectionHeader={({ section: { title } }) => (
               <Text className="text-white font-bold text-[24px] my-[10px]">
