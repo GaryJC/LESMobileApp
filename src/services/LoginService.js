@@ -5,7 +5,7 @@ import { LesConstants, LesPlatformCenter } from "les-im-components";
 import JSEvent from "../utils/JSEvent";
 import { DataEvents } from "../modules/Events";
 import { loginRequest } from "../utils/auth";
-import { AppStateStatus } from "react-native";
+import { AppState, AppStateStatus } from "react-native";
 
 const LoginExceptionType = Constants.LoginExceptionType;
 const { ErrorCodes, WebsocketState } = LesConstants;
@@ -40,6 +40,10 @@ export default class LoginService {
     LesPlatformCenter.IMListeners.onWebsocketStateChanged = state => {
       if (state == WebsocketState.Disconnected) {
         //连接断开了
+        if (AppState.currentState == 'active') {
+          //当前处于激活状态，网络连接断开了，尝试重连
+          // setTimeout(() => this.quickLogin(true), 1000);
+        }
       }
     }
     return this;
@@ -64,10 +68,7 @@ export default class LoginService {
 
       if (LesPlatformCenter.Inst.ConnectState != WebsocketState.Connected) {
         //重新连接
-        JSEvent.emit(DataEvents.User.UserState_Relogin, Constants.ReloginState.ReloginStarted);
-        //开始连接
         await this.quickLogin(true);
-        
       }
 
     }
@@ -138,6 +139,10 @@ export default class LoginService {
         `trying to quick login ${loginInfo.id} => ${loginInfo.token}`
       );
 
+      if (isReconnect) {
+        JSEvent.emit(DataEvents.User.UserState_Relogin, Constants.ReloginState.ReloginStarted);
+      }
+
       const result = await LesPlatformCenter.Inst.connect(
         Constants.Address.IMServer,
         loginInfo.id,
@@ -171,6 +176,10 @@ export default class LoginService {
       }
       return LesConstants.ErrorCodes.Success;
     } catch (e) {
+      if (isReconnect) {
+        //重连失败
+        JSEvent.emit(DataEvents.User.UserState_Relogin, Constants.ReloginState.ReloginFailed);
+      }
       //错误，返回错误码
       return e;
     }

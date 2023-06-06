@@ -5,6 +5,7 @@ import DataSavingService from "./DataSavingService";
 import DataCenter from "../modules/DataCenter";
 import IMUserInfoService from "./IMUserInfoService";
 import FriendData from "../Models/Friends";
+import Constants from "../modules/Constants";
 
 const { IMUserState, IMUserOnlineState } = LesConstants;
 
@@ -69,6 +70,10 @@ class FriendService {
   }
 
   async #onUserLogin() {
+    this.#pullFriendsDataFromServer();
+  }
+
+  async #pullFriendsDataFromServer() {
     const { accountId } = DataCenter.userInfo;
     try {
       const friends = await LesPlatformCenter.IMFunctions.getFriends();
@@ -151,6 +156,12 @@ class FriendService {
 
   }
 
+  async onUserRelogin(state){
+    if(state == Constants.ReloginState.ReloginSuccessful){
+      await this.#pullFriendsDataFromServer();
+    }
+  }
+
 }
 
-export default FriendService;
+export default FriendService; 
