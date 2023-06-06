@@ -12,6 +12,14 @@ export const DataEvents = {
 
 
   User: {
+
+    /**
+     * 用户重登陆成功
+     * 携带参数 {ReloginState}
+     * @type {ReloginState}
+     */
+    UserState_Relogin: "DATA_EVENT_UserState_Relogin",
+
     /**
     * 用户登录状态更新（已登陆）
     * 无携带参数

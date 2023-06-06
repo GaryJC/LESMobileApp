@@ -211,14 +211,10 @@ class MessageService {
     DatabaseService.Inst.loadTimelineId().then(id => this.#latestTimelineId = id);
   }
 
-  /**
-   * 
-   * @param {AppStateStatus} fromState 
-   * @param {AppStateStatus} toState 
-   */
-  async onAppStateChanged(fromState, toState) {
-    if (toState == 'active' && fromState != null) {
-      //app被重新唤醒
+
+  async onUserRelogin(state) {
+    if (state == Constants.ReloginState.ReloginSuccessful) {
+      //重连成功，尝试拉取最新的timeline数据
       try {
         const { startId, endId, datas } = await LesPlatformCenter.IMFunctions.requestTimeline(this.#latestTimelineId, -1);
         datas.forEach(data => {

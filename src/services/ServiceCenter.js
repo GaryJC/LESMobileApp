@@ -7,6 +7,11 @@ import DatabaseService from "./DatabaseService";
 import MessageService from "./MessageService";
 
 import { AppState, AppStateStatus, NativeEventSubscription } from "react-native";
+import JSEvent from "../utils/JSEvent";
+import { DataEvents } from "../modules/Events";
+import Constants from "../modules/Constants";
+
+const { ReloginState } = Constants;
 
 /**
  * 负责载入所有的service
@@ -17,6 +22,8 @@ import { AppState, AppStateStatus, NativeEventSubscription } from "react-native"
  * onServiceReady()，如果service含有onServiceReady()方法，会在所有service的init方法都被执行过后，再依次执行所有service的onServiceReady()方法，可以是async方法
  * 
  * onAppStateChanged(fromState, toState)，如果service含有onAppStateChanged()方法，会在app切换状态（前台，后台等）时被依次调用，可以是async方法
+ * 
+ * onUserRelogin(state)，如果service含有onUserRelogin()方法，会在客户端尝试重连、成功或失败时依次调用，可以是async方法 
  * 
  * onDestroy()，app被销毁时调用，一般只用于调试阶段(保存代码reload后，也需要销毁一次)
  */
@@ -57,6 +64,10 @@ export default class ServiceCenter {
     async loadAllServices() {
 
         this.#appStateSubscribtion = AppState.addEventListener('change', state => this.#handleAppStateChanged(state))
+
+        JSEvent.on(DataEvents.User.UserState_Relogin, state => {
+            this.#onUserRelogin(state);
+        })
 
         const serviceList = [
             DatabaseService,
@@ -108,6 +119,20 @@ export default class ServiceCenter {
                 service.onDestroy();
             }
         })
+    }
+
+    /**
+     * 
+     * @param {ReloginState} state 
+     */
+    async #onUserRelogin(state) {
+        console.log(`user relogin state[${state}], start invoking service.onUserRelogin`)
+        for (let i = 0; i < this.#services.length; i++) {
+            const service = this.#services[i];
+            if (service.onUserRelogin) {
+                service.onUserRelogin(state);
+            }
+        }
     }
 
     /**
