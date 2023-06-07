@@ -12,7 +12,13 @@ import {
   StatusBar,
 } from "react-native";
 // import { MessageData, ChatListData } from "../Data/dummyData";
-import { useState, useRef, useEffect, useReducer } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  useLayoutEffect,
+  useReducer,
+} from "react";
 import { Ionicons } from "@expo/vector-icons";
 import {
   KeyboardAwareFlatList,
@@ -101,6 +107,8 @@ const ChatScreen = () => {
   const [chatListData, setChatListData] = useState([]);
   // 当前聊天窗口的聊天记录
   const [messages, dispatchMessages] = useReducer(messageReducer, []);
+  // 每个聊天列表的新消息数量
+  const [newMsgCount, setNewMsgCount] = useState([]);
 
   /**
    * 指定对话有数据更新时执行
@@ -108,7 +116,7 @@ const ChatScreen = () => {
    */
   const msgListener = (chatId) => {
     // 如果当前chatId和接受到的信息chatId匹配就直接更新UI
-    console.log("chat id: ", curChatId, chatId);
+    console.log("cur chat id and message id: ", curChatId, chatId);
     if (curChatId === chatId) {
       const messageList = DataCenter.messageCache.getMesssageList(
         chatId,
@@ -134,7 +142,8 @@ const ChatScreen = () => {
 
   /**
    * 将获取的chatList数据转换成UI需要的格式
-   * @returns {array}
+   * @param {ChatListItem[]} chatList
+   * @returns {chatListData}
    */
   const handleChatListData = (chatList) => {
     // 将原始的数据转换成UI所需要的数据
@@ -156,12 +165,19 @@ const ChatScreen = () => {
 
   /**
    * 对话列表有数据更新时执行
+   * 重新排序对话列表
+   * 获取新消息数量
    * @param {string | null} chatId
    */
   const chatListListener = (chatId) => {
+    // 重新将对话列表排序
     const chatList = DataCenter.messageCache.getChatList();
     setChatListData(handleChatListData(chatList));
     console.log("chat list listener updated id: ", chatId, chatList);
+
+    // 获取新消息数量
+    const chatListNewMsgCount = getChatListMsgCount(chatList);
+    setNewMsgCount(chatListNewMsgCount);
   };
 
   /**
@@ -190,36 +206,121 @@ const ChatScreen = () => {
     return userInfo;
   };
 
+  /**
+   * 获取消息列表中的新消息数量
+   * @param {ChatListItem[]} chatList
+   * @returns {chatListNewMsgCount}
+   */
+  const getChatListMsgCount = (chatList) => {
+    const chatListNewMsgCount = chatList.map((item) => {
+      return item.chatId === curChatId
+        ? { chatId: item.chatId, newMessageCount: 0 }
+        : { chatId: item.chatId, newMessageCount: item.newMessageCount };
+    });
+    console.log("chat list new msg count: ", chatListNewMsgCount);
+    return chatListNewMsgCount;
+  };
+
+  // useEffect(() => {
+  //   /**
+  //    * 返回打开界面时默认的聊天信息，列表数据
+  //    * @returns {{chatList, chatId, targetId, names, avatars, userInfo, messsageData}}
+  //    */
+  //   const getInitData = () => {
+  //     // 获取所有的对话列表数据
+  //     const chatList = DataCenter.messageCache.getChatList();
+  //     // 获取所有对话列表的新消息
+  //     const chatListNewMsgCount = getChatListMsgCount(chatList);
+  //     // 获取头部的对话列表
+  //     const initChatListData = chatList[0];
+  //     // 获取初始对话列表的chatId
+  //     const chatId = initChatListData.chatId;
+  //     console.log("initial chat id: ", chatId);
+  //     // 获取初始化对话列表的聊天信息
+  //     const messageData = DataCenter.messageCache
+  //       .getMesssageList(chatId, 0, 10)
+  //       .reverse();
+  //     // 是群聊的话这里应该是什么样的？可以是是一个数组包含所有用户的id吗? 不然如何获取每个用户的信息？
+  //     const targetId = initChatListData.targetId;
+  //     console.log("targetId: ", targetId);
+  //     const userInfo = getUserInfo(targetId);
+
+  //     return {
+  //       chatList,
+  //       chatId,
+  //       targetId,
+  //       names,
+  //       avatars,
+  //       userInfo,
+  //       messageData,
+  //       chatListNewMsgCount,
+  //     };
+  //   };
+
+  //   const {
+  //     chatList,
+  //     chatId,
+  //     targetId,
+  //     names,
+  //     avatars,
+  //     userInfo,
+  //     messageData,
+  //     chatListNewMsgCount,
+  //   } = getInitData();
+
+  //   setNewMsgCount(chatListNewMsgCount);
+  //   dispatchMessages({
+  //     type: "RESET_AND_ADD_MESSAGES",
+  //     payload: messageData,
+  //   });
+
+  //   setCurChatId(chatId);
+  //   msgListener(chatId);
+  //   setCurUserInfo(userInfo);
+  //   setCurRecipientId(targetId);
+  //   const chatListData = handleChatListData(chatList);
+  //   setChatListData(chatListData);
+  // }, []);
+
   useEffect(() => {
     /**
      * 返回打开界面时默认的聊天信息，列表数据
-     * @returns {{chatList, chatId, targetId, names, avatars, userInfo}}
+     * @returns {{chatList, chatId, targetId, names, avatars, userInfo, messsageData}}
      */
     const getInitData = () => {
       // 获取所有的对话列表数据
       const chatList = DataCenter.messageCache.getChatList();
-      // 获取头部的对话列表
-      const initChatListData = chatList[0];
-      // 获取初始对话列表的chatId
-      const chatId = initChatListData.chatId;
-      console.log("initial chat id: ", chatId);
-      // 是群聊的话获取所有用户的id?
-      const targetId = initChatListData.targetId;
-      console.log("targetId: ", targetId);
-      const userInfo = getUserInfo(targetId);
-
-      return { chatList, chatId, targetId, names, avatars, userInfo };
+      if (chatList.length) {
+        // 获取所有对话列表的新消息
+        const chatListNewMsgCount = getChatListMsgCount(chatList);
+        setNewMsgCount(chatListNewMsgCount);
+        // 获取头部的对话列表
+        const initChatListData = chatList[0];
+        // 获取初始对话列表的chatId
+        const chatId = initChatListData.chatId;
+        setCurChatId(chatId);
+        // msgListener(chatId);
+        // 获取初始化对话列表的聊天信息
+        const messageData = DataCenter.messageCache
+          .getMesssageList(chatId, 0, 10)
+          .reverse();
+        dispatchMessages({
+          type: "RESET_AND_ADD_MESSAGES",
+          payload: messageData,
+        });
+        // 是群聊的话这里应该是什么样的？可以是是一个数组包含所有用户的id吗? 不然如何获取每个用户的信息？
+        const targetId = initChatListData.targetId;
+        setCurRecipientId(targetId);
+        console.log("targetId: ", targetId);
+        // 获取初始化窗口的用户信息，如id, name, avatar
+        const userInfo = getUserInfo(targetId);
+        setCurUserInfo(userInfo);
+        // 将初始化对话列表转换成UI需要的格式
+        const chatListData = handleChatListData(chatList);
+        setChatListData(chatListData);
+      }
     };
-
-    const { chatList, chatId, targetId, names, avatars, userInfo } =
-      getInitData();
-
-    setCurChatId(chatId);
-    msgListener(chatId);
-    setCurUserInfo(userInfo);
-    const chatListData = handleChatListData(chatList);
-    setChatListData(chatListData);
-    setCurRecipientId(targetId);
+    getInitData();
   }, []);
 
   useEffect(() => {
@@ -244,10 +345,16 @@ const ChatScreen = () => {
    * @param {number} targetId
    */
   const onClickChatHandler = (chatId, targetId) => {
+    // 清空数据
+    const chatListItem = DataCenter.messageCache.touchChatData(chatId);
+    console.log("after touch count: ", chatListItem.newMessageCount);
+
+    chatListListener(chatId);
+
     setCurChatId(chatId);
+    setCurRecipientId(targetId);
     const userInfo = getUserInfo(targetId);
     setCurUserInfo(userInfo);
-    setCurRecipientId(targetId);
     dispatchMessages({
       type: "RESET_AND_ADD_MESSAGES",
       payload: DataCenter.messageCache.getMesssageList(chatId, 0, 10).reverse(),
@@ -261,13 +368,17 @@ const ChatScreen = () => {
         <View className="flex-1">
           <FlatList
             data={chatListData}
-            renderItem={
-              ({ item }) => ChatList(item, onClickChatHandler)
-              // <ChatList
-              //   recipientId={item.recipentId}
-              //   chatAvatar={item.chatAvatar}
-              // />
-            }
+            renderItem={({ item }) => (
+              // ChatList(item, onClickChatHandler)
+              <ChatList
+                curChatId={curChatId}
+                chatId={item.chatId}
+                avatar={item.avatar}
+                targetId={item.targetId}
+                chatListNewMsgCount={newMsgCount}
+                onClickChatHandler={onClickChatHandler}
+              />
+            )}
             keyExtractor={(item) => item.targetId}
           />
         </View>
@@ -340,7 +451,6 @@ const ChatScreen = () => {
               placeholderTextColor="#CACACA"
             />
             <TouchableOpacity
-              // onPress={sendMessage}
               onPress={() =>
                 MessageService.Inst.sendMessage(curRecipientId, newMessage)
               }

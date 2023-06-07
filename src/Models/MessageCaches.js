@@ -303,7 +303,7 @@ class ChatListItem {
   }
 
   clearNewMsgCount() {
-    this.newMessageCount = 0;
+    this.#newMessageCount = 0;
   }
 
   refresh() {

@@ -1,5 +1,6 @@
 import { View, Text, ImageBackground } from "react-native";
 import Constants from "../modules/Constants";
+import { useState } from "react";
 
 export const ChatBubble = ({
   senderId,
@@ -8,8 +9,8 @@ export const ChatBubble = ({
   status,
   userInfo,
 }) => {
+  // bug
   const { name, avatar } = userInfo.find((item) => item.id === senderId);
-
   /**
    *
    * @param {Date} date
