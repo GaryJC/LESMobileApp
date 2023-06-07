@@ -11,7 +11,7 @@ import {
   StyleSheet,
   StatusBar,
 } from "react-native";
-import { MessageData, ChatListData } from "../Data/dummyData";
+// import { MessageData, ChatListData } from "../Data/dummyData";
 import { useState, useRef, useEffect, useReducer } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import {
@@ -24,49 +24,20 @@ import JSEvent from "../utils/JSEvent";
 import { UIEvents } from "../modules/Events";
 import Constants from "../modules/Constants";
 import DataCenter from "../modules/DataCenter";
+import IMUserInfoService from "../services/IMUserInfoService";
+import { ChatBubble } from "../Components/ChatBubble";
+import { ChatList } from "../Components/ChatList";
 
 // import { bottomTabHeight } from "../App";
 
 const statusBarHeight = StatusBar.currentHeight;
 // console.log(statusBarHeight);
 
-const ChatBubble = (
-  messageSenderName,
-  messageSenderAvatar,
-  messageContent,
-  messageDate,
-  messageStatus
-) => (
-  <View className="flex-row py-[10px]">
-    <View className="overflow-hidden rounded-full w-[50px] h-[50px]">
-      <ImageBackground
-        source={messageSenderAvatar}
-        className="w-[100%] h-[100%]"
-        resizeMode="cover"
-      />
-    </View>
-    <View className="justify-evenly pl-[10px]">
-      <View className="flex-row items-end">
-        <Text className="text-[17px] text-white font-bold">
-          {messageSenderName}
-        </Text>
-        <Text className="text-[10px] text-[#CFCFCF] pl-[10px]">
-          {messageDate}
-        </Text>
-      </View>
-      <Text className="text-[13px] text-white">{messageContent}</Text>
-      {messageStatus === Constants.deliveryState.delivering && (
-        <Text>Loading</Text>
-      )}
-    </View>
-  </View>
-);
-
 const messageReducer = (state, action) => {
   switch (action.type) {
     case "ADD_MESSAGE":
-      // console.log("add message:", [...state, action.payload]);
       return [...state, action.payload];
+
     case "UPDATE_MESSAGE_STATUS":
       console.log(state);
       let updatedState = state.map((message) =>
@@ -87,91 +58,271 @@ const messageReducer = (state, action) => {
       }
       console.log("updatedState: ", updatedState);
       return updatedState;
+
+    case "RESET_AND_ADD_MESSAGES":
+      return action.payload.reduce((accumulator, messageData) => {
+        if (messageData.status === Constants.deliveryState.delivered) {
+          // Check if the message already exists in the state using find
+          let messageExists = accumulator.find(
+            (message) => message.messageId === messageData.messageId
+          );
+          // If message with the 'delivered' status does not exist in the state, add it
+          if (
+            !messageExists &&
+            messageData.status === Constants.deliveryState.delivered
+          ) {
+            return [...accumulator, messageData];
+          } else {
+            return accumulator.map((message) =>
+              message.messageId === messageData.messageId
+                ? { ...message, status: messageData.status }
+                : message
+            );
+          }
+        } else {
+          return [...accumulator, messageData];
+        }
+      }, []);
     default:
       throw new Error();
   }
 };
 
 const ChatScreen = () => {
-  // 消息列表
-  // const [messages, setMessages] = useState([]);
-  // 收到的最新消息
+  // 输入框输入的消息
   const [newMessage, setNewMessage] = useState("");
+  // 当前chatid
+  const [curChatId, setCurChatId] = useState();
   // 当前选择的聊天对象的id
-  const [curRecipientId, setCurRecipientId] = useState(2);
-  const [curRecipientName, setCurRecipientName] = useState();
-
+  const [curRecipientId, setCurRecipientId] = useState();
+  // 当前聊天对象的名字
+  const [curRecipientName, setCurRecipientName] = useState([]);
+  // 当前聊天窗口的的头像
+  const [curChatAvatar, setCurChatAvatar] = useState([]);
+  const [curUserInfo, setCurUserInfo] = useState([]);
+  // 聊天列表
+  const [chatListData, setChatListData] = useState([]);
+  // 当前聊天窗口的聊天记录
   const [messages, dispatchMessages] = useReducer(messageReducer, []);
 
-  useEffect(() => {
-
-    const msgListener = (messageData) => {
-      // assuming messageData contains status
-      console.log("message recived in chat: ", messageData);
-      if (messageData.status === Constants.deliveryState.delivered) {
-        dispatchMessages({
-          type: "UPDATE_MESSAGE_STATUS",
-          payload: messageData,
-        });
-      } else {
-        dispatchMessages({
-          type: "ADD_MESSAGE",
-          payload: messageData,
-        });
-      }
+  /**
+   * 指定对话有数据更新时执行
+   * @param {string} chatId
+   */
+  const msgListener = (chatId) => {
+    // 如果当前chatId和接受到的信息chatId匹配就直接更新UI
+    console.log("chat id: ", curChatId, chatId);
+    if (curChatId === chatId) {
+      const messageList = DataCenter.messageCache.getMesssageList(
+        chatId,
+        0,
+        10
+      );
+      console.log("Message data received: ", messageList);
+      messageList.forEach((messageData) => {
+        if (messageData.status === Constants.deliveryState.delivered) {
+          dispatchMessages({
+            type: "UPDATE_MESSAGE_STATUS",
+            payload: messageData,
+          });
+        } else {
+          dispatchMessages({
+            type: "ADD_MESSAGE",
+            payload: messageData,
+          });
+        }
+      });
     }
+  };
 
-    JSEvent.on(UIEvents.Message.MessageState_UIRefresh, msgListener);
+  /**
+   * 将获取的chatList数据转换成UI需要的格式
+   * @returns {array}
+   */
+  const handleChatListData = (chatList) => {
+    // 将原始的数据转换成UI所需要的数据
+    const chatListData = chatList.map((item) => {
+      const targetId = item.targetId;
+      // 目前头像为空，先用placeholder
+      // const avatar = IMUserInfoService.Inst.getUser(targetId).avatar;
+      const avatar = `https://i.pravatar.cc/150?img=${targetId}`;
+      const chatId = item.chatId;
+      return {
+        chatId: chatId,
+        targetId: targetId,
+        avatar: avatar,
+        name: targetId,
+      };
+    });
+    return chatListData;
+  };
 
-    // Don't forget to remove the listener when the component unmounts
-    return () => JSEvent.remove(UIEvents.Message.MessageState_UIRefresh, msgListener);
+  /**
+   * 对话列表有数据更新时执行
+   * @param {string | null} chatId
+   */
+  const chatListListener = (chatId) => {
+    const chatList = DataCenter.messageCache.getChatList();
+    setChatListData(handleChatListData(chatList));
+    console.log("chat list listener updated id: ", chatId, chatList);
+  };
+
+  /**
+   * 返回一个用户名组成的数组
+   * @param {number|number[]} targetId 可以是一个或多个id
+   * @returns {usernames}
+   */
+  const getUsernames = (targetId) => {
+    const usernames = IMUserInfoService.Inst.getUser(targetId).map((item) => {
+      item.name;
+    });
+    return usernames;
+  };
+
+  /**
+   * 返回一个对象组成的数组，对象内含有用户对应的id, avatar
+   * @param {number|number[]} targetId 可以是一个或多个id
+   * @returns {avatars}
+   */
+  const getUserAvatars = (targetId) => {
+    // 目前头像为空，先用placeholder
+    let avatars = IMUserInfoService.Inst.getUser(targetId).map((item) => {
+      return {
+        id: item.id,
+        avatar: `https://i.pravatar.cc/150?img=${item.id}`,
+      };
+    });
+    // 加入用户自己的头像
+    avatars = [
+      ...avatars,
+      {
+        id: DataCenter.userInfo.accountId,
+        avatar: `https://i.pravatar.cc/150?img=${DataCenter.userInfo.accountId}`,
+      },
+    ];
+    return avatars;
+  };
+
+  /**
+   * 获取当前聊天窗口所有对象的信息
+   * @param {number|number[]} targetId
+   * @returns {userInfo}
+   */
+  const getUserInfo = (targetId) => {
+    // 目前头像为空，先用placeholder
+    let userInfo = IMUserInfoService.Inst.getUser(targetId).map((item) => {
+      return {
+        id: item.id,
+        avatar: `https://i.pravatar.cc/150?img=${item.id}`,
+        name: item.name,
+      };
+    });
+    // 加入用户自己的信息
+    userInfo = [
+      ...userInfo,
+      {
+        id: DataCenter.userInfo.accountId,
+        avatar: `https://i.pravatar.cc/150?img=${DataCenter.userInfo.accountId}`,
+        name: DataCenter.userInfo.imUserInfo.name,
+      },
+    ];
+    return userInfo;
+  };
+
+  useEffect(() => {
+    /**
+     * 返回打开界面时默认的聊天信息，列表数据
+     * @returns {object}
+     */
+    const getInitData = () => {
+      // 获取所有的对话列表数据
+      const chatList = DataCenter.messageCache.getChatList();
+      console.log("所有的对话列表数据： ", chatList);
+
+      // 获取头部的对话列表
+      const initChatListData = chatList[0];
+
+      // 获取初始对话列表的chatId
+      const chatId = initChatListData.chatId;
+      console.log("initial chat id: ", chatId);
+      // 是群聊的话获取所有用户的id?
+      const targetId = initChatListData.targetId;
+
+      console.log("targetId: ", targetId);
+
+      // const names = getUsernames(targetId);
+      // const avatars = getUserAvatars(targetId);
+      const userInfo = getUserInfo(targetId);
+
+      return { chatList, chatId, targetId, names, avatars, userInfo };
+    };
+
+    const { chatList, chatId, targetId, names, avatars, userInfo } =
+      getInitData();
+
+    setCurChatId(chatId);
+    msgListener(chatId);
+    setCurUserInfo(userInfo);
+    const chatListData = handleChatListData(chatList);
+    setChatListData(chatListData);
+    // console.log("chat list data: ", chatListData);
+
+    setCurRecipientId(targetId);
+    // setCurRecipientName(names);
+    // setCurChatAvatar(avatars);
   }, []);
 
   useEffect(() => {
-    const curChatData = MessageData.find(
-      (item) => item.recipientId === curRecipientId
-    );
-    // console.log(curChatData);
-    // setMessages(curChatData.messages);
-    // setMessages(DataCenter.messageCaches["1-17"]);
-    setCurRecipientName(curChatData.recipientName);
-  }, [curRecipientId]);
+    JSEvent.on(UIEvents.Message.Message_Chat_Updated, msgListener);
+    JSEvent.on(UIEvents.Message.Message_Chat_List_Updated, chatListListener);
+
+    return () => {
+      JSEvent.remove(UIEvents.Message.Message_Chat_Updated, msgListener);
+      JSEvent.remove(
+        UIEvents.Message.Message_Chat_List_Updated,
+        chatListListener
+      );
+    };
+  }, [curChatId]);
 
   const flatListRef = useRef();
 
-  const onClickChatHandler = (recipentId) => {
-    // 切换到指定的窗口
-    setCurRecipientId(recipentId);
-    console.log(curRecipientId);
+  /**
+   * 点击chatList切换聊天对象时更新UI
+   * @param {string} chatId
+   * @param {string} name
+   * @param {number} targetId
+   */
+  const onClickChatHandler = (chatId, targetId) => {
+    setCurChatId(chatId);
+    const usernames = getUsernames(targetId);
+    // setCurRecipientName(usernames);
+    const userAvatars = getUserAvatars(targetId);
+    const userInfo = getUserInfo(targetId);
+    setCurUserInfo(userInfo);
+    // setCurChatAvatar(userAvatars);
+    setCurRecipientId(targetId);
+    dispatchMessages({
+      type: "RESET_AND_ADD_MESSAGES",
+      payload: DataCenter.messageCache.getMesssageList(chatId, 0, 10),
+    });
+    console.log("switched chat id: ", chatId);
   };
-
-  const ChatList = (recipientId, chatAvatar) => (
-    // add onPress handler to switch chat recipient
-    <TouchableHighlight onPress={() => onClickChatHandler(recipientId)}>
-      <View className="overflow-hidden rounded-full w-[55px] h-[55px] mb-[15px]">
-        <ImageBackground
-          source={chatAvatar}
-          className="w-[100%] h-[100%]"
-          resizeMode="cover"
-        />
-      </View>
-    </TouchableHighlight>
-  );
 
   return (
     <View className="flex-1 flex-row pt-[5vh]">
       <View className="w-[20%] items-center flex-col">
         <View className="flex-1">
           <FlatList
-            data={ChatListData}
-            renderItem={({ item }) =>
-              ChatList(item.recipientId, item.chatAvatar)
+            data={chatListData}
+            renderItem={
+              ({ item }) => ChatList(item, onClickChatHandler)
               // <ChatList
               //   recipientId={item.recipentId}
               //   chatAvatar={item.chatAvatar}
               // />
             }
-            keyExtractor={(item) => item.recipientId}
+            keyExtractor={(item) => item.targetId}
           />
         </View>
         <View className="flex-2 justify-evenly border-t-2 border-[#575757] p-[5px]">
@@ -184,14 +335,15 @@ const ChatScreen = () => {
           </View>
         </View>
       </View>
-      <View
-        // style={styles.container}
-        className="flex-1 bg-[#262F38] rounded-lg"
-      >
+      <View className="flex-1 bg-[#262F38] rounded-lg">
         <View className="flex-row justify-between p-[10px]">
-          <Text className="text-white font-bold text-[20px]">
-            {curRecipientName}
-          </Text>
+          {curUserInfo
+            .filter((item) => item.id !== DataCenter.userInfo.accountId)
+            .map((item, index) => (
+              <Text key={index} className="text-white font-bold text-[20px]">
+                {item.name}
+              </Text>
+            ))}
           <Ionicons
             name="ellipsis-horizontal"
             color="white"
@@ -202,36 +354,26 @@ const ChatScreen = () => {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           // behavior="position"
           className="flex-1 px-[10px]"
-        // keyboardVerticalOffset={-400}
-        // keyboardVerticalOffset={140}
+          // keyboardVerticalOffset={-400}
+          // keyboardVerticalOffset={140}
         >
           {/* <KeyboardAwareFlatList
           className="flex-1"
           // keyboardShouldPersistTaps="always"
         > */}
-          {/* 这里的头像缓存起来 */}
-
           <FlatList
             ref={flatListRef}
-            // data={MessageData}
             data={messages}
-            // renderItem={({ item }) =>
-            //   ChatBubble(
-            //     item.messageSenderName,
-            //     item.messageSenderAvatar,
-            //     item.messageContent,
-            //     item.messageDate
-            //   )
-            // }
-            renderItem={({ item }) => {
-              return ChatBubble(
-                item.senderId,
-                require("../../assets/img/gameCardBg.jpg"),
-                item.content,
-                "6/10",
-                item.status
-              );
-            }}
+            renderItem={({ item }) => (
+              <ChatBubble
+                senderId={item.senderId}
+                avatar={curChatAvatar}
+                content={item.content}
+                date={"6/10"}
+                status={item.status}
+                userInfo={curUserInfo}
+              />
+            )}
             ListEmptyComponent={<Text>No messages to display</Text>}
             keyExtractor={(item, index) => index.toString()}
             onContentSizeChange={() =>
@@ -254,7 +396,9 @@ const ChatScreen = () => {
             />
             <TouchableOpacity
               // onPress={sendMessage}
-              onPress={() => MessageService.Inst.sendMessage(17, newMessage)}
+              onPress={() =>
+                MessageService.Inst.sendMessage(curRecipientId, newMessage)
+              }
               className="bg-[#5EB857] p-[5px] rounded"
             >
               <Text className="text-white font-bold">Send</Text>

@@ -4,6 +4,8 @@ import {
   FlatList,
   ImageBackground,
   SectionList,
+  Button,
+  TextInput,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
@@ -18,6 +20,7 @@ import JSEvent from "../utils/JSEvent";
 import { UIEvents } from "../modules/Events";
 import FriendService from "../services/FriendService";
 import MockServer from "../utils/MockServer";
+import { LesPlatformCenter } from "les-im-components";
 
 const primaryButtonContent = [
   { title: "Friends Request", icon: "emoji-people", link: "" },
@@ -98,8 +101,8 @@ export default function FriendsScreen() {
   useEffect(() => {
     const onFriendStateUIUpdated = () => {
       // console.log(FriendListData);
-      const online = FriendService.Inst.getFriendList(f => f.isOnline)
-      const offline = FriendService.Inst.getFriendList(f => !f.isOnline)
+      const online = FriendService.Inst.getFriendList((f) => f.isOnline);
+      const offline = FriendService.Inst.getFriendList((f) => !f.isOnline);
 
       // const online = DataCenter.friendListData.filter(
       //   (item) => item.friendState === 0 || item.friendState === 2
@@ -128,9 +131,22 @@ export default function FriendsScreen() {
     };
   }, []);
 
+  const temporyAddHander = () => {
+    LesPlatformCenter.IMFunctions.sendFriendInvitation(36)
+      .then((res) => {
+        console.log("Inivitation success: ", res);
+      })
+      .catch((e) => console.log("Invitiation failed: ", e));
+  };
+
+  const TemporyAddButton = () => (
+    <Button title="Add" onPress={temporyAddHander} />
+  );
+
   return (
     <View className="flex-1 w-[90vw] mx-auto">
-      <View className="">
+      <TemporyAddButton />
+      <View>
         {primaryButtonContent.map(({ title, icon, link }, index) =>
           PrimaryButton(title, icon, link, index)
         )}
@@ -146,11 +162,7 @@ export default function FriendsScreen() {
             keyExtractor={(item, index) => item.id + index}
             renderItem={({ item, section }) =>
               section.title === "Recommended Friends"
-                ? RecommendedFriend(
-                  item.id,
-                  item.name,
-                  item.avatar
-                )
+                ? RecommendedFriend(item.id, item.name, item.avatar)
                 : Friend(item.id, item.name, item.avatar)
             }
             renderSectionHeader={({ section: { title } }) => (
