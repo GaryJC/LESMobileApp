@@ -60,29 +60,26 @@ const messageReducer = (state, action) => {
       return updatedState;
 
     case "RESET_AND_ADD_MESSAGES":
-      return action.payload.reduce((accumulator, messageData) => {
-        if (messageData.status === Constants.deliveryState.delivered) {
-          // Check if the message already exists in the state using find
-          let messageExists = accumulator.find(
-            (message) => message.messageId === messageData.messageId
-          );
-          // If message with the 'delivered' status does not exist in the state, add it
-          if (
-            !messageExists &&
-            messageData.status === Constants.deliveryState.delivered
-          ) {
-            return [...accumulator, messageData];
+      return action.payload.map((messageData) => {
+        // Check if the message already exists in the state using find
+        let existingMessage = state.find(
+          (message) => message.messageId === messageData.messageId
+        );
+
+        if (existingMessage) {
+          // If message already exists in the state, update its status
+          if (messageData.status === Constants.deliveryState.delivered) {
+            return { ...existingMessage, status: messageData.status };
           } else {
-            return accumulator.map((message) =>
-              message.messageId === messageData.messageId
-                ? { ...message, status: messageData.status }
-                : message
-            );
+            return existingMessage;
           }
         } else {
-          return [...accumulator, messageData];
+          // If message does not exist in the state and its status is 'delivered', add it
+          if (messageData.status === Constants.deliveryState.delivered) {
+            return messageData;
+          }
         }
-      }, []);
+      });
     default:
       throw new Error();
   }
@@ -96,9 +93,9 @@ const ChatScreen = () => {
   // 当前选择的聊天对象的id
   const [curRecipientId, setCurRecipientId] = useState();
   // 当前聊天对象的名字
-  const [curRecipientName, setCurRecipientName] = useState([]);
+  // const [curRecipientName, setCurRecipientName] = useState([]);
   // 当前聊天窗口的的头像
-  const [curChatAvatar, setCurChatAvatar] = useState([]);
+  // const [curChatAvatar, setCurChatAvatar] = useState([]);
   const [curUserInfo, setCurUserInfo] = useState([]);
   // 聊天列表
   const [chatListData, setChatListData] = useState([]);
@@ -168,42 +165,6 @@ const ChatScreen = () => {
   };
 
   /**
-   * 返回一个用户名组成的数组
-   * @param {number|number[]} targetId 可以是一个或多个id
-   * @returns {usernames}
-   */
-  const getUsernames = (targetId) => {
-    const usernames = IMUserInfoService.Inst.getUser(targetId).map((item) => {
-      item.name;
-    });
-    return usernames;
-  };
-
-  /**
-   * 返回一个对象组成的数组，对象内含有用户对应的id, avatar
-   * @param {number|number[]} targetId 可以是一个或多个id
-   * @returns {avatars}
-   */
-  const getUserAvatars = (targetId) => {
-    // 目前头像为空，先用placeholder
-    let avatars = IMUserInfoService.Inst.getUser(targetId).map((item) => {
-      return {
-        id: item.id,
-        avatar: `https://i.pravatar.cc/150?img=${item.id}`,
-      };
-    });
-    // 加入用户自己的头像
-    avatars = [
-      ...avatars,
-      {
-        id: DataCenter.userInfo.accountId,
-        avatar: `https://i.pravatar.cc/150?img=${DataCenter.userInfo.accountId}`,
-      },
-    ];
-    return avatars;
-  };
-
-  /**
    * 获取当前聊天窗口所有对象的信息
    * @param {number|number[]} targetId
    * @returns {userInfo}
@@ -232,26 +193,19 @@ const ChatScreen = () => {
   useEffect(() => {
     /**
      * 返回打开界面时默认的聊天信息，列表数据
-     * @returns {object}
+     * @returns {{chatList, chatId, targetId, names, avatars, userInfo}}
      */
     const getInitData = () => {
       // 获取所有的对话列表数据
       const chatList = DataCenter.messageCache.getChatList();
-      console.log("所有的对话列表数据： ", chatList);
-
       // 获取头部的对话列表
       const initChatListData = chatList[0];
-
       // 获取初始对话列表的chatId
       const chatId = initChatListData.chatId;
       console.log("initial chat id: ", chatId);
       // 是群聊的话获取所有用户的id?
       const targetId = initChatListData.targetId;
-
       console.log("targetId: ", targetId);
-
-      // const names = getUsernames(targetId);
-      // const avatars = getUserAvatars(targetId);
       const userInfo = getUserInfo(targetId);
 
       return { chatList, chatId, targetId, names, avatars, userInfo };
@@ -265,11 +219,7 @@ const ChatScreen = () => {
     setCurUserInfo(userInfo);
     const chatListData = handleChatListData(chatList);
     setChatListData(chatListData);
-    // console.log("chat list data: ", chatListData);
-
     setCurRecipientId(targetId);
-    // setCurRecipientName(names);
-    // setCurChatAvatar(avatars);
   }, []);
 
   useEffect(() => {
@@ -295,16 +245,12 @@ const ChatScreen = () => {
    */
   const onClickChatHandler = (chatId, targetId) => {
     setCurChatId(chatId);
-    const usernames = getUsernames(targetId);
-    // setCurRecipientName(usernames);
-    const userAvatars = getUserAvatars(targetId);
     const userInfo = getUserInfo(targetId);
     setCurUserInfo(userInfo);
-    // setCurChatAvatar(userAvatars);
     setCurRecipientId(targetId);
     dispatchMessages({
       type: "RESET_AND_ADD_MESSAGES",
-      payload: DataCenter.messageCache.getMesssageList(chatId, 0, 10),
+      payload: DataCenter.messageCache.getMesssageList(chatId, 0, 10).reverse(),
     });
     console.log("switched chat id: ", chatId);
   };
@@ -367,9 +313,8 @@ const ChatScreen = () => {
             renderItem={({ item }) => (
               <ChatBubble
                 senderId={item.senderId}
-                avatar={curChatAvatar}
                 content={item.content}
-                date={"6/10"}
+                timestamp={item.timestamp}
                 status={item.status}
                 userInfo={curUserInfo}
               />
