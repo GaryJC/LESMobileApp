@@ -1,6 +1,6 @@
 import { View, Text, ImageBackground } from "react-native";
 import Constants from "../modules/Constants";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export const ChatBubble = ({
   senderId,
@@ -9,30 +9,38 @@ export const ChatBubble = ({
   status,
   userInfo,
 }) => {
-  // bug
-  const { name, avatar } = userInfo.find((item) => item.id === senderId);
-  /**
-   *
-   * @param {Date} date
-   * @returns {formattedDate}
-   */
-  function formatDate(date) {
-    const options = {
-      year: "2-digit",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    };
+  const [name, setName] = useState();
+  const [avatar, setAvatar] = useState();
+  const [date, setDate] = useState();
 
-    let formattedDate;
-    if (timestamp) {
-      formattedDate = new Intl.DateTimeFormat("en-US", options).format(date);
+  useEffect(() => {
+    const { name, avatar } = userInfo.find((item) => item.id === senderId);
+    setName(name);
+    setAvatar(avatar);
+    /**
+     *
+     * @param {Date} date
+     * @returns {formattedDate}
+     */
+    function formatDate(date) {
+      const options = {
+        year: "2-digit",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      };
+
+      let formattedDate;
+      if (timestamp) {
+        formattedDate = new Intl.DateTimeFormat("en-US", options).format(date);
+      }
+      return formattedDate;
     }
-    return formattedDate;
-  }
 
-  const date = formatDate(new Date(timestamp * 1000)); // Outputs in MM/DD/YY, HH:MM format
+    const date = formatDate(new Date(timestamp * 1000)); // Outputs in MM/DD/YY, HH:MM format
+    setDate(date);
+  }, []);
 
   return (
     <View className="flex-row py-[10px]">

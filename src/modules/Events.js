@@ -10,9 +10,7 @@ export const DataEvents = {
     PullDataState_IsFinished: "DATA_EVENT_PullData_IsFinished",
   },
 
-
   User: {
-
     /**
      * 用户重登陆成功
      * 携带参数 {ReloginState}
@@ -21,9 +19,9 @@ export const DataEvents = {
     UserState_Relogin: "DATA_EVENT_UserState_Relogin",
 
     /**
-    * 用户登录状态更新（已登陆）
-    * 无携带参数
-    */
+     * 用户登录状态更新（已登陆）
+     * 无携带参数
+     */
     UserState_IsLoggedin: "DATA_EVENT_UserState_IsLoggedin",
 
     /**
@@ -36,7 +34,7 @@ export const DataEvents = {
      * @type {{id:number, state:IMUserState, onlineState:IMUserOnlineState}}
      * 用户的详细数据，可通过IMUserInfoService.getUser(id)获取
      */
-    UserState_Changed: "DATA_EVENT_UserState_Changed"
+    UserState_Changed: "DATA_EVENT_UserState_Changed",
   },
 
   /**
@@ -49,7 +47,6 @@ export const DataEvents = {
     FriendState_Updated: "DATA_EVENT_FriendState_Updated",
   },
 
-
   Message: {
     /**
      * 消息被投递后事件
@@ -57,19 +54,19 @@ export const DataEvents = {
      */
     MessageState_Sent: "DATA_EVENT_MessageState_Sent",
     /**
-    * 收到新的timelineData事件
-    * 携带参数为 MessageData
-    * @type {MessageData}
-    */
+     * 收到新的timelineData事件
+     * 携带参数为 MessageData
+     * @type {MessageData}
+     */
     TimelineState_Updated: "DATA_EVENT_Message_Updated",
 
     /**
      * 本地timelineId更新事件
-     * 
+     *
      * 携带参数为 latestTimelineId
      * @type {number}
      */
-    TimelineId_Updated: "DATA_EVENT_TimelineId_Updated"
+    TimelineId_Updated: "DATA_EVENT_TimelineId_Updated",
   },
 
   /**
@@ -79,7 +76,6 @@ export const DataEvents = {
   Notification: {
     NotificationState_Invoked: "DATA_EVENT_NotificationState_Invoked",
   },
-
 
   Saving: {
     /**
@@ -109,34 +105,37 @@ export const UIEvents = {
     PullDataState_UINotLoading: "UI_EVENT_PullDataState_UIIsNotLoading",
   },
 
+  User: {
+    UserState_UIRefresh: "UI_EVENT_UserState_UIRefresh",
+    User_Click_Chat_Updated: "UI_EVENT_User_Click_Chat_Updated",
+  },
 
   Message: {
     /**
-      * 消息UI更新
-      * 携带参数为 PBLesIMTimelineData
-      * 
-      * 目前这个不用了
-      */
+     * 消息UI更新
+     * 携带参数为 PBLesIMTimelineData
+     *
+     * 目前这个不用了
+     */
     MessageState_UIRefresh: "UI_EVENT_MessageState_UIRefresh",
-
 
     /**
      * 通知UI，指定对话有数据更新
      * 携带参数为数据有更新的对话id
-     * 
+     *
      * UI部分监听这个消息，如果对应的对话id为开启状态，则更新对话的状态
-     * 
+     *
      * @type {string}
      */
     Message_Chat_Updated: "UI_EVENT_Message_Chat_Updated",
 
     /**
      * 通知UI，对话列表数据有更新
-     * 
+     *
      * 携带参数为数据有更新的对话id，为空则表示全部更新
-     * 
+     *
      * 收到事件后去DataCenter.messageCache获取最新的列表
-     * 
+     *
      * @type {string}
      */
     Message_Chat_List_Updated: "UI_EVENT_Message_Chat_List_Updated",

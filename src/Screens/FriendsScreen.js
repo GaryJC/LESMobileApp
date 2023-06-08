@@ -21,6 +21,7 @@ import { UIEvents } from "../modules/Events";
 import FriendService from "../services/FriendService";
 import MockServer from "../utils/MockServer";
 import { LesPlatformCenter } from "les-im-components";
+import { FriendList } from "../Components/FriendList";
 
 const primaryButtonContent = [
   { title: "Friends Request", icon: "emoji-people", link: "" },
@@ -73,11 +74,16 @@ const RecommendedFriend = (id, name, avatar) => (
 const Friend = (id, name, avatar) => (
   <View className="flex-row justify-between mb-[10px]">
     <View className="flex-row items-center">
-      <View className="w-[55px] h-[55px] rounded-full overflow-hidden mr-[10px]">
-        <ImageBackground
-          source={{ uri: avatar }}
-          className="w-[100%] h-[100%]"
-        />
+      <View className="relative">
+        <View className="w-[55px] h-[55px] rounded-full overflow-hidden mr-[10px]">
+          <ImageBackground
+            source={{ uri: avatar }}
+            className="w-[100%] h-[100%]"
+          />
+        </View>
+        <View className="absolute bottom-[10] right-[10] w-[20px] h-[20px]">
+          <View className="bg-[#FF3737] w-[100%] h-[100%] rounded-full"></View>
+        </View>
       </View>
       <Text className="text-white text-[20px] font-bold">{name}</Text>
     </View>
@@ -93,6 +99,13 @@ const Friend = (id, name, avatar) => (
   </View>
 );
 
+const handleFriendData = (friendData) => {
+  const data = friendData.map((item) => {
+    return { ...item, state: item.state, avatar: item.avatar };
+  });
+  return data;
+};
+
 export default function FriendsScreen() {
   // const [onlineFriends, setOnlineFriends] = useState([]);
   // const [offlineFriends, setOfflineFriends] = useState([]);
@@ -100,10 +113,10 @@ export default function FriendsScreen() {
 
   useEffect(() => {
     const onFriendStateUIUpdated = () => {
-      // console.log(FriendListData);
+      console.log("friend state update");
       const online = FriendService.Inst.getFriendList((f) => f.isOnline);
       const offline = FriendService.Inst.getFriendList((f) => !f.isOnline);
-
+      console.log("processed friend data: ", online);
       // const online = DataCenter.friendListData.filter(
       //   (item) => item.friendState === 0 || item.friendState === 2
       // );
@@ -119,15 +132,15 @@ export default function FriendsScreen() {
 
     onFriendStateUIUpdated();
 
-    // 注册好友在线状态UI更新事件
-    // *** 这里的注册在触发之后才发生的
     JSEvent.on(UIEvents.Friend.FriendState_UIRefresh, onFriendStateUIUpdated);
+    JSEvent.on(UIEvents.User.UserState_UIRefresh, onFriendStateUIUpdated);
 
     return () => {
       JSEvent.remove(
         UIEvents.Friend.FriendState_UIRefresh,
         onFriendStateUIUpdated
       );
+      JSEvent.remove(UIEvents.User.UserState_UIRefresh, onFriendStateUIUpdated);
     };
   }, []);
 
@@ -160,10 +173,27 @@ export default function FriendsScreen() {
             stickySectionHeadersEnabled={false}
             sections={friendsData}
             keyExtractor={(item, index) => item.id + index}
+            // renderItem={({ item, section }) =>
+            //   section.title === "Recommended Friends"
+            //     ? RecommendedFriend(item.id, item.name, item.avatar)
+            //     : Friend(item.id, item.name, item.avatar)
+            // }
             renderItem={({ item, section }) =>
-              section.title === "Recommended Friends"
-                ? RecommendedFriend(item.id, item.name, item.avatar)
-                : Friend(item.id, item.name, item.avatar)
+              section.title === "Recommended Friends" ? (
+                <RecomFriendsData
+                  id={item.id}
+                  name={item.name}
+                  state={item.state}
+                  avatar={item.avatar}
+                />
+              ) : (
+                <FriendList
+                  id={item.id}
+                  name={item.name}
+                  state={item.state}
+                  avatar={item.avatar}
+                />
+              )
             }
             renderSectionHeader={({ section: { title } }) => (
               <Text className="text-white font-bold text-[24px] my-[10px]">

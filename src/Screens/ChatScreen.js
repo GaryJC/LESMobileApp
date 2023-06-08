@@ -326,6 +326,7 @@ const ChatScreen = () => {
   useEffect(() => {
     JSEvent.on(UIEvents.Message.Message_Chat_Updated, msgListener);
     JSEvent.on(UIEvents.Message.Message_Chat_List_Updated, chatListListener);
+    JSEvent.on(UIEvents.User.User_Click_Chat_Updated, onClickChatHandler);
 
     return () => {
       JSEvent.remove(UIEvents.Message.Message_Chat_Updated, msgListener);
@@ -333,6 +334,7 @@ const ChatScreen = () => {
         UIEvents.Message.Message_Chat_List_Updated,
         chatListListener
       );
+      JSEvent.remove(UIEvents.User.User_Click_Chat_Updated, onClickChatHandler);
     };
   }, [curChatId]);
 
@@ -344,7 +346,8 @@ const ChatScreen = () => {
    * @param {string} name
    * @param {number} targetId
    */
-  const onClickChatHandler = (chatId, targetId) => {
+  const onClickChatHandler = ({ chatId, targetId }) => {
+    console.log("sasa: ", chatId, targetId);
     // 清空数据
     const chatListItem = DataCenter.messageCache.touchChatData(chatId);
     console.log("after touch count: ", chatListItem.newMessageCount);

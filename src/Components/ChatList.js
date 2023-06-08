@@ -21,7 +21,9 @@ export const ChatList = ({
 
   return (
     // add onPress handler to switch chat recipient
-    <TouchableHighlight onPress={() => onClickChatHandler(chatId, targetId)}>
+    <TouchableHighlight
+      onPress={() => onClickChatHandler({ chatId: chatId, targetId: targetId })}
+    >
       <View className="relative">
         <View className="overflow-hidden rounded-full w-[55px] h-[55px] mb-[15px]">
           <ImageBackground
