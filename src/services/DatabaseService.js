@@ -6,8 +6,6 @@ import DataCenter from "../modules/DataCenter";
 import Message from "../Models/Message";
 import MessageData from "../Models/MessageData";
 import { ChatListItem } from "../Models/MessageCaches";
-import { Notification, Notifications } from "../Models/Notifications";
-import { LesConstants } from "les-im-components";
 
 const db_version = "1.0";
 
@@ -48,12 +46,6 @@ export default class DatabaseService {
 
         try {
             const version = await this.#getVersion();
-            //先尝试建数据库，把没有的数据表创建出来
-            try {
-                await this.#createDatabase(false);
-            } catch (e) {
-                console.error("create database failed:", e)
-            }
             if (version != db_version) {
                 this.#updateDatabase(version);
             }
@@ -93,7 +85,7 @@ export default class DatabaseService {
      * 
      * @param {SQLite.SQLTransaction} tx 
      * @param {string} sql 
-     * @param {SQLite.SQLResultSet | null} values 
+     * @param {object[] | null} values 
      */
     #transactionPromise(tx, sql, values) {
         return new Promise((reslove, reject) => {
@@ -103,7 +95,7 @@ export default class DatabaseService {
                     reslove(result)
                 },
                 (_, error) => {
-                    console.log(`sql ${sql} err `, error)
+                    //console.log(`sql ${sql} err `, error)
                     reject(error)
                 });
         });
@@ -132,12 +124,13 @@ export default class DatabaseService {
         })
     }
 
-    #createDatabase(createTblVersion = true) {
+    #createDatabase() {
         return new Promise((reslove) => {
             this.#currDb.transaction(async (tx) => {
                 let ps = [];
-                if (createTblVersion) ps.push(this.#createTblVersion(tx));
-                ps.push(this.#createTables(tx));
+                ps.push(this.#createTblVersion(tx));
+                ps.push(this.#createTblMessage(tx));
+                ps.push(this.#createTblChatlist(tx));
                 try {
                     await Promise.all(ps);
                 } catch (e) {
@@ -146,14 +139,6 @@ export default class DatabaseService {
                 reslove();
             })
         })
-    }
-
-    #createTables(tx) {
-        let ps = [];
-        ps.push(this.#createTblMessage(tx));
-        ps.push(this.#createTblChatlist(tx));
-        ps.push(this.#createTblNotification(tx));
-        return Promise.all(ps);
     }
 
     #createTblVersion(tx) {
@@ -204,13 +189,12 @@ export default class DatabaseService {
                 );`
         ));
 
-        ps.push(this.#transactionPromise(tx, `create index if not exists index_message_timelineId on tbl_message(timelineId);`));
-        ps.push(this.#transactionPromise(tx, `create index if not exists index_message_senderId on tbl_message(senderId);`));
-        ps.push(this.#transactionPromise(tx, `create index if not exists index_message_recipientId on tbl_message(recipientId);`));
-        ps.push(this.#transactionPromise(tx, `create index if not exists index_message_groupId on tbl_message(groupId);`))
+        ps.push(this.#transactionPromise(tx, `create index index_message_timelineId on tbl_message(timelineId);`));
+        ps.push(this.#transactionPromise(tx, `create index index_message_senderId on tbl_message(senderId);`));
+        ps.push(this.#transactionPromise(tx, `create index index_message_recipientId on tbl_message(recipientId);`));
+        ps.push(this.#transactionPromise(tx, `create index index_message_groupId on tbl_message(groupId);`))
         return Promise.all(ps);
     }
-
     /**
      * 
      * @param {SQLite.SQLTransaction} tx 
@@ -225,30 +209,6 @@ export default class DatabaseService {
                     updateTime integer not null,
                     latestMessage nvarchar not null
                 );`
-        );
-    }
-
-    /**
-      * 
-      * @param {SQLite.SQLTransaction} tx 
-      */
-    #createTblNotification(tx) {
-        return this.#transactionPromise(tx,
-            `create table if not exists tbl_notifications(
-                id integer primary key not null,
-                type integer not null,
-                senderId integer not null,
-                senderName nvarchar,
-                senderTag integer not null,
-                recipientId integer not null,
-                recipientName nvarchar,
-                recipientTag integer not null,
-                state integer not null,
-                time integer not null,
-                groupId integer not null,
-                groupName nvarchar,
-                content nvarchar
-            );`
         );
     }
 
@@ -413,104 +373,5 @@ export default class DatabaseService {
         })
     }
 
-
-    /**
-     * 
-     * @param {Notification} noti 
-     */
-    saveNotification(noti) {
-        if (this.#currDb == null) return null;
-        this.#currDb.transaction(tx => {
-            this.#saveNotification(tx, noti);
-        })
-    }
-
-    /**
-     * 
-     * @param {SQLite.SQLResultSet} result 
-     */
-    #parseNotificationFromDb(result) {
-        let ret = [];
-        for (let i = 0; i < result.rows.length; i++) {
-            const item = result.rows.item(i);
-            const noti = new Notification();
-            noti.id = item.id;
-            noti.type = item.type;
-            noti.sender = {
-                id: item.senderId,
-                name: item.senderName,
-                tag: item.senderTag
-            }
-            noti.recipient = {
-                id: item.recipientId,
-                name: item.recipientName,
-                tag: item.recipientTag
-            }
-            noti.state = item.state;
-            noti.time = item.time;
-            noti.groupInfo = { id: item.groupId, name: item.groupName }
-            noti.content = item.content;
-            ret.push(noti);
-        }
-        return ret;
-    }
-
-    /**
-     * 读取所有未响应的通知消息
-     * @returns {Notifications[]}
-     */
-    loadNotifications() {
-        return new Promise((reslove, reject) => {
-            if (this.#currDb == null) {
-                reject(ERROR_DB_ISNULL)
-                return;
-            };
-            this.#currDb.transaction(async tx => {
-                try {
-                    const result = await this.#transactionPromise(tx,
-                        `select * from tbl_notifications where state < ?`
-                        , [LesConstants.IMNotificationState.Accepted]);
-                    reslove(this.#parseNotificationFromDb(result));
-                } catch (e) {
-                    console.error("load notifications error,", e)
-                    reject(e);
-                }
-            });
-        })
-    }
-
-    /**
-     * 
-     * @param {SQlite.SQLTransaction} tx 
-     * @param {Notification} noti 
-     */
-    #saveNotification(tx, noti) {
-        tx.executeSql(
-            `select id from tbl_notifications where id = ?`, [noti.id],
-            (_, succ) => {
-                let sql = "insert into tbl_notifications values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
-                let value = [
-                    noti.id, noti.type, noti.sender.id, noti.sender.name,
-                    noti.sender.tag, noti.recipient.id, noti.recipient.name, noti.recipient.tag,
-                    noti.state, noti.time, noti.groupInfo.id, noti.groupInfo.name, noti.content
-                ];
-
-                if (succ.rows.length > 0) {
-                    //update
-                    sql = "update tbl_notifications set type = ?, senderId=?,senderName=?,senderTag=?,recipientId=?,recipientName=?,recipientTag=?,state=?,time=?,groupId=?,groupName=?,content=? where id = ?";
-                    value = [
-                        noti.type, noti.sender.id, noti.sender.name,
-                        noti.sender.tag, noti.recipient.id, noti.recipient.name, noti.recipient.tag,
-                        noti.state, noti.time, noti.groupInfo.id, noti.groupInfo.name, noti.content, noti.id
-                    ];
-                }
-
-                tx.executeSql(sql, value, (_, succ) => { console.log("notification saved", noti) }, (_, error) => { console.error("notification saved error", noti, error) })
-
-            }, (_, e) => {
-                console.error(`save notification [${noti.id}] error: `, e);
-            }
-        );
-    }
 
 }

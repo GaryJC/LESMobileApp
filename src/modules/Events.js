@@ -75,16 +75,6 @@ export const DataEvents = {
    */
   Notification: {
     NotificationState_Invoked: "DATA_EVENT_NotificationState_Invoked",
-    
-    /**
-     * 通知消息有更新时发出
-     * 
-     * 携带数据为变更的通知消息
-     * 
-     * @type {Notification}
-     */
-    NotificationState_Updated: "DATA_EVENT_NotificationState_Updated",
-
   },
 
   Saving: {
