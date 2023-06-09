@@ -172,7 +172,7 @@ class FriendService {
       this.#friendList = friendList;
 
       //读取完毕，发送好友更新事件
-      JSEvent.emit(UIEvents.User.UserState_UIRefresh);
+      JSEvent.emit(UIEvents.Friend.FriendState_UIRefresh);
     } catch (e) {
       console.log("好友获取失败:", e.toString(16));
     }
@@ -193,7 +193,7 @@ class FriendService {
         u = user[0];
       }
       const friendData = new FriendData(f.id, f.time, user[0]);
-
+      console.log("ffdsa: ", user[0]);
       if (filter == null) {
         friends.push(friendData);
       } else {
@@ -203,8 +203,6 @@ class FriendService {
         }
       }
     });
-
-    console.log("friends list: ", friends);
 
     return friends.sort((f1, f2) => {
       if (f1.isOnline != f2.isOnline) {
@@ -225,17 +223,19 @@ class FriendService {
   }
 
   /**
-   * 触发好友状态更新事件
+   *
    * @param {number} id
    * @param {IMUserState} state
    * @param {IMUserOnlineState} onlineState
    */
   #onUserStateChanged(id, state, onlineState) {
-    JSEvent.emit(UIEvents.User.UserState_UIRefresh, {
-      id,
-      state,
-      onlineState,
-    });
+    JSEvent.emit(UIEvents.User.UserState_UIRefresh, { id, state, onlineState });
+  }
+
+  async onUserRelogin(state) {
+    if (state == Constants.ReloginState.ReloginSuccessful) {
+      await this.#pullFriendsDataFromServer();
+    }
   }
 
   async onUserRelogin(state) {
