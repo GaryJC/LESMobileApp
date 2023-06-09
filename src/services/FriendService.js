@@ -117,7 +117,7 @@ class FriendService {
           friend.onlineState,
           noti.time
         );
-        JSEvent.emit(UIEvents.Friend.FriendState_UIRefresh);
+        JSEvent.emit(UIEvents.User.UserState_UIRefresh);
       }
     }
   }
@@ -126,7 +126,7 @@ class FriendService {
     const idx = this.#friendList.findIndex((item) => item.id == friendId);
     if (idx > -1) {
       this.#friendList.splice(idx, 1);
-      JSEvent.emit(UIEvents.Friend.FriendState_UIRefresh);
+      JSEvent.emit(UIEvents.User.UserState_UIRefresh);
     }
   }
 
@@ -172,7 +172,7 @@ class FriendService {
       this.#friendList = friendList;
 
       //读取完毕，发送好友更新事件
-      JSEvent.emit(UIEvents.Friend.FriendState_UIRefresh);
+      JSEvent.emit(UIEvents.User.UserState_UIRefresh);
     } catch (e) {
       console.log("好友获取失败:", e.toString(16));
     }
