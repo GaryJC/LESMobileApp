@@ -7,8 +7,12 @@ import {
 } from "react-native";
 import { UserData } from "../Data/dummyData";
 import { useEffect, useState, useRef, useMemo, useCallback } from "react";
-import BottomSheet from "@gorhom/bottom-sheet";
 import StatusBottomSheet from "../Components/StatusBottomSheet";
+import {
+  StateIndicator,
+  makeStateReadable,
+} from "../Components/StateIndicator";
+import DataCenter from "../modules/DataCenter";
 
 const userOptions = [
   { id: 1, title: "Account", link: "" },
@@ -24,10 +28,17 @@ const UserOptionButton = (key, title, link) => (
 
 export default function UserScreen() {
   // const [userData, setUserData] = useState();
-  const [userStatus, setUserStatus] = useState("Online");
+  const [userStatus, setUserStatus] = useState(
+    DataCenter.userInfo.imUserInfo.state
+  );
   // const [username, setUsername] = useState();
   // const [userId, setUserId] = useState();
-
+  const [userInfo, setUserInfo] = useState({
+    name: "",
+    accountId: "",
+    state: "",
+    // avatar:"",
+  });
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const openSheet = () => {
@@ -35,27 +46,26 @@ export default function UserScreen() {
     setIsSheetOpen(true);
   };
 
-  // const closeSheet = () => {
-  //   bottomSheetRef.current?.close(); // this will slide down the sheet
-  // };
-
-  //
   useEffect(() => {
-    setUserStatus(() =>
-      UserData.userStatus === "0"
-        ? "Online"
-        : UserData.userStatus === "1"
-        ? "Offline"
-        : "Idle"
-    );
+    // setUserStatus(DataCenter.userInfo.imUserInfo.state);
+    setUserInfo((pre) => {
+      return {
+        ...pre,
+        name: DataCenter.userInfo.imUserInfo.name,
+        accountId: DataCenter.userInfo.accountId,
+        // avatar:DataCenter.userInfo.accountId
+      };
+    });
+    setUserStatus(DataCenter.userInfo.imUserInfo.state);
   }, []);
-
-  console.log(userStatus);
 
   const SwitchStatusButton = () => (
     <TouchableHighlight onPress={openSheet}>
-      <View className="w-[25vw] h-[5vh] bg-[#7E5ED9] rounded-lg justify-center items-center">
-        <Text className="text-white text-[20px] font-bold">{userStatus}</Text>
+      <View className="w-[25vw] h-[5vh] bg-[#7E5ED9] rounded-lg flex-row justify-evenly items-center">
+        <StateIndicator state={userStatus} />
+        <Text className="text-white text-[16px] font-bold">
+          {makeStateReadable(userStatus)}
+        </Text>
       </View>
     </TouchableHighlight>
   );
@@ -68,7 +78,7 @@ export default function UserScreen() {
       >
         <View className="overflow-hidden rounded-full w-[100px] h-[100px] absolute bottom-[-50px]">
           <ImageBackground
-            source={UserData.userAvatar}
+            source={{ uri: `https://i.pravatar.cc/?img=${userInfo.accountId}` }}
             className="w-[100%] h-[100%]"
             resizeMode="cover"
           />
@@ -76,9 +86,9 @@ export default function UserScreen() {
       </ImageBackground>
       <View className="w-[90%] mx-auto mt-[50px] items-center">
         <Text className="text-white font-bold text-[30px]">
-          {UserData.username}
+          {userInfo.name}
         </Text>
-        <Text className="text-white text-[15px]">#{UserData.userId}</Text>
+        <Text className="text-white text-[15px]">#{userInfo.accountId}</Text>
         <View className="flex-row items-center justify-between mt-[3vh]">
           <Text className="text-white text-[20px] pr-[20px]">Set Status:</Text>
           <SwitchStatusButton />

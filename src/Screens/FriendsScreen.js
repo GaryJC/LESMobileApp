@@ -71,58 +71,20 @@ const RecommendedFriend = (id, name, avatar) => (
   </View>
 );
 
-const Friend = (id, name, avatar) => (
-  <View className="flex-row justify-between mb-[10px]">
-    <View className="flex-row items-center">
-      <View className="relative">
-        <View className="w-[55px] h-[55px] rounded-full overflow-hidden mr-[10px]">
-          <ImageBackground
-            source={{ uri: avatar }}
-            className="w-[100%] h-[100%]"
-          />
-        </View>
-        <View className="absolute bottom-[10] right-[10] w-[20px] h-[20px]">
-          <View className="bg-[#FF3737] w-[100%] h-[100%] rounded-full"></View>
-        </View>
-      </View>
-      <Text className="text-white text-[20px] font-bold">{name}</Text>
-    </View>
-    <View className="flex-row items-center">
-      <View className="w-[35px] h-[35px] bg-[#182634] rounded-full overflow-hidden justify-center items-center">
-        <Ionicons
-          name="chatbubble-ellipses-outline"
-          color={"white"}
-          size={24}
-        />
-      </View>
-    </View>
-  </View>
-);
-
-const handleFriendData = (friendData) => {
-  const data = friendData.map((item) => {
-    return { ...item, state: item.state, avatar: item.avatar };
-  });
-  return data;
-};
-
 export default function FriendsScreen() {
   // const [onlineFriends, setOnlineFriends] = useState([]);
   // const [offlineFriends, setOfflineFriends] = useState([]);
   const [friendsData, setFriendsData] = useState([]);
 
   useEffect(() => {
+    // 可传参数 { id, state, onlineState }
     const onFriendStateUIUpdated = () => {
-      console.log("friend state update");
-      const online = FriendService.Inst.getFriendList((f) => f.isOnline);
-      const offline = FriendService.Inst.getFriendList((f) => !f.isOnline);
-      console.log("processed friend data: ", online);
-      // const online = DataCenter.friendListData.filter(
-      //   (item) => item.friendState === 0 || item.friendState === 2
-      // );
-      // const offline = DataCenter.friendListData.filter(
-      //   (item) => item.friendState === 1
-      // );
+      // const online = FriendService.Inst.getFriendList((f) => f.isOnline);
+      // const offline = FriendService.Inst.getFriendList((f) => !f.isOnline);
+      const friendList = FriendService.Inst.getFriendList();
+      const online = friendList.filter((item) => item.onlineState === 1);
+      const offline = friendList.filter((item) => item.onlineState === 2);
+
       setFriendsData([
         { title: "Recommended Friends", data: [] },
         { title: "Online", data: online },
@@ -132,14 +94,9 @@ export default function FriendsScreen() {
 
     onFriendStateUIUpdated();
 
-    JSEvent.on(UIEvents.Friend.FriendState_UIRefresh, onFriendStateUIUpdated);
     JSEvent.on(UIEvents.User.UserState_UIRefresh, onFriendStateUIUpdated);
 
     return () => {
-      JSEvent.remove(
-        UIEvents.Friend.FriendState_UIRefresh,
-        onFriendStateUIUpdated
-      );
       JSEvent.remove(UIEvents.User.UserState_UIRefresh, onFriendStateUIUpdated);
     };
   }, []);
@@ -173,11 +130,6 @@ export default function FriendsScreen() {
             stickySectionHeadersEnabled={false}
             sections={friendsData}
             keyExtractor={(item, index) => item.id + index}
-            // renderItem={({ item, section }) =>
-            //   section.title === "Recommended Friends"
-            //     ? RecommendedFriend(item.id, item.name, item.avatar)
-            //     : Friend(item.id, item.name, item.avatar)
-            // }
             renderItem={({ item, section }) =>
               section.title === "Recommended Friends" ? (
                 <RecomFriendsData
@@ -201,18 +153,6 @@ export default function FriendsScreen() {
               </Text>
             )}
           />
-          {/* <FlatList
-            data={RecommendedFriendsData}
-            renderItem={({ item }) =>
-              RecommendedFriend(
-                item.friendId,
-                item.friendName,
-                item.friendAvatar
-              )
-            }
-            keyExtractor={(item) => item.friendId}
-          />
-        </View> */}
         </View>
       </View>
     </View>

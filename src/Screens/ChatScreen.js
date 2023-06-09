@@ -115,6 +115,8 @@ const ChatScreen = () => {
    * @param {string} chatId
    */
   const msgListener = (chatId) => {
+    // 如果聊天列表为空，来了新消息，直接显示
+
     // 如果当前chatId和接受到的信息chatId匹配就直接更新UI
     console.log("cur chat id and message id: ", curChatId, chatId);
     if (curChatId === chatId) {
@@ -347,7 +349,6 @@ const ChatScreen = () => {
    * @param {number} targetId
    */
   const onClickChatHandler = ({ chatId, targetId }) => {
-    console.log("sasa: ", chatId, targetId);
     // 清空数据
     const chatListItem = DataCenter.messageCache.touchChatData(chatId);
     console.log("after touch count: ", chatListItem.newMessageCount);

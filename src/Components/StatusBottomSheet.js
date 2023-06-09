@@ -1,6 +1,8 @@
-import { View, Text, TouchableHighlight, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import BottomSheet, { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
+import { LesConstants, LesPlatformCenter } from "les-im-components";
+import { StateIndicator, makeStateReadable } from "./StateIndicator";
 
 export default function StatusBottomSheet({
   isSheetOpen,
@@ -39,16 +41,34 @@ export default function StatusBottomSheet({
     }
   }, [isSheetOpen]);
 
-  const switchStatusHandler = (status) => {
-    setUserStatus(status);
-    console.log(setUserStatus);
+  /**
+   * 切换状态
+   * @param {number} state
+   */
+  const switchStatusHandler = (state) => {
     // console.log(status);
+    LesPlatformCenter.IMFunctions.setState(state)
+      .then((code) => {
+        console.log("状态设置成功");
+        // const readableState = makeStateReadable(state);
+        // console.log("ssa: ", readableState);
+        setUserStatus(state);
+        setIsSheetOpen(false);
+      })
+      .catch((code) => {
+        console.log(`状态设置失败: ${code.toString(16)}`);
+      });
   };
 
-  const StatusButton = ({ status }) => (
+  const StatusButton = ({ state }) => (
     <View className="border-b-2 border-[#5C5C5C] py-[10]">
-      <TouchableOpacity onPress={() => switchStatusHandler(status)}>
-        <Text className="text-white text-[16px] font-bold">{status}</Text>
+      <TouchableOpacity onPress={() => switchStatusHandler(state)}>
+        <View className="flex-row items-center justify-between">
+          <Text className="text-white text-[16px] font-bold">
+            {makeStateReadable(state)}
+          </Text>
+          <StateIndicator state={state} />
+        </View>
       </TouchableOpacity>
     </View>
   );
@@ -65,10 +85,10 @@ export default function StatusBottomSheet({
       backgroundStyle={{ backgroundColor: "#262F38" }}
     >
       <View className="flex-1 px-[30] py-[10]">
-        <StatusButton status="Online" />
-        <StatusButton status="Busy" />
-        <StatusButton status="Away" />
-        <StatusButton status="Hiding" />
+        <StatusButton state={LesConstants.IMUserState.Online} />
+        <StatusButton state={LesConstants.IMUserState.Busy} />
+        <StatusButton state={LesConstants.IMUserState.Away} />
+        <StatusButton state={LesConstants.IMUserState.Hiding} />
       </View>
     </BottomSheet>
   );

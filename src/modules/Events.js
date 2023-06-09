@@ -106,7 +106,16 @@ export const UIEvents = {
   },
 
   User: {
+    /**
+     * 好有状态更新时刷新UI
+     * @type {{id: number ,state: IMUserState ,onlineState:IMUserOnlineState}}
+     */
     UserState_UIRefresh: "UI_EVENT_UserState_UIRefresh",
+    /**
+     * 从用户列表进入聊天
+     * 携带参数为目标的chatId, targetId
+     * @type {{chatId:string, targetId:number}}
+     */
     User_Click_Chat_Updated: "UI_EVENT_User_Click_Chat_Updated",
   },
 

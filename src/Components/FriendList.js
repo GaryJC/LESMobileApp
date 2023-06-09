@@ -32,8 +32,7 @@ export const FriendList = ({ id, name, state, avatar }) => {
               className="w-[100%] h-[100%]"
             />
           </View>
-          <View className="absolute bottom-[0] right-[5] rounded-full w-[20px] h-[20px] justify-center items-center">
-            {/* <View className="bg-[#FF3737] w-[100%] h-[100%] rounded-full"></View> */}
+          <View className="absolute bottom-[0] right-[5] justify-center items-center">
             <StateIndicator state={state} />
           </View>
         </View>
