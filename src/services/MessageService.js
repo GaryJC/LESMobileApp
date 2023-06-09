@@ -26,11 +26,10 @@ class MessageService {
     return MessageService.#inst ?? new MessageService();
   }
 
-  constructor(friendListData) {
+  constructor() {
     if (new.target !== MessageService) return;
     if (MessageService.#inst == null) {
       MessageService.#inst = this;
-      //   this.friendListData = friendListData;
     }
     return MessageService.#inst;
   }
@@ -192,23 +191,26 @@ class MessageService {
       this.#onTimelineUpdated(message);
     };
 
-    JSEvent.on(DataEvents.User.UserState_DataReady, () => {
-      this.#onUserLogin();
-    })
+    //事件改为由ServiceCenter统一监听，并调用service.onUserLogin
+    // JSEvent.on(DataEvents.User.UserState_DataReady, () => {
+    //   this.#onUserLogin();
+    // })
 
   }
 
-  #onUserLogin() {
+  async onUserLogin() {
     //为新用户创建messageCache
     DataCenter.messageCache = new MessageCaches(DataCenter.userInfo.accountId);
     //从数据库中读取对话列表缓存
-    DatabaseService.Inst.loadChatList().then(list => {
+    try {
+      const list = await DatabaseService.Inst.loadChatList();
       DataCenter.messageCache.setChatList(list);
       //更新对话列表事件
       JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, null)
-    }).catch(_ => { });
-
-    DatabaseService.Inst.loadTimelineId().then(id => this.#latestTimelineId = id);
+    } catch (e) {
+      console.error("load user chat list error", e);
+    }
+    this.#latestTimelineId = await DatabaseService.Inst.loadTimelineId();
   }
 
 
