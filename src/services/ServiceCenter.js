@@ -10,7 +10,6 @@ import { AppState, AppStateStatus, NativeEventSubscription } from "react-native"
 import JSEvent from "../utils/JSEvent";
 import { DataEvents } from "../modules/Events";
 import Constants from "../modules/Constants";
-import NotificationService from "./NotificationService";
 
 const { ReloginState } = Constants;
 
@@ -23,8 +22,6 @@ const { ReloginState } = Constants;
  * onServiceReady()，如果service含有onServiceReady()方法，会在所有service的init方法都被执行过后，再依次执行所有service的onServiceReady()方法，可以是async方法
  * 
  * onAppStateChanged(fromState, toState)，如果service含有onAppStateChanged()方法，会在app切换状态（前台，后台等）时被依次调用，可以是async方法
- * 
- * onUserLogin(), 如果service含有onUserLogin方法，会在用户登录成功后，且已经从数据库中读取出缓存信息后，依次调用，可以使async方法
  * 
  * onUserRelogin(state)，如果service含有onUserRelogin()方法，会在客户端尝试重连、成功或失败时依次调用，可以是async方法 
  * 
@@ -72,13 +69,6 @@ export default class ServiceCenter {
             this.#onUserRelogin(state);
         })
 
-        /**
-         * UserState_DataReady 事件从DatabaseService中发出，在用户登录，且数据载入完毕后发出
-         */
-        JSEvent.on(DataEvents.User.UserState_DataReady, () => {
-            this.#onUserLogin();
-        })
-
         const serviceList = [
             DatabaseService,
             FriendService,
@@ -86,8 +76,7 @@ export default class ServiceCenter {
             DataSavingService,
             LoginService,
             IMUserinfoService,
-            MessageService,
-            NotificationService
+            MessageService
         ]
 
 
@@ -107,11 +96,7 @@ export default class ServiceCenter {
         for (let i = 0; i < services.length; i++) {
             const service = services[i];
             if (service.init) {
-                try {
-                    await service.init();
-                } catch (e) {
-                    console.error(`Service[${service.className}] init `, e)
-                }
+                await service.init();
             }
         }
 
@@ -121,11 +106,7 @@ export default class ServiceCenter {
         for (let i = 0; i < services.length; i++) {
             const service = services[i];
             if (service.onServiceReady) {
-                try {
-                    await service.onServiceReady();
-                } catch (e) {
-                    console.error(`Service[${service.className}] onServiceReady `, e)
-                }
+                await service.onServiceReady();
             }
         }
 
@@ -140,20 +121,6 @@ export default class ServiceCenter {
         })
     }
 
-    async #onUserLogin() {
-        console.log(`user login, start invoking service.onUserLogin`)
-        for (let i = 0; i < this.#services.length; i++) {
-            const service = this.#services[i];
-            if (service.onUserLogin) {
-                try {
-                    service.onUserLogin();
-                } catch (e) {
-                    console.error(`Service[${service.className}] onUserLogin `, e)
-                }
-            }
-        }
-    }
-
     /**
      * 
      * @param {ReloginState} state 
@@ -163,11 +130,7 @@ export default class ServiceCenter {
         for (let i = 0; i < this.#services.length; i++) {
             const service = this.#services[i];
             if (service.onUserRelogin) {
-                try {
-                    await service.onUserRelogin(state);
-                } catch (e) {
-                    console.error(`Service[${service.className}] onUserRelogin `, e)
-                }
+                service.onUserRelogin(state);
             }
         }
     }
@@ -196,7 +159,7 @@ export default class ServiceCenter {
                 try {
                     await service.onAppStateChanged(this.#currentAppState, state);
                 } catch (e) {
-                    console.error(`Service[${service.className}] onAppStateChanged`, e)
+                    console.log(`Service[${service.className}] onAppStateChanged`, e)
                 }
             }
         }

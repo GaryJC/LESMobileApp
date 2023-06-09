@@ -149,7 +149,6 @@ export default class LoginService {
         loginInfo.token,
         device
       );
-
       //登陆成功
       const imUserInfo = {
         name: result.name,
@@ -175,7 +174,6 @@ export default class LoginService {
       } else {
         JSEvent.emit(DataEvents.User.UserState_IsLoggedin);
       }
-
       return LesConstants.ErrorCodes.Success;
     } catch (e) {
       if (isReconnect) {
