@@ -75,25 +75,26 @@ const messageReducer = (state, action) => {
       return updatedState;
 
     case "RESET_AND_ADD_MESSAGES":
-      return action.payload.map((messageData) => {
-        // Check if the message already exists in the state using find
-        let existingMessage = state.find(
-          (message) => message.messageId === messageData.messageId
-        );
-        if (existingMessage) {
-          // If message already exists in the state, update its status
-          if (messageData.status === Constants.deliveryState.delivered) {
-            return { ...existingMessage, status: messageData.status };
-          } else {
-            return existingMessage;
-          }
-        } else {
-          // If message does not exist in the state and its status is 'delivered', add it
-          if (messageData.status === Constants.deliveryState.delivered) {
-            return messageData;
-          }
-        }
-      });
+      // return action.payload.map((messageData) => {
+      //   // Check if the message already exists in the state using find
+      //   let existingMessage = state.find(
+      //     (message) => message.messageId === messageData.messageId
+      //   );
+      //   if (existingMessage) {
+      //     // If message already exists in the state, update its status
+      //     if (messageData.status === Constants.deliveryState.delivered) {
+      //       return { ...existingMessage, status: messageData.status };
+      //     } else {
+      //       return existingMessage;
+      //     }
+      //   } else {
+      //     // If message does not exist in the state and its status is 'delivered', add it
+      //     if (messageData.status === Constants.deliveryState.delivered) {
+      //       return messageData;
+      //     }
+      //   }
+      // });
+      return action.payload;
     default:
       throw new Error();
   }
@@ -118,13 +119,17 @@ const ChatScreen = () => {
   // 每个聊天列表的新消息数量
   const [newMsgCount, setNewMsgCount] = useState([]);
 
+  const messagesRef = useRef();
+
+  messagesRef.current = messages;
+
   /**
    * 指定对话有数据更新时执行
    * @param {{string, MessageData}} chatId
    */
   const msgListener = ({ chatId, msgData }) => {
     // 如果聊天列表为空，来了新消息，直接显示
-    console.log("msgData: ", msgData);
+    // console.log("msgData: ", msgData);
 
     // 如果当前chatId和接受到的信息chatId匹配就直接更新UI
     console.log("cur chat id and message id: ", curChatId, chatId);
@@ -151,27 +156,10 @@ const ChatScreen = () => {
 
       // 当信息的发送者是用户自己，并且信息的状态是delivering的时候，才需要更新信息
       // 其他情况直接添加
-      if (
-        msgData.senderId === DataCenter.userInfo.accountId &&
-        msgData.status === Constants.deliveryState.delivered
-      ) {
-        dispatchMessages({
-          type: "UPDATE_MESSAGE_STATUS",
-          payload: msgData,
-        });
-      } else {
-        dispatchMessages({
-          type: "ADD_MESSAGE",
-          payload: msgData,
-        });
-      }
-      //如果msg id存在在state里，add, otherwise update
-      // console.log("nnnn: ", messages, msgData);
-      // const isExisted = messages.find(
-      //   (item) => item.messageId === msgData.messageId
-      // );
-      // console.log("is existed? ", isExisted);
-      // if (isExisted) {
+      // if (
+      //   msgData.senderId === DataCenter.userInfo.accountId &&
+      //   msgData.status === Constants.deliveryState.delivered
+      // ) {
       //   dispatchMessages({
       //     type: "UPDATE_MESSAGE_STATUS",
       //     payload: msgData,
@@ -182,6 +170,23 @@ const ChatScreen = () => {
       //     payload: msgData,
       //   });
       // }
+      // 如果msg id存在在state里，add, otherwise update
+      // console.log("nnnn: ", messagesRef.current, msgData);
+      const isExisted = messagesRef.current.find(
+        (item) => item.messageId === msgData.messageId
+      );
+      console.log("is existed? ", isExisted);
+      if (isExisted) {
+        dispatchMessages({
+          type: "UPDATE_MESSAGE_STATUS",
+          payload: msgData,
+        });
+      } else {
+        dispatchMessages({
+          type: "ADD_MESSAGE",
+          payload: msgData,
+        });
+      }
     }
   };
 
@@ -331,20 +336,26 @@ const ChatScreen = () => {
    * @param {number} targetId
    */
   const onClickChatHandler = ({ chatId, targetId }) => {
-    // 清空数据
-    const chatListItem = DataCenter.messageCache.touchChatData(chatId);
-    console.log("after touch count: ", chatListItem.newMessageCount);
+    // 已经在这个窗口的话不操作
+    if (curChatId !== chatId) {
+      // 清空数据
+      const chatListItem = DataCenter.messageCache.touchChatData(chatId);
+      console.log("after touch count: ", chatListItem.newMessageCount);
 
-    chatListListener(chatId);
+      chatListListener(chatId);
 
-    setCurChatId(chatId);
-    setCurRecipientId(targetId);
-    const userInfo = getUserInfo(targetId);
-    setCurUserInfo(userInfo);
-    dispatchMessages({
-      type: "RESET_AND_ADD_MESSAGES",
-      payload: DataCenter.messageCache.getMesssageList(chatId, 0, 10).reverse(),
-    });
+      setCurChatId(chatId);
+      setCurRecipientId(targetId);
+      const userInfo = getUserInfo(targetId);
+      setCurUserInfo(userInfo);
+
+      dispatchMessages({
+        type: "RESET_AND_ADD_MESSAGES",
+        payload: DataCenter.messageCache
+          .getMesssageList(chatId, 0, 10)
+          .reverse(),
+      });
+    }
     console.log("switched chat id: ", chatId);
   };
 
