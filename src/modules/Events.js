@@ -1,6 +1,8 @@
 import { LesConstants } from "les-im-components";
 import MessageData from "../Models/MessageData";
+import Constants from "./Constants";
 const { IMUserState, IMUserOnlineState } = LesConstants;
+const { ReloginState } = Constants;
 export const DataEvents = {
   /**
    * 拉取数据的状态更新
@@ -75,7 +77,7 @@ export const DataEvents = {
    */
   Notification: {
     NotificationState_Invoked: "DATA_EVENT_NotificationState_Invoked",
-    
+
     /**
      * 通知消息有更新时发出
      * 

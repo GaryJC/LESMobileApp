@@ -145,25 +145,32 @@ class Notifications {
     //#region ui调用部分
 
     /**
-     * 返回当前所有的通知消息
+     * 返回当前所有的通知消息，或指定类型的通知消息
      * 
      * 只会返回还未响应的消息
      * 
+     * @param {IMNotificationType | null} type
      * @returns {Notification[]}
      */
-    getAllNotifications() {
-        return [...this.notificationList];
+    getAllNotifications(type = null) {
+        if (type == null) {
+            return [...this.notificationList];
+        } else {
+            return this.notificationList.filter(noti => noti.type == type);
+        }
     }
 
     /**
-     * 返回未读的通知数量
-     * 
+     * 返回未读的通知数量，或指定类型的未读通知消息数量
+     * @param {IMNotificationType | null} type
      * @returns {number}
      */
-    unreadCount() {
+    unreadCount(type = null) {
         let count = 0;
         this.notificationList.forEach(noti => {
             if (noti.state == IMNotificationState.Unread && noti.mode == "recipient") {
+                //非指定类型的消息，不计数
+                if (type != null && type != noti.type) return;
                 //只有接收者模式，状态是unread的通知，才算做未读消息
                 count++;
             }
