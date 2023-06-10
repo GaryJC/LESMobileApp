@@ -1,6 +1,8 @@
 import { LesConstants } from "les-im-components";
 import MessageData from "../Models/MessageData";
+import Constants from "./Constants";
 const { IMUserState, IMUserOnlineState } = LesConstants;
+const { ReloginState } = Constants;
 export const DataEvents = {
   /**
    * 拉取数据的状态更新
