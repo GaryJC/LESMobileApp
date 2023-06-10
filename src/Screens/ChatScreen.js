@@ -40,29 +40,38 @@ const statusBarHeight = StatusBar.currentHeight;
 // console.log(statusBarHeight);
 
 const messageReducer = (state, action) => {
+  console.log("reducer: ", state, action);
   switch (action.type) {
     case "ADD_MESSAGE":
+      // order
       return [...state, action.payload];
 
     case "UPDATE_MESSAGE_STATUS":
-      console.log(state);
-      let updatedState = state.map((message) =>
+      // console.log(state);
+      // let updatedState = state.map((message) =>
+      //   message.messageId === action.payload.messageId
+      //     ? { ...message, status: action.payload.status }
+      //     : message
+      // );
+      // // Check if the message already exists in the state using find
+      // let messageExists = state.find(
+      //   (message) => message.messageId === action.payload.messageId
+      // );
+      // // If message with the 'delivered' status does not exist in the state, add it
+      // if (
+      //   !messageExists &&
+      //   action.payload.status === Constants.deliveryState.delivered
+      // ) {
+      //   updatedState = [...updatedState, action.payload];
+      // }
+      // console.log("updatedState: ", updatedState);
+      // return updatedState;
+
+      const updatedState = state.map((message) =>
         message.messageId === action.payload.messageId
           ? { ...message, status: action.payload.status }
           : message
       );
-      // Check if the message already exists in the state using find
-      let messageExists = state.find(
-        (message) => message.messageId === action.payload.messageId
-      );
-      // If message with the 'delivered' status does not exist in the state, add it
-      if (
-        !messageExists &&
-        action.payload.status === Constants.deliveryState.delivered
-      ) {
-        updatedState = [...updatedState, action.payload];
-      }
-      console.log("updatedState: ", updatedState);
       return updatedState;
 
     case "RESET_AND_ADD_MESSAGES":
@@ -71,7 +80,6 @@ const messageReducer = (state, action) => {
         let existingMessage = state.find(
           (message) => message.messageId === messageData.messageId
         );
-
         if (existingMessage) {
           // If message already exists in the state, update its status
           if (messageData.status === Constants.deliveryState.delivered) {
@@ -112,33 +120,68 @@ const ChatScreen = () => {
 
   /**
    * 指定对话有数据更新时执行
-   * @param {string} chatId
+   * @param {{string, MessageData}} chatId
    */
-  const msgListener = (chatId) => {
+  const msgListener = ({ chatId, msgData }) => {
     // 如果聊天列表为空，来了新消息，直接显示
+    console.log("msgData: ", msgData);
 
     // 如果当前chatId和接受到的信息chatId匹配就直接更新UI
     console.log("cur chat id and message id: ", curChatId, chatId);
     if (curChatId === chatId) {
-      const messageList = DataCenter.messageCache.getMesssageList(
-        chatId,
-        0,
-        10
-      );
-      console.log("Message data received: ", messageList);
-      messageList.forEach((messageData) => {
-        if (messageData.status === Constants.deliveryState.delivered) {
-          dispatchMessages({
-            type: "UPDATE_MESSAGE_STATUS",
-            payload: messageData,
-          });
-        } else {
-          dispatchMessages({
-            type: "ADD_MESSAGE",
-            payload: messageData,
-          });
-        }
-      });
+      // const messageList = DataCenter.messageCache.getMesssageList(
+      //   chatId,
+      //   0,
+      //   10
+      // );
+      // console.log("Message data received: ", messageList);
+      // messageList.forEach((messageData) => {
+      //   if (messageData.status === Constants.deliveryState.delivered) {
+      //     dispatchMessages({
+      //       type: "UPDATE_MESSAGE_STATUS",
+      //       payload: messageData,
+      //     });
+      //   } else {
+      //     dispatchMessages({
+      //       type: "ADD_MESSAGE",
+      //       payload: messageData,
+      //     });
+      //   }
+      // });
+
+      // 当信息的发送者是用户自己，并且信息的状态是delivering的时候，才需要更新信息
+      // 其他情况直接添加
+      if (
+        msgData.senderId === DataCenter.userInfo.accountId &&
+        msgData.status === Constants.deliveryState.delivered
+      ) {
+        dispatchMessages({
+          type: "UPDATE_MESSAGE_STATUS",
+          payload: msgData,
+        });
+      } else {
+        dispatchMessages({
+          type: "ADD_MESSAGE",
+          payload: msgData,
+        });
+      }
+      //如果msg id存在在state里，add, otherwise update
+      // console.log("nnnn: ", messages, msgData);
+      // const isExisted = messages.find(
+      //   (item) => item.messageId === msgData.messageId
+      // );
+      // console.log("is existed? ", isExisted);
+      // if (isExisted) {
+      //   dispatchMessages({
+      //     type: "UPDATE_MESSAGE_STATUS",
+      //     payload: msgData,
+      //   });
+      // } else {
+      //   dispatchMessages({
+      //     type: "ADD_MESSAGE",
+      //     payload: msgData,
+      //   });
+      // }
     }
   };
 
@@ -222,67 +265,6 @@ const ChatScreen = () => {
     console.log("chat list new msg count: ", chatListNewMsgCount);
     return chatListNewMsgCount;
   };
-
-  // useEffect(() => {
-  //   /**
-  //    * 返回打开界面时默认的聊天信息，列表数据
-  //    * @returns {{chatList, chatId, targetId, names, avatars, userInfo, messsageData}}
-  //    */
-  //   const getInitData = () => {
-  //     // 获取所有的对话列表数据
-  //     const chatList = DataCenter.messageCache.getChatList();
-  //     // 获取所有对话列表的新消息
-  //     const chatListNewMsgCount = getChatListMsgCount(chatList);
-  //     // 获取头部的对话列表
-  //     const initChatListData = chatList[0];
-  //     // 获取初始对话列表的chatId
-  //     const chatId = initChatListData.chatId;
-  //     console.log("initial chat id: ", chatId);
-  //     // 获取初始化对话列表的聊天信息
-  //     const messageData = DataCenter.messageCache
-  //       .getMesssageList(chatId, 0, 10)
-  //       .reverse();
-  //     // 是群聊的话这里应该是什么样的？可以是是一个数组包含所有用户的id吗? 不然如何获取每个用户的信息？
-  //     const targetId = initChatListData.targetId;
-  //     console.log("targetId: ", targetId);
-  //     const userInfo = getUserInfo(targetId);
-
-  //     return {
-  //       chatList,
-  //       chatId,
-  //       targetId,
-  //       names,
-  //       avatars,
-  //       userInfo,
-  //       messageData,
-  //       chatListNewMsgCount,
-  //     };
-  //   };
-
-  //   const {
-  //     chatList,
-  //     chatId,
-  //     targetId,
-  //     names,
-  //     avatars,
-  //     userInfo,
-  //     messageData,
-  //     chatListNewMsgCount,
-  //   } = getInitData();
-
-  //   setNewMsgCount(chatListNewMsgCount);
-  //   dispatchMessages({
-  //     type: "RESET_AND_ADD_MESSAGES",
-  //     payload: messageData,
-  //   });
-
-  //   setCurChatId(chatId);
-  //   msgListener(chatId);
-  //   setCurUserInfo(userInfo);
-  //   setCurRecipientId(targetId);
-  //   const chatListData = handleChatListData(chatList);
-  //   setChatListData(chatListData);
-  // }, []);
 
   useEffect(() => {
     /**
@@ -383,7 +365,9 @@ const ChatScreen = () => {
                 onClickChatHandler={onClickChatHandler}
               />
             )}
-            keyExtractor={(item) => item.targetId}
+            keyExtractor={(item, index) =>
+              item.id ? item.id.toString() : index.toString()
+            }
           />
         </View>
         <View className="flex-2 justify-evenly border-t-2 border-[#575757] p-[5px]">

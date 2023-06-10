@@ -75,16 +75,15 @@ export const DataEvents = {
    */
   Notification: {
     NotificationState_Invoked: "DATA_EVENT_NotificationState_Invoked",
-    
+
     /**
      * 通知消息有更新时发出
-     * 
+     *
      * 携带数据为变更的通知消息
-     * 
+     *
      * @type {Notification}
      */
     NotificationState_Updated: "DATA_EVENT_NotificationState_Updated",
-
   },
 
   Saving: {
@@ -144,7 +143,7 @@ export const UIEvents = {
      *
      * UI部分监听这个消息，如果对应的对话id为开启状态，则更新对话的状态
      *
-     * @type {string}
+     * @type {string, MessageData}
      */
     Message_Chat_Updated: "UI_EVENT_Message_Chat_Updated",
 
