@@ -4,6 +4,7 @@ import JSEvent from "../utils/JSEvent";
 import { DataEvents } from "../modules/Events";
 import DatabaseService from "./DatabaseService";
 import Constants from "../modules/Constants";
+import DataCenter from "../modules/DataCenter";
 
 const { IMNotificationType, IMNotificationState } = LesConstants;
 
@@ -28,11 +29,6 @@ class NotificationService {
         return NotificationService.#inst;
     }
 
-    /**
-     * @type {Notifications}
-     */
-    #notifications;
-
     init() {
         LesPlatformCenter.IMListeners.onIMUserNotification = notification => {
             this.#onRecvNotification(notification);
@@ -40,7 +36,7 @@ class NotificationService {
     }
 
     #onRecvNotification(pbNoti) {
-        const noti = this.#notifications.processNotification(pbNoti);
+        const noti = DataCenter.notifications.processNotification(pbNoti);
         JSEvent.emit(DataEvents.Notification.NotificationState_Updated, noti);
 
         //save to database
@@ -49,7 +45,7 @@ class NotificationService {
 
     async onUserLogin() {
         console.log("create notifications")
-        this.#notifications = new Notifications();
+        DataCenter.notifications = new Notifications();
         //load notifications from db
 
         // try {
@@ -70,7 +66,7 @@ class NotificationService {
 
     async onUserRelogin(state) {
         if (state == Constants.ReloginState.ReloginSuccessful) {
-            this.#notifications = new Notifications();
+            DataCenter.notifications = new Notifications();
             await this.#loadNotificationsFromServer();
         }
     }

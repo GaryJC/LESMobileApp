@@ -4,6 +4,7 @@ import { DataEvents } from "./Events";
 import FriendData from "../Models/Friends";
 import MessageData from "../Models/MessageData";
 import { MessageCaches } from "../Models/MessageCaches";
+import { Notifications } from "../Models/Notifications";
 
 
 const services = [];
@@ -119,6 +120,11 @@ const DataCenter = {
    */
   messageCache: null,
 
+  /**
+   * 通知消息
+   * @type {Notifications}
+   */
+  notifications: null,
 };
 
 export default DataCenter;
