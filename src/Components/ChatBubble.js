@@ -13,6 +13,8 @@ export const ChatBubble = ({
   const [avatar, setAvatar] = useState();
   const [date, setDate] = useState();
 
+  console.log("statusss: ", status);
+
   useEffect(() => {
     const { name, avatar } = userInfo.find((item) => item.id === senderId);
     setName(name);
@@ -38,7 +40,7 @@ export const ChatBubble = ({
       return formattedDate;
     }
 
-    const date = formatDate(new Date(timestamp * 1000)); // Outputs in MM/DD/YY, HH:MM format
+    const date = formatDate(new Date(timestamp)); // Outputs in MM/DD/YY, HH:MM format
     setDate(date);
   }, []);
 

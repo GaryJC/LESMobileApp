@@ -57,12 +57,13 @@ class MessageService {
 
           //存入缓存并发布事件
           const msgData = this.#onTimelineUpdated(message);
+          // const msgData = this.#onMessageSent(message);
 
           // console.log("send message: ", message);
           // JSEvent.emit(DataEvents.Saving.SavingState_Message, message);
 
           // DataSavingService.Inst.onSavingMessage(message);
-          resolve(msgData)
+          resolve(msgData);
         })
         .catch((e) => {
           // 如果处理失败
@@ -70,18 +71,16 @@ class MessageService {
           console.log("messgae send error: ", e);
           reject(e);
         });
-    })
+    });
   }
 
-
-
   /**
-   * 
-   * @param {PBLesIMTimelineData} timelineData 
+   *
+   * @param {PBLesIMTimelineData} timelineData
    * @returns {MessageData}
    */
   #onMessageSent(timelineData) {
-    //转化为  MessageData 
+    //转化为  MessageData
     const msgData = this.#pbTimelineDataToMessageData(timelineData);
 
     //存入messageCaches
@@ -96,17 +95,17 @@ class MessageService {
     const chatId = MessageCaches.MakeChatIDByMsgData(msgData);
 
     //发布UI事件，通知ui指定对话有更新
-    JSEvent.emit(UIEvents.Message.Message_Chat_Updated, chatId)
+    JSEvent.emit(UIEvents.Message.Message_Chat_Updated, { chatId, msgData });
 
     return msgData;
   }
 
   /**
-   * @param {PBLesIMTimelineData} timelineData 
+   * @param {PBLesIMTimelineData} timelineData
    * @returns {MessageData}
    */
   #onTimelineUpdated(timelineData) {
-    //转化为  MessageData 
+    //转化为  MessageData
     const msgData = this.#pbTimelineDataToMessageData(timelineData);
 
     if (msgData.timelineId == 0) {
@@ -126,15 +125,15 @@ class MessageService {
     JSEvent.emit(DataEvents.Message.TimelineState_Updated, msgData);
 
     //发布UI事件，通知ui指定对话有更新
-    JSEvent.emit(UIEvents.Message.Message_Chat_Updated, chatId)
+    JSEvent.emit(UIEvents.Message.Message_Chat_Updated, { chatId, msgData });
     //更新对话列表，携带有更新的chatId
-    JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, chatId)
+    JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, chatId);
 
     return msgData;
   }
 
   /**
-   * @param {PBLesIMTimelineData} timelineData 
+   * @param {PBLesIMTimelineData} timelineData
    * @returns {MessageData}
    */
   #pbTimelineDataToMessageData(timelineData) {
@@ -149,7 +148,10 @@ class MessageService {
     const timestamp = timelineData.getTimestamp();
 
     // 信息的投递状态
-    let status = timelineId == 0 ? Constants.deliveryState.delivering : Constants.deliveryState.delivered;
+    let status =
+      timelineId == 0
+        ? Constants.deliveryState.delivering
+        : Constants.deliveryState.delivered;
 
     const messageData = new MessageData();
     messageData.messageId = messageId;
@@ -166,7 +168,6 @@ class MessageService {
     return messageData;
   }
 
-
   #updateTimelineId(timelineId) {
     const newTimelineId = Math.max(this.#latestTimelineId, timelineId);
     this.#latestTimelineId = newTimelineId;
@@ -174,7 +175,6 @@ class MessageService {
   }
 
   init() {
-
     //监听onIMMessageSent
     LesPlatformCenter.IMListeners.onIMMessageSent = (message) => {
       console.log(
@@ -195,7 +195,6 @@ class MessageService {
     // JSEvent.on(DataEvents.User.UserState_DataReady, () => {
     //   this.#onUserLogin();
     // })
-
   }
 
   async onUserLogin() {
@@ -206,20 +205,23 @@ class MessageService {
       const list = await DatabaseService.Inst.loadChatList();
       DataCenter.messageCache.setChatList(list);
       //更新对话列表事件
-      JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, null)
+      JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, null);
     } catch (e) {
       console.error("load user chat list error", e);
     }
     this.#latestTimelineId = await DatabaseService.Inst.loadTimelineId();
   }
 
-
   async onUserRelogin(state) {
     if (state == Constants.ReloginState.ReloginSuccessful) {
       //重连成功，尝试拉取最新的timeline数据
       try {
-        const { startId, endId, datas } = await LesPlatformCenter.IMFunctions.requestTimeline(this.#latestTimelineId, -1);
-        datas.forEach(data => {
+        const { startId, endId, datas } =
+          await LesPlatformCenter.IMFunctions.requestTimeline(
+            this.#latestTimelineId,
+            -1
+          );
+        datas.forEach((data) => {
           this.#onTimelineUpdated(data);
         });
       } catch (e) {
