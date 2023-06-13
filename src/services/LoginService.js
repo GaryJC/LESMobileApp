@@ -3,7 +3,7 @@ import Constants from "../modules/Constants";
 import DataCenter from "../modules/DataCenter";
 import { LesConstants, LesPlatformCenter } from "les-im-components";
 import JSEvent from "../utils/JSEvent";
-import { DataEvents } from "../modules/Events";
+import { DataEvents, UIEvents } from "../modules/Events";
 import { loginRequest } from "../utils/auth";
 import { AppState, AppStateStatus } from "react-native";
 
@@ -37,43 +37,42 @@ export default class LoginService {
 
   async init() {
     await this.#loadLoginData();
-    LesPlatformCenter.IMListeners.onWebsocketStateChanged = state => {
+    LesPlatformCenter.IMListeners.onWebsocketStateChanged = (state) => {
       if (state == WebsocketState.Disconnected) {
         //连接断开了
-        if (AppState.currentState == 'active') {
+        if (AppState.currentState == "active") {
           //当前处于激活状态，网络连接断开了，尝试重连
           // setTimeout(() => this.quickLogin(true), 1000);
         }
       }
-    }
+    };
     return this;
   }
 
-
   /**
-   * 
-   * @param {AppStateStatus} fromState 
-   * @param {AppStateStatus} toState 
+   *
+   * @param {AppStateStatus} fromState
+   * @param {AppStateStatus} toState
    */
   async onAppStateChanged(fromState, toState) {
-
-    if (toState == 'background') {
+    if (toState == "background") {
       //ios切换到后台以后会断开socket，android需要手动断开
       LesPlatformCenter.Inst.disconnect();
     }
 
-    if (toState == 'active' && fromState != null) {
+    if (toState == "active" && fromState != null) {
       //应用被重新激活了
       //检测连接是否正常
 
       if (LesPlatformCenter.Inst.ConnectState != WebsocketState.Connected) {
+        console.log("websocket disconnected, need to re-reconnect");
         //重新连接
+        JSEvent.emit(UIEvents.AppState_UIUpdated, true);
         await this.quickLogin(true);
+        JSEvent.emit(UIEvents.AppState_UIUpdated, false);
       }
-
     }
   }
-
 
   onDestroy() {
     //LesPlatformCenter.Inst.disconnect();
@@ -140,7 +139,10 @@ export default class LoginService {
       );
 
       if (isReconnect) {
-        JSEvent.emit(DataEvents.User.UserState_Relogin, Constants.ReloginState.ReloginStarted);
+        JSEvent.emit(
+          DataEvents.User.UserState_Relogin,
+          Constants.ReloginState.ReloginStarted
+        );
       }
 
       const result = await LesPlatformCenter.Inst.connect(
@@ -171,7 +173,10 @@ export default class LoginService {
 
       //发送登陆成功事件
       if (isReconnect) {
-        JSEvent.emit(DataEvents.User.UserState_Relogin, Constants.ReloginState.ReloginSuccessful);
+        JSEvent.emit(
+          DataEvents.User.UserState_Relogin,
+          Constants.ReloginState.ReloginSuccessful
+        );
       } else {
         JSEvent.emit(DataEvents.User.UserState_IsLoggedin);
       }
@@ -180,7 +185,10 @@ export default class LoginService {
     } catch (e) {
       if (isReconnect) {
         //重连失败
-        JSEvent.emit(DataEvents.User.UserState_Relogin, Constants.ReloginState.ReloginFailed);
+        JSEvent.emit(
+          DataEvents.User.UserState_Relogin,
+          Constants.ReloginState.ReloginFailed
+        );
       }
       //错误，返回错误码
       return e;

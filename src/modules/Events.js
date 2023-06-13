@@ -1,6 +1,7 @@
 import { LesConstants } from "les-im-components";
 import MessageData from "../Models/MessageData";
 import Constants from "./Constants";
+import { AppStateStatus } from "react-native";
 const { IMUserState, IMUserOnlineState } = LesConstants;
 const { ReloginState } = Constants;
 export const DataEvents = {
@@ -115,6 +116,13 @@ export const UIEvents = {
     PullDataState_UILoading: "UI_EVENT_PullDataState_UILoading",
     PullDataState_UINotLoading: "UI_EVENT_PullDataState_UIIsNotLoading",
   },
+
+  /**
+   * App的状态发生改变时加载loading bar UI
+   * 携带参数为 fromState, state
+   * @type {AppStateStatus} state
+   */
+  AppState_UIUpdated: "UI_EVENT_AppState_UIUpdated",
 
   User: {
     /**
