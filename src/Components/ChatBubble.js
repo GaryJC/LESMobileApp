@@ -1,4 +1,4 @@
-import { View, Text, ImageBackground } from "react-native";
+import { View, Text, ImageBackground, ActivityIndicator } from "react-native";
 import Constants from "../modules/Constants";
 import { useState, useEffect } from "react";
 
@@ -45,7 +45,7 @@ export const ChatBubble = ({
   }, []);
 
   return (
-    <View className="flex-row py-[10px]">
+    <View className="flex-row py-[10px] w-[100%]">
       <View className="overflow-hidden rounded-full w-[50px] h-[50px]">
         <ImageBackground
           source={{ uri: avatar }}
@@ -58,8 +58,17 @@ export const ChatBubble = ({
           <Text className="text-[17px] text-white font-bold">{name}</Text>
           <Text className="text-[10px] text-[#CFCFCF] pl-[10px]">{date}</Text>
         </View>
-        <Text className="text-[13px] text-white">{content}</Text>
-        {status === Constants.deliveryState.delivering && <Text>Loading</Text>}
+
+        <View className="flex-row">
+          <Text className="text-[13px] text-white w-[80%]">{content}</Text>
+          {status === Constants.deliveryState.delivering && (
+            <ActivityIndicator
+              className="pl-[10px"
+              size={"small"}
+              color={"#8D8D8D"}
+            />
+          )}
+        </View>
       </View>
     </View>
   );
