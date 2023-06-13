@@ -66,10 +66,11 @@ export default class LoginService {
 
       if (LesPlatformCenter.Inst.ConnectState != WebsocketState.Connected) {
         console.log("websocket disconnected, need to re-reconnect");
-        //重新连接
-        JSEvent.emit(UIEvents.AppState_UIUpdated, true);
+        // 重新连接
+        // 发送重新连接事件通知UI加载loading bar
+        // JSEvent.emit(UIEvents.AppState_UIUpdated, true);
         await this.quickLogin(true);
-        JSEvent.emit(UIEvents.AppState_UIUpdated, false);
+        // JSEvent.emit(UIEvents.AppState_UIUpdated, false);
       }
     }
   }

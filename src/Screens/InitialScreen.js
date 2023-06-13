@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import LoginService from "../services/LoginService";
 import { LesConstants } from "les-im-components";
 import ServiceCenter from "../services/ServiceCenter";
+import JSEvent from "../utils/JSEvent";
 
 const onAppInit = async () => {
   await ServiceCenter.Inst.loadAllServices();
@@ -17,6 +18,10 @@ const onAppDestroyed = async () => {
 
 export default function InitialScreen() {
   const navigation = useNavigation();
+
+  const reloginFailedHandler = (state) => {
+    console.log("rrrrr: ", state);
+  };
 
   useEffect(() => {
     async function asyncInit() {
@@ -49,8 +54,12 @@ export default function InitialScreen() {
     }
 
     asyncInit();
+
+    // JSEvent.on(DataEvents.User.UserState_Relogin, reloginFailedHandler);
+
     return () => {
       onAppDestroyed();
+      // JSEvent.remove(DataEvents.User.UserState_Relogin);
     };
   }, []);
 

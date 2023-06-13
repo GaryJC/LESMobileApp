@@ -12,7 +12,7 @@ import {
   NativeEventSubscription,
 } from "react-native";
 import JSEvent from "../utils/JSEvent";
-import { DataEvents } from "../modules/Events";
+import { DataEvents, UIEvents } from "../modules/Events";
 import Constants from "../modules/Constants";
 import NotificationService from "./NotificationService";
 
@@ -165,6 +165,7 @@ export default class ServiceCenter {
     console.log(
       `user relogin state[${state}], start invoking service.onUserRelogin`
     );
+    // JSEvent.emit(UIEvents.AppState_UIUpdated, true);
     for (let i = 0; i < this.#services.length; i++) {
       const service = this.#services[i];
       if (service.onUserRelogin) {
@@ -175,6 +176,7 @@ export default class ServiceCenter {
         }
       }
     }
+    // JSEvent.emit(UIEvents.AppState_UIUpdated, false);
   }
 
   /**
@@ -197,6 +199,7 @@ export default class ServiceCenter {
       `app is changing state from [${this.#currentAppState}] to [${state}]`
     );
 
+    JSEvent.emit(UIEvents.AppState_UIUpdated, true);
     for (let i = 0; i < this.#services.length; i++) {
       const service = this.#services[i];
       if (service.onAppStateChanged) {
@@ -208,6 +211,7 @@ export default class ServiceCenter {
         }
       }
     }
+    JSEvent.emit(UIEvents.AppState_UIUpdated, false);
 
     //Promise.all(promises);
     this.#currentAppState = state;

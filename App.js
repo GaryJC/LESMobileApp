@@ -5,7 +5,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "expo-status-bar";
 import { LesConstants } from "les-im-components";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Dimensions } from "react-native";
 import ChatScreen from "./src/Screens/ChatScreen";
 import CreateNameScreen from "./src/Screens/CreateNameScreen";
@@ -21,7 +21,8 @@ import ServiceCenter from "./src/services/ServiceCenter";
 import LoginService from "./src/services/LoginService";
 import JSEvent from "./src/utils/JSEvent";
 import { View, Text, ActivityIndicator } from "react-native";
-import { UIEvents } from "./src/modules/Events";
+import { UIEvents, DataEvents } from "./src/modules/Events";
+import Constants from "./src/modules/Constants";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -129,21 +130,34 @@ export default function App() {
   const [isInitializing, setIsInitializing] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
+  const navigationRef = useRef(null);
 
-  function setLoading(boolean) {
-    console.log("is loading? ", boolean);
-    setIsLoading(boolean);
+  function setLoading(state) {
+    console.log("is loading? ", state);
+    setIsLoading(state);
   }
 
   function setLogin() {
     setIsLoggedin(true);
   }
 
+  /**
+   * 重新快速登录失败时调用，导向登陆界面
+   * @param {ReloginState} state
+   */
+  function reloginFailedHandler(state) {
+    if (state === Constants.ReloginState.ReloginFailed) {
+      navigationRef.current?.navigate("Login");
+    }
+  }
+
   useEffect(() => {
     JSEvent.on(UIEvents.AppState_UIUpdated, setLoading);
+    JSEvent.on(DataEvents.User.UserState_Relogin, reloginFailedHandler);
 
     return () => {
       JSEvent.remove(UIEvents.AppState_UIUpdated);
+      JSEvent.remove(DataEvents.User.UserState_Relogin);
     };
   }, []);
 
@@ -241,7 +255,7 @@ export default function App() {
       </NavigationContainer>
       )}
       */}
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
           initialRouteName="initial"
           screenOptions={{
