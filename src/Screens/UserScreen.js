@@ -61,6 +61,10 @@ export default function UserScreen() {
         // avatar:DataCenter.userInfo.accountId
       };
     });
+    // setUserInfo({
+    //   name: DataCenter.userInfo.imUserInfo.name,
+    //   accountId: DataCenter.userInfo.accountId,
+    // });
     setUserStatus(DataCenter.userInfo.imUserInfo.state);
   }, []);
 
@@ -78,12 +82,30 @@ export default function UserScreen() {
   const onLogoutHandler = async () => {
     try {
       await deleteAuthCache();
+      // (DataCenter.userInfo = {
+      //   accountId: "",
+      //   email: "",
+      //   loginKey: "",
+
+      //   /**
+      //    * im用户信息
+      //    */
+      //   imUserInfo: {
+      //     name: "",
+      //     tag: 0,
+      //     state: 0,
+      //   },
+      // }),
       navigation.navigate("Login");
     } catch {
       (e) => {
         console.log("log out error: ", e);
       };
     }
+  };
+
+  const navigateToNotification = () => {
+    navigation.navigate("Notification");
   };
 
   const deleteAuthCache = async () => {
@@ -116,6 +138,12 @@ export default function UserScreen() {
           <Text className="text-white text-[20px] pr-[20px]">Set Status:</Text>
           <SwitchStatusButton />
         </View>
+
+        <TouchableHighlight onPress={navigateToNotification}>
+          <View className="bg-[#131F2B]">
+            <Text className="text-white">Notifications</Text>
+          </View>
+        </TouchableHighlight>
 
         <View className="bg-[#131F2B] rounded-lg w-[100%] mt-[3vh]">
           <ScrollView className="divide-y-2 divide-[#5C5C5C] px-[10px]">
