@@ -7,6 +7,7 @@ import IMUserInfoService from "./IMUserInfoService";
 import FriendData from "../Models/Friends";
 import Constants from "../modules/Constants";
 import { Notification, Notifications } from "../Models/Notifications";
+import NotificationService from "./NotificationService";
 
 const {
   IMUserState,
@@ -144,6 +145,21 @@ class FriendService {
     const idx = this.#friendList.findIndex((item) => item.id == id);
     if (idx > -1) return;
     this.#friendList.push({ id: id, time: time });
+  }
+
+  /**
+   * 移除好友，成功返回移除好友的id，失败返回错误码
+   * @param {number} friendId 
+   * @returns {Promise<number, number>}
+   */
+  removeFriend(friendId) {
+    return new Promise((resolve, reject) => {
+      LesPlatformCenter.IMFunctions.removeFriend(friendId).then(id => {
+        resolve(id);
+      }).catch(e => {
+        reject(e);
+      })
+    })
   }
 
   async onUserLogin() {

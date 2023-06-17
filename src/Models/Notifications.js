@@ -124,6 +124,19 @@ class Notifications {
     }
 
     /**
+     * 
+     * @param {number} id 
+     * @returns {Notification | null}
+     */
+    getNotification(id) {
+        const { index, notification } = this.#findNotification(id);
+        return index == -1 ? null : notification;
+    }
+
+
+    //#region ui调用部分
+
+    /**
      * 将指定id的消息设置为已读状态
      * 
      * 只有未读状态的消息才会变成已读状态
@@ -140,9 +153,6 @@ class Notifications {
         }
         return notification;
     }
-
-
-    //#region ui调用部分
 
     /**
      * 返回当前所有的通知消息，或指定类型的通知消息
