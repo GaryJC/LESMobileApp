@@ -5,7 +5,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "expo-status-bar";
 import { LesConstants } from "les-im-components";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Dimensions } from "react-native";
 import ChatScreen from "./src/Screens/ChatScreen";
 import CreateNameScreen from "./src/Screens/CreateNameScreen";
@@ -19,7 +19,11 @@ import LoginScreen from "./src/Screens/LoginScreen";
 import InitialScreen from "./src/Screens/InitialScreen";
 import ServiceCenter from "./src/services/ServiceCenter";
 import LoginService from "./src/services/LoginService";
+import Notification from "./src/Screens/NotificationScreen";
 import JSEvent from "./src/utils/JSEvent";
+import { View, Text, ActivityIndicator } from "react-native";
+import { UIEvents, DataEvents } from "./src/modules/Events";
+import Constants from "./src/modules/Constants";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -34,7 +38,7 @@ const onAppDestroyed = async () => {
   //保存页面会刷新app，此处重置event，否则会出现重复监听问题
   JSEvent.reset();
   ServiceCenter.Inst.onAppDestroyed();
-}
+};
 
 const BottomTabNavigation = () => (
   <BottomTab.Navigator
@@ -126,10 +130,39 @@ export default function App() {
   const [isLoggedin, setIsLoggedin] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
 
+  const [isLoading, setIsLoading] = useState(false);
+  const navigationRef = useRef(null);
+
+  function setLoading(state) {
+    console.log("is loading? ", state);
+    setIsLoading(state);
+  }
+
   function setLogin() {
     setIsLoggedin(true);
   }
 
+  /**
+   * 重新快速登录失败时调用，导向登陆界面
+   * @param {ReloginState} state
+   */
+  function reloginFailedHandler(state) {
+    if (state === Constants.ReloginState.ReloginFailed) {
+      navigationRef.current?.navigate("Login");
+    }
+  }
+
+  useEffect(() => {
+    JSEvent.on(UIEvents.AppState_UIUpdated, setLoading);
+    JSEvent.on(DataEvents.User.UserState_Relogin, reloginFailedHandler);
+
+    return () => {
+      JSEvent.remove(UIEvents.AppState_UIUpdated);
+      JSEvent.remove(DataEvents.User.UserState_Relogin);
+    };
+  }, []);
+
+  /*
   useEffect(() => {
     async function asyncInit() {
       //等待所有服务装载完毕
@@ -159,9 +192,13 @@ export default function App() {
     }
 
     asyncInit();
-    return () => { onAppDestroyed() };
+    return () => {
+      onAppDestroyed();
+    };
   }, []);
+  */
 
+  /*
   const ContentScreens = () => (
     <>
       <Stack.Screen
@@ -177,38 +214,87 @@ export default function App() {
     </>
   );
 
+  const AuthScreens = () => (
+    <>
+      <Stack.Screen name="Signup" component={SignupScreen} />
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="CreateName" component={CreateNameScreen} />
+    </>
+  );
+  */
+
   return (
     <>
       <StatusBar style="light" />
-      {isInitializing ? (
+
+      {/* {isInitializing ? (
         <InitialScreen />
       ) : (
-        <NavigationContainer>
-          {isLoggedin ? (
-            <Stack.Navigator initialRouteName="BottomTab">
-              {ContentScreens()}
-            </Stack.Navigator>
-          ) : (
-            <Stack.Navigator
-              initialRouteName="Login"
-              screenOptions={{
-                headerStyle: {
-                  backgroundColor: "#080F14",
-                },
-                headerTitleStyle: {
-                  color: "white",
-                },
-
-                contentStyle: { backgroundColor: "#080F14" },
-              }}
-            >
-              <Stack.Screen name="Signup" component={SignupScreen} />
-              <Stack.Screen name="Login" component={LoginScreen} />
-              <Stack.Screen name="CreateName" component={CreateNameScreen} />
-              {ContentScreens()}
-            </Stack.Navigator>
-          )}
-        </NavigationContainer>
+      <NavigationContainer>
+        {isLoggedin ? (
+          <Stack.Navigator initialRouteName="BottomTab">
+            {ContentScreens()}
+            {AuthScreens()}
+          </Stack.Navigator>
+        ) : (
+          <Stack.Navigator
+            initialRouteName="Login"
+            screenOptions={{
+              headerStyle: {
+                backgroundColor: "#080F14",
+              },
+              headerTitleStyle: {
+                color: "white",
+              },
+              contentStyle: { backgroundColor: "#080F14" },
+            }}
+          >
+            {ContentScreens()}
+          </Stack.Navigator>
+        )}
+   
+      </NavigationContainer>
+      )}
+      */}
+      <NavigationContainer ref={navigationRef}>
+        <Stack.Navigator
+          initialRouteName="initial"
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: "#080F14",
+            },
+            headerTitleStyle: {
+              color: "white",
+            },
+            contentStyle: { backgroundColor: "#080F14" },
+          }}
+        >
+          <Stack.Screen
+            name="initial"
+            component={InitialScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="BottomTab"
+            component={BottomTabNavigation}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="GameDetails"
+            component={GameDetailsScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen name="Signup" component={SignupScreen} />
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="CreateName" component={CreateNameScreen} />
+          <Stack.Screen name="Notification" component={Notification} />
+        </Stack.Navigator>
+      </NavigationContainer>
+      {isLoading && (
+        <View className="h-[5vh] items-center justify-center bg-[#1F4168] flex-row">
+          <Text className="text-white pr-[10px]">Reconnecting</Text>
+          <ActivityIndicator size={"small"} color={"#CACACA"} />
+        </View>
       )}
     </>
   );

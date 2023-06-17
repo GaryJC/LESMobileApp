@@ -25,7 +25,13 @@ export const ChatList = ({
       onPress={() => onClickChatHandler({ chatId: chatId, targetId: targetId })}
     >
       <View className="relative">
-        <View className="overflow-hidden rounded-full w-[55px] h-[55px] mb-[15px]">
+        <View
+          className={
+            curChatId === chatId
+              ? "border-[#5EB857] border-4 overflow-hidden rounded-full w-[55px] h-[55px] mb-[15px]"
+              : "overflow-hidden rounded-full w-[55px] h-[55px] mb-[15px]"
+          }
+        >
           <ImageBackground
             source={{ uri: avatar }}
             className="w-[100%] h-[100%]"

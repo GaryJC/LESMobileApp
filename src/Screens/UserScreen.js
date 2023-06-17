@@ -13,6 +13,8 @@ import {
   makeStateReadable,
 } from "../Components/StateIndicator";
 import DataCenter from "../modules/DataCenter";
+import { useNavigation } from "@react-navigation/native";
+import * as SecureStore from "expo-secure-store";
 
 const userOptions = [
   { id: 1, title: "Account", link: "" },
@@ -41,6 +43,8 @@ export default function UserScreen() {
   });
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
+  const navigation = useNavigation();
+
   const openSheet = () => {
     // bottomSheetRef.current?.expand(); // 1 refers to the second snap point ('50%')
     setIsSheetOpen(true);
@@ -48,6 +52,7 @@ export default function UserScreen() {
 
   useEffect(() => {
     // setUserStatus(DataCenter.userInfo.imUserInfo.state);
+    console.log("user email: ", DataCenter.userInfo.email);
     setUserInfo((pre) => {
       return {
         ...pre,
@@ -56,6 +61,10 @@ export default function UserScreen() {
         // avatar:DataCenter.userInfo.accountId
       };
     });
+    // setUserInfo({
+    //   name: DataCenter.userInfo.imUserInfo.name,
+    //   accountId: DataCenter.userInfo.accountId,
+    // });
     setUserStatus(DataCenter.userInfo.imUserInfo.state);
   }, []);
 
@@ -69,6 +78,42 @@ export default function UserScreen() {
       </View>
     </TouchableHighlight>
   );
+
+  const onLogoutHandler = async () => {
+    try {
+      await deleteAuthCache();
+      // (DataCenter.userInfo = {
+      //   accountId: "",
+      //   email: "",
+      //   loginKey: "",
+
+      //   /**
+      //    * im用户信息
+      //    */
+      //   imUserInfo: {
+      //     name: "",
+      //     tag: 0,
+      //     state: 0,
+      //   },
+      // }),
+      navigation.navigate("Login");
+    } catch {
+      (e) => {
+        console.log("log out error: ", e);
+      };
+    }
+  };
+
+  const navigateToNotification = () => {
+    navigation.navigate("Notification");
+  };
+
+  const deleteAuthCache = async () => {
+    const delAccountId = SecureStore.deleteItemAsync("accountId");
+    const delLoginKey = await SecureStore.deleteItemAsync("loginKey");
+    const delEmail = await SecureStore.deleteItemAsync("email");
+    await Promise.all(delAccountId, delLoginKey, delEmail);
+  };
 
   return (
     <View className="flex-1">
@@ -94,6 +139,12 @@ export default function UserScreen() {
           <SwitchStatusButton />
         </View>
 
+        <TouchableHighlight onPress={navigateToNotification}>
+          <View className="bg-[#131F2B]">
+            <Text className="text-white">Notifications</Text>
+          </View>
+        </TouchableHighlight>
+
         <View className="bg-[#131F2B] rounded-lg w-[100%] mt-[3vh]">
           <ScrollView className="divide-y-2 divide-[#5C5C5C] px-[10px]">
             {userOptions.map((item, index) =>
@@ -101,9 +152,13 @@ export default function UserScreen() {
             )}
           </ScrollView>
         </View>
-        <View className="bg-[#131F2B] rounded-lg w-[100%] mt-[3vh] items-center">
-          <Text className="py-[10px] text-[#FF0000] text-[15px]">Log Out</Text>
-        </View>
+        <TouchableHighlight className="w-[100%]" onPress={onLogoutHandler}>
+          <View className="bg-[#131F2B] rounded-lg w-[100%] mt-[3vh] items-center">
+            <Text className="py-[10px] text-[#FF0000] text-[15px]">
+              Log Out
+            </Text>
+          </View>
+        </TouchableHighlight>
       </View>
       {/* The bottom sheet that is used to switch the user status */}
       <StatusBottomSheet

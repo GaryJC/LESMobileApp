@@ -35,6 +35,11 @@ const Constants = {
     AccountCenterError: "AccountCenterError",
     IMServerError: "IMServerError",
   },
+
+  NotificationTab: {
+    Notification: "Notification",
+    Invitation: "Invitation",
+  },
 };
 
 export default Constants;

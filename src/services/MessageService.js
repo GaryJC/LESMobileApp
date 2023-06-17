@@ -56,8 +56,8 @@ class MessageService {
           //如果服务器成功处理
 
           //存入缓存并发布事件
-          const msgData = this.#onTimelineUpdated(message);
-          // const msgData = this.#onMessageSent(message);
+          // const msgData = this.#onTimelineUpdated(message);
+          const msgData = this.#onMessageSent(message);
 
           // console.log("send message: ", message);
           // JSEvent.emit(DataEvents.Saving.SavingState_Message, message);
