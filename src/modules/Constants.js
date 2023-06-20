@@ -36,9 +36,16 @@ const Constants = {
     IMServerError: "IMServerError",
   },
 
-  NotificationTab: {
-    Notification: "Notification",
-    Invitation: "Invitation",
+  Notification: {
+    NotificationTab: {
+      Notifications: "Notifications",
+      Invitations: "Invitations",
+    },
+
+    NotificationMode: {
+      sender: "sender",
+      recipient: "recipient",
+    },
   },
 };
 

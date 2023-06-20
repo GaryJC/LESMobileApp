@@ -4,91 +4,93 @@ import {
   Image,
   ImageBackground,
   TouchableHighlight,
+  TouchableOpacity,
 } from "react-native";
 import DataCenter from "../modules/DataCenter";
 import { LesConstants, LesPlatformCenter } from "les-im-components";
+import NotificationService from "../services/NotificationService";
+import Constants from "../modules/Constants";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function InvitationList({ item }) {
   console.log("item: ", item);
 
   const onRespondHandler = (notificationId, response) => {
-    LesPlatformCenter.IMFunctions.respondNotification(notificationId, response)
+    console.log("noti, response: ", notificationId, response);
+    // LesPlatformCenter.IMFunctions.respondNotification(notificationId, response)
+    NotificationService.Inst.respondFriendInvitation(notificationId, response)
       .then((res) => {
         console.log("response: ", res);
       })
       .catch((e) => console.error(e));
   };
 
-  const InviteFromSelf = ({ notificationId }) => (
-    <View className="bg-[#131F2A] flex-row justify-between items-center">
-      <View className="flex-row items-center">
-        <Image
-          source={{ uri: `https://i.pravatar.cc/?img=${item.sender.id}` }}
-          className="w-[50px] h-[50px] rounded-full"
-        />
-        <Text className="text-white">{item.sender.name}</Text>
-      </View>
-      <View className="flex-row">
-        <TouchableHighlight
-          onPress={() =>
-            onRespondHandler(
-              notificationId,
-              LesConstants.IMNotificationState.Canceled
-            )
-          }
-        >
-          <View>
-            <Text className="text-white">Cancel</Text>
-          </View>
-        </TouchableHighlight>
+  const InvitationLayout = ({ children }) => (
+    <View className="bg-[#131F2A] rounded-lg p-[15px]">
+      <View className="flex-row justify-between items-center">
+        <View className="flex-row items-center">
+          <Image
+            source={{ uri: `https://i.pravatar.cc/?img=${item.sender.id}` }}
+            className="w-[50px] h-[50px] rounded-full"
+          />
+          <Text className="text-white font-bold text-[16px] pl-[10px]">
+            {item.sender.name}
+          </Text>
+        </View>
+        <View className="flex-row">{children}</View>
       </View>
     </View>
   );
 
-  const InvitFromOthers = ({ notificationId }) => (
-    <View className="bg-[#131F2A] flex-row justify-between items-center">
-      <View className="flex-row items-center">
-        <Image
-          source={{ uri: `https://i.pravatar.cc/?img=${item.sender.id}` }}
-          className="w-[50px] h-[50px] rounded-full"
-        />
-        <Text className="text-white">{item.sender.name}</Text>
-      </View>
-      <View className="flex-row">
-        <TouchableHighlight
-          onPress={() =>
-            onRespondHandler(
-              notificationId,
-              LesConstants.IMNotificationState.Accepted
-            )
-          }
-        >
-          <View>
-            <Text className="text-white">Accept</Text>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight
-          onPress={() =>
-            onRespondHandler(
-              notificationId,
-              LesConstants.IMNotificationState.Rejected
-            )
-          }
-        >
-          <View>
-            <Text className="text-white">Reject</Text>
-          </View>
-        </TouchableHighlight>
-      </View>
-    </View>
+  const SenderInvitation = ({ notificationId }) => (
+    <InvitationLayout>
+      <TouchableHighlight
+        onPress={() =>
+          onRespondHandler(
+            notificationId,
+            LesConstants.IMNotificationState.Canceled
+          )
+        }
+      >
+        <View>
+          <Text className="text-white font-bold">Cancel</Text>
+        </View>
+      </TouchableHighlight>
+    </InvitationLayout>
+  );
+
+  const RecipientInvitation = ({ notificationId }) => (
+    <InvitationLayout>
+      <TouchableOpacity
+        onPress={() =>
+          onRespondHandler(
+            notificationId,
+            LesConstants.IMNotificationState.Accepted
+          )
+        }
+        className="pr-[5px]"
+      >
+        <Ionicons name="checkmark-circle" size={34} color="green" />
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() =>
+          onRespondHandler(
+            notificationId,
+            LesConstants.IMNotificationState.Rejected
+          )
+        }
+      >
+        <Ionicons name="close-circle" size={34} color="grey" />
+      </TouchableOpacity>
+    </InvitationLayout>
   );
 
   return (
-    <View className="w-[90vw] mx-auto">
-      {item.sender.id === DataCenter.userInfo.accountId ? (
-        <InviteFromSelf notificationId={item.id} />
+    <View className="px-[5vw] py-[5px]">
+      {item.mode === Constants.Notification.NotificationMode.sender ? (
+        <SenderInvitation notificationId={item.id} />
       ) : (
-        <InvitFromOthers notificationId={item.id} />
+        <RecipientInvitation notificationId={item.id} />
       )}
     </View>
   );

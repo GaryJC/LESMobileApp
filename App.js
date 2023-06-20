@@ -20,6 +20,7 @@ import InitialScreen from "./src/Screens/InitialScreen";
 import ServiceCenter from "./src/services/ServiceCenter";
 import LoginService from "./src/services/LoginService";
 import Notification from "./src/Screens/NotificationScreen";
+import FriendRequestScreen from "./src/Screens/FriendRequestScreen";
 import JSEvent from "./src/utils/JSEvent";
 import { View, Text, ActivityIndicator } from "react-native";
 import { UIEvents, DataEvents } from "./src/modules/Events";
@@ -288,6 +289,7 @@ export default function App() {
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="CreateName" component={CreateNameScreen} />
           <Stack.Screen name="Notification" component={Notification} />
+          <Stack.Screen name="FriendRequest" component={FriendRequestScreen} />
         </Stack.Navigator>
       </NavigationContainer>
       {isLoading && (

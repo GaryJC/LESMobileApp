@@ -6,6 +6,8 @@ import {
   SectionList,
   Button,
   TextInput,
+  TouchableHighlight,
+  TouchableOpacity,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
@@ -13,40 +15,39 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 //dummy data
 import { RecomFriendsData } from "../Data/dummyData";
-// import { FriendsData } from "../Data/dummyData";
-// import { FriendListData } from "../modules/DataCenter";
 import DataCenter from "../modules/DataCenter";
 import JSEvent from "../utils/JSEvent";
-import { UIEvents } from "../modules/Events";
+import { UIEvents, DataEvents } from "../modules/Events";
 import FriendService from "../services/FriendService";
 import MockServer from "../utils/MockServer";
 import { LesPlatformCenter } from "les-im-components";
 import { FriendList } from "../Components/FriendList";
+import NotificationService from "../services/NotificationService";
+import { FriendButton } from "../Components/FriendButton";
 
-const primaryButtonContent = [
+const friendButtonContent = [
   { title: "Friends Request", icon: "emoji-people", link: "" },
   { title: "Blocked", icon: "block", link: "" },
 ];
 
 const PrimaryButton = (title, icon, link, index) => (
-  <View
-    key={index}
-    className="bg-[#131F2A] h-[100px] px-[20px] flex-row justify-between mb-[10px]"
-  >
-    <View className="flex-row items-center">
-      <MaterialIcons name={icon} color="white" size={34} />
-      <Text className="text-white font-bold text-[20px] pl-[10px]">
-        {title}
-      </Text>
+  <TouchableHighlight key={index} onPress={() => console.log(link)}>
+    <View className="bg-[#131F2A] h-[100px] px-[20px] flex-row justify-between mb-[10px]">
+      <View className="flex-row items-center">
+        <MaterialIcons name={icon} color="white" size={34} />
+        <Text className="text-white font-bold text-[20px] pl-[10px]">
+          {title}
+        </Text>
+      </View>
+      <View className="justify-center">
+        <Ionicons
+          name="chevron-forward-outline"
+          color="white"
+          size={34}
+        ></Ionicons>
+      </View>
     </View>
-    <View className="justify-center">
-      <Ionicons
-        name="chevron-forward-outline"
-        color="white"
-        size={34}
-      ></Ionicons>
-    </View>
-  </View>
+  </TouchableHighlight>
 );
 
 const RecommendedFriend = (id, name, avatar) => (
@@ -76,6 +77,8 @@ export default function FriendsScreen() {
   // const [offlineFriends, setOfflineFriends] = useState([]);
   const [friendsData, setFriendsData] = useState([]);
 
+  const [unreadCount, setUnreadCount] = useState(0);
+
   useEffect(() => {
     // 可传参数 { id, state, onlineState }
     const onFriendStateUIUpdated = () => {
@@ -94,15 +97,28 @@ export default function FriendsScreen() {
 
     onFriendStateUIUpdated();
 
+    const updateUnreadCountHandler = () => {
+      const count = DataCenter.notifications.unreadCount();
+      setUnreadCount(count);
+    };
+
+    updateUnreadCountHandler();
+
     JSEvent.on(UIEvents.User.UserState_UIRefresh, onFriendStateUIUpdated);
+    JSEvent.on(
+      DataEvents.Notification.NotificationState_Updated,
+      updateUnreadCountHandler
+    );
 
     return () => {
       JSEvent.remove(UIEvents.User.UserState_UIRefresh, onFriendStateUIUpdated);
+      JSEvent.remove(DataEvents.Notification.NotificationState_Updated);
     };
   }, []);
 
   const temporyAddHander = () => {
-    LesPlatformCenter.IMFunctions.sendFriendInvitation(36)
+    // LesPlatformCenter.IMFunctions.sendFriendInvitation(8)
+    NotificationService.Inst.sendFriendInvitation(8)
       .then((res) => {
         console.log("Inivitation success: ", res);
       })
@@ -114,12 +130,26 @@ export default function FriendsScreen() {
   );
 
   return (
-    <View className="flex-1 w-[90vw] mx-auto">
+    <View className="flex-1 px-[5vw]">
       <TemporyAddButton />
       <View>
-        {primaryButtonContent.map(({ title, icon, link }, index) =>
-          PrimaryButton(title, icon, link, index)
-        )}
+        {/* {friendButtonContent.map(({ title, icon, link }, index) => (
+          <FriendButton title={title} icon={icon} link={link} index={index} />
+        ))} */}
+        <FriendButton
+          title="Friend Request"
+          icon="emoji-people"
+          link="FriendRequest"
+        >
+          {unreadCount !== 0 && (
+            <View className="w-[20px] h-[20px] bg-[#FF3737] rounded-full relative bottom-[15px] right-[5px]">
+              <Text className="font-bold text-white text-center">
+                {unreadCount}
+              </Text>
+            </View>
+          )}
+        </FriendButton>
+        <FriendButton title="Blocked" icon="block" link="Blocked" />
       </View>
       <View className="mt-[30px] flex-1">
         {/* <Text className="text-white font-bold text-[24px]">

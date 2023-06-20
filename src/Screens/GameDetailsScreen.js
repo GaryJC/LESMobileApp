@@ -114,7 +114,7 @@ export default function GameDetailsScreen() {
           </View>
         </ImageBackground>
       </View>
-      <View className="w-[90vw] mx-auto mt-[5vh]">
+      <View className="px-[5vw] mt-[5vh]">
         <View className="flex-row justify-between ">
           <PrimaryButton title={"Website"} icon={"browsers-outline"} />
           <PrimaryButton title={"Patch Notes"} icon={"bandage-outline"} />

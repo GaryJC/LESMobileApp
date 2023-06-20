@@ -4,6 +4,7 @@ import {
   ImageBackground,
   ScrollView,
   TouchableHighlight,
+  TouchableOpacity,
 } from "react-native";
 import { UserData } from "../Data/dummyData";
 import { useEffect, useState, useRef, useMemo, useCallback } from "react";
@@ -15,6 +16,9 @@ import {
 import DataCenter from "../modules/DataCenter";
 import { useNavigation } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
+import { Ionicons } from "@expo/vector-icons";
+import JSEvent from "../utils/JSEvent";
+import { DataEvents } from "../modules/Events";
 
 const userOptions = [
   { id: 1, title: "Account", link: "" },
@@ -42,6 +46,7 @@ export default function UserScreen() {
     // avatar:"",
   });
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const navigation = useNavigation();
 
@@ -66,11 +71,27 @@ export default function UserScreen() {
     //   accountId: DataCenter.userInfo.accountId,
     // });
     setUserStatus(DataCenter.userInfo.imUserInfo.state);
+
+    const updateUnreadCountHandler = () => {
+      const count = DataCenter.notifications.unreadCount();
+      setUnreadCount(count);
+    };
+
+    updateUnreadCountHandler();
+
+    JSEvent.on(
+      DataEvents.Notification.NotificationState_Updated,
+      updateUnreadCountHandler
+    );
+
+    return () => {
+      JSEvent.remove(DataEvents.Notification.NotificationState_Updated);
+    };
   }, []);
 
   const SwitchStatusButton = () => (
     <TouchableHighlight onPress={openSheet}>
-      <View className="w-[25vw] h-[5vh] bg-[#7E5ED9] rounded-lg flex-row justify-evenly items-center">
+      <View className="w-[25vw] h-[5vh] bg-[#853DFB] rounded-lg flex-row justify-evenly items-center">
         <StateIndicator state={userStatus} />
         <Text className="text-white text-[16px] font-bold">
           {makeStateReadable(userStatus)}
@@ -128,8 +149,21 @@ export default function UserScreen() {
             resizeMode="cover"
           />
         </View>
+        <TouchableOpacity
+          onPress={navigateToNotification}
+          className="absolute left-[5vw] top-[8vh]"
+        >
+          <Ionicons name="notifications" size={30} color="white" />
+          {unreadCount !== 0 && (
+            <View className="w-[20px] h-[20px] bg-[#FF3737] rounded-full relative bottom-[15px] left-[15px]">
+              <Text className="font-bold text-white text-center">
+                {unreadCount}
+              </Text>
+            </View>
+          )}
+        </TouchableOpacity>
       </ImageBackground>
-      <View className="w-[90%] mx-auto mt-[50px] items-center">
+      <View className="px-[5vw] mt-[50px] items-center">
         <Text className="text-white font-bold text-[30px]">
           {userInfo.name}
         </Text>
@@ -138,13 +172,6 @@ export default function UserScreen() {
           <Text className="text-white text-[20px] pr-[20px]">Set Status:</Text>
           <SwitchStatusButton />
         </View>
-
-        <TouchableHighlight onPress={navigateToNotification}>
-          <View className="bg-[#131F2B]">
-            <Text className="text-white">Notifications</Text>
-          </View>
-        </TouchableHighlight>
-
         <View className="bg-[#131F2B] rounded-lg w-[100%] mt-[3vh]">
           <ScrollView className="divide-y-2 divide-[#5C5C5C] px-[10px]">
             {userOptions.map((item, index) =>

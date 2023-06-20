@@ -50,7 +50,7 @@ export default function HomeScreen() {
   }, []);
 
   return (
-    <View className="w-[90%] mx-auto mt-[3vh] flex-1">
+    <View className="px-[5vw] mt-[3vh] flex-1">
       {/* <Text>Home</Text> */}
       {/* <StatusBar style="auto" /> */}
       {/* <Text className="text-white text-[30px] font-bold">Light Esports</Text> */}
