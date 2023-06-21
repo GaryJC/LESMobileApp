@@ -149,17 +149,19 @@ class FriendService {
 
   /**
    * 移除好友，成功返回移除好友的id，失败返回错误码
-   * @param {number} friendId 
+   * @param {number} friendId
    * @returns {Promise<number, number>}
    */
   removeFriend(friendId) {
     return new Promise((resolve, reject) => {
-      LesPlatformCenter.IMFunctions.removeFriend(friendId).then(id => {
-        resolve(id);
-      }).catch(e => {
-        reject(e);
-      })
-    })
+      LesPlatformCenter.IMFunctions.removeFriend(friendId)
+        .then((id) => {
+          resolve(id);
+        })
+        .catch((e) => {
+          reject(e);
+        });
+    });
   }
 
   async onUserLogin() {

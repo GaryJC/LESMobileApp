@@ -24,31 +24,12 @@ import { LesPlatformCenter } from "les-im-components";
 import { FriendList } from "../Components/FriendList";
 import NotificationService from "../services/NotificationService";
 import { FriendButton } from "../Components/FriendButton";
+import FriendBottomSheet from "../Components/FriendBottomSheet";
 
 const friendButtonContent = [
   { title: "Friends Request", icon: "emoji-people", link: "" },
   { title: "Blocked", icon: "block", link: "" },
 ];
-
-const PrimaryButton = (title, icon, link, index) => (
-  <TouchableHighlight key={index} onPress={() => console.log(link)}>
-    <View className="bg-[#131F2A] h-[100px] px-[20px] flex-row justify-between mb-[10px]">
-      <View className="flex-row items-center">
-        <MaterialIcons name={icon} color="white" size={34} />
-        <Text className="text-white font-bold text-[20px] pl-[10px]">
-          {title}
-        </Text>
-      </View>
-      <View className="justify-center">
-        <Ionicons
-          name="chevron-forward-outline"
-          color="white"
-          size={34}
-        ></Ionicons>
-      </View>
-    </View>
-  </TouchableHighlight>
-);
 
 const RecommendedFriend = (id, name, avatar) => (
   <View className="flex-row justify-between mb-[10px]">
@@ -78,6 +59,16 @@ export default function FriendsScreen() {
   const [friendsData, setFriendsData] = useState([]);
 
   const [unreadCount, setUnreadCount] = useState(0);
+
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  const [selectedFriend, setSelectedFriend] = useState();
+
+  const openSheet = (friend) => {
+    // bottomSheetRef.current?.expand(); // 1 refers to the second snap point ('50%')
+    setIsSheetOpen(true);
+    setSelectedFriend(friend);
+  };
 
   useEffect(() => {
     // 可传参数 { id, state, onlineState }
@@ -174,6 +165,7 @@ export default function FriendsScreen() {
                   name={item.name}
                   state={item.state}
                   avatar={item.avatar}
+                  openSheet={() => openSheet(item)}
                 />
               )
             }
@@ -185,6 +177,11 @@ export default function FriendsScreen() {
           />
         </View>
       </View>
+      <FriendBottomSheet
+        isSheetOpen={isSheetOpen}
+        setIsSheetOpen={setIsSheetOpen}
+        selectedFriend={selectedFriend}
+      />
     </View>
   );
 }
