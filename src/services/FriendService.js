@@ -157,6 +157,8 @@ class FriendService {
       LesPlatformCenter.IMFunctions.removeFriend(friendId)
         .then((id) => {
           resolve(id);
+          // 从缓存中移除
+          this.#onFriendRemoved(id);
         })
         .catch((e) => {
           reject(e);
@@ -211,7 +213,7 @@ class FriendService {
         u = user[0];
       }
       const friendData = new FriendData(f.id, f.time, user[0]);
-      console.log("ffdsa: ", user[0]);
+      // console.log("ffdsa: ", user[0]);
       if (filter == null) {
         friends.push(friendData);
       } else {

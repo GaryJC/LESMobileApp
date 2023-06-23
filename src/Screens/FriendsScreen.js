@@ -76,6 +76,7 @@ export default function FriendsScreen() {
       // const online = FriendService.Inst.getFriendList((f) => f.isOnline);
       // const offline = FriendService.Inst.getFriendList((f) => !f.isOnline);
       const friendList = FriendService.Inst.getFriendList();
+      console.log("friend list: ", friendList);
       const online = friendList.filter((item) => item.onlineState === 1);
       const offline = friendList.filter((item) => item.onlineState === 2);
 

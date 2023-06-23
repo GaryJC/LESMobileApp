@@ -279,6 +279,7 @@ const ChatScreen = () => {
     const getInitData = () => {
       // 获取所有的对话列表数据
       const chatList = DataCenter.messageCache.getChatList();
+      console.log("chat list: ", chatList);
       if (chatList.length) {
         // 获取所有对话列表的新消息
         const chatListNewMsgCount = getChatListMsgCount(chatList);

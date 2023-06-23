@@ -1,5 +1,6 @@
 import { LesConstants } from "les-im-components";
 import MessageData from "./MessageData";
+import DatabaseService from "../services/DatabaseService";
 const { IMMessageType } = LesConstants;
 /**
  * 消息缓存
@@ -162,6 +163,23 @@ class MessageCaches {
    */
   getChatList() {
     return [...this.#chatListSorted];
+  }
+
+  /**
+   * 删除指定的对话数据
+   * e.g. 删除好友后将聊天列表移除
+   * 还需要从database里移除
+   * @param {string} chatId
+   */
+  removeChatListItem(chatId) {
+    const idx = this.#chatListSorted.findIndex(
+      (item) => item.chatId === chatId
+    );
+    if (idx > -1) {
+      this.#chatListSorted.splice(idx, 1);
+      // JSEvent.emit(UIEvents.User.UserState_UIRefresh);
+      DatabaseService.Inst.removeChatListItem(chatId);
+    }
   }
 
   /**
