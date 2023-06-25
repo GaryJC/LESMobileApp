@@ -56,6 +56,11 @@ export default function Notification() {
     []
   );
 
+  const [unreadCount, setUnreadCount] = useState({
+    notiCount: 0,
+    invitCount: 0,
+  });
+
   const switchTab = (tab) => {
     console.log(
       "switch tab: ",
@@ -86,8 +91,28 @@ export default function Notification() {
       type: "GET_NOTIFICATIONS",
       payload: allNotifications.filter((item) => item.type === 0),
     });
-    // setNotifications(notifications);
     console.log("all noticiations: ", allNotifications);
+
+    const updateUnreadCountHandler = () => {
+      const notiCount = DataCenter.notifications.unreadCount(0);
+      const friendInvitCount = DataCenter.notifications.unreadCount(1);
+      const groupInviteCount = DataCenter.notifications.unreadCount(2);
+      setUnreadCount({
+        notiCount: notiCount,
+        invitCount: friendInvitCount + groupInviteCount,
+      });
+    };
+
+    updateUnreadCountHandler();
+
+    JSEvent.on(
+      DataEvents.Notification.NotificationState_Updated,
+      updateUnreadCountHandler
+    );
+
+    return () => {
+      JSEvent.remove(DataEvents.Notification.NotificationState_Updated);
+    };
   }, []);
 
   useEffect(() => {
@@ -129,9 +154,14 @@ export default function Notification() {
                 : ""
             }
           >
-            <Text className="text-white font-bold text-center">
-              Notifications
-            </Text>
+            <View className="flex-row items-center justify-center">
+              <Text className="text-white font-bold text-center">
+                Notifications
+              </Text>
+              {unreadCount.notiCount !== 0 && (
+                <View className="w-[10px] h-[10px] ml-[10px] bg-[#FF3737] rounded-full"></View>
+              )}
+            </View>
           </View>
         </TouchableOpacity>
         <TouchableOpacity
@@ -145,9 +175,14 @@ export default function Notification() {
                 : ""
             }
           >
-            <Text className="text-white font-bold text-center">
-              Invitations
-            </Text>
+            <View className="flex-row items-center justify-center">
+              <Text className="text-white font-bold text-center">
+                Invitations
+              </Text>
+              {unreadCount.invitCount !== 0 && (
+                <View className="w-[10px] h-[10px] ml-[5px] bg-[#FF3737] rounded-full"></View>
+              )}
+            </View>
           </View>
         </TouchableOpacity>
       </View>
