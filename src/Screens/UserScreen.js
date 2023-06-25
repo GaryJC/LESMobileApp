@@ -56,20 +56,6 @@ export default function UserScreen() {
   };
 
   useEffect(() => {
-    // setUserStatus(DataCenter.userInfo.imUserInfo.state);
-    console.log("user email: ", DataCenter.userInfo.email);
-    setUserInfo((pre) => {
-      return {
-        ...pre,
-        name: DataCenter.userInfo.imUserInfo.name,
-        accountId: DataCenter.userInfo.accountId,
-        // avatar:DataCenter.userInfo.accountId
-      };
-    });
-    // setUserInfo({
-    //   name: DataCenter.userInfo.imUserInfo.name,
-    //   accountId: DataCenter.userInfo.accountId,
-    // });
     setUserStatus(DataCenter.userInfo.imUserInfo.state);
 
     const updateUnreadCountHandler = () => {
@@ -79,13 +65,31 @@ export default function UserScreen() {
 
     updateUnreadCountHandler();
 
+    const retriveUserInfoHandler = () => {
+      console.log("user name: ", DataCenter.userInfo.name);
+      console.log("user email: ", DataCenter.userInfo.email);
+      setUserInfo((pre) => {
+        return {
+          ...pre,
+          name: DataCenter.userInfo.imUserInfo.name,
+          accountId: DataCenter.userInfo.accountId,
+          // avatar:DataCenter.userInfo.accountId
+        };
+      });
+    };
+
+    retriveUserInfoHandler();
+
     JSEvent.on(
       DataEvents.Notification.NotificationState_Updated,
       updateUnreadCountHandler
     );
 
+    JSEvent.on(DataEvents.User.UserState_IsLoggedin, retriveUserInfoHandler);
+
     return () => {
       JSEvent.remove(DataEvents.Notification.NotificationState_Updated);
+      JSEvent.remove(DataEvents.User.UserState_IsLoggedin);
     };
   }, []);
 
