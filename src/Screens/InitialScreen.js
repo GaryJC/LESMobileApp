@@ -44,10 +44,13 @@ export default function InitialScreen() {
           // setLogin();
         } else {
           //TODO 快速登陆失败了，跳转到LoginScreen
+          console.log("llllll");
           navigation.navigate("Login");
         }
       } else {
         //TODO 没有登录信息，跳转到LoginScreen
+        console.log("llllll");
+        navigation.navigate("Login");
       }
 
       // setIsInitializing(false);

@@ -127,7 +127,10 @@ class MessageService {
     //发布UI事件，通知ui指定对话有更新
     JSEvent.emit(UIEvents.Message.Message_Chat_Updated, { chatId, msgData });
     //更新对话列表，携带有更新的chatId
-    JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, chatId);
+    JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, {
+      payload: chatId,
+      action: "update",
+    });
 
     return msgData;
   }
@@ -205,7 +208,10 @@ class MessageService {
       const list = await DatabaseService.Inst.loadChatList();
       DataCenter.messageCache.setChatList(list);
       //更新对话列表事件
-      JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, null);
+      JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, {
+        chatId: "",
+        action: "",
+      });
     } catch (e) {
       console.error("load user chat list error", e);
     }

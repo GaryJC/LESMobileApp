@@ -84,6 +84,7 @@ export const RecomFriendDataData = [
   new FriendData(5, "Player2", 0, "https://i.pravatar.cc"),
 ];
 
+/*
 export const MessageData = [
   {
     recipientId: 2,
@@ -196,7 +197,7 @@ export const MessageData = [
     ],
   },
 ];
-
+*/
 export const ChatListData = [
   new ChatList(2, require("../../assets/img/gameCardBg.jpg")),
   new ChatList(3, require("../../assets/img/userBg.jpg")),

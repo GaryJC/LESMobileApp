@@ -23,6 +23,7 @@ export const ChatList = ({
     // add onPress handler to switch chat recipient
     <TouchableHighlight
       onPress={() => onClickChatHandler({ chatId: chatId, targetId: targetId })}
+      // onPress={() => console.log(targetId)}
     >
       <View className="relative">
         <View

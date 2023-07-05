@@ -1,6 +1,7 @@
 import { View, Text, ImageBackground, ActivityIndicator } from "react-native";
 import Constants from "../modules/Constants";
 import { useState, useEffect } from "react";
+import DataCenter from "../modules/DataCenter";
 
 export const ChatBubble = ({
   senderId,
@@ -13,7 +14,7 @@ export const ChatBubble = ({
   const [avatar, setAvatar] = useState();
   const [date, setDate] = useState();
 
-  console.log("statusss: ", status);
+  // console.log("statusss: ", status);
 
   useEffect(() => {
     const { name, avatar } = userInfo.find((item) => item.id === senderId);
@@ -44,23 +45,48 @@ export const ChatBubble = ({
     setDate(date);
   }, []);
 
-  return (
-    <View className="flex-row py-[10px] w-[100%]">
-      <View className="overflow-hidden rounded-full w-[50px] h-[50px]">
-        <ImageBackground
-          source={{ uri: avatar }}
-          className="w-[100%] h-[100%]"
-          resizeMode="cover"
-        />
+  const Avatar = () => (
+    <View className="overflow-hidden rounded-full w-[50px] h-[50px]">
+      <ImageBackground
+        source={{ uri: avatar }}
+        className="w-[100%] h-[100%]"
+        resizeMode="cover"
+      />
+    </View>
+  );
+
+  const OwnBubbles = () => (
+    <View className="flex-row py-[10px] justify-end">
+      <View>
+        <View className="flex-row justify-end items-end">
+          <Text className="text-[17px] text-white font-bold">{name}</Text>
+          <Text className="text-[10px] text-[#CFCFCF] pl-[10px]">{date}</Text>
+        </View>
+        <View className="flex-row justify-end pl-[30vw]">
+          <Text className="text-[13px] text-white">{content}</Text>
+          {status === Constants.deliveryState.delivering && (
+            <ActivityIndicator
+              className="pl-[10px"
+              size={"small"}
+              color={"#8D8D8D"}
+            />
+          )}
+        </View>
       </View>
+      <Avatar />
+    </View>
+  );
+
+  const OtherBubbles = () => (
+    <View className={"flex-row py-[10px] justify-start"}>
+      <Avatar />
       <View className="justify-evenly pl-[10px]">
         <View className="flex-row items-end">
           <Text className="text-[17px] text-white font-bold">{name}</Text>
           <Text className="text-[10px] text-[#CFCFCF] pl-[10px]">{date}</Text>
         </View>
-
         <View className="flex-row">
-          <Text className="text-[13px] text-white w-[80%]">{content}</Text>
+          <Text className="text-[13px] text-white pr-[30vw]">{content}</Text>
           {status === Constants.deliveryState.delivering && (
             <ActivityIndicator
               className="pl-[10px"
@@ -71,5 +97,15 @@ export const ChatBubble = ({
         </View>
       </View>
     </View>
+  );
+
+  return (
+    <>
+      {senderId === DataCenter.userInfo.accountId ? (
+        <OwnBubbles />
+      ) : (
+        <OtherBubbles />
+      )}
+    </>
   );
 };

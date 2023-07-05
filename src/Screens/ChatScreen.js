@@ -33,6 +33,7 @@ import DataCenter from "../modules/DataCenter";
 import IMUserInfoService from "../services/IMUserInfoService";
 import { ChatBubble } from "../Components/ChatBubble";
 import { ChatList } from "../Components/ChatList";
+import MessageData from "../Models/MessageData";
 
 // import { bottomTabHeight } from "../App";
 
@@ -95,6 +96,10 @@ const messageReducer = (state, action) => {
       //   }
       // });
       return action.payload;
+
+    case "CLEAR_MESSAGES":
+      return [];
+
     default:
       throw new Error();
   }
@@ -116,6 +121,7 @@ const ChatScreen = () => {
   const [chatListData, setChatListData] = useState([]);
   // 当前聊天窗口的聊天记录
   const [messages, dispatchMessages] = useReducer(messageReducer, []);
+  console.log("messages: ", messages);
   // 每个聊天列表的新消息数量
   const [newMsgCount, setNewMsgCount] = useState([]);
 
@@ -129,49 +135,11 @@ const ChatScreen = () => {
    */
   const msgListener = ({ chatId, msgData }) => {
     // 如果聊天列表为空，来了新消息，直接显示
-    // console.log("msgData: ", msgData);
+    console.log("msgData: ", msgData);
 
     // 如果当前chatId和接受到的信息chatId匹配就直接更新UI
     console.log("cur chat id and message id: ", curChatId, chatId);
     if (curChatId === chatId) {
-      // const messageList = DataCenter.messageCache.getMesssageList(
-      //   chatId,
-      //   0,
-      //   10
-      // );
-      // console.log("Message data received: ", messageList);
-      // messageList.forEach((messageData) => {
-      //   if (messageData.status === Constants.deliveryState.delivered) {
-      //     dispatchMessages({
-      //       type: "UPDATE_MESSAGE_STATUS",
-      //       payload: messageData,
-      //     });
-      //   } else {
-      //     dispatchMessages({
-      //       type: "ADD_MESSAGE",
-      //       payload: messageData,
-      //     });
-      //   }
-      // });
-
-      // 当信息的发送者是用户自己，并且信息的状态是delivering的时候，才需要更新信息
-      // 其他情况直接添加
-      // if (
-      //   msgData.senderId === DataCenter.userInfo.accountId &&
-      //   msgData.status === Constants.deliveryState.delivered
-      // ) {
-      //   dispatchMessages({
-      //     type: "UPDATE_MESSAGE_STATUS",
-      //     payload: msgData,
-      //   });
-      // } else {
-      //   dispatchMessages({
-      //     type: "ADD_MESSAGE",
-      //     payload: msgData,
-      //   });
-      // }
-      // 如果msg id存在在state里，add, otherwise update
-      // console.log("nnnn: ", messagesRef.current, msgData);
       const isExisted = messagesRef.current.find(
         (item) => item.messageId === msgData.messageId
       );
@@ -219,11 +187,19 @@ const ChatScreen = () => {
    * 获取新消息数量
    * @param {string | null} chatId
    */
-  const chatListListener = (chatId) => {
+  const chatListListener = ({ chatId, action }) => {
+    console.log("chat id & action: ", chatId, action, curChatId);
+    if (action === "delete" && chatId === curChatId) {
+      setCurUserInfo(null);
+      dispatchMessages({
+        type: "CLEAR_MESSAGES",
+      });
+    }
     // 重新将对话列表排序
     const chatList = DataCenter.messageCache.getChatList();
+    console.log("chat list: ", chatList);
     setChatListData(handleChatListData(chatList));
-    console.log("chat list listener updated id: ", chatId, chatList);
+    // console.log("chat list listener updated id: ", chatId, chatList);
 
     // 获取新消息数量
     const chatListNewMsgCount = getChatListMsgCount(chatList);
@@ -337,17 +313,20 @@ const ChatScreen = () => {
    * @param {number} targetId
    */
   const onClickChatHandler = ({ chatId, targetId }) => {
+    console.log("chatId & targetId: ", chatId, targetId, curChatId);
     // 已经在这个窗口的话不操作
     if (curChatId !== chatId) {
       // 清空数据
       const chatListItem = DataCenter.messageCache.touchChatData(chatId);
-      console.log("after touch count: ", chatListItem.newMessageCount);
+      console.log("chat list item: ", chatListItem);
+      // console.log("after touch count: ", chatListItem.newMessageCount);
 
       chatListListener(chatId);
 
       setCurChatId(chatId);
       setCurRecipientId(targetId);
       const userInfo = getUserInfo(targetId);
+      console.log("cur user info: ", userInfo);
       setCurUserInfo(userInfo);
 
       dispatchMessages({
@@ -358,6 +337,18 @@ const ChatScreen = () => {
       });
     }
     console.log("switched chat id: ", chatId);
+  };
+
+  const onMessageSendHandler = () => {
+    MessageService.Inst.sendMessage(curRecipientId, newMessage);
+    // const msgData = new MessageData();
+    // msgData.content = newMessage;
+    // msgData.senderId = DataCenter.userInfo.accountId;
+    // msgData.status = Constants.deliveryState.delivering;
+    // dispatchMessages({
+    //   type: "ADD_MESSAGE",
+    //   payload: msgData,
+    // });
   };
 
   return (
@@ -395,7 +386,7 @@ const ChatScreen = () => {
       <View className="flex-1 bg-[#262F38] rounded-lg">
         <View className="flex-row justify-between p-[10px]">
           {curUserInfo
-            .filter((item) => item.id !== DataCenter.userInfo.accountId)
+            ?.filter((item) => item.id !== DataCenter.userInfo.accountId)
             .map((item, index) => (
               <Text key={index} className="text-white font-bold text-[20px]">
                 {item.name}
@@ -451,9 +442,7 @@ const ChatScreen = () => {
               placeholderTextColor="#CACACA"
             />
             <TouchableOpacity
-              onPress={() =>
-                MessageService.Inst.sendMessage(curRecipientId, newMessage)
-              }
+              onPress={onMessageSendHandler}
               className="bg-[#5EB857] p-[5px] rounded"
             >
               <Text className="text-white font-bold">Send</Text>

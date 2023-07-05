@@ -75,7 +75,10 @@ export default function FriendBottomSheet({
         // 移除缓存中对应的聊天列表
         DataCenter.messageCache.removeChatListItem(chatId);
         // 刷新好友列表
-        JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated);
+        JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, {
+          chatId: chatId,
+          action: "delete",
+        });
         setIsSheetOpen(false);
       })
       .catch((e) => {
