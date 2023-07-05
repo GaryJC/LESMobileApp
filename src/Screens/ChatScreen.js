@@ -166,11 +166,12 @@ const ChatScreen = () => {
   const handleChatListData = (chatList) => {
     // 将原始的数据转换成UI所需要的数据
     const chatListData = chatList.map((item) => {
-      const targetId = item.targetId;
+      // const targetId = item.targetId;
       // 目前头像为空，先用placeholder
       // const avatar = IMUserInfoService.Inst.getUser(targetId).avatar;
-      const avatar = `https://i.pravatar.cc/150?img=${targetId}`;
       const chatId = item.chatId;
+      const targetId = item.chatId.split("-")[2];
+      const avatar = `https://i.pravatar.cc/150?img=${targetId}`;
       return {
         chatId: chatId,
         targetId: targetId,

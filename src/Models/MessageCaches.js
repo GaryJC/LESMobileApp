@@ -265,7 +265,6 @@ class ChatListItem {
 
   constructor(chatId) {
     this.#chatId = chatId;
-    this.targetId = chatId.split("-")[2];
     this.#newMessageCount = 0;
     this.refresh();
   }
