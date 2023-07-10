@@ -35,6 +35,7 @@ export default function VerifyCodeModal({
 
   async function signupHandler() {
     setIsLoading(true);
+    console.log(email, token, verifyCode);
     try {
       const response = await signupRequest(email, token, verifyCode);
       const data = response.data;

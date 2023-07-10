@@ -40,14 +40,14 @@ class DataSavingService {
 
   /**
    * @deprecated 这个方法不再使用
-   * @param {} message 
+   * @param {} message
    */
   onSavingMessage(message) {
     // 缓存消息
     // 发布消息UI更新事件
     console.log("timelineId: ", message.getTimelineid());
     const senderId = message.getSenderid();
-    const recipentId = message.getRecipientid();
+    const recipientId = message.getRecipientid();
     const messageId = message.getMessageid();
     const content = message.getContent();
     const timelineId = message.getTimelineid();
@@ -68,15 +68,14 @@ class DataSavingService {
 
     // 对话窗口的id
     const chatId =
-      senderId < recipentId
-        ? senderId + "-" + recipentId
-        : recipentId + "-" + senderId;
-
+      senderId < recipientId
+        ? senderId + "-" + recipientId
+        : recipientId + "-" + senderId;
 
     const messageData = new MessageData();
     messageData.messageId = messageId;
     messageData.senderId = senderId;
-    messageData.recipentId = recipentId;
+    messageData.recipientId = recipientId;
     messageData.timelineId = timelineId;
     messageData.content = content;
     messageData.status = status;
@@ -116,9 +115,9 @@ class DataSavingService {
 
   /**
    * 将用户的登录信息保存到DataCenter中
-   * @param {number} id 
-   * @param {string} key 
-   * @param {{name:string, tag:number, email:string, state:IMUserState}} imUserInfo 
+   * @param {number} id
+   * @param {string} key
+   * @param {{name:string, tag:number, email:string, state:IMUserState}} imUserInfo
    */
   saveLoginDataToDataCenter(id, key, email, imUserInfo) {
     DataCenter.userInfo.accountId = id;
@@ -129,20 +128,20 @@ class DataSavingService {
 
   /**
    * 将数据保存到Secure Store中
-   * @param {string} key 
-   * @param {string|object} value 
+   * @param {string} key
+   * @param {string|object} value
    */
   async secureSaveData(key, value) {
-    const t = typeof (value);
+    const t = typeof value;
     let v = value;
-    if (t != 'string') {
+    if (t != "string") {
       v = JSON.stringify(value);
     }
 
     const data = {
       type: t,
       value: v,
-    }
+    };
 
     try {
       await SecureStore.setItemAsync(key, JSON.stringify(data));
@@ -155,7 +154,7 @@ class DataSavingService {
 
   /**
    * 从Secure Store中读取数据
-   * @param {string} key 
+   * @param {string} key
    * @returns {string|object}
    */
   async secureGetData(key) {
@@ -172,12 +171,11 @@ class DataSavingService {
         return null;
       }
 
-      if (json.type == 'string') {
+      if (json.type == "string") {
         return json.value;
       } else {
         return JSON.parse(json.value);
       }
-
     } catch (e) {
       console.log(`getItem ${key} => ${value} Failed: `, e);
       return null;
@@ -186,25 +184,31 @@ class DataSavingService {
 
   init() {
     //this.addDataSavingStateListener();
-    JSEvent.on(DataEvents.Message.MessageState_Sent, msg => this.#onReceiveMessage(msg));
-    JSEvent.on(DataEvents.Message.TimelineState_Updated, msg => this.#onReceiveMessage(msg));
-    JSEvent.on(DataEvents.Message.TimelineId_Updated, timelineId => this.#onTimelineIdUpdated(timelineId));
+    JSEvent.on(DataEvents.Message.MessageState_Sent, (msg) =>
+      this.#onReceiveMessage(msg)
+    );
+    JSEvent.on(DataEvents.Message.TimelineState_Updated, (msg) =>
+      this.#onReceiveMessage(msg)
+    );
+    JSEvent.on(DataEvents.Message.TimelineId_Updated, (timelineId) =>
+      this.#onTimelineIdUpdated(timelineId)
+    );
   }
 
-  #onTimelineIdUpdated(timelineId){
+  #onTimelineIdUpdated(timelineId) {
     DatabaseService.Inst.saveTimelineId(timelineId);
   }
 
   #onReceiveMessage(msgData) {
     //将收到的消息异步存库
     DatabaseService.Inst.saveMessage(msgData)
-      .then(succ =>
-        console.log(succ))
-      .catch(error => console.log(error));
+      .then((succ) => console.log("save success: ", succ))
+      .catch((error) => console.log("save fail: ", error));
 
     const chatId = MessageCaches.MakeChatIDByMsgData(msgData);
     //保存chatlist
     const item = DataCenter.messageCache.getChatListItem(chatId);
+    console.log("iiiii: ", item);
     if (item != null) {
       DatabaseService.Inst.saveChatListItem(item);
     }

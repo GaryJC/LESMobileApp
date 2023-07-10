@@ -22,7 +22,7 @@ class MessageCaches {
     } else {
       return MessageCaches.MakeChatID(
         msgData.senderId,
-        msgData.recipentId,
+        msgData.recipientId,
         msgData.messageType
       );
     }
@@ -30,15 +30,15 @@ class MessageCaches {
 
   static MakeChatID(
     senderId,
-    recipentId,
+    recipientId,
     type = LesConstants.IMMessageType.Single
   ) {
     if (type == LesConstants.IMMessageType.Single) {
-      const id1 = Math.min(senderId, recipentId);
-      const id2 = Math.max(senderId, recipentId);
+      const id1 = Math.min(senderId, recipientId);
+      const id2 = Math.max(senderId, recipientId);
       return `chat-${id1}-${id2}`;
     } else {
-      return `group-${recipentId}`;
+      return `group-${recipientId}`;
     }
   }
 
@@ -102,7 +102,7 @@ class MessageCaches {
     if (chatData == null) {
       let targetId =
         msgData.senderId == this.#currUserId
-          ? msgData.recipentId
+          ? msgData.recipientId
           : msgData.senderId;
       if (msgData.messageType == IMMessageType.Group) {
         targetId = msgData.groupId;

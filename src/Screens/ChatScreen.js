@@ -10,6 +10,7 @@ import {
   ImageBackground,
   StyleSheet,
   StatusBar,
+  ActivityIndicator,
 } from "react-native";
 // import { MessageData, ChatListData } from "../Data/dummyData";
 import {
@@ -46,7 +47,8 @@ const messageReducer = (state, action) => {
     case "ADD_MESSAGE":
       // order
       return [...state, action.payload];
-
+    case "LOAD_MESSAGE":
+      return [...action.payload, ...state];
     case "UPDATE_MESSAGE_STATUS":
       // console.log(state);
       // let updatedState = state.map((message) =>
@@ -70,10 +72,15 @@ const messageReducer = (state, action) => {
 
       const updatedState = state.map((message) =>
         message.messageId === action.payload.messageId
-          ? { ...message, status: action.payload.status }
+          ? {
+              ...message,
+              status: action.payload.status,
+              timelineId: action.payload.timelineId,
+            }
           : message
       );
-      return updatedState;
+      console.log("updated messages: ", updatedState);
+      return updatedState.sort((a, b) => a.timelineId - b.timelineId);
 
     case "RESET_AND_ADD_MESSAGES":
       // return action.payload.map((messageData) => {
@@ -95,7 +102,7 @@ const messageReducer = (state, action) => {
       //     }
       //   }
       // });
-      return action.payload;
+      return action.payload.sort((a, b) => a.timelineId - b.timelineId);
 
     case "CLEAR_MESSAGES":
       return [];
@@ -121,13 +128,56 @@ const ChatScreen = () => {
   const [chatListData, setChatListData] = useState([]);
   // 当前聊天窗口的聊天记录
   const [messages, dispatchMessages] = useReducer(messageReducer, []);
-  console.log("messages: ", messages);
+  // console.log("messages: ", messages);
   // 每个聊天列表的新消息数量
   const [newMsgCount, setNewMsgCount] = useState([]);
+
+  const [startIndex, setStartIndex] = useState(0);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [loadCount, setLoadCount] = useState(9);
 
   const messagesRef = useRef();
 
   messagesRef.current = messages;
+
+  const loadMoreMessages = async () => {
+    // setStartIndex((pre) => pre + 10);
+    console.log("startIndex: ", startIndex, isLoading);
+    const loadedData = DataCenter.messageCache.getMesssageList(
+      curChatId,
+      startIndex,
+      loadCount
+    );
+    setStartIndex((pre) => pre + loadedData.length);
+    console.log("after loaded startIndex: ", startIndex);
+    console.log("loaded data: ", loadedData);
+    dispatchMessages({
+      type: "LOAD_MESSAGE",
+      payload: loadedData,
+    });
+    setIsLoading(false);
+  };
+
+  const handleScrollEnd = async (event) => {
+    if (event.nativeEvent.contentOffset.y === 0) {
+      setIsLoading(true);
+      setTimeout(() => {
+        loadMoreMessages();
+      }, 1000);
+      // await loadMoreMessages(); // directly calling loadMoreMessages
+    }
+  };
+
+  const renderHeader = () => {
+    if (!isLoading) return null;
+    return (
+      <View style={{ paddingVertical: 20 }}>
+        <ActivityIndicator size="small" />
+      </View>
+    );
+  };
 
   /**
    * 指定对话有数据更新时执行
@@ -170,7 +220,9 @@ const ChatScreen = () => {
       // 目前头像为空，先用placeholder
       // const avatar = IMUserInfoService.Inst.getUser(targetId).avatar;
       const chatId = item.chatId;
-      const targetId = item.chatId.split("-")[2];
+      const [smallerId, biggerId] = chatId.split("-").slice(1, 3);
+      const targetId =
+        smallerId == DataCenter.userInfo.accountId ? biggerId : smallerId;
       const avatar = `https://i.pravatar.cc/150?img=${targetId}`;
       return {
         chatId: chatId,
@@ -198,7 +250,7 @@ const ChatScreen = () => {
     }
     // 重新将对话列表排序
     const chatList = DataCenter.messageCache.getChatList();
-    console.log("chat list: ", chatList);
+    console.log("chat listttt: ", chatList);
     setChatListData(handleChatListData(chatList));
     // console.log("chat list listener updated id: ", chatId, chatList);
 
@@ -268,9 +320,13 @@ const ChatScreen = () => {
         setCurChatId(chatId);
         // msgListener(chatId);
         // 获取初始化对话列表的聊天信息
-        const messageData = DataCenter.messageCache
-          .getMesssageList(chatId, 0, 10)
-          .reverse();
+        const messageData = DataCenter.messageCache.getMesssageList(
+          chatId,
+          startIndex,
+          loadCount
+        );
+        setStartIndex((pre) => pre + messageData.length);
+        // .reverse();
         dispatchMessages({
           type: "RESET_AND_ADD_MESSAGES",
           payload: messageData,
@@ -281,6 +337,7 @@ const ChatScreen = () => {
         console.log("targetId: ", targetId);
         // 获取初始化窗口的用户信息，如id, name, avatar
         const userInfo = getUserInfo(targetId);
+        console.log("cur user info: ", userInfo, targetId);
         setCurUserInfo(userInfo);
         // 将初始化对话列表转换成UI需要的格式
         const chatListData = handleChatListData(chatList);
@@ -304,6 +361,10 @@ const ChatScreen = () => {
       JSEvent.remove(UIEvents.User.User_Click_Chat_Updated, onClickChatHandler);
     };
   }, [curChatId]);
+
+  useEffect(() => {
+    console.log("messages: ", messages);
+  }, [messages]);
 
   const flatListRef = useRef();
 
@@ -332,9 +393,8 @@ const ChatScreen = () => {
 
       dispatchMessages({
         type: "RESET_AND_ADD_MESSAGES",
-        payload: DataCenter.messageCache
-          .getMesssageList(chatId, 0, 10)
-          .reverse(),
+        payload: DataCenter.messageCache.getMesssageList(chatId, 0, loadCount),
+        // .reverse(),
       });
     }
     console.log("switched chat id: ", chatId);
@@ -424,14 +484,19 @@ const ChatScreen = () => {
             )}
             ListEmptyComponent={<Text>No messages to display</Text>}
             keyExtractor={(item, index) => index.toString()}
-            onContentSizeChange={() =>
-              messages.length > 0 &&
-              flatListRef.current?.scrollToEnd({ animated: true })
-            }
-            onLayout={() =>
-              messages.length > 0 &&
-              flatListRef.current?.scrollToEnd({ animated: true })
-            }
+            // onContentSizeChange={() =>
+            //   messages.length > 0 &&
+            //   flatListRef.current?.scrollToEnd({ animated: true })
+            // }
+            // onLayout={() =>
+            //   messages.length > 0 &&
+            //   flatListRef.current?.scrollToEnd({ animated: true })
+            // }
+            // onEndReached={() => console.log("end")}
+            // inverted
+            onMomentumScrollEnd={handleScrollEnd}
+            // ListFooterComponent={renderFooter}
+            ListHeaderComponent={renderHeader}
           />
 
           <View className="flex-row items-center py-[10px] h-[50px]">

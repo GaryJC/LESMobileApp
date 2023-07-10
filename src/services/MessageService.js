@@ -48,13 +48,12 @@ class MessageService {
   }
 
   // 发送消息功能
-  sendMessage(recipentId, message) {
+  sendMessage(recipientId, message) {
     return new Promise((resolve, reject) => {
-      LesPlatformCenter.IMFunctions.sendMessage(recipentId, message)
+      LesPlatformCenter.IMFunctions.sendMessage(recipientId, message)
         // 发布UI加载事件？
         .then((message) => {
           //如果服务器成功处理
-
           //存入缓存并发布事件
           // const msgData = this.#onTimelineUpdated(message);
           const msgData = this.#onMessageSent(message);
@@ -82,7 +81,7 @@ class MessageService {
   #onMessageSent(timelineData) {
     //转化为  MessageData
     const msgData = this.#pbTimelineDataToMessageData(timelineData);
-
+    console.log("on message sent: ", timelineData, msgData);
     //存入messageCaches
     DataCenter.messageCache.pushMessage(msgData);
 
@@ -107,7 +106,7 @@ class MessageService {
   #onTimelineUpdated(timelineData) {
     //转化为  MessageData
     const msgData = this.#pbTimelineDataToMessageData(timelineData);
-
+    console.log("on time line updated");
     if (msgData.timelineId == 0) {
       //新消息，先赋予一个当前timelineId的最大值，方便排序使用
       msgData.timelineId = this.#latestTimelineId + 1;
@@ -142,7 +141,7 @@ class MessageService {
   #pbTimelineDataToMessageData(timelineData) {
     const timelineId = timelineData.getTimelineid();
     const senderId = timelineData.getSenderid();
-    const recipentId = timelineData.getRecipientid();
+    const recipientId = timelineData.getRecipientid();
     const messageId = timelineData.getMessageid();
     const content = timelineData.getContent();
     const messageType = timelineData.getMessagetype();
@@ -159,7 +158,7 @@ class MessageService {
     const messageData = new MessageData();
     messageData.messageId = messageId;
     messageData.senderId = senderId;
-    messageData.recipentId = recipentId;
+    messageData.recipientId = recipientId;
     messageData.timelineId = timelineId;
     messageData.content = content;
     messageData.status = status;
@@ -173,6 +172,23 @@ class MessageService {
 
   #updateTimelineId(timelineId) {
     const newTimelineId = Math.max(this.#latestTimelineId, timelineId);
+    // 当初始化应用时或第一次在设备打开应用时， 如果这个账号之前存在过发送过聊天信息
+    // 会造成读取之前所有的聊天记录
+    if (
+      this.#latestTimelineId !== 0 &&
+      timelineId !== 0 &&
+      timelineId - this.#latestTimelineId !== 1
+    ) {
+      LesPlatformCenter.IMFunctions.requestTimeline(
+        this.#latestTimelineId,
+        timelineId
+      ).then((res) => {
+        console.log("request: ", res);
+        res.datas.forEach((data) => {
+          this.#onTimelineUpdated(data);
+        });
+      });
+    }
     this.#latestTimelineId = newTimelineId;
     JSEvent.emit(DataEvents.Message.TimelineId_Updated, this.#latestTimelineId);
   }
@@ -208,14 +224,26 @@ class MessageService {
       const list = await DatabaseService.Inst.loadChatList();
       DataCenter.messageCache.setChatList(list);
       //更新对话列表事件
-      JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, {
-        chatId: "",
-        action: "",
-      });
+      // JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, {
+      //   chatId: "",
+      //   action: "",
+      // });
     } catch (e) {
       console.error("load user chat list error", e);
     }
+    try {
+      const messages = await DatabaseService.Inst.loadAllMessages();
+      messages.forEach((message) => {
+        DataCenter.messageCache.pushMessage(message);
+      });
+      // const data = DataCenter.messageCache.getMesssageList("chat2-8", 0, 10);
+      console.log("database messages: ", messages);
+    } catch (e) {
+      console.error("load message error", e);
+    }
+
     this.#latestTimelineId = await DatabaseService.Inst.loadTimelineId();
+    console.log("timelineid in database: ", this.#latestTimelineId);
   }
 
   async onUserRelogin(state) {

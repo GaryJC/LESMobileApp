@@ -228,6 +228,7 @@ export default function SignupScreen() {
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
         email={email}
+        token={token}
         sendCodeButton={
           <SendCodeButton
             style={

@@ -25,6 +25,8 @@ import JSEvent from "./src/utils/JSEvent";
 import { View, Text, ActivityIndicator } from "react-native";
 import { UIEvents, DataEvents } from "./src/modules/Events";
 import Constants from "./src/modules/Constants";
+import DatabaseService from "./src/services/DatabaseService";
+import DataCenter from "./src/modules/DataCenter";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();

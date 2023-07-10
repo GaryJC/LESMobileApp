@@ -14,9 +14,10 @@ export const ChatBubble = ({
   const [avatar, setAvatar] = useState();
   const [date, setDate] = useState();
 
-  // console.log("statusss: ", status);
+  console.log("statusss: ", status);
 
   useEffect(() => {
+    console.log("user info: ", userInfo, senderId);
     const { name, avatar } = userInfo.find((item) => item.id === senderId);
     setName(name);
     setAvatar(avatar);

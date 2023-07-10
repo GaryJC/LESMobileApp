@@ -45,7 +45,6 @@ export default class DatabaseService {
 
   async #openDatabase(userId) {
     this.#currDb = SQLite.openDatabase(`les-db-${userId}`);
-
     try {
       const version = await this.#getVersion();
       //先尝试建数据库，把没有的数据表创建出来
@@ -326,7 +325,7 @@ export default class DatabaseService {
         messageId,
         timelineId,
         senderId,
-        recipentId,
+        recipientId,
         messageType,
         groupId,
         timestamp,
@@ -343,7 +342,7 @@ export default class DatabaseService {
               messageId,
               timelineId,
               senderId,
-              recipentId,
+              recipientId,
               messageType,
               groupId,
               timestamp,
@@ -357,7 +356,7 @@ export default class DatabaseService {
               values = [
                 timelineId,
                 senderId,
-                recipentId,
+                recipientId,
                 messageType,
                 groupId,
                 timestamp,
@@ -531,6 +530,32 @@ export default class DatabaseService {
             resolve(r);
           },
           (s, error) => {
+            reject(error);
+          }
+        );
+      });
+    });
+  }
+
+  /**
+   * Load all messages from the database
+   * @returns {Promise}
+   */
+  loadAllMessages() {
+    return new Promise((resolve, reject) => {
+      if (this.#currDb == null) reject(ERROR_DB_ISNULL);
+      this.#currDb.transaction((tx) => {
+        tx.executeSql(
+          "select * from tbl_message",
+          [],
+          (statement, result) => {
+            let messages = [];
+            for (let i = 0; i < result.rows.length; i++) {
+              messages.push(result.rows.item(i));
+            }
+            resolve(messages);
+          },
+          (statement, error) => {
             reject(error);
           }
         );
