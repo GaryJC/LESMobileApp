@@ -50,10 +50,15 @@ export default function UserScreen() {
 
   const navigation = useNavigation();
 
-  const openSheet = () => {
+  const openSheet = useCallback(() => {
     // bottomSheetRef.current?.expand(); // 1 refers to the second snap point ('50%')
     setIsSheetOpen(true);
-  };
+  }, []);
+
+  const closeSheet = useCallback(() => {
+    // bottomSheetRef.current?.expand(); // 1 refers to the second snap point ('50%')
+    setIsSheetOpen(false);
+  }, []);
 
   useEffect(() => {
     setUserStatus(DataCenter.userInfo.imUserInfo.state);
@@ -194,7 +199,7 @@ export default function UserScreen() {
       {/* The bottom sheet that is used to switch the user status */}
       <StatusBottomSheet
         isSheetOpen={isSheetOpen}
-        setIsSheetOpen={setIsSheetOpen}
+        closeSheet={closeSheet}
         setUserStatus={setUserStatus}
       />
     </View>

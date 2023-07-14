@@ -385,6 +385,33 @@ export default class DatabaseService {
   }
 
   /**
+   * Searches chat history for a keyword.
+   * @param {string} keyword
+   * @returns {Promise}
+   */
+  searchChatHistory(keyword) {
+    return new Promise((resolve, reject) => {
+      if (this.#currDb == null) reject(ERROR_DB_ISNULL);
+      this.#currDb.transaction((tx) => {
+        tx.executeSql(
+          "SELECT * FROM tbl_message WHERE content LIKE ?",
+          [`%${keyword}%`],
+          (statement, result) => {
+            let messages = [];
+            for (let i = 0; i < result.rows.length; i++) {
+              messages.push(result.rows.item(i));
+            }
+            resolve(messages);
+          },
+          (statement, error) => {
+            reject(error);
+          }
+        );
+      });
+    });
+  }
+
+  /**
    * 将消息列表存入数据库
    * @param {ChatListItem[]} chatlist;
    */
@@ -440,6 +467,50 @@ export default class DatabaseService {
       });
     });
   }
+
+  /**
+   * Load 5 messages preceding and all messages following the specific timelineId
+   * @param {number} timelineId
+   * @returns {Promise<Array>}
+   */
+  /*
+  loadMessagesFromTimelineId(timelineId) {
+    return new Promise((resolve, reject) => {
+      if (this.#currDb == null) reject(ERROR_DB_ISNULL);
+      this.#currDb.transaction((tx) => {
+        tx.executeSql(
+          "SELECT * FROM tbl_message WHERE timelineId <= ? ORDER BY timelineId DESC LIMIT 6",
+          [timelineId],
+          (tx, result) => {
+            let messages = [];
+            for (let i = 0; i < result.rows.length; i++) {
+              messages.push(result.rows.item(i));
+            }
+            messages = messages.reverse(); // Reverse the messages for correct display
+
+            // Then retrieve all messages after that timelineId
+            tx.executeSql(
+              "SELECT * FROM tbl_message WHERE timelineId > ? ORDER BY timelineId ASC",
+              [timelineId],
+              (tx, result2) => {
+                for (let i = 0; i < result2.rows.length; i++) {
+                  messages.push(result2.rows.item(i));
+                }
+                resolve(messages);
+              },
+              (tx, error) => {
+                reject(error);
+              }
+            );
+          },
+          (tx, error) => {
+            reject(error);
+          }
+        );
+      });
+    });
+  }
+  */
 
   /**
    * @param {SQLite.SQLTransaction} tx

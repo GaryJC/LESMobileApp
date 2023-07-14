@@ -35,6 +35,7 @@ import IMUserInfoService from "../services/IMUserInfoService";
 import { ChatBubble } from "../Components/ChatBubble";
 import { ChatList } from "../Components/ChatList";
 import MessageData from "../Models/MessageData";
+import SearchBottomSheet from "../Components/SearchBottomSheet";
 
 // import { bottomTabHeight } from "../App";
 
@@ -131,12 +132,14 @@ const ChatScreen = () => {
   // console.log("messages: ", messages);
   // 每个聊天列表的新消息数量
   const [newMsgCount, setNewMsgCount] = useState([]);
-
+  // 读取数据的起始index
   const [startIndex, setStartIndex] = useState(0);
-
+  // 是否在拉取数据
   const [isLoading, setIsLoading] = useState(false);
-
+  // 初始显示的消息数量
   const [loadCount, setLoadCount] = useState(9);
+  // 聊天搜索窗口是否打开
+  const [isSearchSheetOpen, setIsSearchSheetOpen] = useState(false);
 
   const messagesRef = useRef();
 
@@ -150,6 +153,7 @@ const ChatScreen = () => {
       startIndex,
       loadCount
     );
+    loadedData.reverse();
     setStartIndex((pre) => pre + loadedData.length);
     console.log("after loaded startIndex: ", startIndex);
     console.log("loaded data: ", loadedData);
@@ -165,7 +169,7 @@ const ChatScreen = () => {
       setIsLoading(true);
       setTimeout(() => {
         loadMoreMessages();
-      }, 1000);
+      }, 100);
       // await loadMoreMessages(); // directly calling loadMoreMessages
     }
   };
@@ -260,22 +264,71 @@ const ChatScreen = () => {
   };
 
   /**
+   * 点击chatList切换聊天对象时更新UI
+   *
+   * @param {string} chatId
+   * @param {string} name
+   * @param {number} targetId
+   * @param {MessageData} data
+   */
+  const onClickChatHandler = ({ chatId, targetId, data }) => {
+    console.log("chatId & targetId: ", chatId, targetId, curChatId);
+    // 已经在这个窗口的话不操作
+    if (curChatId !== chatId) {
+      updateChatHandler(chatId, targetId);
+      // const count =
+      //   DataCenter.messageCache.getChatDataByChatId(chatId).messageList.length;
+      dispatchMessages({
+        type: "RESET_AND_ADD_MESSAGES",
+        payload: DataCenter.messageCache.getMesssageList(chatId, 0, loadCount),
+        // .reverse(),
+      });
+    }
+    console.log("switched chat id: ", chatId);
+  };
+
+  const updateChatHandler = (chatId, targetId) => {
+    const chatListItem = DataCenter.messageCache.touchChatData(chatId);
+    console.log("chat list item: ", chatListItem);
+    chatListListener(chatId);
+    setCurChatId(chatId);
+    setCurRecipientId(targetId);
+    const userInfo = getUserInfo(targetId);
+    console.log("cur user info: ", userInfo);
+    setCurUserInfo(userInfo);
+  };
+
+  const onSearchUpdateHandler = ({ chatId, targetId, messageId, data }) => {
+    updateChatHandler(chatId, targetId);
+    dispatchMessages({
+      type: "RESET_AND_ADD_MESSAGES",
+      payload: data,
+      // .reverse(),
+    });
+    console.log("sss: ", messageId, messages);
+    // const index = messages.findIndex((msg) => msg.messageId === messageId);
+    // flatListRef.current.scrollToIndex({ index });
+  };
+
+  /**
    * 获取当前聊天窗口所有对象的信息
    * @param {number|number[]} targetId
    * @returns {userInfo}
    */
   const getUserInfo = (targetId) => {
     // 目前头像为空，先用placeholder
-    let userInfo = IMUserInfoService.Inst.getUser(targetId).map((item) => {
-      return {
-        id: item.id,
-        avatar: `https://i.pravatar.cc/150?img=${item.id}`,
-        name: item.name,
-      };
-    });
+    const oppositeInfo = IMUserInfoService.Inst.getUser(targetId).map(
+      (item) => {
+        return {
+          id: item.id,
+          avatar: `https://i.pravatar.cc/150?img=${item.id}`,
+          name: item.name,
+        };
+      }
+    );
     // 加入用户自己的信息
-    userInfo = [
-      ...userInfo,
+    const userInfo = [
+      ...oppositeInfo,
       {
         id: DataCenter.userInfo.accountId,
         avatar: `https://i.pravatar.cc/150?img=${DataCenter.userInfo.accountId}`,
@@ -325,7 +378,7 @@ const ChatScreen = () => {
           startIndex,
           loadCount
         );
-        setStartIndex((pre) => pre + messageData.length);
+        // setStartIndex((pre) => pre + messageData.length);
         // .reverse();
         dispatchMessages({
           type: "RESET_AND_ADD_MESSAGES",
@@ -351,6 +404,7 @@ const ChatScreen = () => {
     JSEvent.on(UIEvents.Message.Message_Chat_Updated, msgListener);
     JSEvent.on(UIEvents.Message.Message_Chat_List_Updated, chatListListener);
     JSEvent.on(UIEvents.User.User_Click_Chat_Updated, onClickChatHandler);
+    JSEvent.on(UIEvents.Message.Message_Search_Updated, onSearchUpdateHandler);
 
     return () => {
       JSEvent.remove(UIEvents.Message.Message_Chat_Updated, msgListener);
@@ -359,49 +413,23 @@ const ChatScreen = () => {
         chatListListener
       );
       JSEvent.remove(UIEvents.User.User_Click_Chat_Updated, onClickChatHandler);
+      JSEvent.remove(
+        UIEvents.Message.Message_Search_Updated,
+        onSearchUpdateHandler
+      );
     };
   }, [curChatId]);
 
   useEffect(() => {
     console.log("messages: ", messages);
+    setStartIndex(messages.length);
   }, [messages]);
 
   const flatListRef = useRef();
 
-  /**
-   * 点击chatList切换聊天对象时更新UI
-   * @param {string} chatId
-   * @param {string} name
-   * @param {number} targetId
-   */
-  const onClickChatHandler = ({ chatId, targetId }) => {
-    console.log("chatId & targetId: ", chatId, targetId, curChatId);
-    // 已经在这个窗口的话不操作
-    if (curChatId !== chatId) {
-      // 清空数据
-      const chatListItem = DataCenter.messageCache.touchChatData(chatId);
-      console.log("chat list item: ", chatListItem);
-      // console.log("after touch count: ", chatListItem.newMessageCount);
-
-      chatListListener(chatId);
-
-      setCurChatId(chatId);
-      setCurRecipientId(targetId);
-      const userInfo = getUserInfo(targetId);
-      console.log("cur user info: ", userInfo);
-      setCurUserInfo(userInfo);
-
-      dispatchMessages({
-        type: "RESET_AND_ADD_MESSAGES",
-        payload: DataCenter.messageCache.getMesssageList(chatId, 0, loadCount),
-        // .reverse(),
-      });
-    }
-    console.log("switched chat id: ", chatId);
-  };
-
   const onMessageSendHandler = () => {
     MessageService.Inst.sendMessage(curRecipientId, newMessage);
+    flatListRef.current?.scrollToEnd({ animated: true });
     // const msgData = new MessageData();
     // msgData.content = newMessage;
     // msgData.senderId = DataCenter.userInfo.accountId;
@@ -410,6 +438,10 @@ const ChatScreen = () => {
     //   type: "ADD_MESSAGE",
     //   payload: msgData,
     // });
+  };
+
+  const openSearchSheet = () => {
+    setIsSearchSheetOpen(true);
   };
 
   return (
@@ -435,13 +467,16 @@ const ChatScreen = () => {
           />
         </View>
         <View className="flex-2 justify-evenly border-t-2 border-[#575757] p-[5px]">
-          <View className="overflow-hidden w-[40px] h-[40px] bg-[#262F38] rounded-full mb-[5px] items-center justify-center">
-            {/* <ImageBackground /> */}
-            <Ionicons name="search-outline" color="#5FB54F" size={24} />
-          </View>
-          <View className="overflow-hidden w-[40px] h-[40px] bg-[#262F38] rounded-full mb-[5px] items-center justify-center">
-            <Ionicons name="add-outline" color="#5FB54F" size={24}></Ionicons>
-          </View>
+          <TouchableHighlight onPress={openSearchSheet}>
+            <View className="overflow-hidden w-[40px] h-[40px] bg-[#262F38] rounded-full mb-[5px] items-center justify-center">
+              <Ionicons name="search-outline" color="#5FB54F" size={24} />
+            </View>
+          </TouchableHighlight>
+          <TouchableHighlight>
+            <View className="overflow-hidden w-[40px] h-[40px] bg-[#262F38] rounded-full mb-[5px] items-center justify-center">
+              <Ionicons name="add-outline" color="#5FB54F" size={24}></Ionicons>
+            </View>
+          </TouchableHighlight>
         </View>
       </View>
       <View className="flex-1 bg-[#262F38] rounded-lg">
@@ -473,15 +508,20 @@ const ChatScreen = () => {
           <FlatList
             ref={flatListRef}
             data={messages}
-            renderItem={({ item }) => (
-              <ChatBubble
-                senderId={item.senderId}
-                content={item.content}
-                timestamp={item.timestamp}
-                status={item.status}
-                userInfo={curUserInfo}
-              />
-            )}
+            renderItem={({ item, index }) => {
+              const preMessage = messages[index - 1];
+              return (
+                <ChatBubble
+                  // senderId={item.senderId}
+                  // content={item.content}
+                  // timestamp={item.timestamp}
+                  // status={item.status}
+                  message={item}
+                  preMessage={preMessage}
+                  userInfo={curUserInfo}
+                />
+              );
+            }}
             ListEmptyComponent={<Text>No messages to display</Text>}
             keyExtractor={(item, index) => index.toString()}
             // onContentSizeChange={() =>
@@ -509,7 +549,7 @@ const ChatScreen = () => {
             />
             <TouchableOpacity
               onPress={onMessageSendHandler}
-              className="bg-[#5EB857] p-[5px] rounded"
+              className="bg-[#6E5EDB] p-[5px] rounded"
             >
               <Text className="text-white font-bold">Send</Text>
             </TouchableOpacity>
@@ -517,6 +557,10 @@ const ChatScreen = () => {
         </KeyboardAvoidingView>
         {/* </KeyboardAwareFlatList> */}
       </View>
+      <SearchBottomSheet
+        isSearchSheetOpen={isSearchSheetOpen}
+        setIsSearchSheetOpen={setIsSearchSheetOpen}
+      />
     </View>
   );
 };

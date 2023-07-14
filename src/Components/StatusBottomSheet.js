@@ -6,7 +6,7 @@ import { StateIndicator, makeStateReadable } from "./StateIndicator";
 
 export default function StatusBottomSheet({
   isSheetOpen,
-  setIsSheetOpen,
+  closeSheet,
   setUserStatus,
 }) {
   const snapPoints = useMemo(() => ["30%"], []);
@@ -19,7 +19,7 @@ export default function StatusBottomSheet({
 
   const handleSheetEnd = useCallback(() => {
     console.log("The bottom sheet is now closed");
-    setIsSheetOpen(false);
+    closeSheet();
   }, []);
 
   const renderBackdrop = useCallback(
@@ -53,7 +53,7 @@ export default function StatusBottomSheet({
         // const readableState = makeStateReadable(state);
         // console.log("ssa: ", readableState);
         setUserStatus(state);
-        setIsSheetOpen(false);
+        closeSheet();
       })
       .catch((code) => {
         console.log(`状态设置失败: ${code.toString(16)}`);

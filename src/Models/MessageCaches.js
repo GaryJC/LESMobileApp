@@ -366,6 +366,10 @@ class ChatData {
     return this.#targetId;
   }
 
+  get messageList() {
+    return this.#messageList;
+  }
+
   /**
    * 对话类型
    *

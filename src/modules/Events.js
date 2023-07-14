@@ -127,13 +127,13 @@ export const UIEvents = {
   User: {
     /**
      * 好有状态更新时刷新UI
-     * @type {{id: number ,state: IMUserState ,onlineState:IMUserOnlineState}}
+     * @type {{id: number, state: IMUserState, onlineState:IMUserOnlineState}}
      */
     UserState_UIRefresh: "UI_EVENT_UserState_UIRefresh",
     /**
      * 从用户列表进入聊天
      * 携带参数为目标的chatId, targetId
-     * @type {{chatId:string, targetId:number}}
+     * @type {{chatId:string, targetId:number, data:null | MessageData[]}}
      */
     User_Click_Chat_Updated: "UI_EVENT_User_Click_Chat_Updated",
   },
@@ -167,5 +167,13 @@ export const UIEvents = {
      * @type {string}
      */
     Message_Chat_List_Updated: "UI_EVENT_Message_Chat_List_Updated",
+
+    /**
+     * 点击聊天记录后通知UI,指定对话有数据更新
+     * 携带参数为对话Id, 聊天目标Id, 聊天数据
+     *
+     * @type {{chatId: string, targetId: number, data: MessageData[]}}
+     */
+    Message_Search_Updated: "UI_EVENT_Message_Search_Updated",
   },
 };
