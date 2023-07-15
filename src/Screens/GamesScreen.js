@@ -54,7 +54,7 @@ export default function GamesScreen() {
   const [searchText, setSearchText] = useState();
 
   return (
-    <View className="px-[5vw] flex-1">
+    <View className="mx-[5vw] flex-1">
       {/* add event handler for submitting search */}
       {/* <View>
         <TextInput

@@ -1,4 +1,7 @@
-import BottomSheet, { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetModal,
+} from "@gorhom/bottom-sheet";
 import {
   View,
   Text,
@@ -17,12 +20,11 @@ import { UIEvents } from "../modules/Events";
 import FriendService from "../services/FriendService";
 
 export default function FriendBottomSheet({
-  isSheetOpen,
-  setIsSheetOpen,
+  bottomSheetModalRef,
   selectedFriend,
 }) {
-  const snapPoints = useMemo(() => ["70%", "60%"]);
-  const bottomSheetRef = useRef(null);
+  const snapPoints = useMemo(() => ["60%", "50%"]);
+  // const bottomSheetRef = useRef(null);
   const renderBackdrop = useCallback(
     (props) => (
       <BottomSheetBackdrop
@@ -41,10 +43,10 @@ export default function FriendBottomSheet({
 
   const handleSheetEnd = useCallback(() => {
     console.log("The bottom sheet is now closed");
-    setIsSheetOpen(false);
   }, []);
 
   const goChatHandler = () => {
+    bottomSheetModalRef.current?.close();
     navigation.navigate("Chats");
     const chatId = MessageCaches.MakeChatID(
       selectedFriend.id,
@@ -86,78 +88,82 @@ export default function FriendBottomSheet({
       });
   };
 
-  useEffect(() => {
-    if (isSheetOpen) {
-      bottomSheetRef.current?.expand(); // this will snap to the maximum provided point
-    } else {
-      bottomSheetRef.current?.close(); // this will slide down the sheet
-    }
-  }, [isSheetOpen]);
+  // useEffect(() => {
+  //   if (isSheetOpen) {
+  //     bottomSheetRef.current?.expand(); // this will snap to the maximum provided point
+  //   } else {
+  //     bottomSheetRef.current?.close(); // this will slide down the sheet
+  //   }
+  // }, [isSheetOpen]);
 
   return (
-    <BottomSheet
-      ref={bottomSheetRef}
-      index={-1} // 0 refers to the first snap point ('25%')
+    <BottomSheetModal
+      ref={bottomSheetModalRef}
+      index={1}
       snapPoints={snapPoints}
-      enablePanDownToClose={true}
       onChange={handleSheetChanges}
-      onClose={handleSheetEnd}
+      enablePanDownToClose={true}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: "#262F38" }}
       handleIndicatorStyle={{ backgroundColor: "white" }}
-      //   handleStyle={{ opacity: 0 }}
     >
-      <View>
-        <ImageBackground
-          source={require("../../assets/img/userBg.jpg")}
-          className="h-[25vh] items-center relative"
-        >
-          <Image
-            source={{
-              uri: `https://i.pravatar.cc/?img=${selectedFriend?.id}`,
-            }}
-            className="w-[100px] h-[100px] rounded-full absolute bottom-[-50px] left-[25px]"
-          />
-        </ImageBackground>
-      </View>
-      <View className="mt-[55px] ml-[20px] flex-row items-end">
-        <Text className="text-white font-bold text-[18px]">
-          {selectedFriend?.name}
-        </Text>
-        <Text className="text-white font-bold pl-[5px]">
-          #{selectedFriend?.id}
-        </Text>
-      </View>
-      <View className="flex-row justify-between mt-[10px] mx-[5%]">
-        <TouchableHighlight
-          onPress={goChatHandler}
-          className="w-[45%] h-[80px] rounded-lg overflow-hidden"
-        >
-          <View className="bg-[#131F2A] items-center justify-center w-[100%] h-[100%]">
-            <Ionicons name="chatbox-ellipses-outline" size={30} color="white" />
-            <Text className="text-white font-bold text-[15px]">Chat</Text>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight
-          onPress={() => console.log("yes")}
-          className="w-[45%] h-[80px] rounded-lg overflow-hidden"
-        >
-          <View className="bg-[#131F2A] w-[100%] h-[100%] items-center justify-center">
-            <MaterialIcons name="group-add" size={32} color="white" />
-            <Text className="text-white font-bold text-[15px]">
-              Invite to chat
-            </Text>
-          </View>
-        </TouchableHighlight>
-      </View>
-      <TouchableHighlight
-        className="mt-[20px] mx-[5%] rounded-lg overflow-hidden"
-        onPress={removeFriendHandler}
-      >
-        <View className="bg-[#131F2A] h-[35px] justify-center">
-          <Text className="text-[#FF0000] font-bold text-center">Delete</Text>
+      <View className="flex-1">
+        <View>
+          <ImageBackground
+            source={require("../../assets/img/userBg.jpg")}
+            className="h-[25vh] items-center relative"
+          >
+            <Image
+              source={{
+                uri: `https://i.pravatar.cc/?img=${selectedFriend?.id}`,
+              }}
+              className="w-[100px] h-[100px] rounded-full absolute bottom-[-50px] left-[25px]"
+            />
+          </ImageBackground>
         </View>
-      </TouchableHighlight>
-    </BottomSheet>
+        <View className="mt-[55px] ml-[20px] flex-row items-end">
+          <Text className="text-white font-bold text-[18px]">
+            {selectedFriend?.name}
+          </Text>
+          <Text className="text-white font-bold pl-[5px]">
+            #{selectedFriend?.id}
+          </Text>
+        </View>
+        <View className="flex-row justify-between mt-[10px] mx-[5%]">
+          <TouchableHighlight
+            onPress={goChatHandler}
+            className="w-[45%] h-[80px] rounded-lg overflow-hidden"
+          >
+            <View className="bg-[#131F2A] items-center justify-center w-[100%] h-[100%]">
+              <Ionicons
+                name="chatbox-ellipses-outline"
+                size={30}
+                color="white"
+              />
+              <Text className="text-white font-bold text-[15px]">Chat</Text>
+            </View>
+          </TouchableHighlight>
+          <TouchableHighlight
+            onPress={() => console.log("yes")}
+            className="w-[45%] h-[80px] rounded-lg overflow-hidden"
+          >
+            <View className="bg-[#131F2A] w-[100%] h-[100%] items-center justify-center">
+              <MaterialIcons name="group-add" size={32} color="white" />
+              <Text className="text-white font-bold text-[15px]">
+                Invite to chat
+              </Text>
+            </View>
+          </TouchableHighlight>
+        </View>
+        <TouchableHighlight
+          className="mt-[20px] mx-[5%] rounded-lg overflow-hidden"
+          onPress={removeFriendHandler}
+        >
+          <View className="bg-[#131F2A] h-[35px] justify-center">
+            <Text className="text-[#FF0000] font-bold text-center">Delete</Text>
+          </View>
+        </TouchableHighlight>
+      </View>
+    </BottomSheetModal>
   );
 }

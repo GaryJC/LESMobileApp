@@ -20,10 +20,10 @@ const Activity = ({ activityImg, activityIntro, activityTitle }) => (
       className="w-[100%] h-[100%] rounded-2xl relative"
     >
       <View className="w-[100%] h-[30%] bg-[#182634]/[0.8] absolute bottom-[0] justify-evenly">
-        <Text className="text-white text-[16px] font-bold px-[5vw]">
+        <Text className="text-white text-[16px] font-bold mx-[5vw]">
           {activityTitle}
         </Text>
-        <Text className="text-white text-[12px] px-[5vw]">{activityIntro}</Text>
+        <Text className="text-white text-[12px] mx-[5vw]">{activityIntro}</Text>
       </View>
     </ImageBackground>
   </Pressable>
@@ -50,7 +50,7 @@ export default function HomeScreen() {
   }, []);
 
   return (
-    <View className="px-[5vw] mt-[3vh] flex-1">
+    <View className="mx-[5vw] mt-[3vh] flex-1">
       {/* <Text>Home</Text> */}
       {/* <StatusBar style="auto" /> */}
       {/* <Text className="text-white text-[30px] font-bold">Light Esports</Text> */}

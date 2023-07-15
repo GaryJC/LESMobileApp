@@ -71,7 +71,7 @@ export default function FriendRequestScreen() {
   // useEffect(() => {}, [selectedTab]);
 
   return (
-    <View className="flex-1 px-[5vw]">
+    <View className="flex-1 mx-[5vw]">
       <View className="mt-[20px]">
         <FlatList
           data={notifications}

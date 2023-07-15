@@ -12,7 +12,7 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 //dummy data
 import { RecomFriendsData } from "../Data/dummyData";
 import DataCenter from "../modules/DataCenter";
@@ -25,6 +25,7 @@ import { FriendList } from "../Components/FriendList";
 import NotificationService from "../services/NotificationService";
 import { FriendButton } from "../Components/FriendButton";
 import FriendBottomSheet from "../Components/FriendBottomSheet";
+import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 
 const friendButtonContent = [
   { title: "Friends Request", icon: "emoji-people", link: "" },
@@ -60,16 +61,6 @@ export default function FriendsScreen() {
 
   const [unreadCount, setUnreadCount] = useState(0);
 
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
-
-  const [selectedFriend, setSelectedFriend] = useState();
-
-  const openSheet = (friend) => {
-    // bottomSheetRef.current?.expand(); // 1 refers to the second snap point ('50%')
-    setIsSheetOpen(true);
-    setSelectedFriend(friend);
-  };
-
   useEffect(() => {
     // 可传参数 { id, state, onlineState }
     const onFriendStateUIUpdated = () => {
@@ -81,7 +72,7 @@ export default function FriendsScreen() {
       const offline = friendList.filter((item) => item.onlineState === 2);
 
       setFriendsData([
-        { title: "Recommended Friends", data: [] },
+        // { title: "Recommended Friends", data: [] },
         { title: "Online", data: online },
         { title: "Offline", data: offline },
       ]);
@@ -161,13 +152,7 @@ export default function FriendsScreen() {
                   avatar={item.avatar}
                 />
               ) : (
-                <FriendList
-                  id={item.id}
-                  name={item.name}
-                  state={item.state}
-                  avatar={item.avatar}
-                  openSheet={() => openSheet(item)}
-                />
+                <FriendList friend={item} />
               )
             }
             renderSectionHeader={({ section: { title } }) => (
@@ -178,11 +163,6 @@ export default function FriendsScreen() {
           />
         </View>
       </View>
-      <FriendBottomSheet
-        isSheetOpen={isSheetOpen}
-        setIsSheetOpen={setIsSheetOpen}
-        selectedFriend={selectedFriend}
-      />
     </View>
   );
 }

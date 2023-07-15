@@ -79,7 +79,7 @@ const SearchBottomSheet = ({ isSearchSheetOpen, setIsSearchSheetOpen }) => {
             onChangeText={onSearchHandler}
             className="flex-1 bg-[#1B1B1B] rounded h-[100%] p-[5px] text-[#CACACA]"
             // onSubmitEditing={sendMessage}
-            placeholder="Input searching keyword"
+            placeholder="Search chat history"
             placeholderTextColor="#CACACA"
           />
         </View>

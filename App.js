@@ -21,8 +21,13 @@ import ServiceCenter from "./src/services/ServiceCenter";
 import LoginService from "./src/services/LoginService";
 import Notification from "./src/Screens/NotificationScreen";
 import FriendRequestScreen from "./src/Screens/FriendRequestScreen";
+import FriendSearchScreen from "./src/Screens/FriendsSearchScreen";
+import {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from "@gorhom/bottom-sheet";
 import JSEvent from "./src/utils/JSEvent";
-import { View, Text, ActivityIndicator } from "react-native";
+import { View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
 import { UIEvents, DataEvents } from "./src/modules/Events";
 import Constants from "./src/modules/Constants";
 import DatabaseService from "./src/services/DatabaseService";
@@ -52,10 +57,16 @@ const BottomTabNavigation = () => (
         height: bottomTabHeight,
       },
       tabBarShowLabel: false,
-      // headerTransparent: true,
       headerStyle: {
         backgroundColor: "#080F14",
       },
+      headerTitleStyle: {
+        marginLeft: 5,
+        color: "#ffffff",
+        fontSize: 30,
+        fontWeight: "bold",
+      },
+      headerTitleAlign: "left",
       headerShadowVisible: false,
       headerShown: false,
       tabBarHideOnKeyboard: true,
@@ -69,12 +80,6 @@ const BottomTabNavigation = () => (
         tabBarIcon: ({ color, size }) => (
           <Ionicons name="home-outline" color={color} size={size} />
         ),
-        headerTitleStyle: {
-          color: "#ffffff",
-          fontSize: 30,
-          fontWeight: "bold",
-          // marginLeft: 20,
-        },
         title: "Light Esports",
         headerShown: true,
       }}
@@ -91,17 +96,22 @@ const BottomTabNavigation = () => (
     <BottomTab.Screen
       name="Friends"
       component={FriendsScreen}
-      options={{
+      options={({ navigation }) => ({
         tabBarIcon: ({ color, size }) => (
           <Ionicons name="people-outline" color={color} size={size} />
         ),
-        headerTitleStyle: {
-          color: "white",
-          fontWeight: "bold",
-          fontSize: 30,
-        },
         headerShown: true,
-      }}
+        headerRight: () => (
+          <TouchableOpacity onPress={() => navigation.navigate("FriendSearch")}>
+            <Ionicons
+              name="search"
+              color={"white"}
+              size={30}
+              style={{ marginRight: 10 }}
+            />
+          </TouchableOpacity>
+        ),
+      })}
     />
     <BottomTab.Screen
       name="Games"
@@ -110,11 +120,6 @@ const BottomTabNavigation = () => (
         tabBarIcon: ({ color, size }) => (
           <Ionicons name="game-controller-outline" color={color} size={size} />
         ),
-        headerTitleStyle: {
-          color: "white",
-          fontWeight: "bold",
-          fontSize: 40,
-        },
         headerShown: true,
       }}
     />
@@ -228,7 +233,7 @@ export default function App() {
   */
 
   return (
-    <>
+    <BottomSheetModalProvider>
       <StatusBar style="light" />
 
       {/* {isInitializing ? (
@@ -292,7 +297,12 @@ export default function App() {
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="CreateName" component={CreateNameScreen} />
           <Stack.Screen name="Notification" component={Notification} />
-          <Stack.Screen name="FriendRequest" component={FriendRequestScreen} />
+          <Stack.Screen
+            name="FriendRequest"
+            component={FriendRequestScreen}
+            options={{ headerTitle: "Friend Request" }}
+          />
+          <Stack.Screen name="FriendSearch" component={FriendSearchScreen} />
         </Stack.Navigator>
       </NavigationContainer>
       {isLoading && (
@@ -301,6 +311,6 @@ export default function App() {
           <ActivityIndicator size={"small"} color={"#CACACA"} />
         </View>
       )}
-    </>
+    </BottomSheetModalProvider>
   );
 }

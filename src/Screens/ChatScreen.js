@@ -518,7 +518,9 @@ const ChatScreen = () => {
                   // status={item.status}
                   message={item}
                   preMessage={preMessage}
-                  userInfo={curUserInfo}
+                  userInfo={curUserInfo.find(
+                    (user) => user.id === item.senderId
+                  )}
                 />
               );
             }}

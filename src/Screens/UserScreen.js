@@ -172,7 +172,7 @@ export default function UserScreen() {
           )}
         </TouchableOpacity>
       </ImageBackground>
-      <View className="px-[5vw] mt-[50px] items-center">
+      <View className="mx-[5vw] mt-[50px] items-center">
         <Text className="text-white font-bold text-[30px]">
           {userInfo.name}
         </Text>

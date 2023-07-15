@@ -141,7 +141,7 @@ export default function Notification() {
   // useEffect(() => {}, [selectedTab]);
 
   return (
-    <View className="flex-1 px-[5vw]">
+    <View className="flex-1 mx-[5vw]">
       <View className="flex-row justify-between bg-[#262F38] h-[4vh] rounded-lg items-center">
         <TouchableOpacity
           className="flex-1"

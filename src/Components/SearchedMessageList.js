@@ -5,6 +5,7 @@ import {
   ImageBackground,
   TouchableHighlight,
   TouchableOpacity,
+  FlatList,
 } from "react-native";
 import { useEffect, useState } from "react";
 import IMUserInfoService from "../services/IMUserInfoService";
@@ -16,63 +17,37 @@ import JSEvent from "../utils/JSEvent";
 import { UIEvents } from "../modules/Events";
 
 const SearchedMessageList = ({ item, handleSheetEnd }) => {
-  const [name, setName] = useState();
-  const [date, setDate] = useState();
-  const [content, setContent] = useState();
-  const [senderId, setSenderId] = useState();
-  const [recipientId, setRecipientId] = useState();
-  const [timelineId, setTimelineId] = useState();
-  const [chatId, setChatId] = useState();
-  const [messageId, setMessageId] = useState();
+  const { timestamp, senderId, recipientId, content, timelineId, messageId } =
+    item;
+  const chatId = MessageCaches.MakeChatID(senderId, recipientId);
 
-  useEffect(() => {
-    const { timestamp, senderId, recipientId, content, timelineId, messageId } =
-      item;
-    setSenderId(senderId);
-    setRecipientId(recipientId);
-    setContent(content);
-    setTimelineId(timelineId);
-    setMessageId(messageId);
-    setChatId(MessageCaches.MakeChatID(senderId, recipientId));
-    let userInfo = DataCenter.userInfo;
-    if (senderId === userInfo.accountId) {
-      setName(userInfo.imUserInfo.name);
-    } else {
-      userInfo = IMUserInfoService.Inst.getUser(senderId).pop();
-      console.log("uuuuuu: ", userInfo);
-      setName(userInfo.name);
-    }
-    // setAvatar(avatar);
-    const date = formatDate(new Date(timestamp)); // Outputs in MM/DD/YY, HH:MM format
-    setDate(date);
-  }, [item]);
+  let userInfo = DataCenter.userInfo;
+  let name;
+  if (senderId === userInfo.accountId) {
+    name = userInfo.imUserInfo.name;
+  } else {
+    userInfo = IMUserInfoService.Inst.getUser(senderId).pop();
+    name = userInfo.name;
+  }
+
+  const date = formatDate(new Date(timestamp));
 
   const onClickMsgHandler = async () => {
-    // let data = await DatabaseService.Inst.loadMessagesFromTimelineId(
-    //   timelineId,
-    // );
-    // data.forEach((msg) => DataCenter.messageCache.pushMessage(msg));
     const targetId =
       DataCenter.userInfo.accountId === senderId ? recipientId : senderId;
-    // const count =
-    //   DataCenter.messageCache.getChatDataByChatId(chatId).messageList.length;
-    console.log(
-      "ooooo: ",
-      DataCenter.messageCache.getChatDataByChatId(chatId).messageList
-    );
     const messageList =
       DataCenter.messageCache.getChatDataByChatId(chatId).messageList;
-    console.log("searched data: ", data);
     const count =
       messageList.findIndex((item) => item.timelineId === timelineId) + 5;
-    console.log("data index: ", count);
     const data = DataCenter.messageCache.getMesssageList(chatId, 0, count);
+
     JSEvent.emit(UIEvents.Message.Message_Search_Updated, {
       chatId: chatId,
       targetId: targetId,
       messageId: messageId,
       data: data,
     });
+
     handleSheetEnd();
   };
 
