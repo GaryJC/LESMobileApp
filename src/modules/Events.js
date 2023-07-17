@@ -2,6 +2,7 @@ import { LesConstants } from "les-im-components";
 import MessageData from "../Models/MessageData";
 import Constants from "./Constants";
 import { AppStateStatus } from "react-native";
+import ChatGroup from "../Models/ChatGroup";
 const { IMUserState, IMUserOnlineState } = LesConstants;
 const { ReloginState } = Constants;
 export const DataEvents = {
@@ -89,6 +90,21 @@ export const DataEvents = {
     NotificationState_Updated: "DATA_EVENT_NotificationState_Updated",
   },
 
+
+  ChatGroup: {
+    /**
+     * 加入群，或者新建群聊成功后，会发送此事件，携带参数类型为ChatGroup，需要注意的是，此事的ChatGroup中可能只包含ID，没有名字，需要监听ChatGroup_Updated事件更新
+     * 
+     * @type {ChatGroup}
+     */
+    ChatGroup_New: "DATA_EVENT_ChatGroup_OnNewChatGroup",
+
+    /**
+     * 群数据更新后，会发送此事件
+     */
+    ChatGroup_Updated: "DATA_EVENT_ChatGroup_ChatGroup_Updated"
+  },
+
   Saving: {
     /**
      * @deprecated 暂时不用了
@@ -97,6 +113,8 @@ export const DataEvents = {
      */
     SavingState_Message: "DATA_EVENT_SavingState_Message",
   },
+
+
 };
 
 export const UIEvents = {

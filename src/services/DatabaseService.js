@@ -8,6 +8,7 @@ import MessageData from "../Models/MessageData";
 import { ChatListItem } from "../Models/MessageCaches";
 import { Notification, Notifications } from "../Models/Notifications";
 import { LesConstants } from "les-im-components";
+import ChatGroup from "../Models/ChatGroup";
 
 const db_version = "1.0";
 
@@ -157,6 +158,7 @@ export default class DatabaseService {
   #createTables(tx) {
     let ps = [];
     ps.push(this.#createTblMessage(tx));
+    ps.push(this.#createTblChatGroup(tx));
     ps.push(this.#createTblChatlist(tx));
     ps.push(this.#createTblNotification(tx));
     return Promise.all(ps);
@@ -202,6 +204,33 @@ export default class DatabaseService {
     //         console.log(error);
     //     }
     // );
+  }
+
+  /**
+   * 这个表格用于存储各个群聊的信息、
+   */
+  #createTblChatGroup(tx) {
+    let ps = [];
+    ps.push(this.#transactionPromise(
+      tx,
+      `create table if not exists tbl_chatgroup(
+                    groupId INTEGER PRIMARY KEY NOT NULL,
+                    name nvarchar NOT NULL,
+                    desc nvarchar NOT NULL,
+                    creator INTEGER NOT NULL,
+                    createTime INTEGER NOT NULL,
+                    iconId INTEGER NOT NULL,
+                    latestTimelineId INTEGER NOT NULL
+      )`
+    ));
+
+    ps.push(
+      this.#transactionPromise(
+        tx,
+        `create index if not exists index_chatgroup_creator on tbl_chatgroup(creator);`
+      )
+    );
+    return Promise.all(ps);
   }
 
   #createTblMessage(tx) {
@@ -311,6 +340,51 @@ export default class DatabaseService {
     //     tx.executeSql(
     //         `update tbl_version set version = ? where id = 1`, [db_version], (_, r) => { console.log(r) }, (_, e) => { console.log(e) })
     // })
+  }
+
+  /**
+   * 保存或者更新chatGroup数据
+   * @param {ChatGroup} chatGroup 
+   */
+  saveChatGroup(chatGroup) {
+    return new Promise((resolve, reject) => {
+      if (this.#currDb == null) reject(ERROR_DB_ISNULL);
+
+      const { id, name, desc, creator, createTime, iconId, latestTimelineId } = chatGroup;
+
+      this.#currDb.transaction((tx) => {
+        tx.executeSql(
+          `select groupId from tbl_chatgroup where groupId = ?`,
+          [chatGroup.id],
+          (statement, r) => {
+            let sql = "insert into tbl_chatgroup values (?,?,?,?,?,?,?)";
+            let values = [id, name, desc, creator, createTime, iconId, latestTimelineId];
+
+            if (r.rows != null && r.rows._array.length > 0) {
+              //已有数据，更新
+              sql = "update tbl_chatgroup set name = ?, desc = ?, creator = ?, createTime = ?, iconId = ?, latestTimelineId = ? where groupId = ?";
+              values = [name, desc, creator, createTime, iconId, latestTimelineId, id];
+            }
+
+            tx.executeSql(
+              sql,
+              values,
+              (statement, result) => {
+                resolve(result);
+              },
+              (statement, error) => {
+                reject(error);
+              }
+            );
+
+          },
+          (statement, error) => {
+            reject(error);
+          }
+        )
+      })
+
+    });
   }
 
   /**
@@ -589,6 +663,44 @@ export default class DatabaseService {
     });
   }
 
+  /**
+   * 读取聊天群组数据
+   * @returns {Promise<ChatGroup[]>}
+   */
+  loadChatGroup() {
+    return new Promise((resolve, reject) => {
+      if (this.#currDb == null) reject(ERROR_DB_ISNULL);
+      this.#currDb.transaction((tx) => {
+        tx.executeSql(
+          "select * from tbl_chatgroup",
+          null,
+          (_, r) => {
+            let ret = [];
+            for (let i = 0; i < r.rows.length; i++) {
+              const item = r.rows.item(i);
+              const cg = new ChatGroup();
+
+              cg.id = item.groupId;
+              cg.name = item.name;
+              cg.desc = item.desc;
+              cg.creator = item.creator;
+              cg.createTime = item.createTime;
+              cg.iconId = item.iconId;
+              cg.latestTimelineId = item.latestTimelineId;
+
+              ret.push(cg);
+            }
+            resolve(ret);
+          },
+          (_, e) => {
+            console.error("load chatlist error:", e);
+            reject(e);
+          }
+        );
+      });
+    })
+  }
+
   loadMessage() {
     return new Promise((resolve, reject) => {
       if (this.#currDb == null) reject(ERROR_DB_ISNULL);
@@ -610,6 +722,7 @@ export default class DatabaseService {
 
   /**
    * Load all messages from the database
+   * @todo 控制载入的消息数量
    * @returns {Promise}
    */
   loadAllMessages() {

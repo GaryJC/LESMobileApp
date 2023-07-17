@@ -234,7 +234,7 @@ class ChatListItem {
    *
    * 如果是单聊，则为对方用户id，如果要查找用户详细信息，则需要从  IMUserInfoService  中获取
    *
-   * 如果是群聊，则为对应群组id
+   * 如果是群聊，则为对应群组id，如果要查找群详情，则需要从 ChatGroupService 中获取
    */
   targetId;
 
