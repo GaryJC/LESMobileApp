@@ -7,6 +7,8 @@ import DatabaseService from "./DatabaseService";
 import DataCenter from "../modules/DataCenter";
 import { ChatListItem, MessageCaches } from "../Models/MessageCaches";
 import { AppStateStatus } from "react-native";
+import PBUtils from "../utils/PBUtils";
+import ChatGroupService from "./ChatGroupService";
 // import DataCenter from "../modules/DataCenter";
 
 /**
@@ -73,6 +75,30 @@ class MessageService {
     });
   }
 
+  sendChatGroupMessage(chatGroupId, message) {
+    return new Promise((resolve, reject) => {
+      LesPlatformCenter.IMFunctions.sendGroupMessage(chatGroupId, message)
+        .then((message) => {
+          //如果服务器成功处理
+          //存入缓存并发布事件
+          // const msgData = this.#onTimelineUpdated(message);
+          const msgData = this.#onMessageSent(message);
+
+          // console.log("send message: ", message);
+          // JSEvent.emit(DataEvents.Saving.SavingState_Message, message);
+
+          // DataSavingService.Inst.onSavingMessage(message);
+          resolve(msgData);
+        })
+        .catch((e) => {
+          // 如果处理失败
+          // 设置重新发送按钮
+          console.log("messgae send error: ", e);
+          reject(e);
+        });
+    });
+  }
+
   /**
    *
    * @param {PBLesIMTimelineData} timelineData
@@ -85,9 +111,13 @@ class MessageService {
     //存入messageCaches
     DataCenter.messageCache.pushMessage(msgData);
 
-    //更新当前timelinId
-    this.#updateTimelineId(msgData.timelineId);
-
+    if (msgData.messageType == LesConstants.IMMessageType.Group) {
+      //群消息数据，转给ChatGroupService处理，这里由于IMListeners只能挂1个响应函数，所以在此处集中接受，转给其他需要的服务器处理
+      ChatGroupService.Inst.onMessageSent(msgData);
+    } else {
+      //更新当前timelinId
+      this.#updateTimelineId(msgData.timelineId);
+    }
     //发布消息送达事件，给系统使用
     JSEvent.emit(DataEvents.Message.MessageState_Sent, msgData);
 
@@ -106,13 +136,17 @@ class MessageService {
   #onTimelineUpdated(timelineData) {
     //转化为  MessageData
     const msgData = this.#pbTimelineDataToMessageData(timelineData);
-    console.log("on time line updated");
-    if (msgData.timelineId == 0) {
-      //新消息，先赋予一个当前timelineId的最大值，方便排序使用
-      msgData.timelineId = this.#latestTimelineId + 1;
+
+    if (msgData.messageType == LesConstants.IMMessageType.Single) {
+      if (msgData.timelineId == 0) {
+        //新消息，先赋予一个当前timelineId的最大值，方便排序使用
+        msgData.timelineId = this.#latestTimelineId + 1;
+      } else {
+        //更新当前timelinId
+        this.#updateTimelineId(msgData.timelineId);
+      }
     } else {
-      //更新当前timelinId
-      this.#updateTimelineId(msgData.timelineId);
+      ChatGroupService.Inst.onTimelineUpdated(msgData);
     }
 
     //存入messageCaches
@@ -139,35 +173,36 @@ class MessageService {
    * @returns {MessageData}
    */
   #pbTimelineDataToMessageData(timelineData) {
-    const timelineId = timelineData.getTimelineid();
-    const senderId = timelineData.getSenderid();
-    const recipientId = timelineData.getRecipientid();
-    const messageId = timelineData.getMessageid();
-    const content = timelineData.getContent();
-    const messageType = timelineData.getMessagetype();
-    const groupId = timelineData.getGroupid();
-    const contentType = timelineData.getContenttype();
-    const timestamp = timelineData.getTimestamp();
+    // const timelineId = timelineData.getTimelineid();
+    // const senderId = timelineData.getSenderid();
+    // const recipientId = timelineData.getRecipientid();
+    // const messageId = timelineData.getMessageid();
+    // const content = timelineData.getContent();
+    // const messageType = timelineData.getMessagetype();
+    // const groupId = timelineData.getGroupid();
+    // const contentType = timelineData.getContenttype();
+    // const timestamp = timelineData.getTimestamp();
 
-    // 信息的投递状态
-    let status =
-      timelineId == 0
-        ? Constants.deliveryState.delivering
-        : Constants.deliveryState.delivered;
+    // // 信息的投递状态
+    // let status =
+    //   timelineId == 0
+    //     ? Constants.deliveryState.delivering
+    //     : Constants.deliveryState.delivered;
 
-    const messageData = new MessageData();
-    messageData.messageId = messageId;
-    messageData.senderId = senderId;
-    messageData.recipientId = recipientId;
-    messageData.timelineId = timelineId;
-    messageData.content = content;
-    messageData.status = status;
-    messageData.messageType = messageType;
-    messageData.groupId = groupId;
-    messageData.contentType = contentType;
-    messageData.timestamp = timestamp;
+    // const messageData = new MessageData();
+    // messageData.messageId = messageId;
+    // messageData.senderId = senderId;
+    // messageData.recipientId = recipientId;
+    // messageData.timelineId = timelineId;
+    // messageData.content = content;
+    // messageData.status = status;
+    // messageData.messageType = messageType;
+    // messageData.groupId = groupId;
+    // messageData.contentType = contentType;
+    // messageData.timestamp = timestamp;
 
-    return messageData;
+    // return messageData;
+    return PBUtils.pbTimelineDataToMessageData(timelineData);
   }
 
   #updateTimelineId(timelineId) {
@@ -210,6 +245,14 @@ class MessageService {
       this.#onTimelineUpdated(message);
     };
 
+    LesPlatformCenter.IMListeners.onIMChatGroupTimelineUpdated = (message) => {
+      console.log(
+        `收到群消息[${message.getMessageid()}] sender [${message.getSenderid()}] group [${message.getGroupid()}], content: ${message.getContent()}`
+      );
+
+      this.#onTimelineUpdated(message);
+    }
+
     //事件改为由ServiceCenter统一监听，并调用service.onUserLogin
     // JSEvent.on(DataEvents.User.UserState_DataReady, () => {
     //   this.#onUserLogin();
@@ -244,24 +287,57 @@ class MessageService {
 
     this.#latestTimelineId = await DatabaseService.Inst.loadTimelineId();
     console.log("timelineid in database: ", this.#latestTimelineId);
+
+    //请求最新的timeline数据
+    await this.#requestTimeline();
+    await ChatGroupService.Inst.loadChatGroups();
+    // const { startId, endId, datas } =
+    //   await LesPlatformCenter.IMFunctions.requestTimeline(
+    //     this.#latestTimelineId,
+    //     -1
+    //   );
+    // datas.forEach((data) => {
+    //   this.#onTimelineUpdated(data);
+    // });
   }
 
   async onUserRelogin(state) {
     if (state == Constants.ReloginState.ReloginSuccessful) {
       //重连成功，尝试拉取最新的timeline数据
       try {
-        const { startId, endId, datas } =
-          await LesPlatformCenter.IMFunctions.requestTimeline(
-            this.#latestTimelineId,
-            -1
-          );
-        datas.forEach((data) => {
-          this.#onTimelineUpdated(data);
-        });
+        // const { startId, endId, datas } =
+        //   await LesPlatformCenter.IMFunctions.requestTimeline(
+        //     this.#latestTimelineId,
+        //     -1
+        //   );
+        // datas.forEach((data) => {
+        //   this.#onTimelineUpdated(data);
+        // });
+        await this.#requestTimeline();
+        await ChatGroupService.Inst.requestChatGroupsTimeline();
       } catch (e) {
         console.error("request timeline failed: ", e);
       }
     }
+  }
+
+  #requestTimeline() {
+    return new Promise((resolve, reject) => {
+      if (this.#latestTimelineId == 0) {
+        resolve([]);
+        return;
+      }
+      LesPlatformCenter.IMFunctions.requestTimeline(
+        this.#latestTimelineId,
+        -1
+      ).then((data) => {
+        const { startId, endId, datas } = data;
+        datas.forEach((data) => {
+          this.#onTimelineUpdated(data);
+        });
+        resolve(datas);
+      }).catch(e => reject(e));
+    })
   }
 }
 
