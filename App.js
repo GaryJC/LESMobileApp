@@ -112,9 +112,7 @@ const BottomTabNavigation = () => (
             >
               <MaterialIcons name="search" size={30} color="white" />
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("GroupInvite")}
-            >
+            <TouchableOpacity>
               <MaterialIcons name="group-add" size={30} color="white" />
             </TouchableOpacity>
           </View>

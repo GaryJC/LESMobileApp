@@ -39,6 +39,7 @@ import MessageData from "../Models/MessageData";
 import ChatSearchBottomSheet from "../Components/SearchBottomSheet";
 import { useNavigation } from "@react-navigation/native";
 import { debounce } from "lodash";
+import { LesConstants } from "les-im-components";
 
 // import { bottomTabHeight } from "../App";
 
@@ -235,21 +236,32 @@ const ChatScreen = () => {
       // const targetId = item.targetId;
       // 目前头像为空，先用placeholder
       // const avatar = IMUserInfoService.Inst.getUser(targetId).avatar;
-      const chatId = item.chatId;
-      let targetId = item.targetId;
-      if (!targetId) {
-        const [smallerId, biggerId] = chatId.split("-").slice(1, 3);
-        targetId =
-          smallerId == DataCenter.userInfo.accountId ? biggerId : smallerId;
+      if (item.type === LesConstants.IMMessageType.Single) {
+        const chatId = item.chatId;
+        let targetId = item.targetId;
+        if (!targetId) {
+          const [smallerId, biggerId] = chatId.split("-").slice(1, 3);
+          targetId =
+            smallerId == DataCenter.userInfo.accountId ? biggerId : smallerId;
+        }
+        const avatar = `https://i.pravatar.cc/150?img=${targetId}`;
+        // console.log("mmm: ", item, chatId, targetId);
+        return {
+          chatId: chatId,
+          targetId: targetId,
+          avatar: avatar,
+          name: targetId,
+        };
+      } else {
+        const chatId = item.chatId;
+        const avatar = `https://i.pravatar.cc/150?img=${1}`;
+        return {
+          chatId: chatId,
+          targetId: chatId,
+          avatar: avatar,
+          name: "group",
+        };
       }
-      const avatar = `https://i.pravatar.cc/150?img=${targetId}`;
-      // console.log("mmm: ", item, chatId, targetId);
-      return {
-        chatId: chatId,
-        targetId: targetId,
-        avatar: avatar,
-        name: targetId,
-      };
     });
     // console.log("hhhhh: ", chatListData);
     return chatListData;
@@ -288,11 +300,11 @@ const ChatScreen = () => {
    * @param {number} targetId
    * @param {MessageData} data
    */
-  const onClickChatHandler = ({ chatId, targetId, data }) => {
+  const onClickChatHandler = ({ chatId, targetId, data, type }) => {
     console.log("chatId & targetId: ", chatId, targetId, curChatId);
     // 已经在这个窗口的话不操作
     if (curChatId !== chatId) {
-      updateChatHandler(chatId, targetId);
+      updateChatHandler(chatId, targetId, type);
       // const count =
       //   DataCenter.messageCache.getChatDataByChatId(chatId).messageList.length;
       dispatchMessages({
@@ -304,15 +316,24 @@ const ChatScreen = () => {
     console.log("switched chat id: ", chatId);
   };
 
-  const updateChatHandler = (chatId, targetId) => {
+  const updateChatHandler = (chatId, targetId, type) => {
     const chatListItem = DataCenter.messageCache.touchChatData(chatId);
     // console.log("chat list item: ", chatListItem);
-    chatListListener({ chatId: chatId });
-    setCurChatId(chatId);
-    setCurRecipientId(targetId);
-    const userInfo = getUserInfo(targetId);
-    console.log("cur user info: ", userInfo);
-    setCurUserInfo(userInfo);
+    if (type === LesConstants.IMMessageType.Group) {
+      chatListListener({ chatId: chatId });
+      setCurChatId(chatId);
+      setCurRecipientId(chatId);
+      // const userInfo = getUserInfo(targetId);
+      console.log("cur user info: ", userInfo);
+      setCurUserInfo(userInfo);
+    } else {
+      chatListListener({ chatId: chatId });
+      setCurChatId(chatId);
+      setCurRecipientId(chatId);
+      // const userInfo = getUserInfo(targetId);
+      // console.log("cur user info: ", userInfo);
+      // setCurUserInfo(userInfo);
+    }
   };
 
   const onSearchUpdateHandler = ({ chatId, targetId, messageId, data }) => {

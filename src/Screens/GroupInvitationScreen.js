@@ -19,6 +19,7 @@ import NotificationService from "../services/NotificationService";
 import JSEvent from "../utils/JSEvent";
 import { DataEvents, UIEvents } from "../modules/Events";
 import { useNavigation } from "@react-navigation/native";
+import { LesConstants } from "les-im-components";
 
 const GroupInvitationScreen = () => {
   const [friendsData, setFriendsData] = useState([]);
@@ -31,7 +32,12 @@ const GroupInvitationScreen = () => {
   const newGroupEventHandler = (chatGroup) => {
     console.log("new group", chatGroup);
     navigation.navigate("Chats");
-    JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated);
+    const groupId = chatGroup.id;
+    // JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated);
+    JSEvent.emit(UIEvents.User.User_Click_Chat_Updated, {
+      chatId: groupId,
+      type: LesConstants.IMMessageType.Group,
+    });
   };
 
   useEffect(() => {
