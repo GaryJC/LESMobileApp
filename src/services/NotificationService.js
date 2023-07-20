@@ -46,7 +46,7 @@ class NotificationService {
         return new Promise((resolve, reject) => {
             LesPlatformCenter.IMFunctions.sendFriendInvitation(recipientId)
                 .then(pbNoti => {
-                    this.#onRecvNotification(pbNoti);
+                    const noti = this.#onRecvNotification(pbNoti);
                     resolve(noti);
                 }).catch(error => {
                     reject(error);
@@ -93,7 +93,7 @@ class NotificationService {
         return new Promise((resolve, reject) => {
             LesPlatformCenter.IMFunctions.sendChatGroupInvitation(groupId, recipientId)
                 .then(pbNoti => {
-                    this.#onRecvNotification(pbNoti);
+                    const noti = this.#onRecvNotification(pbNoti);
                     resolve(noti);
                 }).catch(error => {
                     reject(error);
@@ -104,7 +104,7 @@ class NotificationService {
     #onRecvNotification(pbNoti) {
         const noti = DataCenter.notifications.processNotification(pbNoti);
         JSEvent.emit(DataEvents.Notification.NotificationState_Updated, noti);
-
+        return noti;
         //save to database
         //DatabaseService.Inst.saveNotification(noti);
     }
