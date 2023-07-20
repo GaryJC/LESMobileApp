@@ -181,11 +181,95 @@ class ChatGroupService {
           DatabaseService.Inst.saveChatGroup(cg);
           resolve(cg);
         })
+<<<<<<< HEAD
         .catch((e) => {
           reject(e);
         });
     });
   }
+=======
+
+
+    }
+
+    #pushChatGroup(cg) {
+        const has = this.#chatGroups[cg.id];
+        this.#chatGroups[cg.id] = cg;
+        if (has == null) {
+            JSEvent.emit(DataEvents.ChatGroup.ChatGroup_New, cg);
+        } else {
+            JSEvent.emit(DataEvents.ChatGroup.ChatGroup_Updated, cg);
+        }
+    }
+
+
+    /**
+     *
+     * @param {Notification} noti
+     */
+    #onNotificationUpdated(noti) {
+        if (noti.type == IMNotificationType.FriendInvitation) {
+            if (noti.state == IMNotificationState.Accepted) {
+                //同意加入群聊
+                let cg = new ChatGroup();
+                cg.id = noti.groupInfo.id;
+                cg.latestTimelineId = 0;
+                this.#pushChatGroup(cg);
+                this.#updateChatGroup(cg.id).then(cg => {
+                }).catch(err => console.error(`更新群[${cg.id}]失败，code：${err.toString(16)}`))
+            }
+        }
+    }
+
+    async loadChatGroups() {
+        //从数据库中读取现有的群组信息，并向服务器拉取最新的群消息数据
+        this.#chatGroups = {}
+        try {
+            const groups = await DatabaseService.Inst.loadChatGroup();
+            groups.forEach(cg => this.#chatGroups[cg.id] = cg)
+            await this.requestChatGroupsTimeline();
+        } catch (e) {
+            console.error(`读取群组数据失败`, e)
+        }
+    }
+
+    requestChatGroupsTimeline() {
+        return new Promise((resolve, reject) => {
+            const groupIds = [];
+            const timelineIds = [];
+
+            for (const id in this.#chatGroups) {
+                const cg = this.#chatGroups[id];
+                groupIds.push(id);
+                timelineIds.push(cg.timelineId);
+            }
+
+            LesPlatformCenter.IMFunctions.getGroupUpdates(groupIds, timelineIds).then(updates => {
+
+            }).catch(err => console.error("获取聊天群组更新失败，code " + err.toString(16)));
+        })
+    }
+
+    /**
+     * 创建聊天群组
+     * @param {string} name 
+     * @param {string} desc 
+     * @returns 
+     */
+    createChatGroup(name, desc) {
+        return new Promise((resolve, reject) => {
+            LesPlatformCenter.IMFunctions.createChatGroup(name, desc).then(data => {
+                const cg = PBUtils.pbChatGroupDataToChatGroup(data);
+                cg.latestTimelineId = 0;
+                this.#pushChatGroup(cg);
+                DatabaseService.Inst.saveChatGroup(cg);
+                resolve(cg);
+            }).catch(e => {
+                reject(e);
+            });
+        })
+    }
+>>>>>>> 41d6cdec83d8703c1fdf2226f76a9df46ef82cdc
 }
 
 export default ChatGroupService;
