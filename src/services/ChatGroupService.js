@@ -155,11 +155,8 @@ class ChatGroupService {
             }
 
             LesPlatformCenter.IMFunctions.getGroupUpdates(groupIds, timelineIds).then(updates => {
-                resolve(updates);
-            }).catch(err => {
-                console.error("获取聊天群组更新失败，code " + err.toString(16))
-                reject(err);
-            });
+
+            }).catch(err => console.error("获取聊天群组更新失败，code " + err.toString(16)));
         })
     }
 
