@@ -9,6 +9,13 @@ class MessageCaches {
   #currUserId;
 
   /**
+   * 如果用户在加载聊天页面之前在好友页面点击了聊天按钮
+   * 因为更新聊天窗口事件还没有被监听，会导致导入的聊天窗口不匹配
+   * 现在如果缓存中没有curChatId才获取的chatList的第一个
+   */
+  #curChatId;
+
+  /**
    * 根据messageData，生成对应的chatId
    * @param {MessageData} msgData
    */
@@ -40,6 +47,14 @@ class MessageCaches {
     } else {
       return `group-${recipientId}`;
     }
+  }
+
+  setCurChatId(chatId) {
+    this.#curChatId = chatId;
+  }
+
+  getCurChatId() {
+    return this.#curChatId;
   }
 
   /**

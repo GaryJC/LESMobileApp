@@ -1,34 +1,28 @@
-import BottomSheet, { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetModal,
+} from "@gorhom/bottom-sheet";
 import { useRef, useMemo, useCallback, useEffect, useState } from "react";
 import { View, TextInput, FlatList } from "react-native";
 import DatabaseService from "../services/DatabaseService";
 import { debounce } from "lodash";
 import SearchedMessageList from "./SearchedMessageList";
 
-const SearchBottomSheet = ({ isSearchSheetOpen, setIsSearchSheetOpen }) => {
-  // ref
-  const bottomSheetRef = useRef(null);
-
+const ChatSearchBottomSheet = ({ bottomSheetRef }) => {
   // variables
-  const snapPoints = useMemo(() => ["60%"], []);
+  const snapPoints = useMemo(() => ["70%", "50"], []);
 
   //   const [searchingWord, setSearchingWord] = useState();
 
   const [searchingResult, setSearchingResult] = useState([]);
-
-  // callbacks
-  //   const handleSheetChanges = useCallback((index) => {
-  //     console.log("handleSheetChanges", index);
-  //   }, []);
 
   const handleSheetChanges = useCallback((index) => {
     console.log("handleSheetChanges", index);
   }, []);
 
   const handleSheetEnd = useCallback(() => {
-    console.log("The bottom sheet is now closed");
-    // setIsSheetOpen(false);
-    setIsSearchSheetOpen(false);
+    bottomSheetRef.current.close();
+    console.log("The bottom sheet is now closed", bottomSheetRef.current);
   }, []);
 
   const renderBackdrop = useCallback(
@@ -52,22 +46,22 @@ const SearchBottomSheet = ({ isSearchSheetOpen, setIsSearchSheetOpen }) => {
     }
   }, 500); // the search function will be called 500 ms after the user stops typing
 
-  useEffect(() => {
-    if (isSearchSheetOpen) {
-      bottomSheetRef.current?.expand(); // this will snap to the maximum provided point
-    } else {
-      bottomSheetRef.current?.close(); // this will slide down the sheet
-    }
-  }, [isSearchSheetOpen]);
+  //   useEffect(() => {
+  //     if (isSearchSheetOpen) {
+  //       bottomSheetRef.current?.present(); // this will snap to the maximum provided point
+  //     } else {
+  //       bottomSheetRef.current?.close(); // this will slide down the sheet
+  //     }
+  //   }, [isSearchSheetOpen]);
 
   return (
-    <BottomSheet
+    <BottomSheetModal
       ref={bottomSheetRef}
-      index={-1} // 0 refers to the first snap point ('25%')
+      index={1} // 0 refers to the first snap point ('25%')
       snapPoints={snapPoints}
       enablePanDownToClose={true}
       onChange={handleSheetChanges}
-      onClose={handleSheetEnd}
+      //   onClose={handleSheetEnd}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: "#262F38" }}
       handleIndicatorStyle={{ backgroundColor: "white" }}
@@ -96,8 +90,8 @@ const SearchBottomSheet = ({ isSearchSheetOpen, setIsSearchSheetOpen }) => {
           />
         </View>
       </View>
-    </BottomSheet>
+    </BottomSheetModal>
   );
 };
 
-export default SearchBottomSheet;
+export default ChatSearchBottomSheet;

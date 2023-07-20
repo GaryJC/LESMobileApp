@@ -18,7 +18,8 @@ export default function InvitationList({ item }) {
   const onRespondHandler = (notificationId, response) => {
     console.log("noti, response: ", notificationId, response);
     // LesPlatformCenter.IMFunctions.respondNotification(notificationId, response)
-    NotificationService.Inst.respondFriendInvitation(notificationId, response)
+    NotificationService.Inst.respondInvitation(notificationId, response)
+      // NotificationService.Inst.respondFriendInvitation(notificationId, response)
       .then((res) => {
         console.log("response: ", res);
       })

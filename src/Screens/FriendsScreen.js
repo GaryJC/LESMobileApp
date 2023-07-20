@@ -26,6 +26,7 @@ import NotificationService from "../services/NotificationService";
 import { FriendButton } from "../Components/FriendButton";
 import FriendBottomSheet from "../Components/FriendBottomSheet";
 import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
+import FriendListChatButton from "../Components/FriendListChatButton";
 
 const friendButtonContent = [
   { title: "Friends Request", icon: "emoji-people", link: "" },
@@ -152,7 +153,10 @@ export default function FriendsScreen() {
                   avatar={item.avatar}
                 />
               ) : (
-                <FriendList friend={item} />
+                <FriendList
+                  friend={item}
+                  button={<FriendListChatButton friend={item} />}
+                />
               )
             }
             renderSectionHeader={({ section: { title } }) => (

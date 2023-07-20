@@ -4,7 +4,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 
 export const StateIndicator = ({ state }) => {
-  console.log("state ", state);
+  // console.log("state ", state);
   switch (state) {
     case LesConstants.IMUserState.Away:
       return <Ionicons name="moon" size={20} color="#F6AB3B" />;

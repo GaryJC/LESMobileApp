@@ -19,6 +19,7 @@ import {
   useEffect,
   useLayoutEffect,
   useReducer,
+  useCallback,
 } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import {
@@ -35,7 +36,9 @@ import IMUserInfoService from "../services/IMUserInfoService";
 import { ChatBubble } from "../Components/ChatBubble";
 import { ChatList } from "../Components/ChatList";
 import MessageData from "../Models/MessageData";
-import SearchBottomSheet from "../Components/SearchBottomSheet";
+import ChatSearchBottomSheet from "../Components/SearchBottomSheet";
+import { useNavigation } from "@react-navigation/native";
+import { debounce } from "lodash";
 
 // import { bottomTabHeight } from "../App";
 
@@ -43,7 +46,7 @@ const statusBarHeight = StatusBar.currentHeight;
 // console.log(statusBarHeight);
 
 const messageReducer = (state, action) => {
-  console.log("reducer: ", state, action);
+  // console.log("reducer: ", state, action);
   switch (action.type) {
     case "ADD_MESSAGE":
       // order
@@ -80,7 +83,7 @@ const messageReducer = (state, action) => {
             }
           : message
       );
-      console.log("updated messages: ", updatedState);
+      // console.log("updated messages: ", updatedState);
       return updatedState.sort((a, b) => a.timelineId - b.timelineId);
 
     case "RESET_AND_ADD_MESSAGES":
@@ -143,39 +146,47 @@ const ChatScreen = () => {
 
   const messagesRef = useRef();
 
+  const bottomSheetRef = useRef(null);
+
   messagesRef.current = messages;
+
+  const navigation = useNavigation();
 
   const loadMoreMessages = async () => {
     // setStartIndex((pre) => pre + 10);
-    console.log("startIndex: ", startIndex, isLoading);
+    console.log("startIndex: ", startIndex);
     const loadedData = DataCenter.messageCache.getMesssageList(
       curChatId,
       startIndex,
       loadCount
     );
-    loadedData.reverse();
-    setStartIndex((pre) => pre + loadedData.length);
-    console.log("after loaded startIndex: ", startIndex);
-    console.log("loaded data: ", loadedData);
-    dispatchMessages({
-      type: "LOAD_MESSAGE",
-      payload: loadedData,
-    });
-    setIsLoading(false);
+    if (loadedData.length > 0) {
+      loadedData.reverse();
+      // setStartIndex((pre) => pre + loadedData.length);
+      dispatchMessages({
+        type: "LOAD_MESSAGE",
+        payload: loadedData,
+      });
+    }
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
   };
 
   const handleScrollEnd = async (event) => {
+    console.log("scroll to end");
     if (event.nativeEvent.contentOffset.y === 0) {
       setIsLoading(true);
-      setTimeout(() => {
-        loadMoreMessages();
-      }, 100);
+      // setTimeout(() => {
+      loadMoreMessages();
+      // }, 100);
       // await loadMoreMessages(); // directly calling loadMoreMessages
     }
   };
 
   const renderHeader = () => {
     if (!isLoading) return null;
+    console.log("is loading: ", isLoading);
     return (
       <View style={{ paddingVertical: 20 }}>
         <ActivityIndicator size="small" />
@@ -219,15 +230,20 @@ const ChatScreen = () => {
    */
   const handleChatListData = (chatList) => {
     // 将原始的数据转换成UI所需要的数据
+    console.log("ccccc: ", chatList);
     const chatListData = chatList.map((item) => {
       // const targetId = item.targetId;
       // 目前头像为空，先用placeholder
       // const avatar = IMUserInfoService.Inst.getUser(targetId).avatar;
       const chatId = item.chatId;
-      const [smallerId, biggerId] = chatId.split("-").slice(1, 3);
-      const targetId =
-        smallerId == DataCenter.userInfo.accountId ? biggerId : smallerId;
+      let targetId = item.targetId;
+      if (!targetId) {
+        const [smallerId, biggerId] = chatId.split("-").slice(1, 3);
+        targetId =
+          smallerId == DataCenter.userInfo.accountId ? biggerId : smallerId;
+      }
       const avatar = `https://i.pravatar.cc/150?img=${targetId}`;
+      // console.log("mmm: ", item, chatId, targetId);
       return {
         chatId: chatId,
         targetId: targetId,
@@ -235,6 +251,7 @@ const ChatScreen = () => {
         name: targetId,
       };
     });
+    // console.log("hhhhh: ", chatListData);
     return chatListData;
   };
 
@@ -289,8 +306,8 @@ const ChatScreen = () => {
 
   const updateChatHandler = (chatId, targetId) => {
     const chatListItem = DataCenter.messageCache.touchChatData(chatId);
-    console.log("chat list item: ", chatListItem);
-    chatListListener(chatId);
+    // console.log("chat list item: ", chatListItem);
+    chatListListener({ chatId: chatId });
     setCurChatId(chatId);
     setCurRecipientId(targetId);
     const userInfo = getUserInfo(targetId);
@@ -305,7 +322,6 @@ const ChatScreen = () => {
       payload: data,
       // .reverse(),
     });
-    console.log("sss: ", messageId, messages);
     // const index = messages.findIndex((msg) => msg.messageId === messageId);
     // flatListRef.current.scrollToIndex({ index });
   };
@@ -354,49 +370,54 @@ const ChatScreen = () => {
   };
 
   useEffect(() => {
-    /**
-     * 返回打开界面时默认的聊天信息，列表数据
-     * @returns {{chatList, chatId, targetId, names, avatars, userInfo, messsageData}}
-     */
+    const initializeChatData = (chatId) => {
+      const targetId = chatId
+        .split("-")
+        .slice(1, 3)
+        .filter((id) => id !== DataCenter.userInfo.accountId);
+
+      console.log("targetId:", targetId);
+      updateChatHandler(chatId, targetId);
+
+      const messageData = DataCenter.messageCache.getMesssageList(
+        chatId,
+        startIndex,
+        loadCount
+      );
+      console.log("message dataaa:", messageData, chatId);
+      dispatchMessages({
+        type: "RESET_AND_ADD_MESSAGES",
+        payload: messageData,
+      });
+
+      setCurRecipientId(targetId);
+      const userInfo = getUserInfo(targetId);
+      console.log("cur user info:", userInfo, targetId);
+      setCurUserInfo(userInfo);
+    };
+
     const getInitData = () => {
-      // 获取所有的对话列表数据
       const chatList = DataCenter.messageCache.getChatList();
-      console.log("chat list: ", chatList);
+      let chatId = DataCenter.messageCache.getCurChatId();
+
+      console.log("chat list:", chatList);
+
       if (chatList.length) {
-        // 获取所有对话列表的新消息
         const chatListNewMsgCount = getChatListMsgCount(chatList);
         setNewMsgCount(chatListNewMsgCount);
-        // 获取头部的对话列表
-        const initChatListData = chatList[0];
-        // 获取初始对话列表的chatId
-        const chatId = initChatListData.chatId;
+
+        if (!chatId) {
+          chatId = chatList[0].chatId;
+        }
         setCurChatId(chatId);
-        // msgListener(chatId);
-        // 获取初始化对话列表的聊天信息
-        const messageData = DataCenter.messageCache.getMesssageList(
-          chatId,
-          startIndex,
-          loadCount
-        );
-        // setStartIndex((pre) => pre + messageData.length);
-        // .reverse();
-        dispatchMessages({
-          type: "RESET_AND_ADD_MESSAGES",
-          payload: messageData,
-        });
-        // 是群聊的话这里应该是什么样的？可以是是一个数组包含所有用户的id吗? 不然如何获取每个用户的信息？
-        const targetId = initChatListData.targetId;
-        setCurRecipientId(targetId);
-        console.log("targetId: ", targetId);
-        // 获取初始化窗口的用户信息，如id, name, avatar
-        const userInfo = getUserInfo(targetId);
-        console.log("cur user info: ", userInfo, targetId);
-        setCurUserInfo(userInfo);
-        // 将初始化对话列表转换成UI需要的格式
-        const chatListData = handleChatListData(chatList);
-        setChatListData(chatListData);
+
+        initializeChatData(chatId);
+      } else if (!chatList.length && chatId) {
+        setCurChatId(chatId);
+        initializeChatData(chatId);
       }
     };
+
     getInitData();
   }, []);
 
@@ -421,7 +442,7 @@ const ChatScreen = () => {
   }, [curChatId]);
 
   useEffect(() => {
-    console.log("messages: ", messages);
+    console.log("messages length: ", messages.length);
     setStartIndex(messages.length);
   }, [messages]);
 
@@ -440,8 +461,17 @@ const ChatScreen = () => {
     // });
   };
 
-  const openSearchSheet = () => {
-    setIsSearchSheetOpen(true);
+  const handleSheetOpen = useCallback(() => {
+    bottomSheetRef.current?.present();
+  }, []);
+
+  const handleSheetEnd = useCallback(() => {
+    bottomSheetRef.current?.dismiss();
+    console.log("The bottom sheet is now closed");
+  }, []);
+
+  const handleCreateGroupOpen = () => {
+    navigation.navigate("GroupInvite");
   };
 
   return (
@@ -467,12 +497,12 @@ const ChatScreen = () => {
           />
         </View>
         <View className="flex-2 justify-evenly border-t-2 border-[#575757] p-[5px]">
-          <TouchableHighlight onPress={openSearchSheet}>
+          <TouchableHighlight onPress={handleSheetOpen}>
             <View className="overflow-hidden w-[40px] h-[40px] bg-[#262F38] rounded-full mb-[5px] items-center justify-center">
               <Ionicons name="search-outline" color="#5FB54F" size={24} />
             </View>
           </TouchableHighlight>
-          <TouchableHighlight>
+          <TouchableHighlight onPress={handleCreateGroupOpen}>
             <View className="overflow-hidden w-[40px] h-[40px] bg-[#262F38] rounded-full mb-[5px] items-center justify-center">
               <Ionicons name="add-outline" color="#5FB54F" size={24}></Ionicons>
             </View>
@@ -497,7 +527,7 @@ const ChatScreen = () => {
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           // behavior="position"
-          className="flex-1 px-[10px]"
+          className="flex-1 px-[10px] mb"
           // keyboardVerticalOffset={-400}
           // keyboardVerticalOffset={140}
         >
@@ -559,10 +589,7 @@ const ChatScreen = () => {
         </KeyboardAvoidingView>
         {/* </KeyboardAwareFlatList> */}
       </View>
-      <SearchBottomSheet
-        isSearchSheetOpen={isSearchSheetOpen}
-        setIsSearchSheetOpen={setIsSearchSheetOpen}
-      />
+      <ChatSearchBottomSheet bottomSheetRef={bottomSheetRef} />
     </View>
   );
 };

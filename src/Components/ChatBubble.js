@@ -33,29 +33,43 @@ export const ChatBubble = ({ message, preMessage, userInfo }) => {
   );
 
   const Bubble = ({ isOwn }) => (
-    <View className={`flex-row py-[10px] justify-${isOwn ? "end" : "start"}`}>
+    <View
+      className={
+        isOwn
+          ? "flex-row py-[10px] justify-end"
+          : "flex-row py-[10px] justify-start"
+      }
+    >
       {!isOwn && <Avatar avatar={userInfo.avatar} />}
       <View className="justify-evenly">
         <View className="flex-row items-end">
           <Text
-            className={`text-[10px] text-white ${isOwn ? "mr" : "ml"}-[5px]`}
+            className={
+              isOwn
+                ? "text-[10px] text-white mr-[5px]"
+                : "text-[10px] text-white ml-[5px]"
+            }
           >
             {userInfo.name}
           </Text>
         </View>
         <View
-          className={`flex-row justify-center ${isOwn ? "pr" : "pl"}-[30vw] ${
-            isOwn ? "mr" : "ml"
-          }-[5px] ${isOwn ? "bg-[#5EB857]" : "bg-[#445465]"} px-2 py-2 rounded`}
+          className={
+            isOwn
+              ? "flex-row justify-center pr-[30vw] mr-[5px] bg-[#5EB857] px-2 py-2 rounded"
+              : "flex-row justify-center pl-[30vw] ml-[5px] bg-[#445465] px-2 py-2 rounded"
+          }
         >
           <Text
-            className={`text-[12px] ${isOwn ? "text-black" : "text-white"}`}
+            className={
+              isOwn ? "text-[12px] text-black" : "text-[12px] text-white"
+            }
           >
             {message?.content}
           </Text>
           {message?.status === Constants.deliveryState.delivering && (
             <ActivityIndicator
-              className={`${isOwn ? "pr" : "pl"}-[10px]`}
+              className={isOwn ? "pr-[10px]" : "pl-[10px]"}
               size={"small"}
               color={"#8D8D8D"}
             />

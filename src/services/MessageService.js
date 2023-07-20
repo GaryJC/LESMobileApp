@@ -251,7 +251,7 @@ class MessageService {
       );
 
       this.#onTimelineUpdated(message);
-    }
+    };
 
     //事件改为由ServiceCenter统一监听，并调用service.onUserLogin
     // JSEvent.on(DataEvents.User.UserState_DataReady, () => {
@@ -280,7 +280,7 @@ class MessageService {
         DataCenter.messageCache.pushMessage(message);
       });
       // const data = DataCenter.messageCache.getMesssageList("chat2-8", 0, 10);
-      console.log("database messages: ", messages);
+      // console.log("database messages: ", messages);
     } catch (e) {
       console.error("load message error", e);
     }
@@ -327,17 +327,16 @@ class MessageService {
         resolve([]);
         return;
       }
-      LesPlatformCenter.IMFunctions.requestTimeline(
-        this.#latestTimelineId,
-        -1
-      ).then((data) => {
-        const { startId, endId, datas } = data;
-        datas.forEach((data) => {
-          this.#onTimelineUpdated(data);
-        });
-        resolve(datas);
-      }).catch(e => reject(e));
-    })
+      LesPlatformCenter.IMFunctions.requestTimeline(this.#latestTimelineId, -1)
+        .then((data) => {
+          const { startId, endId, datas } = data;
+          datas.forEach((data) => {
+            this.#onTimelineUpdated(data);
+          });
+          resolve(datas);
+        })
+        .catch((e) => reject(e));
+    });
   }
 }
 

@@ -1,18 +1,13 @@
 import { View, Text, ImageBackground, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { StateIndicator } from "./StateIndicator";
-import { useNavigation } from "@react-navigation/native";
-import { MessageCaches } from "../Models/MessageCaches";
-import DataCenter from "../modules/DataCenter";
-import JSEvent from "../utils/JSEvent";
-import { UIEvents } from "../modules/Events";
 import { useState, useRef, useCallback } from "react";
 import FriendBottomSheet from "./FriendBottomSheet";
+import FriendListChatButton from "./FriendListChatButton";
 
-export const FriendList = ({ friend }) => {
+export const FriendList = ({ friend, button }) => {
   // const avatar = `https://i.pravatar.cc/?img=${friend.id}`;
 
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
 
   const [selectedFriend, setSelectedFriend] = useState();
 
@@ -26,19 +21,6 @@ export const FriendList = ({ friend }) => {
     setSelectedFriend(friend);
     bottomSheetModalRef.current?.present();
   }, []);
-
-  const goChatHandler = () => {
-    navigation.navigate("Chats");
-    const chatId = MessageCaches.MakeChatID(
-      friend?.id,
-      DataCenter.userInfo.accountId
-    );
-    console.log("go to chat id: ", chatId, id);
-    JSEvent.emit(UIEvents.User.User_Click_Chat_Updated, {
-      chatId: chatId,
-      targetId: friend?.id,
-    });
-  };
 
   const bottomSheetModalRef = useRef(null);
 
@@ -63,17 +45,8 @@ export const FriendList = ({ friend }) => {
             {friend.name}
           </Text>
         </View>
-        <View className="flex-row items-center">
-          <TouchableOpacity onPress={goChatHandler}>
-            <View className="w-[35px] h-[35px] bg-[#182634] rounded-full overflow-hidden justify-center items-center">
-              <Ionicons
-                name="chatbubble-ellipses-outline"
-                color={"white"}
-                size={24}
-              />
-            </View>
-          </TouchableOpacity>
-        </View>
+        {/* <FriendListChatButton friend={friend} /> */}
+        {button}
       </View>
       <FriendBottomSheet
         bottomSheetModalRef={bottomSheetModalRef}

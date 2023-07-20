@@ -1,5 +1,6 @@
 // import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -32,6 +33,8 @@ import { UIEvents, DataEvents } from "./src/modules/Events";
 import Constants from "./src/modules/Constants";
 import DatabaseService from "./src/services/DatabaseService";
 import DataCenter from "./src/modules/DataCenter";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import GroupInvitationScreen from "./src/Screens/GroupInvitationScreen";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -102,14 +105,19 @@ const BottomTabNavigation = () => (
         ),
         headerShown: true,
         headerRight: () => (
-          <TouchableOpacity onPress={() => navigation.navigate("FriendSearch")}>
-            <Ionicons
-              name="search"
-              color={"white"}
-              size={30}
-              style={{ marginRight: 10 }}
-            />
-          </TouchableOpacity>
+          <View className="flex-row items-center mr-[5vw]">
+            <TouchableOpacity
+              onPress={() => navigation.navigate("FriendSearch")}
+              className="mr-[1vw]"
+            >
+              <MaterialIcons name="search" size={30} color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("GroupInvite")}
+            >
+              <MaterialIcons name="group-add" size={30} color="white" />
+            </TouchableOpacity>
+          </View>
         ),
       })}
     />
@@ -233,10 +241,11 @@ export default function App() {
   */
 
   return (
-    <BottomSheetModalProvider>
-      <StatusBar style="light" />
+    <GestureHandlerRootView className="flex-1">
+      <BottomSheetModalProvider>
+        <StatusBar style="light" />
 
-      {/* {isInitializing ? (
+        {/* {isInitializing ? (
         <InitialScreen />
       ) : (
       <NavigationContainer>
@@ -265,52 +274,57 @@ export default function App() {
       </NavigationContainer>
       )}
       */}
-      <NavigationContainer ref={navigationRef}>
-        <Stack.Navigator
-          initialRouteName="initial"
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: "#080F14",
-            },
-            headerTitleStyle: {
-              color: "white",
-            },
-            contentStyle: { backgroundColor: "#080F14" },
-          }}
-        >
-          <Stack.Screen
-            name="initial"
-            component={InitialScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="BottomTab"
-            component={BottomTabNavigation}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="GameDetails"
-            component={GameDetailsScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen name="Signup" component={SignupScreen} />
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="CreateName" component={CreateNameScreen} />
-          <Stack.Screen name="Notification" component={Notification} />
-          <Stack.Screen
-            name="FriendRequest"
-            component={FriendRequestScreen}
-            options={{ headerTitle: "Friend Request" }}
-          />
-          <Stack.Screen name="FriendSearch" component={FriendSearchScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
-      {isLoading && (
-        <View className="h-[5vh] items-center justify-center bg-[#1F4168] flex-row">
-          <Text className="text-white pr-[10px]">Reconnecting</Text>
-          <ActivityIndicator size={"small"} color={"#CACACA"} />
-        </View>
-      )}
-    </BottomSheetModalProvider>
+        <NavigationContainer ref={navigationRef}>
+          <Stack.Navigator
+            initialRouteName="initial"
+            screenOptions={{
+              headerStyle: {
+                backgroundColor: "#080F14",
+              },
+              headerTitleStyle: {
+                color: "white",
+              },
+              contentStyle: { backgroundColor: "#080F14" },
+            }}
+          >
+            <Stack.Screen
+              name="initial"
+              component={InitialScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="BottomTab"
+              component={BottomTabNavigation}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="GameDetails"
+              component={GameDetailsScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen name="Signup" component={SignupScreen} />
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="CreateName" component={CreateNameScreen} />
+            <Stack.Screen name="Notification" component={Notification} />
+            <Stack.Screen
+              name="FriendRequest"
+              component={FriendRequestScreen}
+              options={{ headerTitle: "Friend Request" }}
+            />
+            <Stack.Screen name="FriendSearch" component={FriendSearchScreen} />
+            <Stack.Screen
+              name="GroupInvite"
+              component={GroupInvitationScreen}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+        {isLoading && (
+          <View className="h-[5vh] items-center justify-center bg-[#1F4168] flex-row">
+            <Text className="text-white pr-[10px]">Reconnecting</Text>
+            <ActivityIndicator size={"small"} color={"#CACACA"} />
+          </View>
+        )}
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   );
 }

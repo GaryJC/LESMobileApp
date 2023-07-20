@@ -36,6 +36,7 @@ export default function LoginScreen() {
 
   async function loginHandler() {
     setIsLoading(true);
+    console.log("sssss");
     const loginService = LoginService.Inst;
     try {
       //尝试用户名密码登陆
@@ -44,6 +45,7 @@ export default function LoginScreen() {
         password,
         DataCenter.deviceName
       );
+      console.log("login result: ", result);
       if (result.state == LesConstants.IMUserState.Init) {
         navigation.navigate("CreateName");
       } else {
