@@ -153,7 +153,7 @@ class ChatGroupService {
       for (const id in this.#chatGroups) {
         const cg = this.#chatGroups[id];
         groupIds.push(id);
-        timelineIds.push(cg.timelineId);
+        timelineIds.push(cg.latestTimelineId);
       }
 
       LesPlatformCenter.IMFunctions.getGroupUpdates(groupIds, timelineIds)
