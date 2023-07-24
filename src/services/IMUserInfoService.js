@@ -2,6 +2,7 @@ import { LesPlatformCenter, LesConstants } from "les-im-components";
 import IMUserInfo from "../Models/IMUserInfo";
 import JSEvent from "../utils/JSEvent";
 import { DataEvents } from "../modules/Events";
+import DataCenter from "../modules/DataCenter";
 
 const { IMUserState, IMUserOnlineState } = LesConstants;
 
@@ -81,7 +82,7 @@ export default class IMUserInfoService {
    * @todo 将用户数据更新到数据库
    * @param {IMUserInfo} user
    */
-  async #updateUserToDb(user) {}
+  async #updateUserToDb(user) { }
 
   init() {
     LesPlatformCenter.IMListeners.onIMUserStateChanged = (
@@ -100,16 +101,50 @@ export default class IMUserInfoService {
   }
 
   /**
+   * 设置当前用户的状态
+   * @param {IMUserState} state 
+   */
+  setCurrentUserState(state) {
+    return new Promise((resolve, reject) => {
+      LesPlatformCenter.IMFunctions.setState(state).then(code => {
+        DataCenter.userInfo.imUserInfo.changeState(state);
+        resolve(state);
+      }).catch(err => reject(err));
+    })
+  }
+
+  /**
    * 获取指定id的用户数据
    * 不会返回本地缓存中不存在的用户数据
    * @param {number|number[]} userId 可以是一个或多个id
-   * @returns {IMUserInfo[]} 返回值一定是一个数组，如果没找到则返回空数组
+   * @returns {Promise<IMUserInfo[]>} 返回值一定是一个数组，如果没找到则返回空数组
    */
   getUser(userId) {
+    return new Promise((resolve, reject) => {
+      const { users, miss } = this.#getUserFromCache(userId);
+      if (miss.length > 0) {
+        //需要从服务器获取
+        LesPlatformCenter.IMFunctions.getUsersData(miss).then(us => {
+          const { id, name, tag, state, onlineState } = us;
+          const user = this.updateUser(id, name, tag, state, onlineState);
+          users.push(user);
+        }).catch(err => reject(err));
+      } else {
+        resolve(users);
+      }
+    })
+  }
+
+  #getUserFromCache(userId) {
     let ret = [];
+    let miss = [];
+    const currentUser = DataCenter.userInfo.imUserInfo;
     const pushUser = (id) => {
-      const user = this.userList[id];
-      if (user != null) {
+      const user = id == currentUser.id ? currentUser : this.userList[id];
+
+      if (user == null) {
+        miss.push(id);
+      } else {
         ret.push(user);
       }
     };
@@ -121,6 +156,7 @@ export default class IMUserInfoService {
     } else {
       pushUser(userId);
     }
-    return ret;
+    
+    return { users: ret, miss: miss }
   }
 }

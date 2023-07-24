@@ -701,6 +701,19 @@ export default class DatabaseService {
     })
   }
 
+  removeChatGroup(groupId) {
+    if (this.#currDb == null) reject(ERROR_DB_ISNULL);
+    this.#currDb.transaction((tx) => {
+      tx.executeSql(
+        "delete from tbl_chatgroup where groupId = ?", [groupId],
+        (_, r) => resolve(groupId),
+        (_, e) => {
+          reject(e);
+        }
+      )
+    });
+  }
+
   loadMessage() {
     return new Promise((resolve, reject) => {
       if (this.#currDb == null) reject(ERROR_DB_ISNULL);

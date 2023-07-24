@@ -5,6 +5,7 @@ import FriendData from "../Models/Friends";
 import MessageData from "../Models/MessageData";
 import { MessageCaches } from "../Models/MessageCaches";
 import { Notifications } from "../Models/Notifications";
+import IMUserInfo from "../Models/IMUserInfo";
 
 
 const services = [];
@@ -41,10 +42,9 @@ const DataCenter = {
 
     /**
      * im用户信息
+     * @type {IMUserInfo}
      */
-    imUserInfo: {
-      name: "", tag: 0, state: 0
-    }
+    imUserInfo: new IMUserInfo()
   },
 
   /**
