@@ -17,6 +17,7 @@ import { LesConstants } from "les-im-components";
 import MessageData from "../Models/MessageData";
 import DatabaseService from "./DatabaseService";
 import { MessageCaches } from "../Models/MessageCaches";
+import IMUserInfo from "../Models/IMUserInfo";
 const IMUserState = LesConstants.IMUserState;
 
 class DataSavingService {
@@ -123,7 +124,10 @@ class DataSavingService {
     DataCenter.userInfo.accountId = id;
     DataCenter.userInfo.loginKey = key;
     DataCenter.userInfo.email = email;
-    DataCenter.userInfo.imUserInfo = imUserInfo;
+
+    const userInfo = new IMUserInfo(id, imUserInfo.name, imUserInfo.tag, imUserInfo.state, LesConstants.IMUserOnlineState.Online);
+
+    DataCenter.userInfo.imUserInfo = userInfo;
   }
 
   /**

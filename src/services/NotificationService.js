@@ -92,22 +92,30 @@ class NotificationService {
    * 调用成功返回对应的通知消息内容，并触发NotificationState_Updated事件
    *
    * @param {number} groupId
-   * @param {number} recipientId
-   * @returns
+   * @param {number[]} recipientsId 同时邀请多个id的用户 
+   * @returns 
    */
-  sendGroupInvitation(groupId, recipientId) {
+  sendGroupInvitation(groupId, recipientsId) {
     return new Promise((resolve, reject) => {
       LesPlatformCenter.IMFunctions.sendChatGroupInvitation(
         groupId,
-        recipientId
-      )
-        .then((pbNoti) => {
-          const noti = this.#onRecvNotification(pbNoti);
-          resolve(noti);
+        recipientsId
+      ).then((notis) => {
+        notis.forEach(pbNoti => {
+          const retMap = {};
+          const errorCode = pbNoti.getErrorcode();
+          const recipient = pbNoti.getRecipient().getId();
+          let noti = null;
+          if (errorCode == LesConstants.ErrorCodes.Success) {
+            noti = this.#onRecvNotification(pbNoti);
+          }
+          retMap[recipient] = { code: errorCode, notification: noti }
         })
-        .catch((error) => {
-          reject(error);
-        });
+        //const noti = this.#onRecvNotification(pbNoti);
+        resolve(retMap);
+      }).catch((error) => {
+        reject(error);
+      });
     });
   }
 
