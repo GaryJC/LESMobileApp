@@ -3,7 +3,7 @@ import MessageData from "../Models/MessageData";
 import Constants from "./Constants";
 import { AppStateStatus } from "react-native";
 import ChatGroup from "../Models/ChatGroup";
-const { IMUserState, IMUserOnlineState } = LesConstants;
+const { IMUserState, IMUserOnlineState, IMMessageType } = LesConstants;
 const { ReloginState } = Constants;
 export const DataEvents = {
   /**
@@ -90,11 +90,10 @@ export const DataEvents = {
     NotificationState_Updated: "DATA_EVENT_NotificationState_Updated",
   },
 
-
   ChatGroup: {
     /**
      * 加入群，或者新建群聊成功后，会发送此事件，携带参数类型为ChatGroup，需要注意的是，此事的ChatGroup中可能只包含ID，没有名字，需要监听ChatGroup_Updated事件更新
-     * 
+     *
      * @type {ChatGroup}
      */
     ChatGroup_New: "DATA_EVENT_ChatGroup_OnNewChatGroup",
@@ -102,7 +101,7 @@ export const DataEvents = {
     /**
      * 群数据更新后，会发送此事件
      */
-    ChatGroup_Updated: "DATA_EVENT_ChatGroup_ChatGroup_Updated"
+    ChatGroup_Updated: "DATA_EVENT_ChatGroup_ChatGroup_Updated",
   },
 
   Saving: {
@@ -113,8 +112,6 @@ export const DataEvents = {
      */
     SavingState_Message: "DATA_EVENT_SavingState_Message",
   },
-
-
 };
 
 export const UIEvents = {
@@ -150,8 +147,8 @@ export const UIEvents = {
     UserState_UIRefresh: "UI_EVENT_UserState_UIRefresh",
     /**
      * 从用户列表进入聊天
-     * 携带参数为目标的chatId, targetId
-     * @type {{chatId:string, targetId:number, data:null | MessageData[]}}
+     * 携带参数为目标的chatId, targetId, IMMessageType
+     * @type {{chatId:string, targetId:number ｜ null, type: null | IMMessageType}}
      */
     User_Click_Chat_Updated: "UI_EVENT_User_Click_Chat_Updated",
   },

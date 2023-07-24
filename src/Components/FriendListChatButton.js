@@ -9,16 +9,19 @@ import { UIEvents } from "../modules/Events";
 const FriendListChatButton = ({ friend }) => {
   const navigation = useNavigation();
   const goChatHandler = () => {
-    navigation.navigate("Chats");
     const chatId = MessageCaches.MakeChatID(
       friend?.id,
       DataCenter.userInfo.accountId
     );
     console.log("go to chat id: ", chatId, friend?.id);
-    DataCenter.messageCache.setCurChatId(chatId);
+    const chatListItem = DataCenter.messageCache.getChatListItem(chatId);
+    console.log("chatListItem: ", chatListItem);
+    // DataCenter.messageCache.setCurChatListItem(chatListItem);
+    navigation.navigate("Chats", { chatListItem: chatListItem });
     JSEvent.emit(UIEvents.User.User_Click_Chat_Updated, {
-      chatId: chatId,
-      targetId: friend?.id,
+      // chatId: chatId,
+      // targetId: friend?.id,
+      chatListItem: chatListItem,
     });
   };
   return (

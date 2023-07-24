@@ -23,6 +23,7 @@ export default function FriendBottomSheet({
   bottomSheetModalRef,
   selectedFriend,
 }) {
+  // console.log("ssss", selectedFriend, selectedFriend?.tag);
   const snapPoints = useMemo(() => ["60%", "50%"]);
   // const bottomSheetRef = useRef(null);
   const renderBackdrop = useCallback(
@@ -47,15 +48,18 @@ export default function FriendBottomSheet({
 
   const goChatHandler = () => {
     bottomSheetModalRef.current?.close();
-    navigation.navigate("Chats");
     const chatId = MessageCaches.MakeChatID(
       selectedFriend.id,
       DataCenter.userInfo.accountId
     );
     console.log("go to chat id: ", chatId, selectedFriend.id);
+    const chatListItem = DataCenter.messageCache.getChatListItem(chatId);
+    // DataCenter.messageCache.setCurChatListItem(chatListItem);
+    navigation.navigate("Chats", { chatListItem: chatListItem });
     JSEvent.emit(UIEvents.User.User_Click_Chat_Updated, {
-      chatId: chatId,
-      targetId: selectedFriend.id,
+      // chatId: chatId,
+      // targetId: friend?.id,
+      chatListItem: chatListItem,
     });
   };
 
@@ -126,7 +130,7 @@ export default function FriendBottomSheet({
             {selectedFriend?.name}
           </Text>
           <Text className="text-white font-bold pl-[5px]">
-            #{selectedFriend?.id}
+            #{selectedFriend?.tag}
           </Text>
         </View>
         <View className="flex-row justify-between mt-[10px] mx-[5%]">

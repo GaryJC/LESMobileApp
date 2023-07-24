@@ -35,6 +35,7 @@ import DatabaseService from "./src/services/DatabaseService";
 import DataCenter from "./src/modules/DataCenter";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import GroupInvitationScreen from "./src/Screens/GroupInvitationScreen";
+import FriendAddScreen from "./src/Screens/FriendAddScreen";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -108,12 +109,12 @@ const BottomTabNavigation = () => (
           <View className="flex-row items-center mr-[5vw]">
             <TouchableOpacity
               onPress={() => navigation.navigate("FriendSearch")}
-              className="mr-[1vw]"
+              className="mr-[2vw]"
             >
               <MaterialIcons name="search" size={30} color="white" />
             </TouchableOpacity>
-            <TouchableOpacity>
-              <MaterialIcons name="group-add" size={30} color="white" />
+            <TouchableOpacity onPress={() => navigation.navigate("FriendAdd")}>
+              <MaterialIcons name="person-add-alt-1" size={28} color="white" />
             </TouchableOpacity>
           </View>
         ),
@@ -313,6 +314,12 @@ export default function App() {
             <Stack.Screen
               name="GroupInvite"
               component={GroupInvitationScreen}
+              options={{ headerTitle: "Create Group" }}
+            />
+            <Stack.Screen
+              name="FriendAdd"
+              component={FriendAddScreen}
+              options={{ headerTitle: "Add Friend" }}
             />
           </Stack.Navigator>
         </NavigationContainer>

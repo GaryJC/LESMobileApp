@@ -34,9 +34,16 @@ const GroupInvitationScreen = () => {
     navigation.navigate("Chats");
     const groupId = chatGroup.id;
     // JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated);
+    // JSEvent.emit(UIEvents.User.User_Click_Chat_Updated, {
+    //   chatId: groupId,
+    //   type: LesConstants.IMMessageType.Group,
+    // });
+    const chatListItem = DataCenter.messageCache.getChatListItem(chatId);
+    DataCenter.messageCache.setCurChatListItem(chatListItem);
     JSEvent.emit(UIEvents.User.User_Click_Chat_Updated, {
-      chatId: groupId,
-      type: LesConstants.IMMessageType.Group,
+      // chatId: chatId,
+      // targetId: friend?.id,
+      chatListItem: chatListItem,
     });
   };
 

@@ -43,6 +43,7 @@ export default function UserScreen() {
     name: "",
     accountId: "",
     state: "",
+    tag: "",
     // avatar:"",
   });
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -78,6 +79,7 @@ export default function UserScreen() {
           ...pre,
           name: DataCenter.userInfo.imUserInfo.name,
           accountId: DataCenter.userInfo.accountId,
+          tag: DataCenter.userInfo.imUserInfo.tag,
           // avatar:DataCenter.userInfo.accountId
         };
       });
@@ -176,7 +178,7 @@ export default function UserScreen() {
         <Text className="text-white font-bold text-[30px]">
           {userInfo.name}
         </Text>
-        <Text className="text-white text-[15px]">#{userInfo.accountId}</Text>
+        <Text className="text-white text-[15px]">#{userInfo.tag}</Text>
         <View className="flex-row items-center justify-between mt-[3vh]">
           <Text className="text-white text-[20px] pr-[20px]">Set Status:</Text>
           <SwitchStatusButton />

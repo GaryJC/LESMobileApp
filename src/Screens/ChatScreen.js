@@ -40,6 +40,7 @@ import ChatSearchBottomSheet from "../Components/SearchBottomSheet";
 import { useNavigation } from "@react-navigation/native";
 import { debounce } from "lodash";
 import { LesConstants } from "les-im-components";
+import { useRoute } from "@react-navigation/native";
 
 // import { bottomTabHeight } from "../App";
 
@@ -145,6 +146,12 @@ const ChatScreen = () => {
   // 聊天搜索窗口是否打开
   const [isSearchSheetOpen, setIsSearchSheetOpen] = useState(false);
 
+  const [curChatName, setCurChatName] = useState();
+
+  const [curChatType, setCurChatType] = useState(
+    LesConstants.IMMessageType.Single
+  );
+
   const messagesRef = useRef();
 
   const bottomSheetRef = useRef(null);
@@ -152,6 +159,8 @@ const ChatScreen = () => {
   messagesRef.current = messages;
 
   const navigation = useNavigation();
+
+  const route = useRoute();
 
   const loadMoreMessages = async () => {
     // setStartIndex((pre) => pre + 10);
@@ -249,6 +258,7 @@ const ChatScreen = () => {
         return {
           chatId: chatId,
           targetId: targetId,
+          type: item.type,
           avatar: avatar,
           name: targetId,
         };
@@ -284,7 +294,8 @@ const ChatScreen = () => {
     // 重新将对话列表排序
     const chatList = DataCenter.messageCache.getChatList();
     console.log("chat listttt: ", chatList);
-    setChatListData(handleChatListData(chatList));
+    // setChatListData(handleChatListData(chatList));
+    setChatListData(chatList);
     // console.log("chat list listener updated id: ", chatId, chatList);
 
     // 获取新消息数量
@@ -300,7 +311,9 @@ const ChatScreen = () => {
    * @param {number} targetId
    * @param {MessageData} data
    */
-  const onClickChatHandler = ({ chatId, targetId, data, type }) => {
+  const onClickChatHandler = ({ chatListItem }) => {
+    console.log("cccc: ", chatListItem);
+    const { chatId, targetId, type } = chatListItem;
     console.log("chatId & targetId: ", chatId, targetId, curChatId);
     // 已经在这个窗口的话不操作
     if (curChatId !== chatId) {
@@ -319,20 +332,29 @@ const ChatScreen = () => {
   const updateChatHandler = (chatId, targetId, type) => {
     const chatListItem = DataCenter.messageCache.touchChatData(chatId);
     // console.log("chat list item: ", chatListItem);
+    setCurChatId(chatId);
+    setCurRecipientId(targetId);
+    chatListListener({ chatId: chatId });
     if (type === LesConstants.IMMessageType.Group) {
-      chatListListener({ chatId: chatId });
-      setCurChatId(chatId);
-      setCurRecipientId(chatId);
-      // const userInfo = getUserInfo(targetId);
-      console.log("cur user info: ", userInfo);
-      setCurUserInfo(userInfo);
-    } else {
-      chatListListener({ chatId: chatId });
-      setCurChatId(chatId);
-      setCurRecipientId(chatId);
+      setCurChatType(LesConstants.IMMessageType.Group);
+      // 获取当前群聊信息，如所有成员的targetId等
+      setCurChatName("group");
       // const userInfo = getUserInfo(targetId);
       // console.log("cur user info: ", userInfo);
       // setCurUserInfo(userInfo);
+    } else {
+      const userInfo = getUserInfo(targetId);
+      // console.log(
+      //   "cur user info: ",
+      //   userInfo,
+      //   targetId,
+      //   IMUserInfoService.Inst.getUser(targetId)
+      // );
+      console.log("tttt: ", targetId, IMUserInfoService.Inst.getUser(targetId));
+      const targetName = IMUserInfoService.Inst.getUser(targetId).pop()?.name;
+      setCurChatName(targetName);
+      setCurUserInfo(userInfo);
+      setCurChatType(LesConstants.IMMessageType.Single);
     }
   };
 
@@ -391,14 +413,10 @@ const ChatScreen = () => {
   };
 
   useEffect(() => {
-    const initializeChatData = (chatId) => {
-      const targetId = chatId
-        .split("-")
-        .slice(1, 3)
-        .filter((id) => id !== DataCenter.userInfo.accountId);
+    const initializeChatData = (chatListItem) => {
+      const { chatId, targetId, type } = chatListItem;
 
-      console.log("targetId:", targetId);
-      updateChatHandler(chatId, targetId);
+      updateChatHandler(chatId, targetId, type);
 
       const messageData = DataCenter.messageCache.getMesssageList(
         chatId,
@@ -419,7 +437,11 @@ const ChatScreen = () => {
 
     const getInitData = () => {
       const chatList = DataCenter.messageCache.getChatList();
-      let chatId = DataCenter.messageCache.getCurChatId();
+      // let chatId = DataCenter.messageCache.getCurChatId();
+      // let initChatListItem = DataCenter.messageCache.getCurChatListItem();
+
+      let initChatListItem = route.params.chatListItem;
+      // console.log("ccccm: ", chatListItem);
 
       console.log("chat list:", chatList);
 
@@ -427,16 +449,17 @@ const ChatScreen = () => {
         const chatListNewMsgCount = getChatListMsgCount(chatList);
         setNewMsgCount(chatListNewMsgCount);
 
-        if (!chatId) {
-          chatId = chatList[0].chatId;
+        if (!initChatListItem) {
+          initChatListItem = chatList[0];
         }
-        setCurChatId(chatId);
-
-        initializeChatData(chatId);
-      } else if (!chatList.length && chatId) {
-        setCurChatId(chatId);
-        initializeChatData(chatId);
+        setCurChatId(initChatListItem.chatId);
+        initializeChatData(initChatListItem);
       }
+      // 如果聊天列表为空，但缓存中存在当前chatid，证明用户从好友列表进入
+      // else if (!chatList.length && initChatListItem) {
+      //   setCurChatId(initChatListItem.chatId);
+      //   initializeChatData(initChatListItem);
+      // }
     };
 
     getInitData();
@@ -470,7 +493,12 @@ const ChatScreen = () => {
   const flatListRef = useRef();
 
   const onMessageSendHandler = () => {
-    MessageService.Inst.sendMessage(curRecipientId, newMessage);
+    if (curChatType === LesConstants.IMMessageType.Single) {
+      MessageService.Inst.sendMessage(curRecipientId, newMessage);
+    } else {
+      MessageService.Inst.sendChatGroupMessage(curRecipientId, newMessage);
+    }
+
     flatListRef.current?.scrollToEnd({ animated: true });
     // const msgData = new MessageData();
     // msgData.content = newMessage;
@@ -505,9 +533,10 @@ const ChatScreen = () => {
               // ChatList(item, onClickChatHandler)
               <ChatList
                 curChatId={curChatId}
-                chatId={item.chatId}
-                avatar={item.avatar}
-                targetId={item.targetId}
+                chatListItem={item}
+                // chatId={item.chatId}
+                // avatar={item.avatar}
+                // targetId={item.targetId}
                 chatListNewMsgCount={newMsgCount}
                 onClickChatHandler={onClickChatHandler}
               />
@@ -532,13 +561,13 @@ const ChatScreen = () => {
       </View>
       <View className="flex-1 bg-[#262F38] rounded-lg">
         <View className="flex-row justify-between p-[10px]">
-          {curUserInfo
+          {/* {curUserInfo
             ?.filter((item) => item.id !== DataCenter.userInfo.accountId)
-            .map((item, index) => (
-              <Text key={index} className="text-white font-bold text-[20px]">
-                {item.name}
-              </Text>
-            ))}
+            .map((item, index) => ( */}
+          <Text className="text-white font-bold text-[20px]">
+            {curChatName}
+          </Text>
+          {/* ))} */}
           <Ionicons
             name="ellipsis-horizontal"
             color="white"

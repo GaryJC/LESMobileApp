@@ -1,6 +1,7 @@
 import { LesConstants } from "les-im-components";
 import MessageData from "./MessageData";
 import DatabaseService from "../services/DatabaseService";
+import DataCenter from "../modules/DataCenter";
 const { IMMessageType } = LesConstants;
 /**
  * 消息缓存
@@ -11,9 +12,9 @@ class MessageCaches {
   /**
    * 如果用户在加载聊天页面之前在好友页面点击了聊天按钮
    * 因为更新聊天窗口事件还没有被监听，会导致导入的聊天窗口不匹配
-   * 现在如果缓存中没有curChatId才获取的chatList的第一个
+   * 现在如果缓存中没有保存的chatListItem才获取的chatList的第一个
    */
-  #curChatId;
+  // #curChatListItem;
 
   /**
    * 根据messageData，生成对应的chatId
@@ -49,13 +50,15 @@ class MessageCaches {
     }
   }
 
-  setCurChatId(chatId) {
-    this.#curChatId = chatId;
+  /*
+  setCurChatListItem(chatListItem) {
+    this.#curChatListItem = chatListItem;
   }
 
-  getCurChatId() {
-    return this.#curChatId;
+  getCurChatListItem() {
+    return this.#curChatListItem;
   }
+  */
 
   /**
    * 对话数据，key = chatId, value = ChatData
@@ -203,7 +206,18 @@ class MessageCaches {
    * @returns {ChatListItem}
    */
   getChatListItem(chatId) {
-    return this.#chatListSorted.find((item) => item.chatId == chatId);
+    // return this.#chatListSorted.find((item) => item.chatId == chatId);
+    let chatListItem = this.#chatListSorted.find(
+      (item) => item.chatId == chatId
+    );
+    if (!chatListItem) {
+      //没找到，建立一个并插入
+      chatListItem = new ChatListItem(chatId);
+      this.#chatListSorted.push(chatListItem);
+      this.#sortChatList();
+      return chatListItem;
+    }
+    return chatListItem;
   }
 
   /**
@@ -224,6 +238,7 @@ class MessageCaches {
    */
   getMesssageList(chatId, startIndex, count) {
     const chatData = this.getChatDataByChatId(chatId);
+
     if (chatData == null) {
       return [];
     }
@@ -280,6 +295,15 @@ class ChatListItem {
 
   constructor(chatId) {
     this.#chatId = chatId;
+    this.type =
+      chatId.split("-")[0] === "chat"
+        ? LesConstants.IMMessageType.Single
+        : LesConstants.IMMessageType.Group;
+    this.targetId = chatId
+      .split("-")
+      .slice(1, 3)
+      .filter((id) => id != DataCenter.userInfo.accountId)
+      .pop();
     this.#newMessageCount = 0;
     this.refresh();
   }
