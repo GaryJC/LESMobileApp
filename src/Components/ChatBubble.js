@@ -3,6 +3,7 @@ import Constants from "../modules/Constants";
 import { useState, useEffect } from "react";
 import DataCenter from "../modules/DataCenter";
 import formatDate from "../utils/formatDate";
+import Avatar from "./Avatar";
 
 export const ChatBubble = ({ message, preMessage, userInfo }) => {
   //Calculate time difference and check if it's more than 5 minutes
@@ -22,15 +23,15 @@ export const ChatBubble = ({ message, preMessage, userInfo }) => {
     </View>
   );
 
-  const Avatar = ({ avatar }) => (
-    <View className="overflow-hidden rounded-full w-[50px] h-[50px]">
-      <ImageBackground
-        source={{ uri: avatar }}
-        className="w-[100%] h-[100%]"
-        resizeMode="cover"
-      />
-    </View>
-  );
+  // const Avatar = ({ avatar }) => (
+  //   <View className="overflow-hidden rounded-full w-[50px] h-[50px]">
+  //     <ImageBackground
+  //       source={{ uri: avatar }}
+  //       className="w-[100%] h-[100%]"
+  //       resizeMode="cover"
+  //     />
+  //   </View>
+  // );
 
   const Bubble = ({ isOwn }) => (
     <View
@@ -40,7 +41,12 @@ export const ChatBubble = ({ message, preMessage, userInfo }) => {
           : "flex-row py-[10px] justify-start"
       }
     >
-      {!isOwn && <Avatar avatar={userInfo.avatar} />}
+      {/* {!isOwn && <Avatar avatar={userInfo.avatar} />} */}
+      {!isOwn && (
+        <View className=" w-[45px] h-[45px]">
+          <Avatar tag={userInfo?.tag} name={userInfo?.name} />
+        </View>
+      )}
       <View className="justify-evenly">
         <View className="flex-row items-end">
           <Text
@@ -50,7 +56,7 @@ export const ChatBubble = ({ message, preMessage, userInfo }) => {
                 : "text-[10px] text-white ml-[5px]"
             }
           >
-            {userInfo.name}
+            {userInfo?.name}
           </Text>
         </View>
         <View
@@ -76,7 +82,12 @@ export const ChatBubble = ({ message, preMessage, userInfo }) => {
           )}
         </View>
       </View>
-      {isOwn && <Avatar avatar={userInfo.avatar} />}
+      {/* {isOwn && <Avatar avatar={userInfo.avatar} />} */}
+      {isOwn && (
+        <View className=" w-[45px] h-[45px]">
+          <Avatar tag={userInfo?.tag} name={userInfo?.name} />
+        </View>
+      )}
     </View>
   );
 

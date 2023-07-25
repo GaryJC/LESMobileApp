@@ -203,11 +203,11 @@ class FriendService {
    * filter为过滤器，可以为空
    * @param {function(FriendData):boolean | null} filter
    */
-  getFriendList(filter) {
+  async getFriendList(filter) {
     let friends = [];
 
-    this.#friendList.forEach((f) => {
-      const user = IMUserInfoService.Inst.getUser(f.id);
+    this.#friendList.forEach(async (f) => {
+      const user = await IMUserInfoService.Inst.getUser(f.id);
       let u = null;
       if (user.length != null && user.length > 0) {
         u = user[0];

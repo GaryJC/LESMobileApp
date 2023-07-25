@@ -18,6 +18,7 @@ import DataCenter from "../modules/DataCenter";
 import JSEvent from "../utils/JSEvent";
 import { UIEvents } from "../modules/Events";
 import FriendService from "../services/FriendService";
+import Avatar from "./Avatar";
 
 export default function FriendBottomSheet({
   bottomSheetModalRef,

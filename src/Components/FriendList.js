@@ -3,11 +3,13 @@ import { StateIndicator } from "./StateIndicator";
 import { useState, useRef, useCallback } from "react";
 import FriendBottomSheet from "./FriendBottomSheet";
 import FriendListChatButton from "./FriendListChatButton";
+import Avatar from "./Avatar";
 
 export const FriendList = ({ friend, button }) => {
   // const avatar = `https://i.pravatar.cc/?img=${friend.id}`;
 
   // const navigation = useNavigation();
+  console.log("fl: ", friend);
 
   const [selectedFriend, setSelectedFriend] = useState();
 
@@ -29,13 +31,17 @@ export const FriendList = ({ friend, button }) => {
       <View className="flex-row justify-between mb-[10px]">
         <View className="flex-row items-center">
           <View className="relative">
-            <TouchableOpacity onPress={openSheet}>
-              <View className="w-[55px] h-[55px] rounded-full overflow-hidden mr-[10px]">
+            <TouchableOpacity
+              onPress={openSheet}
+              className="w-[55px] h-[55px] mr-[10px]"
+            >
+              {/* <View className="w-[55px] h-[55px] rounded-full overflow-hidden mr-[10px]">
                 <ImageBackground
                   source={{ uri: `https://i.pravatar.cc/?img=${friend.id}` }}
                   className="w-[100%] h-[100%]"
                 />
-              </View>
+              </View> */}
+              <Avatar tag={friend.tag} name={friend.name} />
             </TouchableOpacity>
             <View className="absolute bottom-[0] right-[5] justify-center items-center">
               <StateIndicator state={friend.state} />

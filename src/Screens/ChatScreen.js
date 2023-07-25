@@ -38,9 +38,10 @@ import { ChatList } from "../Components/ChatList";
 import MessageData from "../Models/MessageData";
 import ChatSearchBottomSheet from "../Components/SearchBottomSheet";
 import { useNavigation } from "@react-navigation/native";
-import { debounce } from "lodash";
+import { debounce, result } from "lodash";
 import { LesConstants } from "les-im-components";
 import { useRoute } from "@react-navigation/native";
+import ChatGroupService from "../services/ChatGroupService";
 
 // import { bottomTabHeight } from "../App";
 
@@ -145,6 +146,8 @@ const ChatScreen = () => {
   const [loadCount, setLoadCount] = useState(9);
   // 聊天搜索窗口是否打开
   const [isSearchSheetOpen, setIsSearchSheetOpen] = useState(false);
+
+  const [chatListInfo, setChatListInfo] = useState([]);
 
   const [curChatName, setCurChatName] = useState();
 
@@ -329,7 +332,7 @@ const ChatScreen = () => {
     console.log("switched chat id: ", chatId);
   };
 
-  const updateChatHandler = (chatId, targetId, type) => {
+  const updateChatHandler = async (chatId, targetId, type) => {
     const chatListItem = DataCenter.messageCache.touchChatData(chatId);
     // console.log("chat list item: ", chatListItem);
     setCurChatId(chatId);
@@ -343,15 +346,21 @@ const ChatScreen = () => {
       // console.log("cur user info: ", userInfo);
       // setCurUserInfo(userInfo);
     } else {
-      const userInfo = getUserInfo(targetId);
+      const userInfo = await getUserInfo(targetId);
       // console.log(
       //   "cur user info: ",
       //   userInfo,
       //   targetId,
       //   IMUserInfoService.Inst.getUser(targetId)
       // );
-      console.log("tttt: ", targetId, IMUserInfoService.Inst.getUser(targetId));
-      const targetName = IMUserInfoService.Inst.getUser(targetId).pop()?.name;
+      // console.log("tttt: ", targetId, IMUserInfoService.Inst.getUser(targetId));
+      // const targetName = await IMUserInfoService.Inst.getUser(targetId).pop()
+      //   ?.name;
+      console.log("uuuu: ", userInfo);
+      const targetName = userInfo
+        .filter((item) => item.id !== DataCenter.userInfo.accountId)
+        .pop().name;
+      console.log("tttt:", targetName);
       setCurChatName(targetName);
       setCurUserInfo(userInfo);
       setCurChatType(LesConstants.IMMessageType.Single);
@@ -374,27 +383,34 @@ const ChatScreen = () => {
    * @param {number|number[]} targetId
    * @returns {userInfo}
    */
-  const getUserInfo = (targetId) => {
+  const getUserInfo = async (targetId) => {
     // 目前头像为空，先用placeholder
-    const oppositeInfo = IMUserInfoService.Inst.getUser(targetId).map(
-      (item) => {
-        return {
-          id: item.id,
-          avatar: `https://i.pravatar.cc/150?img=${item.id}`,
-          name: item.name,
-        };
-      }
-    );
-    // 加入用户自己的信息
-    const userInfo = [
-      ...oppositeInfo,
-      {
-        id: DataCenter.userInfo.accountId,
-        avatar: `https://i.pravatar.cc/150?img=${DataCenter.userInfo.accountId}`,
-        name: DataCenter.userInfo.imUserInfo.name,
-      },
-    ];
-    return userInfo;
+    try {
+      const oppositeInfo = await IMUserInfoService.Inst.getUser(targetId);
+      // console.log("rrrr", result);
+      // const oppositeInfo = result.map((item) => {
+      //   console.log("iii", item.id, item.tag, item.name);
+      //   return {
+      //     id: item.id,
+      //     // avatar: `https://i.pravatar.cc/150?img=${item.id}`,
+      //     tag: item.tag,
+      //     name: item.name,
+      //   };
+      // });
+      // 加入用户自己的信息
+      const userInfo = [
+        ...oppositeInfo,
+        {
+          id: DataCenter.userInfo.accountId,
+          // avatar: `https://i.pravatar.cc/150?img=${DataCenter.userInfo.accountId}`,
+          tag: DataCenter.userInfo.imUserInfo.tag,
+          name: DataCenter.userInfo.imUserInfo.name,
+        },
+      ];
+      return userInfo;
+    } catch (e) {
+      console.log("get user info error: ", e);
+    }
   };
 
   /**
@@ -413,8 +429,9 @@ const ChatScreen = () => {
   };
 
   useEffect(() => {
-    const initializeChatData = (chatListItem) => {
+    const initializeChatData = async (chatListItem) => {
       const { chatId, targetId, type } = chatListItem;
+      console.log("ooooo: ", chatId, targetId, type);
 
       updateChatHandler(chatId, targetId, type);
 
@@ -430,29 +447,61 @@ const ChatScreen = () => {
       });
 
       setCurRecipientId(targetId);
-      const userInfo = getUserInfo(targetId);
+      const userInfo = await getUserInfo(targetId);
       console.log("cur user info:", userInfo, targetId);
       setCurUserInfo(userInfo);
     };
 
-    const getInitData = () => {
+    const getInitData = async () => {
       const chatList = DataCenter.messageCache.getChatList();
       // let chatId = DataCenter.messageCache.getCurChatId();
       // let initChatListItem = DataCenter.messageCache.getCurChatListItem();
 
-      let initChatListItem = route.params.chatListItem;
+      let initChatListItem = route.params?.chatListItem;
       // console.log("ccccm: ", chatListItem);
 
       console.log("chat list:", chatList);
-
+      // 如果缓存中存在聊天列表
       if (chatList.length) {
-        const chatListNewMsgCount = getChatListMsgCount(chatList);
-        setNewMsgCount(chatListNewMsgCount);
+        console.log("sasas");
+        const getChatListInfo = async () => {
+          console.log("wasas");
+          const promises = chatList.map(
+            (item) => {
+              if (item.type === LesConstants.IMMessageType.Single) {
+                return IMUserInfoService.Inst.getUser(item.targetId);
+              } else {
+                // return ChatGroupService.Inst.getChatGroup(item.targetId);
+              }
+            }
+            // IMUserInfoService.Inst.getUser(item.targetId)
+          );
+          try {
+            const result = await Promise.all(promises);
+            console.log("chat list info ", result);
+            setChatListInfo(result);
+            // return result;
+          } catch (e) {
+            console.log(e);
+          }
+        };
 
+        getChatListInfo();
+        // setChatListInfo(getChatListInfo());
+
+        const chatListNewMsgCount = getChatListMsgCount(chatList);
+        console.log("cb", chatListNewMsgCount);
+        setNewMsgCount(chatListNewMsgCount);
+        // 如果用户不是在打开聊天窗口前从好友列表进入的
+        // 获取头部列表
         if (!initChatListItem) {
           initChatListItem = chatList[0];
         }
         setCurChatId(initChatListItem.chatId);
+        initializeChatData(initChatListItem);
+      } else if (initChatListItem) {
+        // 如果缓存中不存在聊天列表
+        // 用户是在打开聊天窗口前从好友列表进入的
         initializeChatData(initChatListItem);
       }
       // 如果聊天列表为空，但缓存中存在当前chatid，证明用户从好友列表进入
@@ -537,6 +586,10 @@ const ChatScreen = () => {
                 // chatId={item.chatId}
                 // avatar={item.avatar}
                 // targetId={item.targetId}
+                // chatListInfo={chatListInfo.find(
+                //   (chatList) => chatList?.id === item.targetId
+                // )}
+                chatListInfo={chatListInfo}
                 chatListNewMsgCount={newMsgCount}
                 onClickChatHandler={onClickChatHandler}
               />
@@ -598,7 +651,7 @@ const ChatScreen = () => {
                   // status={item.status}
                   message={item}
                   preMessage={preMessage}
-                  userInfo={curUserInfo.find(
+                  userInfo={curUserInfo?.find(
                     (user) => user.id === item.senderId
                   )}
                 />
