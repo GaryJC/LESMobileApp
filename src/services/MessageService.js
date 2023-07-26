@@ -290,7 +290,15 @@ class MessageService {
 
     //请求最新的timeline数据
     await this.#requestTimeline();
+    //读取本地的聊天组
     await ChatGroupService.Inst.loadChatGroups();
+    
+    try{
+    const msgDatas = await ChatGroupService.Inst.requestChatGroupsTimeline();
+    msgDatas.forEach(msg=>this.#onTimelineUpdated(msg));
+    }catch(e){
+      console.log("chatgroup updated failed: code", e.toString(16))
+    }
     // const { startId, endId, datas } =
     //   await LesPlatformCenter.IMFunctions.requestTimeline(
     //     this.#latestTimelineId,
@@ -314,7 +322,8 @@ class MessageService {
         //   this.#onTimelineUpdated(data);
         // });
         await this.#requestTimeline();
-        await ChatGroupService.Inst.requestChatGroupsTimeline();
+        const msgDatas = await ChatGroupService.Inst.requestChatGroupsTimeline();
+        msgDatas.forEach(msg => this.#onTimelineUpdated(msg));
       } catch (e) {
         console.error("request timeline failed: ", e);
       }
