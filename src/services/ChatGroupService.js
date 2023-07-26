@@ -73,7 +73,7 @@ class ChatGroupService {
       this.#pushChatGroup(cg);
       this.#updateChatGroup(cg.id);
     } else {
-      cg.latestTimelineId = msgData.timelineId;
+      cg.latestTimelineId = Math.max(cg.latestTimelineId, msgData.timelineId);
     }
   }
 
@@ -91,8 +91,8 @@ class ChatGroupService {
       }
       LesPlatformCenter.IMFunctions.getGroupInfo(groupId)
         .then((data) => {
-          const newCg = PBUtils.pbChatGroupDataToChatGroup(data);
-          newCg.latestTimelineId = cg.latestTimelineId;
+          const newCg = PBUtils.pbChatGroupDataToChatGroup(data.groupData);
+          newCg.latestTimelineId = cg == null ? 0 : cg.latestTimelineId;
           this.#pushChatGroup(newCg);
           DatabaseService.Inst.saveChatGroup(newCg);
           resolve(newCg);
@@ -142,14 +142,40 @@ class ChatGroupService {
     this.#chatGroups = {};
     try {
       const groups = await DatabaseService.Inst.loadChatGroup();
-
-      await this.requestChatGroupsTimeline();
     } catch (e) {
       console.error(`读取群组数据失败`, e);
     }
   }
 
+
+  /**
+   * 
+   * @returns {Promise<PBLesIMTimelineData[]>}
+   */
   requestChatGroupsTimeline() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        //获取所有群组的最新timelineId
+        const updates = await this.#requestChatGroupsTimelineUpdate();
+        //拉取消息
+        const req = updates.map(u => { return { groupId: u.groupId, from: u.currentTimelineId, to: u.latestTimelineId } });
+        LesPlatformCenter.IMFunctions.getGroupTimeline(req).then(msgs => {
+          resolve(msgs);
+        }).catch(e => {
+          reject(e);
+        });
+
+      } catch (e) {
+        reject(e);
+      }
+    })
+  }
+
+  /**
+   * 向服务器请求所有聊天分组的最新timelineId
+   * @returns {Promise<{groupId:number,currentTimelineId:number,latestTimelineId:number,updateTime:number}[]>}
+   */
+  #requestChatGroupsTimelineUpdate() {
     return new Promise((resolve, reject) => {
       const groupIds = [];
       const timelineIds = [];
@@ -162,7 +188,20 @@ class ChatGroupService {
 
       LesPlatformCenter.IMFunctions.getGroupUpdates(groupIds, timelineIds)
         .then((updates) => {
-          resolve(updates);
+          const ret = [];
+          updates.forEach(u => {
+            const groupId = u.getGroupid();
+            const latestTimelineId = u.getLatesttimelineid();
+            const updateTime = u.getUpdatetime();
+
+            const cg = this.#chatGroups[groupId];
+            if (cg.latestTimelineId == null || cg.latestTimelineId == 0) {
+              //本地是0，表示没有提取过消息，线设置为当前分组的最新timelineId
+              cg.latestTimelineId = latestTimelineId;
+            }
+            ret.push({ groupId, currentTimelineId: cg.latestTimelineId, latestTimelineId, updateTime });
+          });
+          resolve(ret);
         })
         .catch((err) => {
           console.error("获取聊天群组更新失败，code " + err.toString(16));
