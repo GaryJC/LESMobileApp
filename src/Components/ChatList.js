@@ -14,7 +14,7 @@ export const ChatList = ({
   onClickChatHandler,
 }) => {
   const [newMsgCount, setNewMsgCount] = useState(0);
-  // console.log("oooo: ", chatListInfo, chatListItem);
+  console.log("oooo: ", chatListInfo, chatListItem);
 
   useEffect(() => {
     const count =

@@ -459,13 +459,12 @@ const ChatScreen = () => {
 
       let initChatListItem = route.params?.chatListItem;
       // console.log("ccccm: ", chatListItem);
-
+      // const res = await ChatGroupService.Inst.getChatGroup(291467793747173400);
+      // console.log("rrrr: ", res);
       console.log("chat list:", chatList);
       // 如果缓存中存在聊天列表
       if (chatList.length) {
-        console.log("sasas");
         const getChatListInfo = async () => {
-          console.log("wasas");
           const promises = chatList.map(
             (item) => {
               if (item.type === LesConstants.IMMessageType.Single) {

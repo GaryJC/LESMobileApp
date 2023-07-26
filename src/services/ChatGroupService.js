@@ -129,7 +129,7 @@ class ChatGroupService {
         cg.latestTimelineId = 0;
         this.#pushChatGroup(cg);
         this.#updateChatGroup(cg.id)
-          .then((cg) => { })
+          .then((cg) => {})
           .catch((err) =>
             console.error(`更新群[${cg.id}]失败，code：${err.toString(16)}`)
           );
@@ -195,7 +195,7 @@ class ChatGroupService {
 
   /**
    * 获取指定聊天群组的详情数据
-   * @param {number} chatGroupId 
+   * @param {number} chatGroupId
    * @returns {Promise<ChatGroup>}
    */
   getChatGroup(chatGroupId) {
@@ -204,7 +204,7 @@ class ChatGroupService {
 
   /**
    * 获取群组成员列表
-   * @param {number} groupId 
+   * @param {number} groupId
    * @param {(state:IMGroupMemberState)=>boolean} stateFilter 状态过滤器，null表示获取全部状态
    * @returns {Promise<ChatGroupMember[]>}
    */
@@ -219,61 +219,67 @@ class ChatGroupService {
 
         const userMap = {};
 
-        users.forEach(user => {
+        users.forEach((user) => {
           userMap[user.id] = user;
-        })
+        });
 
-        members.forEach(member => {
+        members.forEach((member) => {
           const userInfo = userMap[member.userInfo.id];
           if (userInfo != null) {
             member.userInfo = userInfo;
           }
-        })
+        });
 
         resolve(members);
-
       } catch (err) {
+        console.log("sas");
         reject(err);
       }
 
-
-      this.#updateChatGroup(groupId).then(group => {
-        group.getMembers(stateFilter).then(ms => {
-
-          const ids = ms.map((v) => v.userInfo.id);
-          const users = IMUserInfoService.Inst.getUser(ids);
-
-        }).catch(err => reject(err));
-      }).catch(err => reject(err));
-    })
+      this.#updateChatGroup(groupId)
+        .then((group) => {
+          group
+            .getMembers(stateFilter)
+            .then((ms) => {
+              const ids = ms.map((v) => v.userInfo.id);
+              const users = IMUserInfoService.Inst.getUser(ids);
+            })
+            .catch((err) => reject(err));
+        })
+        .catch((err) => reject(err));
+    });
   }
 
   /**
    * 退出群聊
-   * @param {number} groupId 
+   * @param {number} groupId
    */
   quitChatGroup(groupId) {
     return new Promise((resolve, reject) => {
-      LesPlatformCenter.IMFunctions.quitGroup(groupId).then(id => {
-        this.#chatGroups[groupId] = null;
-        delete this.#chatGroups[groupId];
-        DatabaseService.Inst.removeChatGroup(groupId);
-        resolve(id);
-      }).catch(err => reject(err));
-    })
+      LesPlatformCenter.IMFunctions.quitGroup(groupId)
+        .then((id) => {
+          this.#chatGroups[groupId] = null;
+          delete this.#chatGroups[groupId];
+          DatabaseService.Inst.removeChatGroup(groupId);
+          resolve(id);
+        })
+        .catch((err) => reject(err));
+    });
   }
 
   /**
    * 移除群内成员
-   * @param {number} groupId 
-   * @param {number} memberId 
+   * @param {number} groupId
+   * @param {number} memberId
    */
   removeGroupMember(groupId, memberId) {
     return new Promise((resolve, reject) => {
-      LesPlatformCenter.IMFunctions.removeGroupMember(groupId, memberId).then(removedUserId => {
-        resolve(removedUserId);
-      }).catch(err => reject(err));
-    })
+      LesPlatformCenter.IMFunctions.removeGroupMember(groupId, memberId)
+        .then((removedUserId) => {
+          resolve(removedUserId);
+        })
+        .catch((err) => reject(err));
+    });
   }
 }
 

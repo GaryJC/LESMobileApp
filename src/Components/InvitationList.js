@@ -1,41 +1,41 @@
-import {
-  View,
-  Text,
-  Image,
-  ImageBackground,
-  TouchableHighlight,
-  TouchableOpacity,
-} from "react-native";
-import DataCenter from "../modules/DataCenter";
-import { LesConstants, LesPlatformCenter } from "les-im-components";
+import { View, Text, TouchableHighlight, TouchableOpacity } from "react-native";
+import { LesConstants } from "les-im-components";
 import NotificationService from "../services/NotificationService";
 import Constants from "../modules/Constants";
 import { Ionicons } from "@expo/vector-icons";
+import Avatar from "./Avatar";
 
 export default function InvitationList({ item }) {
-  console.log("item: ", item);
-
   const onRespondHandler = (notificationId, response) => {
-    console.log("noti, response: ", notificationId, response);
-    // LesPlatformCenter.IMFunctions.respondNotification(notificationId, response)
     NotificationService.Inst.respondInvitation(notificationId, response)
-      // NotificationService.Inst.respondFriendInvitation(notificationId, response)
       .then((res) => {
         console.log("response: ", res);
       })
       .catch((e) => console.error(e));
   };
 
-  const InvitationLayout = ({ children }) => (
-    <View className="bg-[#131F2A] rounded-lg p-[15px]">
-      <View className="flex-row justify-between items-center">
+  const InvitationLayout = ({ type, children }) => (
+    <View className="bg-[#262F38] rounded-lg overflow-hidden">
+      <View className="bg-[#1A1E22] h-[30px] pl-[10px] justify-center">
+        <Text className="text-white font-bold">
+          {type === LesConstants.IMNotificationType.FriendInvitation
+            ? "Friend Request"
+            : "Group Invitation"}
+        </Text>
+      </View>
+      <View className="flex-row justify-between items-center p-[10px]">
         <View className="flex-row items-center">
-          <Image
-            source={{ uri: `https://i.pravatar.cc/?img=${item.sender.id}` }}
-            className="w-[50px] h-[50px] rounded-full"
-          />
+          <View className="h-[50px] w-[50px]">
+            {type === LesConstants.IMNotificationType.FriendInvitation ? (
+              <Avatar tag={item.sender.tag} name={item.sender.name} />
+            ) : (
+              <Avatar tag={item.id} name={item.groupInfo.name} />
+            )}
+          </View>
           <Text className="text-white font-bold text-[16px] pl-[10px]">
-            {item.sender.name}
+            {type === LesConstants.IMNotificationType.FriendInvitation
+              ? item.sender.name
+              : item.groupInfo.name}
           </Text>
         </View>
         <View className="flex-row">{children}</View>
@@ -44,7 +44,7 @@ export default function InvitationList({ item }) {
   );
 
   const SenderInvitation = ({ notificationId }) => (
-    <InvitationLayout>
+    <InvitationLayout type={item.type}>
       <TouchableHighlight
         onPress={() =>
           onRespondHandler(
@@ -61,7 +61,7 @@ export default function InvitationList({ item }) {
   );
 
   const RecipientInvitation = ({ notificationId }) => (
-    <InvitationLayout>
+    <InvitationLayout type={item.type}>
       <TouchableOpacity
         onPress={() =>
           onRespondHandler(
@@ -87,7 +87,7 @@ export default function InvitationList({ item }) {
   );
 
   return (
-    <View className="mx-[5vw] py-[5px]">
+    <View className="my-[10px]">
       {item.mode === Constants.Notification.NotificationMode.sender ? (
         <SenderInvitation notificationId={item.id} />
       ) : (
