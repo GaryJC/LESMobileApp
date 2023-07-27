@@ -4,8 +4,8 @@ import { debounce } from "lodash";
 import FriendService from "../services/FriendService";
 
 const FriendSearchInput = ({ setSearchResults }) => {
-  const onSearchHandler = debounce((keyword) => {
-    const friendList = FriendService.Inst.getFriendList();
+  const onSearchHandler = debounce(async (keyword) => {
+    const friendList = await FriendService.Inst.getFriendList();
     const result = friendList.filter((friend) =>
       friend.name.toLowerCase().includes(keyword.toLowerCase())
     );

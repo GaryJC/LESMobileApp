@@ -431,7 +431,7 @@ const ChatScreen = () => {
   useEffect(() => {
     const initializeChatData = async (chatListItem) => {
       const { chatId, targetId, type } = chatListItem;
-      console.log("ooooo: ", chatId, targetId, type);
+      // console.log("ooooo: ", chatId, targetId, type);
 
       updateChatHandler(chatId, targetId, type);
 
@@ -470,13 +470,21 @@ const ChatScreen = () => {
               if (item.type === LesConstants.IMMessageType.Single) {
                 return IMUserInfoService.Inst.getUser(item.targetId);
               } else {
-                // return ChatGroupService.Inst.getChatGroup(item.targetId);
+                return ChatGroupService.Inst.getChatGroup(item.targetId);
               }
             }
             // IMUserInfoService.Inst.getUser(item.targetId)
           );
           try {
-            const result = await Promise.all(promises);
+            let result = await Promise.all(promises);
+            result = result.map((item) => {
+              if (Array.isArray(item)) {
+                // const info = item.pop();
+                return { ...item.pop(), type: Constants.ChatListType.Single };
+              } else {
+                return { ...item, type: Constants.ChatListType.Group };
+              }
+            });
             console.log("chat list info ", result);
             setChatListInfo(result);
             // return result;

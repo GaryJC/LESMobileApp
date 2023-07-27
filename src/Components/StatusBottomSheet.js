@@ -3,6 +3,7 @@ import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import BottomSheet, { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { LesConstants, LesPlatformCenter } from "les-im-components";
 import { StateIndicator, makeStateReadable } from "./StateIndicator";
+import IMUserInfoService from "../services/IMUserInfoService";
 
 export default function StatusBottomSheet({
   isSheetOpen,
@@ -47,7 +48,8 @@ export default function StatusBottomSheet({
    */
   const switchStatusHandler = (state) => {
     // console.log(status);
-    LesPlatformCenter.IMFunctions.setState(state)
+    // LesPlatformCenter.IMFunctions.setState(state)
+    IMUserInfoService.Inst.setCurrentUserState(state)
       .then((code) => {
         console.log("状态设置成功");
         // const readableState = makeStateReadable(state);

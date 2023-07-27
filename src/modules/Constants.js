@@ -47,6 +47,11 @@ const Constants = {
       recipient: "recipient",
     },
   },
+
+  ChatListType: {
+    Single: 0,
+    Group: 1,
+  },
 };
 
 export default Constants;

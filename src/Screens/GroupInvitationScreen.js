@@ -48,9 +48,14 @@ const GroupInvitationScreen = () => {
   };
 
   useEffect(() => {
-    const friendList = FriendService.Inst.getFriendList();
-    setFriendsData(friendList);
-    console.log("friend list: ", friendList);
+    FriendService.Inst.getFriendList()
+      .then((res) => {
+        setFriendsData(res);
+        console.log("friend list: ", res);
+      })
+      .catch((e) => {
+        console.log("get friend list error: ", e);
+      });
 
     JSEvent.on(DataEvents.ChatGroup.ChatGroup_New, newGroupEventHandler);
     return () => {

@@ -38,6 +38,7 @@ export default function FriendBottomSheet({
     []
   );
   const navigation = useNavigation();
+  console.log("ssss", selectedFriend);
 
   const handleSheetChanges = useCallback((index) => {
     console.log("handleSheetChanges", index);
@@ -118,12 +119,15 @@ export default function FriendBottomSheet({
             source={require("../../assets/img/userBg.jpg")}
             className="h-[25vh] items-center relative"
           >
-            <Image
+            {/* <Image
               source={{
                 uri: `https://i.pravatar.cc/?img=${selectedFriend?.id}`,
               }}
               className="w-[100px] h-[100px] rounded-full absolute bottom-[-50px] left-[25px]"
-            />
+            /> */}
+            <View className="w-[100px] h-[100px] absolute bottom-[-50px] left-[25px]">
+              <Avatar tag={selectedFriend?.tag} name={selectedFriend?.name} />
+            </View>
           </ImageBackground>
         </View>
         <View className="mt-[55px] ml-[20px] flex-row items-end">
