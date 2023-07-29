@@ -52,9 +52,12 @@ export default function UserScreen() {
 
   const navigation = useNavigation();
 
+  const bottomSheetModalRef = useRef(null);
+
   const openSheet = useCallback(() => {
     // bottomSheetRef.current?.expand(); // 1 refers to the second snap point ('50%')
-    setIsSheetOpen(true);
+    // setIsSheetOpen(true);
+    bottomSheetModalRef.current?.present();
   }, []);
 
   const closeSheet = useCallback(() => {
@@ -202,8 +205,7 @@ export default function UserScreen() {
       </View>
       {/* The bottom sheet that is used to switch the user status */}
       <StatusBottomSheet
-        isSheetOpen={isSheetOpen}
-        closeSheet={closeSheet}
+        bottomSheetModalRef={bottomSheetModalRef}
         setUserStatus={setUserStatus}
       />
     </View>

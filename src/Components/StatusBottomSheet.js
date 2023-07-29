@@ -1,16 +1,18 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { useEffect, useState, useRef, useMemo, useCallback } from "react";
-import BottomSheet, { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetModal,
+} from "@gorhom/bottom-sheet";
 import { LesConstants, LesPlatformCenter } from "les-im-components";
 import { StateIndicator, makeStateReadable } from "./StateIndicator";
 import IMUserInfoService from "../services/IMUserInfoService";
 
 export default function StatusBottomSheet({
-  isSheetOpen,
-  closeSheet,
+  bottomSheetModalRef,
   setUserStatus,
 }) {
-  const snapPoints = useMemo(() => ["30%"], []);
+  const snapPoints = useMemo(() => ["30%"]);
   const bottomSheetRef = useRef(null);
 
   // callbacks
@@ -34,13 +36,13 @@ export default function StatusBottomSheet({
     []
   );
 
-  useEffect(() => {
-    if (isSheetOpen) {
-      bottomSheetRef.current?.expand(); // this will snap to the maximum provided point
-    } else {
-      bottomSheetRef.current?.close(); // this will slide down the sheet
-    }
-  }, [isSheetOpen]);
+  // useEffect(() => {
+  //   if (isSheetOpen) {
+  //     bottomSheetRef.current?.expand(); // this will snap to the maximum provided point
+  //   } else {
+  //     bottomSheetRef.current?.close(); // this will slide down the sheet
+  //   }
+  // }, [isSheetOpen]);
 
   /**
    * 切换状态
@@ -55,7 +57,7 @@ export default function StatusBottomSheet({
         // const readableState = makeStateReadable(state);
         // console.log("ssa: ", readableState);
         setUserStatus(state);
-        closeSheet();
+        bottomSheetModalRef.current?.close();
       })
       .catch((code) => {
         console.log(`状态设置失败: ${code.toString(16)}`);
@@ -76,9 +78,9 @@ export default function StatusBottomSheet({
   );
 
   return (
-    <BottomSheet
-      ref={bottomSheetRef}
-      index={-1} // 0 refers to the first snap point ('25%')
+    <BottomSheetModal
+      ref={bottomSheetModalRef}
+      index={0} // 0 refers to the first snap point ('25%')
       snapPoints={snapPoints}
       enablePanDownToClose={true}
       onChange={handleSheetChanges}
@@ -92,6 +94,6 @@ export default function StatusBottomSheet({
         <StatusButton state={LesConstants.IMUserState.Away} />
         <StatusButton state={LesConstants.IMUserState.Hiding} />
       </View>
-    </BottomSheet>
+    </BottomSheetModal>
   );
 }

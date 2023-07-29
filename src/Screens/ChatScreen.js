@@ -29,7 +29,7 @@ import {
 import FriendService from "../services/FriendService";
 import MessageService from "../services/MessageService";
 import JSEvent from "../utils/JSEvent";
-import { UIEvents } from "../modules/Events";
+import { UIEvents, DataEvents } from "../modules/Events";
 import Constants from "../modules/Constants";
 import DataCenter from "../modules/DataCenter";
 import IMUserInfoService from "../services/IMUserInfoService";
@@ -340,27 +340,22 @@ const ChatScreen = () => {
     chatListListener({ chatId: chatId });
     if (type === LesConstants.IMMessageType.Group) {
       setCurChatType(LesConstants.IMMessageType.Group);
+      // const name = chatListInfo.find((item) => item.id === targetId);
+      // setCurChatName(name);
       // 获取当前群聊信息，如所有成员的targetId等
-      setCurChatName("group");
+      const groupInfo = await ChatGroupService.Inst.getChatGroup(targetId);
+      let groupMembers = await ChatGroupService.Inst.getGroupMembers(targetId);
+      groupMembers = groupMembers.map((item) => item.userInfo);
+      setCurChatName(groupInfo.name);
       // const userInfo = getUserInfo(targetId);
       // console.log("cur user info: ", userInfo);
-      // setCurUserInfo(userInfo);
+      // setCurUserInfo(groupMembers);
+      // console.log("ppppp: ", groupMembers);
     } else {
       const userInfo = await getUserInfo(targetId);
-      // console.log(
-      //   "cur user info: ",
-      //   userInfo,
-      //   targetId,
-      //   IMUserInfoService.Inst.getUser(targetId)
-      // );
-      // console.log("tttt: ", targetId, IMUserInfoService.Inst.getUser(targetId));
-      // const targetName = await IMUserInfoService.Inst.getUser(targetId).pop()
-      //   ?.name;
-      console.log("uuuu: ", userInfo);
       const targetName = userInfo
         .filter((item) => item.id !== DataCenter.userInfo.accountId)
         .pop().name;
-      console.log("tttt:", targetName);
       setCurChatName(targetName);
       setCurUserInfo(userInfo);
       setCurChatType(LesConstants.IMMessageType.Single);
@@ -431,7 +426,6 @@ const ChatScreen = () => {
   useEffect(() => {
     const initializeChatData = async (chatListItem) => {
       const { chatId, targetId, type } = chatListItem;
-      // console.log("ooooo: ", chatId, targetId, type);
 
       updateChatHandler(chatId, targetId, type);
 
@@ -510,6 +504,7 @@ const ChatScreen = () => {
         // 如果缓存中不存在聊天列表
         // 用户是在打开聊天窗口前从好友列表进入的
         initializeChatData(initChatListItem);
+        setCurChatId(initChatListItem.chatId);
       }
       // 如果聊天列表为空，但缓存中存在当前chatid，证明用户从好友列表进入
       // else if (!chatList.length && initChatListItem) {
@@ -526,6 +521,7 @@ const ChatScreen = () => {
     JSEvent.on(UIEvents.Message.Message_Chat_List_Updated, chatListListener);
     JSEvent.on(UIEvents.User.User_Click_Chat_Updated, onClickChatHandler);
     JSEvent.on(UIEvents.Message.Message_Search_Updated, onSearchUpdateHandler);
+    JSEvent.on(DataEvents.ChatGroup.ChatGroup_Updated, chatListListener);
 
     return () => {
       JSEvent.remove(UIEvents.Message.Message_Chat_Updated, msgListener);
@@ -538,6 +534,7 @@ const ChatScreen = () => {
         UIEvents.Message.Message_Search_Updated,
         onSearchUpdateHandler
       );
+      JSEvent.remove(DataEvents.ChatGroup.ChatGroup_Updated);
     };
   }, [curChatId]);
 
@@ -576,7 +573,13 @@ const ChatScreen = () => {
   }, []);
 
   const handleCreateGroupOpen = () => {
-    navigation.navigate("GroupInvite");
+    navigation.navigate("GroupCreate");
+  };
+
+  const goToChatInfoHandler = () => {
+    if (curChatType === Constants.ChatListType.Group) {
+      navigation.navigate("GroupInfo", { targetId: curRecipientId });
+    }
   };
 
   return (
@@ -628,11 +631,9 @@ const ChatScreen = () => {
             {curChatName}
           </Text>
           {/* ))} */}
-          <Ionicons
-            name="ellipsis-horizontal"
-            color="white"
-            size={24}
-          ></Ionicons>
+          <TouchableOpacity onPress={goToChatInfoHandler}>
+            <Ionicons name="ellipsis-horizontal" color="white" size={24} />
+          </TouchableOpacity>
         </View>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}

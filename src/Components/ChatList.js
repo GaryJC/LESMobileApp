@@ -24,17 +24,12 @@ export const ChatList = ({
     setNewMsgCount(count);
   }, [chatListNewMsgCount]);
 
-  const info = useMemo(
-    () => chatListInfo.find((item) => item.id === chatListItem.targetId),
-    [chatListInfo, chatListItem.targetId]
-  );
+  const info = chatListInfo.find((item) => item.id === chatListItem.targetId);
 
-  const tag = useMemo(
-    () => (info?.type === Constants.ChatListType.Group ? info?.id : info?.tag),
-    [info]
-  );
+  const tag =
+    info?.type === Constants.ChatListType.Group ? info?.id : info?.tag;
 
-  const name = useMemo(() => info?.name, [info]);
+  const name = info?.name;
 
   // console.log("ssss: ", chatListInfo, info, tag, name);
   // const info = chatListInfo.find((item) => item.id === chatListItem.targetId);

@@ -38,7 +38,7 @@ export default function FriendBottomSheet({
     []
   );
   const navigation = useNavigation();
-  console.log("ssss", selectedFriend);
+  // console.log("ssss", selectedFriend);
 
   const handleSheetChanges = useCallback((index) => {
     console.log("handleSheetChanges", index);

@@ -34,8 +34,10 @@ import Constants from "./src/modules/Constants";
 import DatabaseService from "./src/services/DatabaseService";
 import DataCenter from "./src/modules/DataCenter";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import GroupInvitationScreen from "./src/Screens/GroupInvitationScreen";
 import FriendAddScreen from "./src/Screens/FriendAddScreen";
+import GroupInfoScreen from "./src/Screens/GroupInfoScreen";
+import GroupCreateScreen from "./src/Screens/GroupCreateScreen";
+import GroupInviteScreen from "./src/Screens/GroupInviteScreen";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -312,14 +314,24 @@ export default function App() {
             />
             <Stack.Screen name="FriendSearch" component={FriendSearchScreen} />
             <Stack.Screen
-              name="GroupInvite"
-              component={GroupInvitationScreen}
+              name="GroupCreate"
+              component={GroupCreateScreen}
               options={{ headerTitle: "Create Group" }}
             />
             <Stack.Screen
               name="FriendAdd"
               component={FriendAddScreen}
               options={{ headerTitle: "Add Friend" }}
+            />
+            <Stack.Screen
+              name="GroupInfo"
+              component={GroupInfoScreen}
+              options={{ headerTitle: "Group Information" }}
+            />
+            <Stack.Screen
+              name="GroupInvite"
+              component={GroupInviteScreen}
+              // options={{ headerTitle: "Group Information" }}
             />
           </Stack.Navigator>
         </NavigationContainer>

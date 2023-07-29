@@ -20,8 +20,11 @@ import JSEvent from "../utils/JSEvent";
 import { DataEvents, UIEvents } from "../modules/Events";
 import { useNavigation } from "@react-navigation/native";
 import { LesConstants } from "les-im-components";
+import GroupRoleBottomSheet from "../Components/GroupRoleBottomSheet";
+import FriendSelectButton from "../Components/FriendSelectButton";
+import DataCenter from "../modules/DataCenter";
 
-const GroupInvitationScreen = () => {
+const GroupCreateScreen = () => {
   const [friendsData, setFriendsData] = useState([]);
   const [selectedFriends, setSelectedFriends] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -31,20 +34,25 @@ const GroupInvitationScreen = () => {
 
   const newGroupEventHandler = (chatGroup) => {
     console.log("new group", chatGroup);
-    navigation.navigate("Chats");
-    const groupId = chatGroup.id;
+
+    const groupId = "group-" + chatGroup.id;
     // JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated);
     // JSEvent.emit(UIEvents.User.User_Click_Chat_Updated, {
     //   chatId: groupId,
     //   type: LesConstants.IMMessageType.Group,
     // });
-    const chatListItem = DataCenter.messageCache.getChatListItem(chatId);
-    DataCenter.messageCache.setCurChatListItem(chatListItem);
+    const chatListItem = DataCenter.messageCache.getChatListItem(groupId);
+    console.log("bbb: ", chatListItem);
+    // DataCenter.messageCache.setCurChatListItem(chatListItem);
     JSEvent.emit(UIEvents.User.User_Click_Chat_Updated, {
       // chatId: chatId,
       // targetId: friend?.id,
       chatListItem: chatListItem,
     });
+  };
+
+  const updateGroupEventHander = (chatGroup) => {
+    console.log("updated chat group: ", chatGroup);
   };
 
   useEffect(() => {
@@ -58,11 +66,14 @@ const GroupInvitationScreen = () => {
       });
 
     JSEvent.on(DataEvents.ChatGroup.ChatGroup_New, newGroupEventHandler);
+    JSEvent.on(DataEvents.ChatGroup.ChatGroup_Updated, updateGroupEventHander);
     return () => {
       JSEvent.remove(DataEvents.ChatGroup.ChatGroup_New);
+      JSEvent.remove(DataEvents.ChatGroup.ChatGroup_Updated);
     };
   }, []);
 
+  /*
   const toggleFriendSelection = (friend) => {
     if (selectedFriends.some((selected) => selected.id === friend.id)) {
       setSelectedFriends(
@@ -85,6 +96,7 @@ const GroupInvitationScreen = () => {
       )}
     </TouchableOpacity>
   );
+  */
 
   const openCreateGroupModal = () => {
     setModalVisible(true);
@@ -107,6 +119,7 @@ const GroupInvitationScreen = () => {
       console.log("invitations: ", invitations);
       const results = await Promise.all(invitations);
       console.log("all invitiatons sent successfully", results);
+      navigation.navigate("Chats");
     } catch (e) {
       console.log("create group error: ", e);
     }
@@ -123,12 +136,12 @@ const GroupInvitationScreen = () => {
             <FriendList
               friend={item}
               button={
-                <SelectButton
+                <FriendSelectButton
                   friend={item}
                   isSelected={selectedFriends.some(
                     (friend) => friend.id === item.id
                   )}
-                  toggleFriendSelection={toggleFriendSelection}
+                  setSelectedFriends={setSelectedFriends}
                 />
               }
             />
@@ -184,4 +197,4 @@ const GroupInvitationScreen = () => {
   );
 };
 
-export default GroupInvitationScreen;
+export default GroupCreateScreen;
