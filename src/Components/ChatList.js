@@ -24,18 +24,13 @@ export const ChatList = ({
     setNewMsgCount(count);
   }, [chatListNewMsgCount]);
 
-  const info = chatListInfo.find((item) => item.id === chatListItem.targetId);
+  const [info, setInfo] = useState();
 
-  const tag =
-    info?.type === Constants.ChatListType.Group ? info?.id : info?.tag;
-
-  const name = info?.name;
-
-  // console.log("ssss: ", chatListInfo, info, tag, name);
-  // const info = chatListInfo.find((item) => item.id === chatListItem.targetId);
-  // const tag = info?.type === Constants.ChatListType.Group ? info.id : info.tag;
-  // const name = info.name;
-  // console.log("ssss: ", chatListInfo, info, tag, name);
+  useEffect(() => {
+    const data = chatListInfo.find((item) => item.id == chatListItem.targetId);
+    console.log("bbbbb", chatListInfo, data, chatListItem);
+    setInfo(data);
+  }, [chatListInfo]);
 
   return (
     // add onPress handler to switch chat recipient
@@ -55,7 +50,12 @@ export const ChatList = ({
               : "rounded-full w-[55px] h-[55px] mb-[15px]"
           }
         >
-          <Avatar tag={tag} name={name} />
+          <Avatar
+            tag={
+              info?.type === Constants.ChatListType.Group ? info?.id : info?.tag
+            }
+            name={info?.name}
+          />
 
           {info?.type === Constants.ChatListType.Group && (
             <View className="w-[20px] h-[20px] rounded-md bg-[#6E5EDB] absolute right-0 justify-center items-center">

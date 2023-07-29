@@ -314,8 +314,27 @@ const ChatScreen = () => {
    * @param {number} targetId
    * @param {MessageData} data
    */
-  const onClickChatHandler = ({ chatListItem }) => {
-    console.log("cccc: ", chatListItem);
+  const onClickChatHandler = async ({ chatListItem }) => {
+    console.log("cccc: ", chatListItem, chatListData, chatListInfo);
+    // 如果当前的列表不存在这个item
+    // 这时的情况可能是新建群或者从用户列表进入
+    if (!chatListData.some((item) => item.targetId === chatListItem.targetId)) {
+      const getChatInfo = async () => {
+        if (chatListItem.type === LesConstants.IMMessageType.Single) {
+          return (
+            await IMUserInfoService.Inst.getUser(chatListItem.targetId)
+          ).pop();
+        } else {
+          return await ChatGroupService.Inst.getChatGroup(
+            chatListItem.targetId
+          );
+        }
+      };
+      const chatInfo = await getChatInfo();
+      console.log("snnbn", chatInfo, chatListInfo);
+      setChatListInfo((pre) => [...pre, chatInfo]);
+    }
+
     const { chatId, targetId, type } = chatListItem;
     console.log("chatId & targetId: ", chatId, targetId, curChatId);
     // 已经在这个窗口的话不操作
@@ -451,8 +470,8 @@ const ChatScreen = () => {
       // let chatId = DataCenter.messageCache.getCurChatId();
       // let initChatListItem = DataCenter.messageCache.getCurChatListItem();
 
-      let initChatListItem = route.params?.chatListItem;
-      // console.log("ccccm: ", chatListItem);
+      // let initChatListItem = route.params?.chatListItem;
+      // console.log("ccccm: ", initChatListItem);
       // const res = await ChatGroupService.Inst.getChatGroup(291467793747173400);
       // console.log("rrrr: ", res);
       console.log("chat list:", chatList);
@@ -495,23 +514,28 @@ const ChatScreen = () => {
         setNewMsgCount(chatListNewMsgCount);
         // 如果用户不是在打开聊天窗口前从好友列表进入的
         // 获取头部列表
-        if (!initChatListItem) {
-          initChatListItem = chatList[0];
-        }
+        // if (!initChatListItem) {
+        const initChatListItem = chatList[0];
+        // }
         setCurChatId(initChatListItem.chatId);
         initializeChatData(initChatListItem);
-      } else if (initChatListItem) {
-        // 如果缓存中不存在聊天列表
-        // 用户是在打开聊天窗口前从好友列表进入的
-        initializeChatData(initChatListItem);
-        setCurChatId(initChatListItem.chatId);
       }
-      // 如果聊天列表为空，但缓存中存在当前chatid，证明用户从好友列表进入
-      // else if (!chatList.length && initChatListItem) {
-      //   setCurChatId(initChatListItem.chatId);
-      //   initializeChatData(initChatListItem);
-      // }
+      // else if (initChatListItem) {
+      // 如果缓存中不存在聊天列表
+      // 用户是在打开聊天窗口前从好友列表进入的
+      // const userData = await IMUserInfoService.Inst.getUser(item.targetId);
+      // console.log("uuu: ", userData);
+      // initializeChatData(initChatListItem);
+      // setCurChatId(initChatListItem.chatId);
+      // 以后会有群组会在好友列表里吗
+      // setChatListInfo([{ ...userData, type: Constants.ChatListType.Single }]);
     };
+    // 如果聊天列表为空，但缓存中存在当前chatid，证明用户从好友列表进入
+    // else if (!chatList.length && initChatListItem) {
+    //   setCurChatId(initChatListItem.chatId);
+    //   initializeChatData(initChatListItem);
+    // }
+    // };
 
     getInitData();
   }, []);
@@ -521,7 +545,9 @@ const ChatScreen = () => {
     JSEvent.on(UIEvents.Message.Message_Chat_List_Updated, chatListListener);
     JSEvent.on(UIEvents.User.User_Click_Chat_Updated, onClickChatHandler);
     JSEvent.on(UIEvents.Message.Message_Search_Updated, onSearchUpdateHandler);
-    JSEvent.on(DataEvents.ChatGroup.ChatGroup_Updated, chatListListener);
+    JSEvent.on(DataEvents.ChatGroup.ChatGroup_Updated, (chatGroup) => {
+      console.log("updated chat group: ", chatGroup);
+    });
 
     return () => {
       JSEvent.remove(UIEvents.Message.Message_Chat_Updated, msgListener);

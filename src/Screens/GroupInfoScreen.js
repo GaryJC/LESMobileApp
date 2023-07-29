@@ -58,7 +58,7 @@ const GroupInfoScreen = () => {
       const groupMembers = await ChatGroupService.Inst.getGroupMembers(
         targetId
       );
-      console.log("group members: ", groupMembers);
+      console.log("group members: ", groupMembers, targetId);
       const role = groupMembers.find(
         (item) => item.userInfo.id === DataCenter.userInfo.accountId
       ).memberRole;

@@ -17,7 +17,7 @@ const FriendListChatButton = ({ friend }) => {
     const chatListItem = DataCenter.messageCache.getChatListItem(chatId);
     console.log("chatListItem: ", chatListItem);
     // DataCenter.messageCache.setCurChatListItem(chatListItem);
-    navigation.navigate("Chats", { chatListItem: chatListItem });
+    navigation.navigate("Chats");
     JSEvent.emit(UIEvents.User.User_Click_Chat_Updated, {
       // chatId: chatId,
       // targetId: friend?.id,

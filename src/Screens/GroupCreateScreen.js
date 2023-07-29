@@ -51,9 +51,9 @@ const GroupCreateScreen = () => {
     });
   };
 
-  const updateGroupEventHander = (chatGroup) => {
-    console.log("updated chat group: ", chatGroup);
-  };
+  // const updateGroupEventHander = (chatGroup) => {
+  //   console.log("updated chat group: ", chatGroup);
+  // };
 
   useEffect(() => {
     FriendService.Inst.getFriendList()
@@ -66,10 +66,10 @@ const GroupCreateScreen = () => {
       });
 
     JSEvent.on(DataEvents.ChatGroup.ChatGroup_New, newGroupEventHandler);
-    JSEvent.on(DataEvents.ChatGroup.ChatGroup_Updated, updateGroupEventHander);
+    // JSEvent.on(DataEvents.ChatGroup.ChatGroup_Updated, updateGroupEventHander);
     return () => {
       JSEvent.remove(DataEvents.ChatGroup.ChatGroup_New);
-      JSEvent.remove(DataEvents.ChatGroup.ChatGroup_Updated);
+      // JSEvent.remove(DataEvents.ChatGroup.ChatGroup_Updated);
     };
   }, []);
 
@@ -112,12 +112,13 @@ const GroupCreateScreen = () => {
       const groupInfo = await ChatGroupService.Inst.createChatGroup(groupName);
       console.log("group info: ", groupInfo);
       const groupId = groupInfo.id;
-
-      const invitations = selectedFriends.map((friend) =>
-        NotificationService.Inst.sendGroupInvitation(groupId, friend.id)
-      );
-      console.log("invitations: ", invitations);
-      const results = await Promise.all(invitations);
+      const invitedIds = selectedFriends.map((friend) => friend.id);
+      // const invitations = selectedFriends.map((friend) =>
+      //   NotificationService.Inst.sendGroupInvitation(groupId, friend.id)
+      // );
+      // console.log("invitations: ", invitations);
+      // const results = await Promise.all(invitations);
+      await NotificationService.Inst.sendGroupInvitation(groupId, invitedIds);
       console.log("all invitiatons sent successfully", results);
       navigation.navigate("Chats");
     } catch (e) {
