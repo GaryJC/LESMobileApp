@@ -1,7 +1,9 @@
-const accountURL = "https://acc.metavirus.games/";
+//const accountURL = "https://acc.metavirus.games/";
+
+import Constants from "./Constants";
 
 const API = {
-  account: accountURL + "account/",
+  account: Constants.Address.AccountServer + "account/",
 
   registerRequest: () => API.account + "registerRequest",
   verifyCode: () => API.account + "verifyCode",
