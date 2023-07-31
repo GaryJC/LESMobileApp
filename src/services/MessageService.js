@@ -292,11 +292,11 @@ class MessageService {
     await this.#requestTimeline();
     //读取本地的聊天组
     await ChatGroupService.Inst.loadChatGroups();
-    
-    try{
-    const msgDatas = await ChatGroupService.Inst.requestChatGroupsTimeline();
-    msgDatas.forEach(msg=>this.#onTimelineUpdated(msg));
-    }catch(e){
+
+    try {
+      const msgDatas = await ChatGroupService.Inst.requestChatGroupsTimeline();
+      msgDatas.forEach(msg => this.#onTimelineUpdated(msg));
+    } catch (e) {
       console.log("chatgroup updated failed: code", e.toString(16))
     }
     // const { startId, endId, datas } =

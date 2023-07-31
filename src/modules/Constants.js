@@ -1,3 +1,13 @@
+const Address_Local = {
+  IMServer: "ws://10.0.2.2:8888/im/ws",
+  AccountServer: "http://10.0.2.2:18881/",
+}
+
+const Address_Production = {
+  IMServer: "ws://15.222.78.167:19888/im/ws",
+  AccountServer: "https://acc.metavirus.games/",
+}
+
 const Constants = {
   deliveryState: {
     delivered: 1,
@@ -27,9 +37,7 @@ const Constants = {
     LoginData: "LES_LoginData",
   },
 
-  Address: {
-    IMServer: "ws://15.222.78.167:19888/im/ws",
-  },
+  Address: Address_Production,
 
   LoginExceptionType: {
     AccountCenterError: "AccountCenterError",
