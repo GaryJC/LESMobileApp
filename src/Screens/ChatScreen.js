@@ -109,7 +109,8 @@ const messageReducer = (state, action) => {
       //     }
       //   }
       // });
-      return action.payload.sort((a, b) => a.timelineId - b.timelineId);
+      // return action.payload.sort((a, b) => a.timelineId - b.timelineId);
+      return action.payload;
 
     case "CLEAR_MESSAGES":
       return [];
@@ -578,7 +579,10 @@ const ChatScreen = () => {
       MessageService.Inst.sendChatGroupMessage(curRecipientId, newMessage);
     }
 
-    flatListRef.current?.scrollToEnd({ animated: true });
+    if (messages.length > 0) {
+      flatListRef.current?.scrollToEnd({ animated: true });
+    }
+
     // const msgData = new MessageData();
     // msgData.content = newMessage;
     // msgData.senderId = DataCenter.userInfo.accountId;

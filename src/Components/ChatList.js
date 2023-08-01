@@ -28,9 +28,9 @@ export const ChatList = ({
 
   useEffect(() => {
     const data = chatListInfo.find((item) => item.id == chatListItem.targetId);
-    console.log("bbbbb", chatListInfo, data, chatListItem);
+    console.log("ddddd: ", chatListInfo, data, chatListItem);
     setInfo(data);
-  }, [chatListInfo]);
+  }, [chatListInfo, chatListItem]);
 
   return (
     // add onPress handler to switch chat recipient
@@ -52,12 +52,14 @@ export const ChatList = ({
         >
           <Avatar
             tag={
-              info?.type === Constants.ChatListType.Group ? info?.id : info?.tag
+              chatListItem?.type === Constants.ChatListType.Group
+                ? info?.id
+                : info?.tag
             }
             name={info?.name}
           />
 
-          {info?.type === Constants.ChatListType.Group && (
+          {chatListItem?.type === Constants.ChatListType.Group && (
             <View className="w-[20px] h-[20px] rounded-md bg-[#6E5EDB] absolute right-0 justify-center items-center">
               <Text className="text-white">G</Text>
             </View>
