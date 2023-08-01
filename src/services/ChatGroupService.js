@@ -129,7 +129,7 @@ class ChatGroupService {
         cg.latestTimelineId = 0;
         this.#pushChatGroup(cg);
         this.#updateChatGroup(cg.id)
-          .then((cg) => {})
+          .then((cg) => { })
           .catch((err) =>
             console.error(`更新群[${cg.id}]失败，code：${err.toString(16)}`)
           );
@@ -142,6 +142,9 @@ class ChatGroupService {
     this.#chatGroups = {};
     try {
       const groups = await DatabaseService.Inst.loadChatGroup();
+      groups.forEach(g => {
+        this.#chatGroups[g.id] = g;
+      })
     } catch (e) {
       console.error(`读取群组数据失败`, e);
     }
@@ -187,20 +190,23 @@ class ChatGroupService {
       }
 
       LesPlatformCenter.IMFunctions.getGroupUpdates(groupIds, timelineIds)
-        .then((updates) => {
+        .then(async (updates) => {
           const ret = [];
-          updates.forEach(u => {
+
+          for (let index = 0; index < updates.length; index++) {
+            const u = updates[index];
             const groupId = u.getGroupid();
             const latestTimelineId = u.getLatesttimelineid();
             const updateTime = u.getUpdatetime();
 
-            const cg = this.#chatGroups[groupId];
-            if (cg.latestTimelineId == null || cg.latestTimelineId == 0) {
+            const cg = await this.getChatGroup(groupId);
+            if(cg.latestTimelineId == null || cg.latestTimelineId == 0) {
               //本地是0，表示没有提取过消息，线设置为当前分组的最新timelineId
               cg.latestTimelineId = latestTimelineId;
+              DatabaseService.Inst.saveChatGroup(cg);
             }
             ret.push({ groupId, currentTimelineId: cg.latestTimelineId, latestTimelineId, updateTime });
-          });
+          }
           resolve(ret);
         })
         .catch((err) => {
