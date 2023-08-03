@@ -130,12 +130,32 @@ class MessageService {
   }
 
   /**
+   * 收到系统控制消息，根据消息内容发送不同事件
+   * @param {MessageData} msgData  
+   */
+  #onReceiveSystemMessage(msgData) {
+    switch (msgData.contentType) {
+      case LesConstants.IMMessageContentType.Group_MemberKick:
+        //当前用户被踢出了群组
+        JSEvent.emit(DataEvents.ChatGroup.ChatGroup_RemovedFromGroup, msgData.groupId);
+        break;
+    }
+  }
+
+  /**
    * @param {PBLesIMTimelineData} timelineData
    * @returns {MessageData}
    */
   #onTimelineUpdated(timelineData) {
     //转化为  MessageData
     const msgData = this.#pbTimelineDataToMessageData(timelineData);
+    if (msgData.messageType == LesConstants.IMMessageType.System) {
+      //这是一条系统消息
+      this.#onReceiveSystemMessage(msgData);
+      //发布新消息事件，供service使用
+      JSEvent.emit(DataEvents.Message.TimelineState_Updated, msgData);
+      return;
+    }
 
     if (msgData.messageType == LesConstants.IMMessageType.Single) {
       if (msgData.timelineId == 0) {
@@ -145,7 +165,7 @@ class MessageService {
         //更新当前timelinId
         this.#updateTimelineId(msgData.timelineId);
       }
-    } else {
+    } else if (msgData.messageType == LesConstants.IMMessageType.Group) {
       ChatGroupService.Inst.onTimelineUpdated(msgData);
     }
 
