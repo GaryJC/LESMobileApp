@@ -77,6 +77,26 @@ class NotificationService {
   }
 
   /**
+   * 取消一个邀请，只能取消发起人发起的邀请
+   * @param {number} notificationId 
+   */
+  cancelInvitation(notificationId) {
+    return new Promise((resolve, reject) => {
+      LesPlatformCenter.IMFunctions.respondNotification(
+        notificationId,
+        IMNotificationState.Canceled
+      )
+        .then((id) => {
+          //调用成功后续不用做处理，客户端会收到服务器发来的最新状态的通知，由onRecvNotification处理
+          resolve(id);
+        })
+        .catch((e) => {
+          reject(e);
+        });
+    });
+  }
+
+  /**
    * 响应指定id的通知消息
    * @deprecated 直接调用 respondInvitation 方法
    * @param {number} notificationId

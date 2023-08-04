@@ -102,6 +102,13 @@ export const DataEvents = {
      * 群数据更新后，会发送此事件
      */
     ChatGroup_Updated: "DATA_EVENT_ChatGroup_ChatGroup_Updated",
+
+    /**
+     * 被移出群聊
+     * @type {groupId:number}
+     */
+    ChatGroup_RemovedFromGroup: "DATA_EVENT_ChatGroup_ChatGroup_RemovedFromGroup"
+
   },
 
   Saving: {
