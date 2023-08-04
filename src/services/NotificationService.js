@@ -92,30 +92,33 @@ class NotificationService {
    * 调用成功返回对应的通知消息内容，并触发NotificationState_Updated事件
    *
    * @param {number} groupId
-   * @param {number[]} recipientsId 同时邀请多个id的用户 
-   * @returns 
+   * @param {number[]} recipientsId 同时邀请多个id的用户
+   * @returns
    */
   sendGroupInvitation(groupId, recipientsId) {
     return new Promise((resolve, reject) => {
       LesPlatformCenter.IMFunctions.sendChatGroupInvitation(
         groupId,
         recipientsId
-      ).then((notis) => {
-        notis.forEach(pbNoti => {
+      )
+        .then((notis) => {
           const retMap = {};
-          const errorCode = pbNoti.getErrorcode();
-          const recipient = pbNoti.getRecipient().getId();
-          let noti = null;
-          if (errorCode == LesConstants.ErrorCodes.Success) {
-            noti = this.#onRecvNotification(pbNoti);
-          }
-          retMap[recipient] = { code: errorCode, notification: noti }
+          notis.forEach((pbNoti) => {
+            // const retMap = {};
+            const errorCode = pbNoti.getErrorcode();
+            const recipient = pbNoti.getRecipient().getId();
+            let noti = null;
+            if (errorCode == LesConstants.ErrorCodes.Success) {
+              noti = this.#onRecvNotification(pbNoti);
+            }
+            retMap[recipient] = { code: errorCode, notification: noti };
+          });
+          //const noti = this.#onRecvNotification(pbNoti);
+          resolve(retMap);
         })
-        //const noti = this.#onRecvNotification(pbNoti);
-        resolve(retMap);
-      }).catch((error) => {
-        reject(error);
-      });
+        .catch((error) => {
+          reject(error);
+        });
     });
   }
 

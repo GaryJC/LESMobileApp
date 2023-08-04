@@ -51,7 +51,6 @@ export const FriendList = ({ friend, button }) => {
             {friend.name}
           </Text>
         </View>
-        {/* <FriendListChatButton friend={friend} /> */}
         {button}
       </View>
       <FriendBottomSheet

@@ -10,11 +10,14 @@ import DataCenter from "../modules/DataCenter";
 import GroupRoleBottomSheet from "../Components/GroupRoleBottomSheet";
 import { TouchableHighlight } from "@gorhom/bottom-sheet";
 import { Ionicons } from "@expo/vector-icons";
+import NotificationService from "../services/NotificationService";
+import Constants from "../modules/Constants";
 
 const GroupInfoScreen = () => {
   const [groupMemberData, setGroupMemberData] = useState([]);
   const [groupInfo, setGroupInfo] = useState();
   const [ownRole, setOwnRole] = useState();
+  const [awaitingMembers, setAwaitingMembers] = useState([]);
 
   const bottomSheetModalRef = useRef(null);
 
@@ -22,15 +25,19 @@ const GroupInfoScreen = () => {
 
   const navigation = useNavigation();
 
-  const targetId = route.params?.targetId;
-  console.log("targetId: ", targetId);
+  const groupId = route.params?.targetId;
+  console.log("targetId: ", groupId);
 
   const processGroupMembers = (groupMembers) => {
+    const confirmedMembers = groupMembers.filter(
+      (member) =>
+        member.memberState === LesConstants.IMGroupMemberState.Confirmed
+    );
     const creators = [];
     const managers = [];
     const members = [];
 
-    groupMembers.forEach((item) => {
+    confirmedMembers.forEach((item) => {
       switch (item.memberRole) {
         case LesConstants.IMGroupMemberRole.Creator:
           creators.push({ ...item.userInfo, memberRole: item.memberRole });
@@ -55,20 +62,37 @@ const GroupInfoScreen = () => {
 
   useEffect(() => {
     const getGroupMembers = async () => {
-      const groupMembers = await ChatGroupService.Inst.getGroupMembers(
-        targetId
-      );
-      console.log("group members: ", groupMembers, targetId);
+      const groupMembers = await ChatGroupService.Inst.getGroupMembers(groupId);
+      console.log("group members: ", groupMembers, groupId);
       const role = groupMembers.find(
         (item) => item.userInfo.id === DataCenter.userInfo.accountId
       ).memberRole;
       console.log("rrr", role);
       setOwnRole(role);
       processGroupMembers(groupMembers);
+
+      const confirmingMembers = DataCenter.notifications
+        .getAllNotifications(LesConstants.IMNotificationType.GroupInvitation)
+        .reduce((res, item) => {
+          if (item.groupInfo.id === groupId && item.mode === "sender") {
+            console.log(res, item);
+            return [
+              ...res,
+              {
+                ...item.recipient,
+                notiId: item.id,
+              },
+            ];
+          }
+          return res;
+        }, []);
+      //   setPendingInvitations(groupNotifications);
+      console.log("confirming members: ", confirmingMembers);
+      setAwaitingMembers(confirmingMembers);
     };
 
     const getChatInfo = async () => {
-      const chatInfo = await ChatGroupService.Inst.getChatGroup(targetId);
+      const chatInfo = await ChatGroupService.Inst.getChatGroup(groupId);
       console.log("chat info: ", chatInfo);
       setGroupInfo(chatInfo);
     };
@@ -110,21 +134,26 @@ const GroupInfoScreen = () => {
         </View>
       );
     }
-    /*
-    return data.id !== DataCenter.userInfo.accountId ? (
-      <View className="justify-center items-center">
-        <TouchableOpacity>
-          <MaterialCommunityIcons name="account-key" size={24} color="white" />
-        </TouchableOpacity>
-      </View>
-    ) : (
-      <></>
-    );
-    */
   };
 
+  const onRespondHandler = (notificationId, response) => {
+    NotificationService.Inst.respondInvitation(notificationId, response)
+      .then((res) => {
+        console.log("response: ", res);
+      })
+      .catch((e) => console.error(e));
+  };
+
+  const CancelButton = ({ item }) => (
+    <View className="justify-center">
+      <TouchableOpacity onPress={() => onRespondHandler()}>
+        <Text className="text-white font-bold">Cancel</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   const inviteFriendHandler = () => {
-    navigation.navigate("GroupInvite", { groupId: targetId });
+    navigation.navigate("GroupInvite", { groupId: groupId });
   };
 
   return (
@@ -151,6 +180,15 @@ const GroupInfoScreen = () => {
                 {title}
               </Text>
             </View>
+          )}
+        />
+      </View>
+      <View>
+        <Text className="text-white">Awaiting Responses</Text>
+        <FlatList
+          data={awaitingMembers}
+          renderItem={({ item }) => (
+            <FriendList friend={item} button={<CancelButton item={item} />} />
           )}
         />
       </View>

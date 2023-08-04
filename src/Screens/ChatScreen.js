@@ -369,7 +369,7 @@ const ChatScreen = () => {
       setCurChatName(groupInfo.name);
       // const userInfo = getUserInfo(targetId);
       // console.log("cur user info: ", userInfo);
-      // setCurUserInfo(groupMembers);
+      setCurUserInfo(groupMembers);
       // console.log("ppppp: ", groupMembers);
     } else {
       const userInfo = await getUserInfo(targetId);

@@ -19,6 +19,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import FriendSelectButton from "../Components/FriendSelectButton";
 import ChatGroupService from "../services/ChatGroupService";
 import DataCenter from "../modules/DataCenter";
+import NotificationService from "../services/NotificationService";
 
 const GroupInviteScreen = () => {
   const [friendsData, setFriendsData] = useState([]);
@@ -49,7 +50,16 @@ const GroupInviteScreen = () => {
     // };
   }, []);
 
-  const inviteFriendHandler = async () => {};
+  const inviteFriendHandler = async () => {
+    const recipientsId = selectedFriends.map((item) => item.id);
+    try {
+      console.log("invite friends: ", recipientsId);
+      await NotificationService.Inst.sendGroupInvitation(groupId, recipientsId);
+      console.log("invite friend successfully");
+    } catch (e) {
+      throw ("invite friend error: ", e);
+    }
+  };
 
   return (
     <View className="flex-1 mx-[5vw]">

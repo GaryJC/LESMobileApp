@@ -1,12 +1,12 @@
 const Address_Local = {
   IMServer: "ws://10.0.2.2:8888/im/ws",
   AccountServer: "http://10.0.2.2:18881/",
-}
+};
 
 const Address_Production = {
   IMServer: "ws://15.222.78.167:19888/im/ws",
   AccountServer: "https://acc.metavirus.games/",
-}
+};
 
 const Constants = {
   deliveryState: {
@@ -45,14 +45,16 @@ const Constants = {
   },
 
   Notification: {
-    NotificationTab: {
+    NotificationType: {
       Notifications: "Notifications",
       Invitations: "Invitations",
+      SelfSent: "SelfSent",
     },
 
     NotificationMode: {
-      sender: "sender",
-      recipient: "recipient",
+      Sender: "sender",
+      Recipient: "recipient",
+      SelfSentGroup: "SelfSentGroup",
     },
   },
 

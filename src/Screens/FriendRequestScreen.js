@@ -43,7 +43,12 @@ export default function FriendRequestScreen() {
   useEffect(() => {
     // 挂载时获取所有推送信息
     const allNotifications = DataCenter.notifications.getAllNotifications();
-    const invitations = allNotifications.filter((item) => item.type !== 0);
+    console.log("uuu: ", allNotifications);
+    const invitations = allNotifications.filter(
+      (item) =>
+        item.type !== 0 &&
+        item.mode === Constants.Notification.NotificationMode.Recipient
+    );
     dispatchNotifications({
       type: "GET__NOTIFICATIONS",
       payload: invitations,

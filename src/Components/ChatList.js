@@ -45,9 +45,13 @@ export const ChatList = ({
       <View className="relative">
         <View
           className={
+            chatListItem?.type !== Constants.ChatListType.Group &&
             curChatId === chatListItem?.chatId
               ? "border-[#5EB857] border-4 rounded-full w-[55px] h-[55px] mb-[15px] relative"
-              : "rounded-full w-[55px] h-[55px] mb-[15px]"
+              : chatListItem?.type === Constants.ChatListType.Group &&
+                curChatId === chatListItem?.chatId
+              ? "border-[#5EB857] border-4 rounded-2xl w-[55px] h-[55px] mb-[15px] relative"
+              : "w-[55px] h-[55px] mb-[15px]"
           }
         >
           <Avatar
@@ -57,10 +61,12 @@ export const ChatList = ({
                 : info?.tag
             }
             name={info?.name}
+            isGroup={
+              chatListItem?.type === Constants.ChatListType.Group && true
+            }
           />
-
           {chatListItem?.type === Constants.ChatListType.Group && (
-            <View className="w-[20px] h-[20px] rounded-md bg-[#6E5EDB] absolute right-0 justify-center items-center">
+            <View className="w-[20px] h-[20px] rounded-tr-xl rounded-bl-lg bg-[#6E5EDB] absolute right-0 justify-center items-center">
               <Text className="text-white">G</Text>
             </View>
           )}

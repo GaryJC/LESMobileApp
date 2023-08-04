@@ -2,7 +2,7 @@ import { View, Text } from "react-native";
 import { AvatarColorPlatte } from "../../assets/AvatarColorPlatte";
 import { useState, useRef } from "react";
 
-const Avatar = ({ tag, name }) => {
+const Avatar = ({ tag, name, isGroup }) => {
   const [fontSize, setFontSize] = useState(0);
   const avatarRef = useRef(null);
 
@@ -20,7 +20,11 @@ const Avatar = ({ tag, name }) => {
     <View
       ref={avatarRef}
       onLayout={handleLayout}
-      className="w-[100%] h-[100%] justify-center items-center rounded-full"
+      className={
+        isGroup
+          ? "w-[100%] h-[100%] justify-center items-center rounded-xl"
+          : "w-[100%] h-[100%] justify-center items-center rounded-full"
+      }
       style={{ backgroundColor: avatarColor }}
     >
       <Text className="text-white font-bold" style={{ fontSize: fontSize }}>

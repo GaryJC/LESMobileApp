@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -14,16 +14,17 @@ import { LesConstants } from "les-im-components";
 import Constants from "../modules/Constants";
 import NotificationList from "../Components/NotificationList";
 import InvitationList from "../Components/InvitationList";
+import GroupSelfSentInviteList from "../Components/GroupSelfSentInviteList";
 
-const notificationTab = Constants.Notification.NotificationTab;
+const NotificationType = Constants.Notification.NotificationType;
+const NotificationMode = Constants.Notification.NotificationMode;
 
 const notificationReducer = (state, action) => {
   console.log(console.log("noti state: ", state, action));
   switch (action.type) {
     case "GET_NOTIFICATIONS":
+      console.log("aaa", action.payload);
       return action.payload;
-    // case "ADD_NOTIFICATIONS":
-    //   return [...state, action.payload];
     case "UPDATE_NOTIFICATIONS":
       const notification = action.payload;
       // 用户点击accept以后也需要从列表里移除
@@ -34,20 +35,12 @@ const notificationReducer = (state, action) => {
       ) {
         return state.filter((item) => item.id !== notification.id);
       }
-      // const isExisted = state.find((item) => item.id === notification.id);
-      // console.log("is existed? ", isExisted);
-      // return isExisted
-      //   ? state.map((item) =>
-      //       item.id === notification.id ? notification : item
-      //     )
-      //   : [...state, notification];
-      return DataCenter.notifications.getAllNotifications();
   }
 };
 
-export default function Notification() {
+export default function NotificationScreen() {
   const [selectedTab, setSelectedTab] = useState(
-    Constants.Notification.NotificationTab.Notifications
+    NotificationType.Notifications
   );
 
   // const [noticiations, setNotifications] = useState([]);
@@ -61,27 +54,80 @@ export default function Notification() {
     invitCount: 0,
   });
 
-  const switchTab = (tab) => {
-    console.log(
-      "switch tab: ",
-      tab,
-      selectedTab,
-      notificationTab.Notifications
-    );
-    if (tab !== selectedTab) {
-      setSelectedTab(tab);
-      const allNotifications = DataCenter.notifications.getAllNotifications();
-      tab === notificationTab.Notifications
-        ? dispatchNotifications({
-            type: "GET_NOTIFICATIONS",
-            payload: allNotifications.filter((item) => item.type === 0),
-          })
-        : dispatchNotifications({
-            type: "GET_NOTIFICATIONS",
-            payload: allNotifications.filter((item) => item.type !== 0),
-          });
-    }
-  };
+  const switchTabHandler = useCallback(
+    (tab) => {
+      if (tab !== selectedTab) {
+        setSelectedTab(tab);
+
+        let allNotifications = DataCenter.notifications.getAllNotifications();
+
+        const { selfSentGroupInvits, otherNotifis } = allNotifications.reduce(
+          (acc, item) => {
+            if (
+              item.type === LesConstants.IMNotificationType.GroupInvitation &&
+              item.mode === NotificationMode.Sender
+            ) {
+              const groupId = item.groupInfo.id;
+              if (!acc.selfSentGroupInvits[groupId]) {
+                acc.selfSentGroupInvits[groupId] = {
+                  id: groupId,
+                  data: [item],
+                  type: LesConstants.IMNotificationType.GroupInvitation,
+                  mode: NotificationMode.SelfSentGroup,
+                };
+              } else {
+                acc.selfSentGroupInvits[groupId].data.push(item);
+              }
+            } else if (
+              item.type !== LesConstants.IMNotificationType.GroupInvitation ||
+              item.mode !== NotificationMode.Sender
+            ) {
+              acc.otherNotifis.push(item);
+            }
+            return acc;
+          },
+          { selfSentGroupInvits: {}, otherNotifis: [] }
+        );
+
+        const data = Object.values(selfSentGroupInvits);
+
+        allNotifications = [...otherNotifis, ...data];
+        console.log("all: ", allNotifications);
+
+        if (tab !== selectedTab) {
+          setSelectedTab(tab);
+          // const allNotifications =
+          //   DataCenter.notifications.getAllNotifications();
+          switch (tab) {
+            case NotificationType.Notifications:
+              dispatchNotifications({
+                type: "GET_NOTIFICATIONS",
+                payload: allNotifications.filter((item) => item.type === 0),
+              });
+              break;
+            case NotificationType.SelfSent:
+              console.log("dddd: ", data);
+              dispatchNotifications({
+                type: "GET_NOTIFICATIONS",
+                payload: data,
+              });
+              break;
+            case NotificationType.Invitations:
+              dispatchNotifications({
+                type: "GET_NOTIFICATIONS",
+                payload: allNotifications.filter(
+                  (item) =>
+                    item.type !== 0 &&
+                    item.mode !== NotificationMode.SelfSentGroup
+                ),
+              });
+              break;
+          }
+        }
+      }
+    },
+    [selectedTab]
+  );
 
   useEffect(() => {
     // 挂载时获取所有推送信息
@@ -94,9 +140,15 @@ export default function Notification() {
     console.log("all noticiations: ", allNotifications);
 
     const updateUnreadCountHandler = () => {
-      const notiCount = DataCenter.notifications.unreadCount(0);
-      const friendInvitCount = DataCenter.notifications.unreadCount(1);
-      const groupInviteCount = DataCenter.notifications.unreadCount(2);
+      const notiCount = DataCenter.notifications.unreadCount(
+        LesConstants.IMNotificationType.Notification
+      );
+      const friendInvitCount = DataCenter.notifications.unreadCount(
+        LesConstants.IMNotificationType.FriendInvitation
+      );
+      const groupInviteCount = DataCenter.notifications.unreadCount(
+        LesConstants.IMNotificationType.GroupInvitation
+      );
       setUnreadCount({
         notiCount: notiCount,
         invitCount: friendInvitCount + groupInviteCount,
@@ -119,9 +171,9 @@ export default function Notification() {
     const onNotiUpdatedHandler = (notification) => {
       console.log("updated noti: ", notification);
       const curType =
-        notification.type == 0
-          ? notificationTab.Notifications
-          : notificationTab.Invitations;
+        notification.type == LesConstants.IMNotificationType.Notification
+          ? NotificationType.Notifications
+          : NotificationType.Invitations;
       if (curType === selectedTab) {
         dispatchNotifications({
           type: "UPDATE_NOTIFICATIONS",
@@ -140,62 +192,56 @@ export default function Notification() {
   }, [selectedTab]);
   // useEffect(() => {}, [selectedTab]);
 
+  const TabButton = ({ notiType, title }) => (
+    <TouchableOpacity
+      className="flex-1"
+      onPress={() => switchTabHandler(notiType)}
+    >
+      <View
+        className={
+          selectedTab === notiType
+            ? "h-[100%] rounded-lg bg-[#535F6A] justify-center"
+            : ""
+        }
+      >
+        <View className="flex-row items-center justify-center">
+          <Text className="text-white font-bold text-center">{title}</Text>
+          {unreadCount.notiCount !== 0 && (
+            <View className="w-[10px] h-[10px] ml-[10px] bg-[#FF3737] rounded-full"></View>
+          )}
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
   return (
     <View className="flex-1 mx-[5vw]">
       <View className="flex-row justify-between bg-[#262F38] h-[4vh] rounded-lg items-center">
-        <TouchableOpacity
-          className="flex-1"
-          onPress={() => switchTab(notificationTab.Notifications)}
-        >
-          <View
-            className={
-              selectedTab === notificationTab.Notifications
-                ? "h-[100%] rounded-lg bg-[#535F6A] justify-center"
-                : ""
-            }
-          >
-            <View className="flex-row items-center justify-center">
-              <Text className="text-white font-bold text-center">
-                Notifications
-              </Text>
-              {unreadCount.notiCount !== 0 && (
-                <View className="w-[10px] h-[10px] ml-[10px] bg-[#FF3737] rounded-full"></View>
-              )}
-            </View>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          className="flex-1"
-          onPress={() => switchTab(notificationTab.Invitations)}
-        >
-          <View
-            className={
-              selectedTab === notificationTab.Invitations
-                ? "h-[100%] rounded-lg bg-[#535F6A] justify-center"
-                : ""
-            }
-          >
-            <View className="flex-row items-center justify-center">
-              <Text className="text-white font-bold text-center">
-                Invitations
-              </Text>
-              {unreadCount.invitCount !== 0 && (
-                <View className="w-[10px] h-[10px] ml-[5px] bg-[#FF3737] rounded-full"></View>
-              )}
-            </View>
-          </View>
-        </TouchableOpacity>
+        <TabButton
+          notiType={NotificationType.Notifications}
+          title="Notifications"
+        />
+        <TabButton
+          notiType={NotificationType.Invitations}
+          title="Invitations"
+        />
+        <TabButton notiType={NotificationType.SelfSent} title="Self-Sent" />
       </View>
-      <View className="mt-[20px]">
+      <View className="mt-[20px] h-[80vh]">
         <FlatList
           data={notifications}
           renderItem={
-            selectedTab === notificationTab.Notifications
+            selectedTab === NotificationType.Notifications
               ? ({ item }) => <NotificationList item={item} />
-              : ({ item }) => <InvitationList item={item} />
+              : ({ item }) =>
+                  item.mode === NotificationMode.SelfSentGroup ? (
+                    <GroupSelfSentInviteList item={item} />
+                  ) : (
+                    <InvitationList item={item} />
+                  )
           }
           // renderItem={({ item }) => console.log(item)}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item, index) => index.toString()}
         />
       </View>
     </View>

@@ -87,8 +87,8 @@ export default function InvitationList({ item }) {
   );
 
   return (
-    <View className="my-[10px]">
-      {item.mode === Constants.Notification.NotificationMode.sender ? (
+    <View className="mb-[10px]">
+      {item.mode === Constants.Notification.NotificationMode.Sender ? (
         <SenderInvitation notificationId={item.id} />
       ) : (
         <RecipientInvitation notificationId={item.id} />
