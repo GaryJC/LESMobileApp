@@ -99,8 +99,14 @@ export default function UserScreen() {
     JSEvent.on(DataEvents.User.UserState_IsLoggedin, retriveUserInfoHandler);
 
     return () => {
-      JSEvent.remove(DataEvents.Notification.NotificationState_Updated);
-      JSEvent.remove(DataEvents.User.UserState_IsLoggedin);
+      JSEvent.remove(
+        DataEvents.Notification.NotificationState_Updated,
+        updateUnreadCountHandler
+      );
+      JSEvent.remove(
+        DataEvents.User.UserState_IsLoggedin,
+        retriveUserInfoHandler
+      );
     };
   }, []);
 

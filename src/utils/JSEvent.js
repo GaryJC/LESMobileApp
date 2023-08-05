@@ -64,7 +64,7 @@ const JSEvent = {
   on: on,
   remove: remove,
   emit: emit,
-  reset: () => events = {}
+  reset: () => (events = {}),
 };
 
 export default JSEvent;

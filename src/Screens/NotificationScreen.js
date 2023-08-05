@@ -58,72 +58,98 @@ export default function NotificationScreen() {
     (tab) => {
       if (tab !== selectedTab) {
         setSelectedTab(tab);
+        if (tab === NotificationType.Notifications) {
+          dispatchNotifications({
+            type: "GET_NOTIFICATIONS",
+            payload: DataCenter.notifications.getAllNotifications(
+              LesConstants.IMNotificationType.Notification
+            ),
+          });
+        } else if (tab === NotificationType.Invitations) {
+          const invitations = DataCenter.notifications
+            .getAllNotifications()
+            .filter(
+              (item) =>
+                item.mode === NotificationMode.Recipient &&
+                item.type !== LesConstants.IMNotificationType.Notification
+            );
+          dispatchNotifications({
+            type: "GET_NOTIFICATIONS",
+            payload: invitations,
+          });
+        } else {
+          const allNotifications =
+            DataCenter.notifications.getAllNotifications();
+          const { selfSentGroupInvits, selfSentFriendInvits } =
+            allNotifications.reduce(
+              (acc, item) => {
+                if (
+                  item.type ===
+                    LesConstants.IMNotificationType.GroupInvitation &&
+                  item.mode === NotificationMode.Sender
+                ) {
+                  const groupId = item.groupInfo.id;
+                  if (!acc.selfSentGroupInvits[groupId]) {
+                    acc.selfSentGroupInvits[groupId] = {
+                      id: groupId,
+                      data: [item],
+                      type: LesConstants.IMNotificationType.GroupInvitation,
+                      mode: NotificationMode.SelfSentGroup,
+                    };
+                  } else {
+                    acc.selfSentGroupInvits[groupId].data.push(item);
+                  }
+                } else if (
+                  item.type ===
+                    LesConstants.IMNotificationType.FriendInvitation &&
+                  item.mode === NotificationMode.Sender
+                ) {
+                  acc.selfSentFriendInvits.push(item);
+                }
+                return acc;
+              },
+              { selfSentGroupInvits: {}, selfSentFriendInvits: [] }
+            );
 
-        let allNotifications = DataCenter.notifications.getAllNotifications();
-
-        const { selfSentGroupInvits, otherNotifis } = allNotifications.reduce(
-          (acc, item) => {
-            if (
-              item.type === LesConstants.IMNotificationType.GroupInvitation &&
-              item.mode === NotificationMode.Sender
-            ) {
-              const groupId = item.groupInfo.id;
-              if (!acc.selfSentGroupInvits[groupId]) {
-                acc.selfSentGroupInvits[groupId] = {
-                  id: groupId,
-                  data: [item],
-                  type: LesConstants.IMNotificationType.GroupInvitation,
-                  mode: NotificationMode.SelfSentGroup,
-                };
-              } else {
-                acc.selfSentGroupInvits[groupId].data.push(item);
-              }
-            } else if (
-              item.type !== LesConstants.IMNotificationType.GroupInvitation ||
-              item.mode !== NotificationMode.Sender
-            ) {
-              acc.otherNotifis.push(item);
-            }
-            return acc;
-          },
-          { selfSentGroupInvits: {}, otherNotifis: [] }
-        );
-
-        const data = Object.values(selfSentGroupInvits);
-
-        allNotifications = [...otherNotifis, ...data];
-        console.log("all: ", allNotifications);
-
-        if (tab !== selectedTab) {
-          setSelectedTab(tab);
-          // const allNotifications =
-          //   DataCenter.notifications.getAllNotifications();
-          switch (tab) {
-            case NotificationType.Notifications:
-              dispatchNotifications({
-                type: "GET_NOTIFICATIONS",
-                payload: allNotifications.filter((item) => item.type === 0),
-              });
-              break;
-            case NotificationType.SelfSent:
-              console.log("dddd: ", data);
-              dispatchNotifications({
-                type: "GET_NOTIFICATIONS",
-                payload: data,
-              });
-              break;
-            case NotificationType.Invitations:
-              dispatchNotifications({
-                type: "GET_NOTIFICATIONS",
-                payload: allNotifications.filter(
-                  (item) =>
-                    item.type !== 0 &&
-                    item.mode !== NotificationMode.SelfSentGroup
-                ),
-              });
-              break;
-          }
+          const selfSentNotifications = [
+            ...selfSentFriendInvits,
+            ...Object.values(selfSentGroupInvits),
+          ];
+          console.log("self sent notifs ", selfSentNotifications);
+          dispatchNotifications({
+            type: "GET_NOTIFICATIONS",
+            payload: selfSentNotifications,
+          });
         }
+
+        // switch (tab) {
+        //   case NotificationType.Notifications:
+        //     dispatchNotifications({
+        //       type: "GET_NOTIFICATIONS",
+        //       payload: allNotifications.filter((item) => item.type === 0),
+        //     });
+        //     break;
+        //   case NotificationType.SelfSent:
+        //     dispatchNotifications({
+        //       type: "GET_NOTIFICATIONS",
+        //       payload: allNotifications.filter(
+        //         (item) =>
+        //           item.mode === NotificationMode.Sender ||
+        //           item.mode === NotificationMode.SelfSentGroup
+        //       ),
+        //     });
+        //     break;
+        //   case NotificationType.Invitations:
+        //     dispatchNotifications({
+        //       type: "GET_NOTIFICATIONS",
+        //       payload: allNotifications.filter(
+        //         (item) =>
+        //           item.type !== 0 &&
+        //           item.mode !== NotificationMode.SelfSentGroup
+        //       ),
+        //     });
+        //     break;
+        // }
       }
     },
     [selectedTab]
@@ -132,12 +158,14 @@ export default function NotificationScreen() {
   useEffect(() => {
     // 挂载时获取所有推送信息
     // 默认选项是推送（不包括邀请）
-    const allNotifications = DataCenter.notifications.getAllNotifications();
+    const notifications = DataCenter.notifications.getAllNotifications(
+      LesConstants.IMNotificationType.Notification
+    );
     dispatchNotifications({
       type: "GET_NOTIFICATIONS",
-      payload: allNotifications.filter((item) => item.type === 0),
+      payload: notifications.filter((item) => item.type === 0),
     });
-    console.log("all noticiations: ", allNotifications);
+    console.log("all noticiations: ", notifications);
 
     const updateUnreadCountHandler = () => {
       const notiCount = DataCenter.notifications.unreadCount(
@@ -163,17 +191,22 @@ export default function NotificationScreen() {
     );
 
     return () => {
-      JSEvent.remove(DataEvents.Notification.NotificationState_Updated);
+      JSEvent.remove(
+        DataEvents.Notification.NotificationState_Updated,
+        updateUnreadCountHandler
+      );
     };
   }, []);
 
   useEffect(() => {
+    console.log("oooo: ", selectedTab);
     const onNotiUpdatedHandler = (notification) => {
       console.log("updated noti: ", notification);
       const curType =
         notification.type == LesConstants.IMNotificationType.Notification
           ? NotificationType.Notifications
           : NotificationType.Invitations;
+
       if (curType === selectedTab) {
         dispatchNotifications({
           type: "UPDATE_NOTIFICATIONS",
@@ -186,9 +219,11 @@ export default function NotificationScreen() {
       DataEvents.Notification.NotificationState_Updated,
       onNotiUpdatedHandler
     );
-    return () => {
-      JSEvent.remove(DataEvents.Notification.NotificationState_Updated);
-    };
+    return () =>
+      JSEvent.remove(
+        DataEvents.Notification.NotificationState_Updated,
+        onNotiUpdatedHandler
+      );
   }, [selectedTab]);
   // useEffect(() => {}, [selectedTab]);
 

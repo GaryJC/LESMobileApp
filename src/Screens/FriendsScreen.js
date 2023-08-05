@@ -96,7 +96,10 @@ export default function FriendsScreen() {
 
     return () => {
       JSEvent.remove(UIEvents.User.UserState_UIRefresh, onFriendStateUIUpdated);
-      JSEvent.remove(DataEvents.Notification.NotificationState_Updated);
+      JSEvent.remove(
+        DataEvents.Notification.NotificationState_Updated,
+        updateUnreadCountHandler
+      );
     };
   }, []);
 

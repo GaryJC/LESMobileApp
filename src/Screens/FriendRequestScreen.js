@@ -69,7 +69,10 @@ export default function FriendRequestScreen() {
     );
 
     return () => {
-      JSEvent.remove(DataEvents.Notification.NotificationState_Updated);
+      JSEvent.remove(
+        DataEvents.Notification.NotificationState_Updated,
+        onNotiUpdatedHandler
+      );
     };
   }, []);
 

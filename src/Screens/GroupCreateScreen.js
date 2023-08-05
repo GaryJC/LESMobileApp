@@ -68,7 +68,7 @@ const GroupCreateScreen = () => {
     JSEvent.on(DataEvents.ChatGroup.ChatGroup_New, newGroupEventHandler);
     // JSEvent.on(DataEvents.ChatGroup.ChatGroup_Updated, updateGroupEventHander);
     return () => {
-      JSEvent.remove(DataEvents.ChatGroup.ChatGroup_New);
+      JSEvent.remove(DataEvents.ChatGroup.ChatGroup_New, newGroupEventHandler);
       // JSEvent.remove(DataEvents.ChatGroup.ChatGroup_Updated);
     };
   }, []);

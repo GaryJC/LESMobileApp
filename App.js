@@ -175,8 +175,8 @@ export default function App() {
     JSEvent.on(DataEvents.User.UserState_Relogin, reloginFailedHandler);
 
     return () => {
-      JSEvent.remove(UIEvents.AppState_UIUpdated);
-      JSEvent.remove(DataEvents.User.UserState_Relogin);
+      JSEvent.remove(UIEvents.AppState_UIUpdated, setLoading);
+      JSEvent.remove(DataEvents.User.UserState_Relogin, reloginFailedHandler);
     };
   }, []);
 
