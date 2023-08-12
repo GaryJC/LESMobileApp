@@ -23,10 +23,10 @@ const notificationReducer = (state, action) => {
   console.log(console.log("noti state: ", state, action));
   switch (action.type) {
     case "GET_NOTIFICATIONS":
-      console.log("aaa", action.payload);
       return action.payload;
     case "UPDATE_NOTIFICATIONS":
       const notification = action.payload;
+      console.log("bbvv: ", state, action);
       // 用户点击accept以后也需要从列表里移除
       if (
         notification.state ===
@@ -202,10 +202,20 @@ export default function NotificationScreen() {
     console.log("oooo: ", selectedTab);
     const onNotiUpdatedHandler = (notification) => {
       console.log("updated noti: ", notification);
-      const curType =
+      // const curType =
+      //   notification.type == LesConstants.IMNotificationType.Notification
+      //     ? NotificationType.Notifications
+      //     : NotificationType.Invitations;
+      let curType;
+      if (notification.mode == NotificationMode.Sender) {
+        curType = NotificationType.SelfSent;
+      } else if (
         notification.type == LesConstants.IMNotificationType.Notification
-          ? NotificationType.Notifications
-          : NotificationType.Invitations;
+      ) {
+        curType = NotificationType.Notifications;
+      } else {
+        curType = NotificationType.Invitations;
+      }
 
       if (curType === selectedTab) {
         dispatchNotifications({

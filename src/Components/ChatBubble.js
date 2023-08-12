@@ -4,15 +4,46 @@ import { useState, useEffect } from "react";
 import DataCenter from "../modules/DataCenter";
 import formatDate from "../utils/formatDate";
 import Avatar from "./Avatar";
+import { LesConstants } from "les-im-components";
 
 export const ChatBubble = ({ message, preMessage, userInfo }) => {
   //Calculate time difference and check if it's more than 5 minutes
+
+  const senderUserInfo = userInfo?.find((user) => user.id === message.senderId);
+  console.log("gggs", senderUserInfo, userInfo);
   const showTimestamp = () => {
     if (preMessage) {
       const timeDifference = message.timestamp - preMessage.timestamp;
       return timeDifference >= 5 * 60 * 1000; //difference is in milliseconds
     }
     return true; //Show timestamp for the first message
+  };
+
+  const SpecialMessage = () => {
+    let content;
+    const username = userInfo.find(
+      (user) => user.id === message.recipientId
+    )?.name;
+    switch (message.contentType) {
+      case LesConstants.IMMessageContentType.Group_MemberAdded:
+        if (message?.senderId === message?.recipientId) {
+          content = `${username} has created the group`;
+        } else {
+          content = `${username} has been invited to the group`;
+        }
+        break;
+      case LesConstants.IMMessageContentType.Group_MemberKick:
+        content = `${username} has been kicked from the group`;
+        break;
+      case LesConstants.IMMessageContentType.Group_MemberQuit:
+        content = `${username} has quitted the group`;
+        break;
+    }
+    return (
+      <View>
+        <Text className="text-white text-center my-[10px]">{content}</Text>
+      </View>
+    );
   };
 
   const TimeStamp = ({ date }) => (
@@ -44,7 +75,7 @@ export const ChatBubble = ({ message, preMessage, userInfo }) => {
       {/* {!isOwn && <Avatar avatar={userInfo.avatar} />} */}
       {!isOwn && (
         <View className=" w-[45px] h-[45px]">
-          <Avatar tag={userInfo?.tag} name={userInfo?.name} />
+          <Avatar tag={senderUserInfo?.tag} name={senderUserInfo?.name} />
         </View>
       )}
       <View className="justify-evenly">
@@ -56,7 +87,7 @@ export const ChatBubble = ({ message, preMessage, userInfo }) => {
                 : "text-[10px] text-white ml-[5px]"
             }
           >
-            {userInfo?.name}
+            {senderUserInfo?.name}
           </Text>
         </View>
         <View
@@ -85,7 +116,7 @@ export const ChatBubble = ({ message, preMessage, userInfo }) => {
       {/* {isOwn && <Avatar avatar={userInfo.avatar} />} */}
       {isOwn && (
         <View className=" w-[45px] h-[45px]">
-          <Avatar tag={userInfo?.tag} name={userInfo?.name} />
+          <Avatar tag={senderUserInfo?.tag} name={senderUserInfo?.name} />
         </View>
       )}
     </View>
@@ -96,7 +127,11 @@ export const ChatBubble = ({ message, preMessage, userInfo }) => {
       {showTimestamp() && (
         <TimeStamp date={formatDate(new Date(message?.timestamp))} />
       )}
-      <Bubble isOwn={message?.senderId === DataCenter.userInfo.accountId} />
+      {message.contentType !== LesConstants.IMMessageContentType.Text ? (
+        <SpecialMessage />
+      ) : (
+        <Bubble isOwn={message?.senderId === DataCenter.userInfo.accountId} />
+      )}
     </>
   );
 };

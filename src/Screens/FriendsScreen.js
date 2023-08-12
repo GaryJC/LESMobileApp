@@ -105,7 +105,7 @@ export default function FriendsScreen() {
 
   const temporyAddHander = () => {
     // LesPlatformCenter.IMFunctions.sendFriendInvitation(8)
-    NotificationService.Inst.sendFriendInvitation(8)
+    NotificationService.Inst.sendFriendInvitation(40)
       .then((res) => {
         console.log("Inivitation success: ", res);
       })

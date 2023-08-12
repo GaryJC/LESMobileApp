@@ -107,8 +107,8 @@ export const DataEvents = {
      * 被移出群聊
      * @type {groupId:number}
      */
-    ChatGroup_RemovedFromGroup: "DATA_EVENT_ChatGroup_ChatGroup_RemovedFromGroup"
-
+    ChatGroup_RemovedFromGroup:
+      "DATA_EVENT_ChatGroup_ChatGroup_RemovedFromGroup",
   },
 
   Saving: {
@@ -197,5 +197,18 @@ export const UIEvents = {
      * @type {{chatId: string, targetId: number, data: MessageData[]}}
      */
     Message_Search_Updated: "UI_EVENT_Message_Search_Updated",
+  },
+
+  ChatGroup: {
+    /**
+     *  移除群组里的成员后通知UI，成员列表有更新
+     *  无携带参数
+     */
+    ChatGroup_RemoveMember: "UI_EVENT_ChatGroup_ChatGroup_RemoveMember",
+
+    /**
+     * 当群组用户的数据更新时，例如用户接受了群组邀请以后，通知UI
+     */
+    ChatGroup_GroupMember_Updated: "UI_EVENT_ChatGroup_GroupInfo_Updated",
   },
 };

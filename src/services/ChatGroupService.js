@@ -102,6 +102,8 @@ class ChatGroupService {
             `get group[${groupId}] info failed, code: ${err.toString(16)}`
           );
           reject(err);
+          // delete this.#chatGroups[groupId];
+          // DatabaseService.Inst.removeChatGroup(groupId);
         });
     });
   }
@@ -121,7 +123,8 @@ class ChatGroupService {
    * @param {Notification} noti
    */
   #onNotificationUpdated(noti) {
-    if (noti.type == IMNotificationType.FriendInvitation) {
+    console.log("nnnn", noti);
+    if (noti.type == IMNotificationType.GroupInvitation) {
       if (noti.state == IMNotificationState.Accepted) {
         //同意加入群聊
         let cg = new ChatGroup();
@@ -129,7 +132,7 @@ class ChatGroupService {
         cg.latestTimelineId = 0;
         this.#pushChatGroup(cg);
         this.#updateChatGroup(cg.id)
-          .then((cg) => { })
+          .then((cg) => {})
           .catch((err) =>
             console.error(`更新群[${cg.id}]失败，code：${err.toString(16)}`)
           );
@@ -142,17 +145,16 @@ class ChatGroupService {
     this.#chatGroups = {};
     try {
       const groups = await DatabaseService.Inst.loadChatGroup();
-      groups.forEach(g => {
+      groups.forEach((g) => {
         this.#chatGroups[g.id] = g;
-      })
+      });
     } catch (e) {
       console.error(`读取群组数据失败`, e);
     }
   }
 
-
   /**
-   * 
+   *
    * @returns {Promise<PBLesIMTimelineData[]>}
    */
   requestChatGroupsTimeline() {
@@ -161,17 +163,24 @@ class ChatGroupService {
         //获取所有群组的最新timelineId
         const updates = await this.#requestChatGroupsTimelineUpdate();
         //拉取消息
-        const req = updates.map(u => { return { groupId: u.groupId, from: u.currentTimelineId, to: u.latestTimelineId } });
-        LesPlatformCenter.IMFunctions.getGroupTimeline(req).then(msgs => {
-          resolve(msgs);
-        }).catch(e => {
-          reject(e);
+        const req = updates.map((u) => {
+          return {
+            groupId: u.groupId,
+            from: u.currentTimelineId,
+            to: u.latestTimelineId,
+          };
         });
-
+        LesPlatformCenter.IMFunctions.getGroupTimeline(req)
+          .then((msgs) => {
+            resolve(msgs);
+          })
+          .catch((e) => {
+            reject(e);
+          });
       } catch (e) {
         reject(e);
       }
-    })
+    });
   }
 
   /**
@@ -200,12 +209,17 @@ class ChatGroupService {
             const updateTime = u.getUpdatetime();
 
             const cg = await this.getChatGroup(groupId);
-            if(cg.latestTimelineId == null || cg.latestTimelineId == 0) {
+            if (cg.latestTimelineId == null || cg.latestTimelineId == 0) {
               //本地是0，表示没有提取过消息，线设置为当前分组的最新timelineId
               cg.latestTimelineId = latestTimelineId;
               DatabaseService.Inst.saveChatGroup(cg);
             }
-            ret.push({ groupId, currentTimelineId: cg.latestTimelineId, latestTimelineId, updateTime });
+            ret.push({
+              groupId,
+              currentTimelineId: cg.latestTimelineId,
+              latestTimelineId,
+              updateTime,
+            });
           }
           resolve(ret);
         })
@@ -277,7 +291,6 @@ class ChatGroupService {
 
         resolve(members);
       } catch (err) {
-        console.log("sas");
         reject(err);
       }
 

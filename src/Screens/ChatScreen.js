@@ -174,6 +174,7 @@ const ChatScreen = () => {
       startIndex,
       loadCount
     );
+    console.log("loaded data: ", loadedData);
     if (loadedData.length > 0) {
       loadedData.reverse();
       // setStartIndex((pre) => pre + loadedData.length);
@@ -307,6 +308,17 @@ const ChatScreen = () => {
     setNewMsgCount(chatListNewMsgCount);
   };
 
+  const updateGroupInfo = async (cg) => {
+    console.log("updated chat group: ", cg);
+    const chatId = cg.groupId;
+    if (chatId === curChatId) {
+      let groupMembers = await ChatGroupService.Inst.getGroupMembers(groupId);
+      groupMembers = groupMembers.map((item) => item.userInfo);
+      setCurUserInfo(groupMembers);
+    }
+    chatListListener({ chatId: chatId });
+  };
+
   /**
    * 点击chatList切换聊天对象时更新UI
    *
@@ -345,32 +357,34 @@ const ChatScreen = () => {
       //   DataCenter.messageCache.getChatDataByChatId(chatId).messageList.length;
       dispatchMessages({
         type: "RESET_AND_ADD_MESSAGES",
-        payload: DataCenter.messageCache.getMesssageList(chatId, 0, loadCount),
-        // .reverse(),
+        payload: DataCenter.messageCache
+          .getMesssageList(chatId, 0, loadCount)
+          .reverse(),
       });
+      console.log(
+        "ddd: ",
+        DataCenter.messageCache.getMesssageList(chatId, 0, loadCount)
+      );
     }
     console.log("switched chat id: ", chatId);
   };
 
   const updateChatHandler = async (chatId, targetId, type) => {
     const chatListItem = DataCenter.messageCache.touchChatData(chatId);
-    // console.log("chat list item: ", chatListItem);
+    console.log("rrrr", chatId, targetId, type);
     setCurChatId(chatId);
     setCurRecipientId(targetId);
     chatListListener({ chatId: chatId });
     if (type === LesConstants.IMMessageType.Group) {
       setCurChatType(LesConstants.IMMessageType.Group);
-      // const name = chatListInfo.find((item) => item.id === targetId);
-      // setCurChatName(name);
       // 获取当前群聊信息，如所有成员的targetId等
+      console.log("ooooo");
       const groupInfo = await ChatGroupService.Inst.getChatGroup(targetId);
       let groupMembers = await ChatGroupService.Inst.getGroupMembers(targetId);
       groupMembers = groupMembers.map((item) => item.userInfo);
       setCurChatName(groupInfo.name);
-      // const userInfo = getUserInfo(targetId);
-      // console.log("cur user info: ", userInfo);
+      console.log("llll:", groupInfo.name);
       setCurUserInfo(groupMembers);
-      // console.log("ppppp: ", groupMembers);
     } else {
       const userInfo = await getUserInfo(targetId);
       const targetName = userInfo
@@ -386,8 +400,7 @@ const ChatScreen = () => {
     updateChatHandler(chatId, targetId);
     dispatchMessages({
       type: "RESET_AND_ADD_MESSAGES",
-      payload: data,
-      // .reverse(),
+      payload: data.reverse(),
     });
     // const index = messages.findIndex((msg) => msg.messageId === messageId);
     // flatListRef.current.scrollToIndex({ index });
@@ -546,9 +559,7 @@ const ChatScreen = () => {
     JSEvent.on(UIEvents.Message.Message_Chat_List_Updated, chatListListener);
     JSEvent.on(UIEvents.User.User_Click_Chat_Updated, onClickChatHandler);
     JSEvent.on(UIEvents.Message.Message_Search_Updated, onSearchUpdateHandler);
-    JSEvent.on(DataEvents.ChatGroup.ChatGroup_Updated, (chatGroup) => {
-      console.log("updated chat group: ", chatGroup);
-    });
+    JSEvent.on(DataEvents.ChatGroup.ChatGroup_Updated, updateGroupInfo);
 
     return () => {
       JSEvent.remove(UIEvents.Message.Message_Chat_Updated, msgListener);
@@ -561,7 +572,7 @@ const ChatScreen = () => {
         UIEvents.Message.Message_Search_Updated,
         onSearchUpdateHandler
       );
-      JSEvent.remove(DataEvents.ChatGroup.ChatGroup_Updated);
+      JSEvent.remove(DataEvents.ChatGroup.ChatGroup_Updated, updateGroupInfo);
     };
   }, [curChatId]);
 
@@ -689,9 +700,11 @@ const ChatScreen = () => {
                   // status={item.status}
                   message={item}
                   preMessage={preMessage}
-                  userInfo={curUserInfo?.find(
-                    (user) => user.id === item.senderId
-                  )}
+                  // userInfo={curUserInfo?.find(
+                  //   (user) => user.id === item.senderId
+                  // )}
+                  // groupData={curUserInfo}
+                  userInfo={curUserInfo}
                 />
               );
             }}

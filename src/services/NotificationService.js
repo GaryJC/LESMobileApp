@@ -78,7 +78,7 @@ class NotificationService {
 
   /**
    * 取消一个邀请，只能取消发起人发起的邀请
-   * @param {number} notificationId 
+   * @param {number} notificationId
    */
   cancelInvitation(notificationId) {
     return new Promise((resolve, reject) => {
@@ -138,6 +138,7 @@ class NotificationService {
         })
         .catch((error) => {
           reject(error);
+          console.log("send invit error", error);
         });
     });
   }

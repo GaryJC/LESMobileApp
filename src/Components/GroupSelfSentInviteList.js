@@ -16,9 +16,9 @@ const GroupSelfSentInviteList = ({ item }) => {
   });
   console.log("iii: ", item, recipients);
 
-  const onRespondHandler = (notificationId, response) => {
-    console.log("pp: ", notificationId, response);
-    NotificationService.Inst.respondInvitation(notificationId, response)
+  const onRespondHandler = (notificationId) => {
+    console.log("pp: ", notificationId);
+    NotificationService.Inst.cancelInvitation(notificationId)
       .then((res) => {
         console.log("response: ", res);
       })
@@ -42,14 +42,7 @@ const GroupSelfSentInviteList = ({ item }) => {
             <Text className="text-white">
               Invited <Text className="font-bold text-[16px]">{item.name}</Text>
             </Text>
-            <TouchableOpacity
-              onPress={() =>
-                onRespondHandler(
-                  item.notiId,
-                  LesConstants.IMNotificationState.Canceled
-                )
-              }
-            >
+            <TouchableOpacity onPress={() => onRespondHandler(item.notiId)}>
               <Text className="text-white font-bold text-[16px]">Cancel</Text>
             </TouchableOpacity>
           </View>

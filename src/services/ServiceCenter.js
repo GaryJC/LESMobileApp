@@ -15,6 +15,7 @@ import JSEvent from "../utils/JSEvent";
 import { DataEvents, UIEvents } from "../modules/Events";
 import Constants from "../modules/Constants";
 import NotificationService from "./NotificationService";
+import ChatGroupService from "./ChatGroupService";
 
 const { ReloginState } = Constants;
 
@@ -93,6 +94,7 @@ export default class ServiceCenter {
       IMUserinfoService,
       MessageService,
       NotificationService,
+      ChatGroupService,
     ];
 
     let services = [];

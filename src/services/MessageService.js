@@ -131,13 +131,17 @@ class MessageService {
 
   /**
    * 收到系统控制消息，根据消息内容发送不同事件
-   * @param {MessageData} msgData  
+   * @param {MessageData} msgData
    */
   #onReceiveSystemMessage(msgData) {
     switch (msgData.contentType) {
       case LesConstants.IMMessageContentType.Group_MemberKick:
         //当前用户被踢出了群组
-        JSEvent.emit(DataEvents.ChatGroup.ChatGroup_RemovedFromGroup, msgData.groupId);
+        JSEvent.emit(DataEvents.ChatGroup.ChatGroup_RemovedFromGroup, {
+          chatId: msgData.groupId,
+          action: "delete",
+        });
+        DatabaseService.Inst.removeChatGroup(msgData.groupId);
         break;
     }
   }
@@ -315,9 +319,9 @@ class MessageService {
 
     try {
       const msgDatas = await ChatGroupService.Inst.requestChatGroupsTimeline();
-      msgDatas.forEach(msg => this.#onTimelineUpdated(msg));
+      msgDatas.forEach((msg) => this.#onTimelineUpdated(msg));
     } catch (e) {
-      console.log("chatgroup updated failed: code", e.toString(16))
+      console.log("chatgroup updated failed: code", e.toString(16));
     }
     // const { startId, endId, datas } =
     //   await LesPlatformCenter.IMFunctions.requestTimeline(
@@ -342,8 +346,9 @@ class MessageService {
         //   this.#onTimelineUpdated(data);
         // });
         await this.#requestTimeline();
-        const msgDatas = await ChatGroupService.Inst.requestChatGroupsTimeline();
-        msgDatas.forEach(msg => this.#onTimelineUpdated(msg));
+        const msgDatas =
+          await ChatGroupService.Inst.requestChatGroupsTimeline();
+        msgDatas.forEach((msg) => this.#onTimelineUpdated(msg));
       } catch (e) {
         console.error("request timeline failed: ", e);
       }

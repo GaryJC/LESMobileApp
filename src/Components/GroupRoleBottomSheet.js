@@ -9,8 +9,14 @@ import IMUserInfoService from "../services/IMUserInfoService";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import ChatGroupService from "../services/ChatGroupService";
+import JSEvent from "../utils/JSEvent";
+import { UIEvents } from "../modules/Events";
 
-export default function GroupRoleBottomSheet({ bottomSheetModalRef }) {
+export default function GroupRoleBottomSheet({
+  bottomSheetModalRef,
+  memberData,
+  groupId,
+}) {
   const snapPoints = useMemo(() => ["27.5%", "40%"]);
   // const bottomSheetRef = useRef(null);
 
@@ -68,8 +74,14 @@ export default function GroupRoleBottomSheet({ bottomSheetModalRef }) {
     </View>
   );
 
-  const removeGroupMemberHandler = () => {
+  const removeGroupMemberHandler = async () => {
     // ChatGroupService.Inst.removeGroupMember()
+    try {
+      await ChatGroupService.Inst.removeGroupMember(groupId, memberData.id);
+      JSEvent.emit(UIEvents.ChatGroup.ChatGroup_RemoveMember);
+    } catch (e) {
+      console.log("remove member error: ", e);
+    }
   };
 
   return (

@@ -211,9 +211,10 @@ export default class DatabaseService {
    */
   #createTblChatGroup(tx) {
     let ps = [];
-    ps.push(this.#transactionPromise(
-      tx,
-      `create table if not exists tbl_chatgroup(
+    ps.push(
+      this.#transactionPromise(
+        tx,
+        `create table if not exists tbl_chatgroup(
                     groupId INTEGER PRIMARY KEY NOT NULL,
                     name nvarchar NOT NULL,
                     desc nvarchar NOT NULL,
@@ -222,7 +223,8 @@ export default class DatabaseService {
                     iconId INTEGER NOT NULL,
                     latestTimelineId INTEGER NOT NULL
       )`
-    ));
+      )
+    );
 
     ps.push(
       this.#transactionPromise(
@@ -344,13 +346,14 @@ export default class DatabaseService {
 
   /**
    * 保存或者更新chatGroup数据
-   * @param {ChatGroup} chatGroup 
+   * @param {ChatGroup} chatGroup
    */
   saveChatGroup(chatGroup) {
     return new Promise((resolve, reject) => {
       if (this.#currDb == null) reject(ERROR_DB_ISNULL);
 
-      const { id, name, desc, creator, createTime, iconId, latestTimelineId } = chatGroup;
+      const { id, name, desc, creator, createTime, iconId, latestTimelineId } =
+        chatGroup;
 
       this.#currDb.transaction((tx) => {
         tx.executeSql(
@@ -358,12 +361,29 @@ export default class DatabaseService {
           [chatGroup.id],
           (statement, r) => {
             let sql = "insert into tbl_chatgroup values (?,?,?,?,?,?,?)";
-            let values = [id, name, desc, creator, createTime, iconId, latestTimelineId];
+            let values = [
+              id,
+              name,
+              desc,
+              creator,
+              createTime,
+              iconId,
+              latestTimelineId,
+            ];
 
             if (r.rows != null && r.rows._array.length > 0) {
               //已有数据，更新
-              sql = "update tbl_chatgroup set name = ?, desc = ?, creator = ?, createTime = ?, iconId = ?, latestTimelineId = ? where groupId = ?";
-              values = [name, desc, creator, createTime, iconId, latestTimelineId, id];
+              sql =
+                "update tbl_chatgroup set name = ?, desc = ?, creator = ?, createTime = ?, iconId = ?, latestTimelineId = ? where groupId = ?";
+              values = [
+                name,
+                desc,
+                creator,
+                createTime,
+                iconId,
+                latestTimelineId,
+                id,
+              ];
             }
 
             tx.executeSql(
@@ -376,14 +396,12 @@ export default class DatabaseService {
                 reject(error);
               }
             );
-
           },
           (statement, error) => {
             reject(error);
           }
-        )
-      })
-
+        );
+      });
     });
   }
 
@@ -698,19 +716,20 @@ export default class DatabaseService {
           }
         );
       });
-    })
+    });
   }
 
   removeChatGroup(groupId) {
     if (this.#currDb == null) reject(ERROR_DB_ISNULL);
     this.#currDb.transaction((tx) => {
       tx.executeSql(
-        "delete from tbl_chatgroup where groupId = ?", [groupId],
+        "delete from tbl_chatgroup where groupId = ?",
+        [groupId],
         (_, r) => resolve(groupId),
         (_, e) => {
           reject(e);
         }
-      )
+      );
     });
   }
 
@@ -761,7 +780,7 @@ export default class DatabaseService {
   }
 
   /**
-   * 从数据库中移除计划列表
+   * 从数据库中移除对话列表
    * @param {SQLite.SQLTransaction} tx
    * @param {string} chatId
    */

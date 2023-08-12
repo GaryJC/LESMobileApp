@@ -2,12 +2,9 @@ import {
   View,
   Text,
   FlatList,
-  Modal,
-  Pressable,
-  TouchableOpacity,
   TouchableHighlight,
   TouchableWithoutFeedback,
-  TextInput,
+  ActivityIndicator,
 } from "react-native";
 import FriendSearchInput from "../Components/FriendSearchInput";
 import { FriendList } from "../Components/FriendList";
@@ -24,6 +21,7 @@ import NotificationService from "../services/NotificationService";
 const GroupInviteScreen = () => {
   const [friendsData, setFriendsData] = useState([]);
   const [selectedFriends, setSelectedFriends] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigation = useNavigation();
   const route = useRoute();
@@ -32,8 +30,11 @@ const GroupInviteScreen = () => {
 
   useEffect(() => {
     const getInvitableFriends = async () => {
+      console.log("ss");
       const friendList = await FriendService.Inst.getFriendList();
+      console.log("hh");
       let members = await ChatGroupService.Inst.getGroupMembers(groupId);
+      console.log("members: ", members, friendList);
       members = members.map((item) => item.userInfo.id);
       const invitableFriends = friendList.filter(
         (item) => !members.includes(item.id)
@@ -52,6 +53,7 @@ const GroupInviteScreen = () => {
 
   const inviteFriendHandler = async () => {
     const recipientsId = selectedFriends.map((item) => item.id);
+    setIsLoading(true);
     try {
       console.log("invite friends: ", recipientsId);
       await NotificationService.Inst.sendGroupInvitation(groupId, recipientsId);
@@ -59,6 +61,8 @@ const GroupInviteScreen = () => {
     } catch (e) {
       throw ("invite friend error: ", e);
     }
+    setIsLoading(false);
+    navigation.goBack();
   };
 
   return (
@@ -84,7 +88,7 @@ const GroupInviteScreen = () => {
           )}
         />
       </View>
-      {selectedFriends.length ? (
+      {!isLoading && selectedFriends.length ? (
         <TouchableHighlight onPress={inviteFriendHandler}>
           <View className="h-[35px] bg-[#6E5EDB] justify-center rounded-lg">
             <Text className="text-white text-center text-[15px] font-bold">
@@ -92,12 +96,18 @@ const GroupInviteScreen = () => {
             </Text>
           </View>
         </TouchableHighlight>
-      ) : (
+      ) : !isLoading && selectedFriends.length ? (
         <TouchableWithoutFeedback>
           <View className="h-[35px] bg-[#52575B] justify-center rounded-lg">
             <Text className="text-white text-center text-[15px] font-bold">
               Invite
             </Text>
+          </View>
+        </TouchableWithoutFeedback>
+      ) : (
+        <TouchableWithoutFeedback>
+          <View className="h-[35px] bg-[#52575B] justify-center rounded-lg">
+            <ActivityIndicator size="small" />
           </View>
         </TouchableWithoutFeedback>
       )}

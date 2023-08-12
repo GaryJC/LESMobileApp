@@ -9,7 +9,6 @@ export const FriendList = ({ friend, button }) => {
   // const avatar = `https://i.pravatar.cc/?img=${friend.id}`;
 
   // const navigation = useNavigation();
-  console.log("fl: ", friend);
 
   const [selectedFriend, setSelectedFriend] = useState();
 

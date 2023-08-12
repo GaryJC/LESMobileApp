@@ -8,6 +8,7 @@ import {
   TouchableHighlight,
   TouchableWithoutFeedback,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import FriendSearchInput from "../Components/FriendSearchInput";
 import { FriendList } from "../Components/FriendList";
@@ -29,6 +30,7 @@ const GroupCreateScreen = () => {
   const [selectedFriends, setSelectedFriends] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [groupName, setGroupName] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigation = useNavigation();
 
@@ -108,6 +110,7 @@ const GroupCreateScreen = () => {
 
   const createGroupHandler = async () => {
     console.log("group name: ", groupName);
+    setIsLoading(true);
     try {
       const groupInfo = await ChatGroupService.Inst.createChatGroup(groupName);
       console.log("group info: ", groupInfo);
@@ -124,6 +127,7 @@ const GroupCreateScreen = () => {
     } catch (e) {
       console.log("create group error: ", e);
     }
+    setIsLoading(false);
   };
 
   return (
@@ -168,10 +172,28 @@ const GroupCreateScreen = () => {
       )}
 
       <Modal animationType="slide" visible={modalVisible} transparent={true}>
-        <Pressable
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.6)",
+          }}
+        >
+          <Pressable
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+            }}
+            onPress={closeCreateGroupModal}
+          />
+          {/* <Pressable
           className="flex-1 justify-center items-center bg-black/[0.6]"
           onPress={closeCreateGroupModal}
-        >
+        > */}
           <View className="w-[70vw] h-[25vh] bg-[#262F38] justify-center items-center p-[15px] rounded-xl">
             <Text className="text-white text-[16px] text-center">
               Please create your group's name
@@ -183,16 +205,25 @@ const GroupCreateScreen = () => {
               onChangeText={setGroupName}
             />
             {/* </View> */}
-            <TouchableHighlight
-              className="mt-[20px]"
-              onPress={createGroupHandler}
-            >
-              <View className="w-[100px] h-[30px] bg-[#58AE69] rounded-lg justify-center items-center">
-                <Text className="text-white">Submit</Text>
-              </View>
-            </TouchableHighlight>
+            {!isLoading ? (
+              <TouchableHighlight
+                className="mt-[20px]"
+                onPress={createGroupHandler}
+              >
+                <View className="w-[100px] h-[30px] bg-[#58AE69] rounded-lg justify-center items-center">
+                  <Text className="text-white">Submit</Text>
+                </View>
+              </TouchableHighlight>
+            ) : (
+              <TouchableWithoutFeedback className="mt-[20px]">
+                <View className="w-[100px] h-[30px] bg-[#52575B] rounded-lg justify-center items-center">
+                  <ActivityIndicator size={"small"} />
+                </View>
+              </TouchableWithoutFeedback>
+            )}
           </View>
-        </Pressable>
+          {/* </Pressable> */}
+        </View>
       </Modal>
     </View>
   );
