@@ -176,7 +176,8 @@ const ChatScreen = () => {
     );
     console.log("loaded data: ", loadedData);
     if (loadedData.length > 0) {
-      loadedData.reverse();
+      // loadedData.reverse();
+      // loadedData
       // setStartIndex((pre) => pre + loadedData.length);
       dispatchMessages({
         type: "LOAD_MESSAGE",
@@ -357,9 +358,8 @@ const ChatScreen = () => {
       //   DataCenter.messageCache.getChatDataByChatId(chatId).messageList.length;
       dispatchMessages({
         type: "RESET_AND_ADD_MESSAGES",
-        payload: DataCenter.messageCache
-          .getMesssageList(chatId, 0, loadCount)
-          .reverse(),
+        payload: DataCenter.messageCache.getMesssageList(chatId, 0, loadCount),
+        // .reverse(),
       });
       console.log(
         "ddd: ",
@@ -400,7 +400,8 @@ const ChatScreen = () => {
     updateChatHandler(chatId, targetId);
     dispatchMessages({
       type: "RESET_AND_ADD_MESSAGES",
-      payload: data.reverse(),
+      // payload: data.reverse(),
+      payload: data,
     });
     // const index = messages.findIndex((msg) => msg.messageId === messageId);
     // flatListRef.current.scrollToIndex({ index });

@@ -464,9 +464,9 @@ class ChatData {
   #sortList() {
     this.#messageList.sort((m1, m2) => {
       if (m1.timelineId == m2.timelineId) {
-        return m2.timestamp - m1.timestamp;
+        return m1.timestamp - m2.timestamp;
       } else {
-        return m2.timelineId - m1.timelineId;
+        return m1.timelineId - m2.timelineId;
       }
     });
   }
