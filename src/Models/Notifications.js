@@ -54,7 +54,7 @@ class Notifications {
    * @param {PBLesIMUserNotificationData} pbData
    * @returns {Notification}
    */
-  rprocessNotification(pbData) {
+  processNotification(pbData) {
     const noti = Notifications.PbDataToNofitication(pbData);
     this.pushNotification(noti);
     return noti;

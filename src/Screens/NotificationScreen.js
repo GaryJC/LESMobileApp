@@ -177,10 +177,17 @@ export default function NotificationScreen() {
       const groupInviteCount = DataCenter.notifications.unreadCount(
         LesConstants.IMNotificationType.GroupInvitation
       );
-      setUnreadCount({
-        notiCount: notiCount,
-        invitCount: friendInvitCount + groupInviteCount,
-      });
+
+      // setUnreadCount({
+      //   NotificationT : notiCount,
+      //   invitCount: friendInvitCount + groupInviteCount,
+      // });
+      setUnreadCount((pre) => ({
+        ...pre,
+        [NotificationType.Notifications]: notiCount,
+        [NotificationType.Invitations]: friendInvitCount + groupInviteCount,
+        [NotificationType.SelfSent]: 0,
+      }));
     };
 
     updateUnreadCountHandler();
@@ -251,7 +258,7 @@ export default function NotificationScreen() {
       >
         <View className="flex-row items-center justify-center">
           <Text className="text-white font-bold text-center">{title}</Text>
-          {unreadCount.notiCount !== 0 && (
+          {unreadCount[notiType] !== 0 && (
             <View className="w-[10px] h-[10px] ml-[10px] bg-[#FF3737] rounded-full"></View>
           )}
         </View>
