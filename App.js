@@ -304,7 +304,13 @@ export default function App() {
               options={{ headerShown: false }}
             />
             <Stack.Screen name="Signup" component={SignupScreen} />
-            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen
+              name="Login"
+              component={LoginScreen}
+              options={{
+                headerBackVisible: false,
+              }}
+            />
             <Stack.Screen name="CreateName" component={CreateNameScreen} />
             <Stack.Screen name="Notification" component={NotificationScreen} />
             <Stack.Screen
