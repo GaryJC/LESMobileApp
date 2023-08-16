@@ -62,37 +62,42 @@ export default function FriendsScreen() {
 
   const [unreadCount, setUnreadCount] = useState(0);
 
+  // 可传参数 { id, state, onlineState }
+  const onFriendStateUIUpdated = async () => {
+    // const online = FriendService.Inst.getFriendList((f) => f.isOnline);
+    // const offline = FriendService.Inst.getFriendList((f) => !f.isOnline);
+    const friendList = await FriendService.Inst.getFriendList();
+    console.log("friend list: ", friendList);
+    const online = friendList.filter((item) => item.onlineState === 1);
+    const offline = friendList.filter((item) => item.onlineState === 2);
+
+    setFriendsData([
+      // { title: "Recommended Friends", data: [] },
+      { title: "Online", data: online },
+      { title: "Offline", data: offline },
+    ]);
+  };
+
+  const updateUnreadCountHandler = () => {
+    const count = DataCenter.notifications.unreadCount();
+    setUnreadCount(count);
+  };
+
   useEffect(() => {
-    // 可传参数 { id, state, onlineState }
-    const onFriendStateUIUpdated = async () => {
-      // const online = FriendService.Inst.getFriendList((f) => f.isOnline);
-      // const offline = FriendService.Inst.getFriendList((f) => !f.isOnline);
-      const friendList = await FriendService.Inst.getFriendList();
-      console.log("friend list: ", friendList);
-      const online = friendList.filter((item) => item.onlineState === 1);
-      const offline = friendList.filter((item) => item.onlineState === 2);
+    const initFriendScreen = () => {
+      onFriendStateUIUpdated();
 
-      setFriendsData([
-        // { title: "Recommended Friends", data: [] },
-        { title: "Online", data: online },
-        { title: "Offline", data: offline },
-      ]);
+      updateUnreadCountHandler();
     };
 
-    onFriendStateUIUpdated();
-
-    const updateUnreadCountHandler = () => {
-      const count = DataCenter.notifications.unreadCount();
-      setUnreadCount(count);
-    };
-
-    updateUnreadCountHandler();
+    initFriendScreen();
 
     JSEvent.on(UIEvents.User.UserState_UIRefresh, onFriendStateUIUpdated);
     JSEvent.on(
       DataEvents.Notification.NotificationState_Updated,
       updateUnreadCountHandler
     );
+    JSEvent.on(UIEvents.User.UserState_IsLoggedin, initFriendScreen);
 
     return () => {
       JSEvent.remove(UIEvents.User.UserState_UIRefresh, onFriendStateUIUpdated);
@@ -100,6 +105,7 @@ export default function FriendsScreen() {
         DataEvents.Notification.NotificationState_Updated,
         updateUnreadCountHandler
       );
+      JSEvent.remove(UIEvents.User.UserState_IsLoggedin, initFriendScreen);
     };
   }, []);
 

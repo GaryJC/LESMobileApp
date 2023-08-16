@@ -18,7 +18,7 @@ import { useNavigation } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 import { Ionicons } from "@expo/vector-icons";
 import JSEvent from "../utils/JSEvent";
-import { DataEvents } from "../modules/Events";
+import { DataEvents, UIEvents } from "../modules/Events";
 import Avatar from "../Components/Avatar";
 
 const userOptions = [
@@ -96,7 +96,7 @@ export default function UserScreen() {
       updateUnreadCountHandler
     );
 
-    JSEvent.on(DataEvents.User.UserState_IsLoggedin, retriveUserInfoHandler);
+    JSEvent.on(UIEvents.User.UserState_IsLoggedin, retriveUserInfoHandler);
 
     return () => {
       JSEvent.remove(
@@ -104,7 +104,7 @@ export default function UserScreen() {
         updateUnreadCountHandler
       );
       JSEvent.remove(
-        DataEvents.User.UserState_IsLoggedin,
+        UIEvents.User.UserState_IsLoggedin,
         retriveUserInfoHandler
       );
     };

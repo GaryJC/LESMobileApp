@@ -158,6 +158,8 @@ export const UIEvents = {
      * @type {{chatId:string, targetId:number ｜ null, type: null | IMMessageType}}
      */
     User_Click_Chat_Updated: "UI_EVENT_User_Click_Chat_Updated",
+
+    UserState_IsLoggedin: "UI_EVENT_UserState_IsLoggedin",
   },
 
   Message: {

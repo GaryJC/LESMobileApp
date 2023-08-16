@@ -137,10 +137,10 @@ class MessageService {
     switch (msgData.contentType) {
       case LesConstants.IMMessageContentType.Group_MemberKick:
         //当前用户被踢出了群组
-        JSEvent.emit(DataEvents.ChatGroup.ChatGroup_RemovedFromGroup, {
-          chatId: msgData.groupId,
-          action: "delete",
-        });
+        JSEvent.emit(
+          DataEvents.ChatGroup.ChatGroup_RemovedFromGroup,
+          msgData.groupId
+        );
         DatabaseService.Inst.removeChatGroup(msgData.groupId);
         break;
     }
@@ -331,6 +331,7 @@ class MessageService {
     // datas.forEach((data) => {
     //   this.#onTimelineUpdated(data);
     // });
+    JSEvent.emit(UIEvents.User.UserState_IsLoggedin);
   }
 
   async onUserRelogin(state) {
