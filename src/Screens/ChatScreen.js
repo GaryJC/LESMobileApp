@@ -291,14 +291,17 @@ const ChatScreen = () => {
    */
   const chatListListener = ({ chatId, action }) => {
     console.log("chat id & action: ", chatId, action, curChatId);
+    // 重新将对话列表排序
+    const chatList = DataCenter.messageCache.getChatList();
     if (action === "delete" && chatId === curChatId) {
-      setCurUserInfo(null);
+      // setCurUserInfo(null);
       dispatchMessages({
         type: "CLEAR_MESSAGES",
       });
+      const firstChatListItem = chatList[0];
+      onClickChatHandler(firstChatListItem);
     }
-    // 重新将对话列表排序
-    const chatList = DataCenter.messageCache.getChatList();
+
     console.log("chat listttt: ", chatList);
     // setChatListData(handleChatListData(chatList));
     setChatListData(chatList);
@@ -312,11 +315,11 @@ const ChatScreen = () => {
   const updateGroupInfo = async (cg) => {
     console.log("updated chat group: ", cg);
     const chatId = cg.groupId;
-    if (chatId === curChatId) {
-      let groupMembers = await ChatGroupService.Inst.getGroupMembers(groupId);
-      groupMembers = groupMembers.map((item) => item.userInfo);
-      setCurUserInfo(groupMembers);
-    }
+    // if (chatId === curChatId) {
+    //   let groupMembers = await ChatGroupService.Inst.getGroupMembers(groupId);
+    //   groupMembers = groupMembers.map((item) => item.userInfo);
+    //   setCurUserInfo(groupMembers);
+    // }
     chatListListener({ chatId: chatId });
   };
 
@@ -374,17 +377,24 @@ const ChatScreen = () => {
       setCurChatType(LesConstants.IMMessageType.Group);
       // 获取当前群聊信息，如所有成员的targetId等
       const groupInfo = await ChatGroupService.Inst.getChatGroup(targetId);
+      setCurChatName(`${groupInfo.name}`);
       let groupMembers = await ChatGroupService.Inst.getGroupMembers(targetId);
-      groupMembers = groupMembers.map((item) => item.userInfo);
-      setCurChatName(`${groupInfo.name}(${groupMembers.length})`);
-      setCurUserInfo(groupMembers);
+      // groupMembers = groupMembers.map((item) => item.userInfo);
+      // console.log("hhh: ", groupMembers);
+      groupMembers = groupMembers.filter(
+        (member) =>
+          member.memberState === LesConstants.IMGroupMemberState.Confirmed
+      );
+      setCurChatName((pre) => pre + `(${groupMembers.length})`);
+      // setCurChatName(`${groupInfo.name}`);
+      // setCurUserInfo(groupMembers);
     } else {
       const userInfo = await getUserInfo(targetId);
       const targetName = userInfo
         .filter((item) => item.id !== DataCenter.userInfo.accountId)
         .pop().name;
       setCurChatName(targetName);
-      setCurUserInfo(userInfo);
+      // setCurUserInfo(userInfo);
       setCurChatType(LesConstants.IMMessageType.Single);
     }
   };
@@ -467,9 +477,9 @@ const ChatScreen = () => {
     });
 
     setCurRecipientId(targetId);
-    const userInfo = await getUserInfo(targetId);
-    console.log("cur user info:", userInfo, targetId);
-    setCurUserInfo(userInfo);
+    // const userInfo = await getUserInfo(targetId);
+    // console.log("cur user info:", userInfo, targetId);
+    // setCurUserInfo(userInfo);
   };
 
   const getInitData = async () => {
@@ -477,6 +487,7 @@ const ChatScreen = () => {
     console.log("chat list & jjj:", chatList);
     // 如果缓存中存在聊天列表
     if (chatList.length) {
+      /*
       const getChatListInfo = async () => {
         const promises = chatList.map(
           (item) => {
@@ -507,6 +518,7 @@ const ChatScreen = () => {
       };
 
       getChatListInfo();
+      */
       // setChatListInfo(getChatListInfo());
 
       const chatListNewMsgCount = getChatListMsgCount(chatList);
@@ -539,7 +551,7 @@ const ChatScreen = () => {
     JSEvent.on(DataEvents.ChatGroup.ChatGroup_Updated, updateGroupInfo);
     JSEvent.on(
       DataEvents.ChatGroup.ChatGroup_RemovedFromGroup,
-      removedFromGroupHandler
+      chatListListener
     );
 
     return () => {
@@ -554,6 +566,10 @@ const ChatScreen = () => {
         onSearchUpdateHandler
       );
       JSEvent.remove(DataEvents.ChatGroup.ChatGroup_Updated, updateGroupInfo);
+      JSEvent.remove(
+        DataEvents.ChatGroup.ChatGroup_RemovedFromGroup,
+        chatListListener
+      );
     };
   }, [curChatId]);
 
@@ -685,7 +701,7 @@ const ChatScreen = () => {
                   //   (user) => user.id === item.senderId
                   // )}
                   // groupData={curUserInfo}
-                  userInfo={curUserInfo}
+                  // userInfo={curUserInfo}
                 />
               );
             }}

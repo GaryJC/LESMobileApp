@@ -21,7 +21,7 @@ const FriendListChatButton = ({ friend }) => {
     JSEvent.emit(UIEvents.User.User_Click_Chat_Updated, {
       // chatId: chatId,
       // targetId: friend?.id,
-      chatListItem: chatListItem,
+      chatListItem,
     });
   };
   return (

@@ -137,10 +137,10 @@ class MessageService {
     switch (msgData.contentType) {
       case LesConstants.IMMessageContentType.Group_MemberKick:
         //当前用户被踢出了群组
-        JSEvent.emit(
-          DataEvents.ChatGroup.ChatGroup_RemovedFromGroup,
-          msgData.groupId
-        );
+        JSEvent.emit(DataEvents.ChatGroup.ChatGroup_RemovedFromGroup, {
+          chatId: "group-" + msgData.groupId,
+          action: "delete",
+        });
         DatabaseService.Inst.removeChatGroup(msgData.groupId);
         break;
     }
@@ -184,10 +184,7 @@ class MessageService {
     //发布UI事件，通知ui指定对话有更新
     JSEvent.emit(UIEvents.Message.Message_Chat_Updated, { chatId, msgData });
     //更新对话列表，携带有更新的chatId
-    JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, {
-      payload: chatId,
-      action: "update",
-    });
+    JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, { chatId });
 
     return msgData;
   }

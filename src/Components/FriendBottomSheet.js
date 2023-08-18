@@ -61,7 +61,7 @@ export default function FriendBottomSheet({
     JSEvent.emit(UIEvents.User.User_Click_Chat_Updated, {
       // chatId: chatId,
       // targetId: friend?.id,
-      chatListItem: chatListItem,
+      chatListItem,
     });
   };
 
@@ -84,7 +84,7 @@ export default function FriendBottomSheet({
         DataCenter.messageCache.removeChatListItem(chatId);
         // 刷新好友列表
         JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, {
-          chatId: chatId,
+          chatId,
           action: "delete",
         });
         setIsSheetOpen(false);

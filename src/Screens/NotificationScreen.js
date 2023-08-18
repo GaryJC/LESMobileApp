@@ -28,13 +28,13 @@ const notificationReducer = (state, action) => {
       const notification = action.payload;
       console.log("bbvv: ", state, action);
       // 用户点击accept以后也需要从列表里移除
-      if (
-        notification.state ===
-        (LesConstants.IMNotificationState.Rejected ||
-          LesConstants.IMNotificationState.Canceled)
-      ) {
-        return state.filter((item) => item.id !== notification.id);
-      }
+      // if (
+      //   notification.state ===
+      //   (LesConstants.IMNotificationState.Rejected ||
+      //     LesConstants.IMNotificationState.Canceled)
+      // ) {
+      return state.filter((item) => item.id !== notification.id);
+    // }
   }
 };
 
