@@ -13,6 +13,7 @@ export const ChatBubble = ({ message, preMessage, userInfo }) => {
   // const senderUserInfo = userInfo?.find((user) => user.id === message.senderId);
 
   const [senderUserInfo, setSenderUserInfo] = useState();
+  // console.log(message);
 
   const showTimestamp = () => {
     if (preMessage) {
@@ -24,16 +25,22 @@ export const ChatBubble = ({ message, preMessage, userInfo }) => {
 
   // const senderUserInfo = IMUserInfoService.Inst.getUser(message.senderId);
 
-  useEffect(() => {
-    const getSenderUserInfo = async () => {
-      const data = (
-        await IMUserInfoService.Inst.getUser(message.senderId)
-      ).pop();
-      console.log("ddd: ", data);
-      setSenderUserInfo(data);
-    };
-    getSenderUserInfo();
-  }, []);
+  // useEffect(() => {
+  //   const getSenderUserInfo = async () => {
+  //     const data = (
+  //       await IMUserInfoService.Inst.getUser(message.senderId)
+  //     ).pop();
+  //     console.log("ddd: ", data);
+  //     setSenderUserInfo(data);
+  //   };
+  //   getSenderUserInfo();
+  // }, [message]);
+
+  const getSenderUserInfo = async () => {
+    const data = (await IMUserInfoService.Inst.getUser(message.senderId)).pop();
+    setSenderUserInfo(data);
+  };
+  getSenderUserInfo();
 
   // console.log("sender user info: ", senderUserInfo, message);
 
@@ -149,7 +156,7 @@ export const ChatBubble = ({ message, preMessage, userInfo }) => {
       {message.contentType !== LesConstants.IMMessageContentType.Text ? (
         <SpecialMessage />
       ) : (
-        <Bubble isOwn={message?.senderId === DataCenter.userInfo.accountId} />
+        <Bubble isOwn={message.senderId == DataCenter.userInfo.accountId} />
       )}
     </>
   );
