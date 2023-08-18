@@ -181,7 +181,6 @@ class NotificationService {
   async #loadNotificationsFromServer() {
     try {
       const resps = await LesPlatformCenter.IMFunctions.getNotifications();
-      console.log("rrr: ", resps);
 
       resps.forEach((resp) => {
         this.#onRecvNotification(resp);

@@ -158,6 +158,8 @@ export const UIEvents = {
      * @type {{chatId:string, targetId:number ｜ null, type: null | IMMessageType}}
      */
     User_Click_Chat_Updated: "UI_EVENT_User_Click_Chat_Updated",
+
+    UserState_IsLoggedin: "UI_EVENT_UserState_IsLoggedin",
   },
 
   Message: {
@@ -175,18 +177,15 @@ export const UIEvents = {
      *
      * UI部分监听这个消息，如果对应的对话id为开启状态，则更新对话的状态
      *
-     * @type {string, MessageData}
+     * @type {{chatId: string, msgData: MessageData}}
      */
     Message_Chat_Updated: "UI_EVENT_Message_Chat_Updated",
 
     /**
      * 通知UI，对话列表数据有更新
-     *
-     * 携带参数为数据有更新的对话id，为空则表示全部更新
-     *
+     * 携带参数为数据有更新的对话id，为空则表示全部更新, action为delete时代表当前聊天被删除，为空表示更新
      * 收到事件后去DataCenter.messageCache获取最新的列表
-     *
-     * @type {string}
+     * @type {{chatId: string | null, action:string | null}}
      */
     Message_Chat_List_Updated: "UI_EVENT_Message_Chat_List_Updated",
 

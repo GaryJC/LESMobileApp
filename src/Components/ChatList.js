@@ -3,6 +3,8 @@ import { useState, useEffect, useMemo } from "react";
 import { LesConstants } from "les-im-components";
 import Avatar from "./Avatar";
 import Constants from "../modules/Constants";
+import IMUserInfoService from "../services/IMUserInfoService";
+import ChatGroupService from "../services/ChatGroupService";
 
 export const ChatList = ({
   curChatId,
@@ -26,11 +28,36 @@ export const ChatList = ({
 
   const [info, setInfo] = useState();
 
+  // useEffect(() => {
+  //   const data = chatListInfo.find((item) => item.id == chatListItem.targetId);
+  //   console.log("ddddd: ", chatListInfo, data, chatListItem);
+  //   setInfo(data);
+  // }, [chatListInfo, chatListItem]);
+
+  // const info = chatListInfo.find((item) => item.id == chatListItem.targetId);
+  // console.log("iiii: ", info, chatListInfo, chatListItem);
+  // const chatType = chatListItem.type;
+
   useEffect(() => {
-    const data = chatListInfo.find((item) => item.id == chatListItem.targetId);
-    console.log("ddddd: ", chatListInfo, data, chatListItem);
-    setInfo(data);
-  }, [chatListInfo, chatListItem]);
+    const getUserInfo = async () => {
+      console.log("nnn: ", chatListItem);
+      const chatType = chatListItem.type;
+      let userInfo;
+      if (chatType === LesConstants.IMMessageType.Single) {
+        userInfo = (
+          await IMUserInfoService.Inst.getUser(chatListItem.targetId)
+        ).pop();
+      } else if (chatType === LesConstants.IMMessageType.Group) {
+        userInfo = await ChatGroupService.Inst.getChatGroup(
+          chatListItem.targetId
+        ).pop();
+      }
+      // return userInfo;
+      console.log("kkkk: ", chatType, userInfo);
+      setInfo(userInfo);
+    };
+    getUserInfo();
+  }, [chatListItem]);
 
   return (
     // add onPress handler to switch chat recipient
@@ -54,7 +81,7 @@ export const ChatList = ({
               : "w-[55px] h-[55px] mb-[15px]"
           }
         >
-          <Avatar
+          {/* <Avatar
             tag={
               chatListItem?.type === Constants.ChatListType.Group
                 ? info?.id
@@ -64,7 +91,15 @@ export const ChatList = ({
             isGroup={
               chatListItem?.type === Constants.ChatListType.Group && true
             }
+          /> */}
+          <Avatar
+            tag={info?.tag}
+            name={info?.name}
+            isGroup={
+              chatListItem?.type === Constants.ChatListType.Group && true
+            }
           />
+
           {chatListItem?.type === Constants.ChatListType.Group && (
             <View className="w-[20px] h-[20px] rounded-tr-xl rounded-bl-lg bg-[#6E5EDB] absolute right-0 justify-center items-center">
               <Text className="text-white">G</Text>

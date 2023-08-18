@@ -5,12 +5,16 @@ import DataCenter from "../modules/DataCenter";
 import formatDate from "../utils/formatDate";
 import Avatar from "./Avatar";
 import { LesConstants } from "les-im-components";
+import IMUserInfoService from "../services/IMUserInfoService";
 
 export const ChatBubble = ({ message, preMessage, userInfo }) => {
   //Calculate time difference and check if it's more than 5 minutes
 
-  const senderUserInfo = userInfo?.find((user) => user.id === message.senderId);
-  console.log("gggs", senderUserInfo, userInfo);
+  // const senderUserInfo = userInfo?.find((user) => user.id === message.senderId);
+
+  const [senderUserInfo, setSenderUserInfo] = useState();
+  // console.log(message);
+
   const showTimestamp = () => {
     if (preMessage) {
       const timeDifference = message.timestamp - preMessage.timestamp;
@@ -19,11 +23,33 @@ export const ChatBubble = ({ message, preMessage, userInfo }) => {
     return true; //Show timestamp for the first message
   };
 
+  // const senderUserInfo = IMUserInfoService.Inst.getUser(message.senderId);
+
+  // useEffect(() => {
+  //   const getSenderUserInfo = async () => {
+  //     const data = (
+  //       await IMUserInfoService.Inst.getUser(message.senderId)
+  //     ).pop();
+  //     console.log("ddd: ", data);
+  //     setSenderUserInfo(data);
+  //   };
+  //   getSenderUserInfo();
+  // }, [message]);
+
+  const getSenderUserInfo = async () => {
+    const data = (await IMUserInfoService.Inst.getUser(message.senderId)).pop();
+    setSenderUserInfo(data);
+  };
+  getSenderUserInfo();
+
+  // console.log("sender user info: ", senderUserInfo, message);
+
   const SpecialMessage = () => {
     let content;
-    const username = userInfo.find(
-      (user) => user.id === message.recipientId
-    )?.name;
+    // const username = userInfo.find(
+    //   (user) => user.id === message.recipientId
+    // )?.name;
+    const username = senderUserInfo?.name;
     switch (message.contentType) {
       case LesConstants.IMMessageContentType.Group_MemberAdded:
         if (message?.senderId === message?.recipientId) {
@@ -130,7 +156,7 @@ export const ChatBubble = ({ message, preMessage, userInfo }) => {
       {message.contentType !== LesConstants.IMMessageContentType.Text ? (
         <SpecialMessage />
       ) : (
-        <Bubble isOwn={message?.senderId === DataCenter.userInfo.accountId} />
+        <Bubble isOwn={message.senderId == DataCenter.userInfo.accountId} />
       )}
     </>
   );
