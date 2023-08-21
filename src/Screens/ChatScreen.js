@@ -42,6 +42,7 @@ import { debounce, result } from "lodash";
 import { LesConstants } from "les-im-components";
 import { useRoute } from "@react-navigation/native";
 import ChatGroupService from "../services/ChatGroupService";
+import { ChatMessageInput } from "../Components/ChatMessageInput";
 
 // import { bottomTabHeight } from "../App";
 
@@ -122,7 +123,7 @@ const messageReducer = (state, action) => {
 
 const ChatScreen = () => {
   // 输入框输入的消息
-  const [newMessage, setNewMessage] = useState("");
+  // const [newMessage, setNewMessage] = useState("");
   // 当前chatid
   const [curChatId, setCurChatId] = useState();
   // 当前选择的聊天对象的id
@@ -580,7 +581,7 @@ const ChatScreen = () => {
 
   const flatListRef = useRef();
 
-  const onMessageSendHandler = () => {
+  const onMessageSendHandler = (newMessage) => {
     if (curChatType === LesConstants.IMMessageType.Single) {
       MessageService.Inst.sendMessage(curRecipientId, newMessage);
     } else {
@@ -590,15 +591,6 @@ const ChatScreen = () => {
     if (messages.length > 0) {
       flatListRef.current?.scrollToEnd({ animated: true });
     }
-
-    // const msgData = new MessageData();
-    // msgData.content = newMessage;
-    // msgData.senderId = DataCenter.userInfo.accountId;
-    // msgData.status = Constants.deliveryState.delivering;
-    // dispatchMessages({
-    //   type: "ADD_MESSAGE",
-    //   payload: msgData,
-    // });
   };
 
   const handleSheetOpen = useCallback(() => {
@@ -619,7 +611,7 @@ const ChatScreen = () => {
       navigation.navigate("GroupInfo", { targetId: curRecipientId });
     }
   };
-
+  console.log("chatdata: ", messages);
   return (
     <View className="flex-1 flex-row pt-[5vh]">
       <View className="w-[20%] items-center flex-col">
@@ -722,7 +714,7 @@ const ChatScreen = () => {
             ListHeaderComponent={renderHeader}
           />
 
-          <View className="flex-row items-center py-[10px] h-[50px]">
+          {/* <View className="flex-row items-center py-[10px] h-[50px]">
             <TextInput
               value={newMessage}
               onChangeText={(text) => setNewMessage(text)}
@@ -736,7 +728,8 @@ const ChatScreen = () => {
             >
               <Text className="text-white font-bold">Send</Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
+          <ChatMessageInput onMessageSendHandler={onMessageSendHandler} />
         </KeyboardAvoidingView>
         {/* </KeyboardAwareFlatList> */}
       </View>

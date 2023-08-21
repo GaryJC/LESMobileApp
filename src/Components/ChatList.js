@@ -40,7 +40,6 @@ export const ChatList = ({
 
   useEffect(() => {
     const getUserInfo = async () => {
-      console.log("nnn: ", chatListItem);
       const chatType = chatListItem.type;
       let userInfo;
       if (chatType === LesConstants.IMMessageType.Single) {
