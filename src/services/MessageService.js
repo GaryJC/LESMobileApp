@@ -141,6 +141,10 @@ class MessageService {
           chatId: "group-" + msgData.groupId,
           action: "delete",
         });
+
+        const chatId = MessageCaches.MakeChatIDByMsgData(msgData);
+        // 移除缓存中对应的聊天列表
+        DataCenter.messageCache.removeChatListItem(chatId);
         DatabaseService.Inst.removeChatGroup(msgData.groupId);
         break;
     }

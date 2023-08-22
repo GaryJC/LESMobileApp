@@ -4,10 +4,11 @@ import DataCenter from "../modules/DataCenter";
 import { LesConstants, LesPlatformCenter } from "les-im-components";
 import JSEvent from "../utils/JSEvent";
 import { DataEvents, UIEvents } from "../modules/Events";
-import { loginRequest } from "../utils/auth";
+import { loginRequest, Firebase } from "../utils/auth";
 import { AppState, AppStateStatus } from "react-native";
+import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth"
 
-const LoginExceptionType = Constants.LoginExceptionType;
+const { LoginExceptionType, LoginState } = Constants;
 const { ErrorCodes, WebsocketState } = LesConstants;
 /**
  * Login服务，用于登陆，连接IM服务器
@@ -36,6 +37,10 @@ export default class LoginService {
   }
 
   async init() {
+    auth().onAuthStateChanged(user => {
+      console.log(user,user?.getIdToken());
+    })
+
     await this.#loadLoginData();
     LesPlatformCenter.IMListeners.onWebsocketStateChanged = (state) => {
       if (state == WebsocketState.Disconnected) {
@@ -197,7 +202,83 @@ export default class LoginService {
   }
 
   /**
-   * 使用用户名密码进行登录
+   * 通过firebase的token登录
+   * @param {string} userToken 
+   * @returns {{id:number, loginState:LoginState}} id--用户id，loginState--当前登录状态，详见{@link Constants.LoginState}
+   * @throws {{type:LoginExceptionType, code:number, msg:string}}}
+   */
+  async firebaseLogin(userToken) {
+    const device = DataCenter.deviceName;
+    try {
+      const response = await Firebase.loginRequest(userToken, device);
+      const data = response.data;
+      if (data.code == 0) {
+        const ret = data.regObject;
+        return { id: ret.accountId, loginState: ret.loginState }
+      } else {
+        throw {
+          type: LoginExceptionType.AccountCenterError,
+          code: data.code,
+          msg: data.msg,
+        };
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  /**
+   * 用户请求发送邮箱验证码
+   * @param {string} userToken 
+   * @return {string} 验证码token
+   */
+  async firebaseRequestSendVaildCode(userToken) {
+    try {
+      const response = await Firebase.sendVerifyCodeRequest(userToken);
+      const data = response.data;
+      if (data.code == 0) {
+        return data.msg;
+      } else {
+        throw {
+          type: LoginExceptionType.VerificationError,
+          code: data.code,
+          msg: data.msg,
+        };
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  /**
+   * 
+   * @param {number} accountId 用户id
+   * @param {string} userToken firebase用户token
+   * @param {string} codeToken 验证码token
+   * @param {string} code 验证码
+   * @returns {boolean} 验证结果
+   */
+  async firebaseRequestVerifyCode(accountId, userToken, codeToken, code) {
+    try {
+      const response = await Firebase.verifyCode(userToken, codeToken, code);
+      const data = response.data;
+      if (data.code == 0) {
+        return data.msg == accountId;
+      } else {
+        throw {
+          type: LoginExceptionType.VerificationError,
+          code: data.code,
+          msg: data.msg,
+        };
+      }
+    } catch (e) {
+
+    }
+    return false;
+  }
+
+  /**
+   * 使用用户名密码进行登录(旧的账号登陆)
    * @param {string} username 用户名
    * @param {string} password 密码
    * @returns {{id:number,name:string,tag:number,state:IMUserState}}

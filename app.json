@@ -21,7 +21,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.lightesport.mobile.app"
+      "package": "com.lightesport.im.mobile"
     },
     "web": {
       "favicon": "./assets/favicon.png"
