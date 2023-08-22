@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "537080417457",
+    "project_id": "les-web3-platform",
+    "storage_bucket": "les-web3-platform.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:537080417457:android:eebb5b9d73e2f0aaf06690",
+        "android_client_info": {
+          "package_name": "com.lightesport.im.mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "537080417457-fd22stn3tkjiauchk1eqpjsjs8dguev4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lightesport.im.mobile",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "537080417457-k01qk24drifnbv425r7c6al4u2a8qp62.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC48YAVEpmteofCxxLEmJd-wCm9xL8E-2k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "537080417457-k01qk24drifnbv425r7c6al4u2a8qp62.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

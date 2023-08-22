@@ -10,6 +10,8 @@ const API = {
   resendCode: () => API.account + "resendCode",
   loginRequest: () => API.account + "loginRequest",
   loginCheck: () => API.account + "loginCheck",
+  sendCodeRequest: () => API.account + "requestSendCode",
+  verifyCodeByToken: () => API.account + "verifyCodeByToken",
 };
 
 export default API;

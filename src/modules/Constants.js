@@ -15,6 +15,21 @@ const Constants = {
     deliveredyFailed: 3,
   },
 
+  LoginState: {
+    /**
+     * 正常登陆
+     */
+    Normal: 0,
+    /**
+     * 需要验证邮箱
+     */
+    VerifyEmail: 1,
+    /**
+     * 需要设置推荐人
+     */
+    UpdateReferrer: 2
+  },
+
   ReloginState: {
     /**
      * 开始尝试重新登陆
@@ -42,6 +57,7 @@ const Constants = {
   LoginExceptionType: {
     AccountCenterError: "AccountCenterError",
     IMServerError: "IMServerError",
+    VerificationError: "VerificationError"
   },
 
   Notification: {
