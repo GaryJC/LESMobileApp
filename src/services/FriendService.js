@@ -118,7 +118,7 @@ class FriendService {
           friend.onlineState,
           noti.time
         );
-        JSEvent.emit(UIEvents.User.UserState_UIRefresh);
+        JSEvent.emit(UIEvents.User.UserState_UIRefresh, friend);
       }
     }
   }
@@ -126,8 +126,8 @@ class FriendService {
   #onFriendRemoved(friendId) {
     const idx = this.#friendList.findIndex((item) => item.id == friendId);
     if (idx > -1) {
-      this.#friendList.splice(idx, 1);
-      JSEvent.emit(UIEvents.User.UserState_UIRefresh);
+      const f = this.#friendList.splice(idx, 1);
+      JSEvent.emit(UIEvents.User.UserState_UIRefresh, f);
     }
   }
 
