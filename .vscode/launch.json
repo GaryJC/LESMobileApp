@@ -5,7 +5,7 @@
             "request": "attach",
             "type": "reactnativedirect",
             "cwd": "${workspaceFolder}",
-            "port": 19000
+            "port": 8082
         },
     ]
 }

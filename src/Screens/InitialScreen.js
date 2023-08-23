@@ -5,6 +5,9 @@ import LoginService from "../services/LoginService";
 import { LesConstants } from "les-im-components";
 import ServiceCenter from "../services/ServiceCenter";
 import JSEvent from "../utils/JSEvent";
+import Constants from "../modules/Constants";
+
+const { LoginState } = Constants;
 
 const onAppInit = async () => {
   await ServiceCenter.Inst.loadAllServices();
@@ -30,11 +33,38 @@ export default function InitialScreen() {
       await onAppInit();
       console.log("all services loaded");
       const loginService = LoginService.Inst;
-      const quickLogin = loginService.canQuickLogin();
-      // const quickLogin = false
-      // console.log("quickLogin: ", quickLogin);
+      const result = await loginService.firebaseQuickLogin();
+      console.log("firebase login result: ", result);
+
+      //根据result.loginState决定显示哪个页面(注册、验证邮箱、设置referrer)
+      switch (result.loginState) {
+        case LoginState.Logout:
+          //快速登录失败，跳到LoginScreen
+          navigation.navigate("Login");
+          break;
+        case LoginState.Normal:
+          //登陆成功了，跳转到主界面
+          navigation.navigate("BottomTab");
+          break;
+        case LoginState.VerifyEmail:
+          //跳转到验证邮箱界面
+
+
+          break;
+        case LoginState.UpdateReferrer:
+          //跳转到更新推荐人界面
+
+
+          break;
+      }
+
+
+
+      //旧的逻辑，废弃
+      //const quickLogin = await loginService.canQuickLogin();
 
       //缓存中有登录信息，可以快速登录
+      /*
       if (quickLogin) {
         const result = await loginService.quickLogin();
         console.log("result: ", result);
@@ -50,7 +80,7 @@ export default function InitialScreen() {
         //TODO 没有登录信息，跳转到LoginScreen
         navigation.navigate("Login");
       }
-
+      */
       // setIsInitializing(false);
     }
 
