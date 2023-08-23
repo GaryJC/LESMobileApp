@@ -36,7 +36,6 @@ export default function LoginScreen() {
 
   async function loginHandler() {
     setIsLoading(true);
-    console.log("sssss");
     const loginService = LoginService.Inst;
     try {
       //尝试用户名密码登陆

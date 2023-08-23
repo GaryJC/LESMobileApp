@@ -17,6 +17,10 @@ const Constants = {
 
   LoginState: {
     /**
+     * 未登录
+     */
+    Logout: -1,
+    /**
      * 正常登陆
      */
     Normal: 0,

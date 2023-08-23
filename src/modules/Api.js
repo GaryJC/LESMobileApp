@@ -12,6 +12,7 @@ const API = {
   loginCheck: () => API.account + "loginCheck",
   sendCodeRequest: () => API.account + "requestSendCode",
   verifyCodeByToken: () => API.account + "verifyCodeByToken",
+  updateReferrer: () => API.account + "updateReferrer",
 };
 
 export default API;

@@ -117,6 +117,7 @@ export const ChatBubble = ({ message, preMessage, userInfo }) => {
           </Text>
         </View>
         <View
+          onTouchEnd={() => { console.log(message)}}
           className={
             isOwn
               ? "flex-row justify-center pr-[30vw] mr-[5px] bg-[#5EB857] px-2 py-2 rounded"

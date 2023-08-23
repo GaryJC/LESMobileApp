@@ -113,6 +113,13 @@ export const Firebase = {
       token: verifyCodeToken,
       code: code
     });
+  },
+
+  updateReferrer: async (firebaseToken, referralCode) => {
+    return await axios.post(API.updateReferrer(), {
+      firebaseToken: firebaseToken,
+      referralCode: referralCode
+    });
   }
 
 }

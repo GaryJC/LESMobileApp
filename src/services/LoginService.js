@@ -37,9 +37,10 @@ export default class LoginService {
   }
 
   async init() {
-    auth().onAuthStateChanged(user => {
-      console.log(user,user?.getIdToken());
-    })
+    // auth().onAuthStateChanged(user => {
+    //   console.log("====", user);
+    //   user?.getIdToken().then(token => { console.log("login token:", token) })
+    // })
 
     await this.#loadLoginData();
     LesPlatformCenter.IMListeners.onWebsocketStateChanged = (state) => {
@@ -68,6 +69,8 @@ export default class LoginService {
     if (toState == "active" && fromState != null) {
       //应用被重新激活了
       //检测连接是否正常
+
+      console.log("current user:", auth().currentUser);
 
       if (LesPlatformCenter.Inst.ConnectState != WebsocketState.Connected) {
         console.log("websocket disconnected, need to re-reconnect");
@@ -201,10 +204,28 @@ export default class LoginService {
     }
   }
 
+
+  /**
+   * @returns {Promise<{id:number, loginState:LoginState}>} id--用户id，loginState--当前登录状态，详见{@link Constants.LoginState}
+   * @throws {{type:LoginExceptionType, code:number, msg:string}}}
+   */
+  async firebaseQuickLogin() {
+    if (auth().currentUser == null) {
+      return { id: -1, loginState: LoginState.Logout };
+    }
+    const token = await auth().currentUser.getIdToken();
+    try {
+      const result = await this.firebaseLogin(token);
+      return result;
+    } catch (e) {
+      throw e;
+    }
+  }
+
   /**
    * 通过firebase的token登录
    * @param {string} userToken 
-   * @returns {{id:number, loginState:LoginState}} id--用户id，loginState--当前登录状态，详见{@link Constants.LoginState}
+   * @returns {Promise<{id:number, loginState:LoginState}>} id--用户id，loginState--当前登录状态，详见{@link Constants.LoginState}
    * @throws {{type:LoginExceptionType, code:number, msg:string}}}
    */
   async firebaseLogin(userToken) {
@@ -213,7 +234,7 @@ export default class LoginService {
       const response = await Firebase.loginRequest(userToken, device);
       const data = response.data;
       if (data.code == 0) {
-        const ret = data.regObject;
+        const ret = data.retObject;
         return { id: ret.accountId, loginState: ret.loginState }
       } else {
         throw {
@@ -275,6 +296,22 @@ export default class LoginService {
 
     }
     return false;
+  }
+
+  /**
+   * 设置用户推荐码，成功与否都进行下一步
+   * @param {string} userToken firebase用户token
+   * @param {string} referralCode 推荐码
+   */
+  async firebaseUpdateReferrer(userToken, referralCode) {
+    try {
+      const response = await Firebase.updateReferrer(userToken, referralCode);
+      const data = response.data;
+      return data.code;
+    } catch (e) {
+
+    }
+    return -1;
   }
 
   /**
