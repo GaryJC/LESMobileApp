@@ -78,7 +78,8 @@ export default class LoginService {
         // 重新连接
         // 发送重新连接事件通知UI加载loading bar
         // JSEvent.emit(UIEvents.AppState_UIUpdated, true);
-        await this.quickLogin(true);
+        //await this.quickLogin(true);
+        await this.firebaseQuickLogin(true);
         // JSEvent.emit(UIEvents.AppState_UIUpdated, false);
       }
     }
@@ -269,14 +270,35 @@ export default class LoginService {
           }
 
         } catch (e) {
+          if (isReconnect) {
+            //重连失败
+            JSEvent.emit(
+              DataEvents.User.UserState_Relogin,
+              Constants.ReloginState.ReloginFailed
+            );
+          }
           return { loginState: loginState, imServerState: e };
         }
         return { loginState: loginState, imServerState: ErrorCodes.Success };
       } else {
+        if (isReconnect) {
+          //重连失败
+          JSEvent.emit(
+            DataEvents.User.UserState_Relogin,
+            Constants.ReloginState.ReloginFailed
+          );
+        }
         return { loginState: loginState, imServerState: ErrorCodes.Timeout };
       }
     } catch (e) {
-      console.log("got exception: ", e);
+      console.log("firebase quick login got exception: ", e);
+      if (isReconnect) {
+        //重连失败
+        JSEvent.emit(
+          DataEvents.User.UserState_Relogin,
+          Constants.ReloginState.ReloginFailed
+        );
+      }
       throw e;
     }
   }
