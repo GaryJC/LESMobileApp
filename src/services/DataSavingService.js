@@ -18,6 +18,7 @@ import MessageData from "../Models/MessageData";
 import DatabaseService from "./DatabaseService";
 import { MessageCaches } from "../Models/MessageCaches";
 import IMUserInfo from "../Models/IMUserInfo";
+import UserProfile from "../Models/UserProfile";
 const IMUserState = LesConstants.IMUserState;
 
 class DataSavingService {
@@ -118,9 +119,9 @@ class DataSavingService {
    * 将用户的登录信息保存到DataCenter中
    * @param {number} id
    * @param {string} key
-   * @param {{name:string, tag:number, email:string, state:IMUserState}} imUserInfo
+   * @param {{name:string, tag:number, email:string, state:IMUserState,userProfile:UserProfile}} imUserInfo
    */
-  saveLoginDataToDataCenter(id, key, email, imUserInfo) {
+  saveLoginDataToDataCenter(id, key, email, imUserInfo, userProfile) {
     DataCenter.userInfo.accountId = id;
     DataCenter.userInfo.loginKey = key;
     DataCenter.userInfo.email = email;
@@ -128,6 +129,7 @@ class DataSavingService {
     const userInfo = new IMUserInfo(id, imUserInfo.name, imUserInfo.tag, imUserInfo.state, LesConstants.IMUserOnlineState.Online);
 
     DataCenter.userInfo.imUserInfo = userInfo;
+    DataCenter.userInfo.userProfile = userProfile;
   }
 
   /**
