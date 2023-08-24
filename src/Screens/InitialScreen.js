@@ -44,6 +44,10 @@ export default function InitialScreen() {
           break;
         case LoginState.Normal:
           //登陆成功了，跳转到主界面
+
+          //连接IM Server
+          
+
           navigation.navigate("BottomTab");
           break;
         case LoginState.VerifyEmail:

@@ -7,6 +7,9 @@ import { DataEvents, UIEvents } from "../modules/Events";
 import { loginRequest, Firebase } from "../utils/auth";
 import { AppState, AppStateStatus } from "react-native";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth"
+import UserProfile from "../Models/UserProfile"
+
+const LoginChannel = "Firebase";
 
 const { LoginExceptionType, LoginState } = Constants;
 const { ErrorCodes, WebsocketState } = LesConstants;
@@ -70,14 +73,13 @@ export default class LoginService {
       //应用被重新激活了
       //检测连接是否正常
 
-      console.log("current user:", auth().currentUser);
-
       if (LesPlatformCenter.Inst.ConnectState != WebsocketState.Connected) {
         console.log("websocket disconnected, need to re-reconnect");
         // 重新连接
         // 发送重新连接事件通知UI加载loading bar
         // JSEvent.emit(UIEvents.AppState_UIUpdated, true);
-        await this.quickLogin(true);
+        //await this.quickLogin(true);
+        await this.firebaseQuickLogin(true);
         // JSEvent.emit(UIEvents.AppState_UIUpdated, false);
       }
     }
@@ -121,6 +123,8 @@ export default class LoginService {
   }
 
   /**
+   * @deprecated
+   * 旧的登录逻辑，废弃了
    * 返回是否可以快速登录
    * 本地缓存中如果有loginId和Key，则可以快速登录，不经过accountServer的loginCheck
    */
@@ -135,6 +139,8 @@ export default class LoginService {
   }
 
   /**
+   * @deprecated
+   * 旧的登录逻辑，废弃了
    * 快速登录，直接使用当前已有的id和token连接IM服务器
    * @returns {ErrorCodes}
    */
@@ -204,20 +210,95 @@ export default class LoginService {
     }
   }
 
-
   /**
-   * @returns {Promise<{id:number, loginState:LoginState}>} id--用户id，loginState--当前登录状态，详见{@link Constants.LoginState}
+   * firebase快速登录
+   * @returns {Promise<{loginState:LoginState, imServerState:ErrorCodes}>} id--用户id，loginState--当前登录状态，详见{@link Constants.LoginState}
    * @throws {{type:LoginExceptionType, code:number, msg:string}}}
    */
-  async firebaseQuickLogin() {
+  async firebaseQuickLogin(isReconnect = false) {
     if (auth().currentUser == null) {
-      return { id: -1, loginState: LoginState.Logout };
+      return { loginState: LoginState.Logout, imServerState: ErrorCodes.Timeout };
     }
     const token = await auth().currentUser.getIdToken();
     try {
+      const device = LesConstants.IMDevices[DataCenter.deviceName];
+      if (isReconnect) {
+        JSEvent.emit(
+          DataEvents.User.UserState_Relogin,
+          Constants.ReloginState.ReloginStarted
+        );
+      }
+
       const result = await this.firebaseLogin(token);
-      return result;
+      const { id, loginState, profile } = result;
+
+      if (loginState == LoginState.Normal) {
+        //登陆成功，连接im服务器
+        try {
+          const result = await LesPlatformCenter.Inst.connect(
+            Constants.Address.IMServer,
+            id,
+            token,
+            device,
+            LoginChannel
+          );
+
+          //登陆成功
+          const imUserInfo = {
+            name: result.name,
+            tag: result.tag,
+            state: result.state,
+          };
+
+          //保存当前用户数据
+          DataSavingService.Inst.saveLoginDataToDataCenter(
+            id,
+            "",
+            "",
+            imUserInfo,
+            profile
+          );
+
+          //发送登陆成功事件
+          if (isReconnect) {
+            JSEvent.emit(
+              DataEvents.User.UserState_Relogin,
+              Constants.ReloginState.ReloginSuccessful
+            );
+          } else {
+            JSEvent.emit(DataEvents.User.UserState_IsLoggedin);
+          }
+
+        } catch (e) {
+          if (isReconnect) {
+            //重连失败
+            JSEvent.emit(
+              DataEvents.User.UserState_Relogin,
+              Constants.ReloginState.ReloginFailed
+            );
+          }
+          return { loginState: loginState, imServerState: e };
+        }
+        return { loginState: loginState, imServerState: ErrorCodes.Success };
+      } else {
+        if (isReconnect) {
+          //重连失败
+          JSEvent.emit(
+            DataEvents.User.UserState_Relogin,
+            Constants.ReloginState.ReloginFailed
+          );
+        }
+        return { loginState: loginState, imServerState: ErrorCodes.Timeout };
+      }
     } catch (e) {
+      console.log("firebase quick login got exception: ", e);
+      if (isReconnect) {
+        //重连失败
+        JSEvent.emit(
+          DataEvents.User.UserState_Relogin,
+          Constants.ReloginState.ReloginFailed
+        );
+      }
       throw e;
     }
   }
@@ -225,7 +306,7 @@ export default class LoginService {
   /**
    * 通过firebase的token登录
    * @param {string} userToken 
-   * @returns {Promise<{id:number, loginState:LoginState}>} id--用户id，loginState--当前登录状态，详见{@link Constants.LoginState}
+   * @returns {Promise<{id:number, loginState:LoginState, profile:UserProfile}>} id--用户id，loginState--当前登录状态，详见{@link Constants.LoginState}
    * @throws {{type:LoginExceptionType, code:number, msg:string}}}
    */
   async firebaseLogin(userToken) {
@@ -235,7 +316,7 @@ export default class LoginService {
       const data = response.data;
       if (data.code == 0) {
         const ret = data.retObject;
-        return { id: ret.accountId, loginState: ret.loginState }
+        return { id: ret.accountId, loginState: ret.loginState, profile: ret.profile }
       } else {
         throw {
           type: LoginExceptionType.AccountCenterError,
@@ -315,6 +396,8 @@ export default class LoginService {
   }
 
   /**
+   * @deprecated
+   * 旧的登录逻辑，废弃了
    * 使用用户名密码进行登录(旧的账号登陆)
    * @param {string} username 用户名
    * @param {string} password 密码
