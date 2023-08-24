@@ -38,6 +38,7 @@ import FriendAddScreen from "./src/Screens/FriendAddScreen";
 import GroupInfoScreen from "./src/Screens/GroupInfoScreen";
 import GroupCreateScreen from "./src/Screens/GroupCreateScreen";
 import GroupInviteScreen from "./src/Screens/GroupInviteScreen";
+import auth from "@react-native-firebase/auth";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -150,6 +151,20 @@ export default function App() {
 
   const [isLoading, setIsLoading] = useState(false);
   const navigationRef = useRef(null);
+
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
+
+  // Handle user state changes
+  function onAuthStateChanged(user) {
+    setUser(user);
+    if (initializing) setInitializing(false);
+  }
+
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
 
   function setLoading(state) {
     console.log("is loading? ", state);

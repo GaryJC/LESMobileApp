@@ -31,7 +31,7 @@ const Constants = {
     /**
      * 需要设置推荐人
      */
-    UpdateReferrer: 2
+    UpdateReferrer: 2,
   },
 
   ReloginState: {
@@ -61,7 +61,7 @@ const Constants = {
   LoginExceptionType: {
     AccountCenterError: "AccountCenterError",
     IMServerError: "IMServerError",
-    VerificationError: "VerificationError"
+    VerificationError: "VerificationError",
   },
 
   Notification: {
@@ -81,6 +81,12 @@ const Constants = {
   ChatListType: {
     Single: 0,
     Group: 1,
+  },
+
+  SigninButtonType: {
+    Twitter: 0,
+    Google: 1,
+    Email: 2,
   },
 };
 

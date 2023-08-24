@@ -6,6 +6,9 @@ import {
   ActivityIndicator,
   TouchableWithoutFeedback,
   Platform,
+  Modal,
+  Pressable,
+  Button,
 } from "react-native";
 import InputLayout from "../Components/InputLayout";
 import { useState } from "react";
@@ -17,12 +20,35 @@ import { LesPlatformCenter, LesConstants } from "les-im-components";
 import IMFunctions from "../utils/IMFunctions";
 import LoginService from "../services/LoginService";
 import Constants from "../modules/Constants";
+import SigninButton from "../Components/SigninButton";
+
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import auth from "@react-native-firebase/auth";
+
+GoogleSignin.configure({
+  webClientId:
+    "537080417457-k01qk24drifnbv425r7c6al4u2a8qp62.apps.googleusercontent.com",
+});
+
+async function onGoogleButtonPress() {
+  // Check if your device supports Google Play
+  await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+  // Get the users ID token
+  const { idToken } = await GoogleSignin.signIn();
+
+  // Create a Google credential with the token
+  const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+  // Sign-in the user with the credential
+  return auth().signInWithCredential(googleCredential);
+}
 
 export default function LoginScreen() {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
+  const [emailSigninModalVisible, setEmailSigninModalVisible] = useState(false);
 
   const navigation = useNavigation();
 
@@ -33,6 +59,14 @@ export default function LoginScreen() {
   function updatePasswordHandler(val) {
     setPassword(val);
   }
+
+  const closeEmailSigninModal = () => {
+    setEmailSigninModalVisible(false);
+  };
+
+  const openEmailSigninModal = () => {
+    setEmailSigninModalVisible(true);
+  };
 
   async function loginHandler() {
     setIsLoading(true);
@@ -126,7 +160,7 @@ export default function LoginScreen() {
 
   return (
     <View className="flex-1 justify-center w-[70vw] mx-auto">
-      {error && (
+      {/* {error && (
         <View>
           <Text className="text-red-500 text-center">{error}</Text>
         </View>
@@ -152,13 +186,71 @@ export default function LoginScreen() {
       />
       <View className="mt-[10px]">
         <Text className="text-white text-center">Not have an account yet?</Text>
-        {/* <AuthButton onPressHandler={navigateToSignup} title="Sign up" /> */}
         <TouchableWithoutFeedback onPress={navigateToSignup}>
           <Text className="text-[#A18EF8] text-center font-bold text-[15px] underline">
             Sign up
           </Text>
         </TouchableWithoutFeedback>
+      </View> */}
+      <View className="items-center">
+        <SigninButton
+          socialType={Constants.SigninButtonType.Email}
+          handler={openEmailSigninModal}
+        />
+        <SigninButton
+          socialType={Constants.SigninButtonType.Google}
+          handler={onGoogleButtonPress}
+        />
+        <SigninButton socialType={Constants.SigninButtonType.Twitter} />
       </View>
+      <Modal
+        animationType="fade"
+        visible={emailSigninModalVisible}
+        transparent={true}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.6)",
+          }}
+        >
+          <Pressable
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+            }}
+            onPress={closeEmailSigninModal}
+          />
+          <View className="bg-[#2A2C37] w-[65vw] p-[15px] rounded">
+            {<CheckEmailModal />}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
+
+const CheckEmailModal = () => (
+  <View>
+    <Text className="text-white text-[18px] font-bold">Sign in with email</Text>
+    <Text className="text-[16px] font-bold text-white">Email</Text>
+    <TextInput />
+    <View className="flex-row justify-end">
+      <TouchableHighlight>
+        <View className="bg-[#393B44] px-[10px] py-[5px] w-[70px] mr-[10px] rounded">
+          <Text className="text-[#547AD5] text-center">Cancel</Text>
+        </View>
+      </TouchableHighlight>
+      <TouchableHighlight>
+        <View className="bg-[#4C89F9] px-[10px] py-[5px] w-[70px] rounded">
+          <Text className="text-white text-center">Next</Text>
+        </View>
+      </TouchableHighlight>
+    </View>
+  </View>
+);

@@ -37,6 +37,7 @@ export default function InitialScreen() {
       console.log("firebase login result: ", result);
 
       //根据result.loginState决定显示哪个页面(注册、验证邮箱、设置referrer)
+
       switch (result.loginState) {
         case LoginState.Logout:
           //快速登录失败，跳到LoginScreen
@@ -49,16 +50,14 @@ export default function InitialScreen() {
         case LoginState.VerifyEmail:
           //跳转到验证邮箱界面
 
-
           break;
         case LoginState.UpdateReferrer:
           //跳转到更新推荐人界面
 
-
           break;
       }
 
-
+      // navigation.navigate("Login");
 
       //旧的逻辑，废弃
       //const quickLogin = await loginService.canQuickLogin();
