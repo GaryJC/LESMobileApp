@@ -122,7 +122,6 @@ const GroupCreateScreen = () => {
       // console.log("invitations: ", invitations);
       // const results = await Promise.all(invitations);
       await NotificationService.Inst.sendGroupInvitation(groupId, invitedIds);
-      console.log("all invitiatons sent successfully", results);
       navigation.navigate("Chats");
     } catch (e) {
       console.log("create group error: ", e);

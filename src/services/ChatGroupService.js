@@ -74,6 +74,7 @@ class ChatGroupService {
       this.#updateChatGroup(cg.id);
     } else {
       cg.latestTimelineId = Math.max(cg.latestTimelineId, msgData.timelineId);
+      DatabaseService.Inst.saveChatGroup(cg);
     }
   }
 
@@ -132,7 +133,7 @@ class ChatGroupService {
         cg.latestTimelineId = 0;
         this.#pushChatGroup(cg);
         this.#updateChatGroup(cg.id)
-          .then((cg) => {})
+          .then((cg) => { })
           .catch((err) =>
             console.error(`更新群[${cg.id}]失败，code：${err.toString(16)}`)
           );
@@ -259,6 +260,21 @@ class ChatGroupService {
    */
   getChatGroup(chatGroupId) {
     return this.#updateChatGroup(chatGroupId);
+  }
+  /**
+   * 从缓存中获取指定聊天群组的详情数据
+   * 如果数据不存在，则返回空，并向服务器请求数据，服务器返回后，触发DataEvents.ChatGroup.ChatGroup_Updated事件
+   * @param {number} chatGroupId
+   * @returns {ChatGroup}
+   */
+  getCachedChatGroup(chatGroupId) {
+    const cg = this.#chatGroups[chatGroupId];
+    if (cg != null && cg.name != null) {
+      return cg;
+    } else {
+      this.#updateChatGroup(chatGroupId);
+      return null;
+    }
   }
 
   /**

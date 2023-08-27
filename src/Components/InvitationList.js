@@ -27,9 +27,9 @@ export default function InvitationList({ item }) {
         <View className="flex-row items-center">
           <View className="h-[50px] w-[50px]">
             {type === LesConstants.IMNotificationType.FriendInvitation ? (
-              <Avatar tag={item.sender.tag} name={item.sender.name} />
+              <Avatar tag={item.sender.tag} name={item.sender.name} size={{ w: 25, h: 25, font: 10 }} />
             ) : (
-              <Avatar tag={item.id} name={item.groupInfo.name} />
+              <Avatar tag={item.id} name={item.groupInfo.name} size={{ w: 25, h: 25, font: 10 }} />
             )}
           </View>
           <Text className="text-white font-bold text-[13px] pl-[10px]">

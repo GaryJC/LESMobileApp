@@ -10,7 +10,7 @@ import { Notification, Notifications } from "../Models/Notifications";
 import { LesConstants } from "les-im-components";
 import ChatGroup from "../Models/ChatGroup";
 
-const db_version = "1.0";
+const db_version = "1.1";
 
 const ERROR_DB_ISNULL = "ERROR_DB_ISNULL";
 
@@ -294,7 +294,8 @@ export default class DatabaseService {
                     type integer not null,
                     newMessageCount integer not null,
                     updateTime integer not null,
-                    latestMessage nvarchar not null
+                    latestMessage nvarchar not null,
+                    latestTimelineId integer not null
                 );`
     );
   }
@@ -342,6 +343,13 @@ export default class DatabaseService {
     //     tx.executeSql(
     //         `update tbl_version set version = ? where id = 1`, [db_version], (_, r) => { console.log(r) }, (_, e) => { console.log(e) })
     // })
+    this.#currDb.transaction(tx => {
+      tx.executeSql("alter table tbl_chatlist add column latestTimelineId integer not null default 0", [], stat => {
+        console.log("================", stat)
+      }, err => {
+        console.log("xxxxxxxxxxxxxxxx", err)
+      });
+    })
   }
 
   /**
@@ -613,7 +621,7 @@ export default class DatabaseService {
       "select chatId from tbl_chatlist where chatId = ?",
       [chat.chatId],
       (_, r) => {
-        let sql = "insert into tbl_chatlist values(?,?,?,?,?,?)";
+        let sql = "insert into tbl_chatlist values(?,?,?,?,?,?,?)";
         let value = [
           chat.chatId,
           chat.targetId,
@@ -621,16 +629,18 @@ export default class DatabaseService {
           chat.newMessageCount,
           chat.updateTime,
           chat.latestMessage,
+          chat.latestTimelineId
         ];
         if (r.rows.length > 0) {
           sql =
-            "update tbl_chatlist set targetId = ?, type = ?, newMessageCount = ?, updateTime = ?, latestMessage = ? where chatId = ?";
+            "update tbl_chatlist set targetId = ?, type = ?, newMessageCount = ?, updateTime = ?, latestMessage = ?, latestTimelineId = ? where chatId = ?";
           value = [
             chat.targetId,
             chat.type,
             chat.newMessageCount,
             chat.updateTime,
             chat.latestMessage,
+            chat.latestTimelineId,
             chat.chatId,
           ];
         }
@@ -666,7 +676,8 @@ export default class DatabaseService {
                 item.type,
                 item.newMessageCount,
                 item.updateTime,
-                item.latestMessage
+                item.latestMessage,
+                item.latestTimelineId
               );
               ret.push(chatListItem);
             }

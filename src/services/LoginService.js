@@ -45,6 +45,17 @@ export default class LoginService {
     //   user?.getIdToken().then(token => { console.log("login token:", token) })
     // })
 
+    //await auth().signInWithEmailAndPassword("ttkuraki@live.com", "Tuom820403")
+
+    // const token = await auth().currentUser.getIdToken();
+
+    // console.log("token====", token)
+
+    // LoginService.Inst.firebaseRequestVerifyCode(52, token, "AZ2kzhJUSA", "497419")
+    //   .then(ret => {
+    //     console.log("===============", ret);
+    //   });
+
     await this.#loadLoginData();
     LesPlatformCenter.IMListeners.onWebsocketStateChanged = (state) => {
       if (state == WebsocketState.Disconnected) {
@@ -299,7 +310,7 @@ export default class LoginService {
           Constants.ReloginState.ReloginFailed
         );
       }
-      throw e;
+      return { loginState: LoginState.Logout, imServerState: ErrorCodes.Timeout };
     }
   }
 
@@ -332,7 +343,7 @@ export default class LoginService {
   /**
    * 用户请求发送邮箱验证码
    * @param {string} userToken 
-   * @return {string} 验证码token
+   * @return {Promise<string>} 验证码token
    */
   async firebaseRequestSendVaildCode(userToken) {
     try {

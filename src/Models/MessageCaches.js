@@ -2,6 +2,8 @@ import { LesConstants } from "les-im-components";
 import MessageData from "./MessageData";
 import DatabaseService from "../services/DatabaseService";
 import DataCenter from "../modules/DataCenter";
+import JSEvent from "../utils/JSEvent";
+import { UIEvents } from "../modules/Events";
 const { IMMessageType } = LesConstants;
 /**
  * 消息缓存
@@ -126,16 +128,33 @@ class MessageCaches {
         targetId = msgData.groupId;
       }
 
-      chatData = this.#chatDatMap[chatId] = new ChatData(
-        chatId,
-        msgData.messageType,
-        targetId
-      );
+      // chatData = this.#chatDatMap[chatId] = new ChatData(
+      //   chatId,
+      //   msgData.messageType,
+      //   targetId
+      // );
+
+      chatData = this.#makeChatData(chatId, targetId, msgData.messageType);
     }
     //同步建立dataSorted
     const dataSorted = this.#getChatListSorted(chatId);
     dataSorted.type = chatData.type;
     dataSorted.targetId = chatData.targetId;
+    return chatData;
+  }
+
+  /**
+   * @param {string} chatId 
+   * @param {number} targetId 
+   * @param {IMMessageType} messageType 
+   * @return {ChatData}
+   */
+  #makeChatData(chatId, targetId, messageType) {
+    const chatData = this.#chatDatMap[chatId] = new ChatData(
+      chatId,
+      messageType,
+      targetId
+    );
     return chatData;
   }
 
@@ -148,6 +167,7 @@ class MessageCaches {
   touchChatData(chatId) {
     const chatSort = this.#getChatListSorted(chatId);
     chatSort.clearNewMsgCount();
+    DatabaseService.Inst.saveChatListItem(chatSort);
     return chatSort;
   }
 
@@ -163,6 +183,7 @@ class MessageCaches {
       //收到新消息，自己发出的消息不增加新消息数量
       chatSort.gotNewMessage(
         msgData.content,
+        msgData.timelineId,
         msgData.senderId != this.#currUserId
       );
       this.#sortChatList();
@@ -181,6 +202,18 @@ class MessageCaches {
    */
   getChatList() {
     return [...this.#chatListSorted];
+  }
+
+  /**
+   * 返回当前新消息总数
+   * @returns {number}
+   */
+  getNewMessageCount() {
+    let count = 0;
+    this.#chatListSorted.forEach(item => {
+      count += item.newMessageCount;
+    });
+    return count;
   }
 
   /**
@@ -223,10 +256,16 @@ class MessageCaches {
   /**
    * 根据chatId查找对应的对话数据
    * @param {string} chatId
+   * @param {boolean} autoCreate 是否自动新建
    * @returns {ChatData}
    */
-  getChatDataByChatId(chatId) {
-    return this.#chatDatMap[chatId];
+  getChatDataByChatId(chatId, autoCreate = false) {
+    let chatData = this.#chatDatMap[chatId];
+    if (chatData == null && autoCreate && chatId != null && chatId != "") {
+      const chatListItem = this.getChatListItem(chatId);
+      chatData = this.#makeChatData(chatId, chatListItem.targetId, chatListItem.type)
+    }
+    return chatData;
   }
 
   /**
@@ -293,6 +332,12 @@ class ChatListItem {
    */
   latestMessage;
 
+  /**
+   * 当前对话最新的timelineId
+   * 收到的消息的timelineId如果大于这个id，则计数新消息
+   */
+  latestTimelineId;
+
   constructor(chatId) {
     this.#chatId = chatId;
     this.type =
@@ -328,23 +373,28 @@ class ChatListItem {
    * @param {number} updateTime
    * @param {string} latestMessage
    */
-  init(targetId, type, newMessageCount, updateTime, latestMessage) {
+  init(targetId, type, newMessageCount, updateTime, latestMessage, latestTimelineId) {
     this.targetId = targetId;
     this.type = type;
     this.#newMessageCount = newMessageCount;
     this.#updateTime = updateTime;
     this.latestMessage = latestMessage;
+    this.latestTimelineId = latestTimelineId;
   }
 
   /**
    * 收到了新消息
    * @param {string} content
+   * @param {number} timelineId 当前消息的timelineId
    * @param {boolean} incNewsCount 是否增加新消息数量，默认为true
    */
-  gotNewMessage(content, incNewsCount = true) {
+  gotNewMessage(content, timelineId, incNewsCount = true) {
     this.refresh();
     if (incNewsCount) {
-      this.incNewMsgCount();
+      if (timelineId > this.latestTimelineId) {
+        this.latestTimelineId = timelineId;
+        this.incNewMsgCount();
+      }
     }
     this.latestMessage = content;
   }
@@ -356,11 +406,13 @@ class ChatListItem {
   incNewMsgCount(count) {
     if (count == null) count = 1;
     this.#newMessageCount += count;
+    JSEvent.emit(UIEvents.Message.Message_New_Count_Changed, { chatId: this.#chatId, currCount: this.#newMessageCount })
     return this.#newMessageCount;
   }
 
   clearNewMsgCount() {
     this.#newMessageCount = 0;
+    JSEvent.emit(UIEvents.Message.Message_New_Count_Changed, { chatId: this.#chatId, currCount: this.#newMessageCount })
   }
 
   refresh() {
@@ -393,6 +445,13 @@ class ChatData {
   #messageList = [];
 
   #targetId;
+
+  /**
+   * @type {string}
+   */
+  get chatId() {
+    return this.#chatId;
+  }
 
   /**
    * 对话目标的Id
@@ -432,6 +491,15 @@ class ChatData {
   }
 
   /**
+   * 返回指定消息id在列表中的索引
+   * @param {string} messageId 消息id
+   */
+  indexOf(messageId) {
+    const idx = this.#messageList.findIndex(m => m.messageId == messageId);
+    return idx;
+  }
+
+  /**
    *
    * @param {number} startIndex 起始索引
    * @param {number} count 数量
@@ -464,9 +532,9 @@ class ChatData {
   #sortList() {
     this.#messageList.sort((m1, m2) => {
       if (m1.timelineId == m2.timelineId) {
-        return m1.timestamp - m2.timestamp;
+        return m2.timestamp - m1.timestamp;
       } else {
-        return m1.timelineId - m2.timelineId;
+        return m2.timelineId - m1.timelineId;
       }
     });
   }

@@ -125,14 +125,28 @@ export default class IMUserInfoService {
       if (miss.length > 0) {
         //需要从服务器获取
         LesPlatformCenter.IMFunctions.getUsersData(miss).then(us => {
-          const { id, name, tag, state, onlineState } = us;
-          const user = this.updateUser(id, name, tag, state, onlineState);
-          users.push(user);
+          us.forEach(u => {
+            const { id, name, tag, state, onlineState } = u;
+            const user = this.updateUser(id, name, tag, state, onlineState);
+            users.push(user);
+          })
         }).catch(err => reject(err));
       } else {
         resolve(users);
       }
     })
+  }
+  /**
+   * 获取缓存中的用户数据，如果缓存中不存在，则会向服务器申请，更新后触发DataEvents.User.UserState_Changed事件
+   * @param {number|number[]} userId 
+   * @returns { IMUserInfo[] } 返回值一定是一个数组，如果没找到则返回空数组
+   */
+  getCachedUser(userId) {
+    const { users, miss } = this.#getUserFromCache(userId);
+    if (miss.length > 0) {
+      this.getUser(miss);
+    }
+    return users;
   }
 
   #getUserFromCache(userId) {
@@ -156,7 +170,7 @@ export default class IMUserInfoService {
     } else {
       pushUser(userId);
     }
-    
+
     return { users: ret, miss: miss }
   }
 }
