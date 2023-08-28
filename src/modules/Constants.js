@@ -49,6 +49,13 @@ const Constants = {
     ReloginFailed: 3,
   },
 
+  EmailState: {
+    Registered: "password",
+    UnRegistered: undefined,
+    RegisteredWithGoogle: "google.com",
+    Unchecked: "Unchecked",
+  },
+
   /**
    * 所有存入Secure Store的key
    */

@@ -6,8 +6,8 @@ import JSEvent from "../utils/JSEvent";
 import { DataEvents, UIEvents } from "../modules/Events";
 import { loginRequest, Firebase } from "../utils/auth";
 import { AppState, AppStateStatus } from "react-native";
-import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth"
-import UserProfile from "../Models/UserProfile"
+import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import UserProfile from "../Models/UserProfile";
 
 const LoginChannel = "Firebase";
 
@@ -228,7 +228,10 @@ export default class LoginService {
    */
   async firebaseQuickLogin(isReconnect = false) {
     if (auth().currentUser == null) {
-      return { loginState: LoginState.Logout, imServerState: ErrorCodes.Timeout };
+      return {
+        loginState: LoginState.Logout,
+        imServerState: ErrorCodes.Timeout,
+      };
     }
     const token = await auth().currentUser.getIdToken();
     try {
@@ -279,7 +282,6 @@ export default class LoginService {
           } else {
             JSEvent.emit(DataEvents.User.UserState_IsLoggedin);
           }
-
         } catch (e) {
           if (isReconnect) {
             //重连失败
@@ -290,7 +292,12 @@ export default class LoginService {
           }
           return { loginState: loginState, imServerState: e };
         }
-        return { loginState: loginState, imServerState: ErrorCodes.Success };
+        return {
+          loginState: loginState,
+          imServerState: ErrorCodes.Success,
+          // imServerState: result.state,
+          id: id,
+        };
       } else {
         if (isReconnect) {
           //重连失败
@@ -299,7 +306,11 @@ export default class LoginService {
             Constants.ReloginState.ReloginFailed
           );
         }
-        return { loginState: loginState, imServerState: ErrorCodes.Timeout };
+        return {
+          loginState: loginState,
+          imServerState: ErrorCodes.Timeout,
+          id: id,
+        };
       }
     } catch (e) {
       console.log("firebase quick login got exception: ", e);
@@ -310,13 +321,16 @@ export default class LoginService {
           Constants.ReloginState.ReloginFailed
         );
       }
-      return { loginState: LoginState.Logout, imServerState: ErrorCodes.Timeout };
+      return {
+        loginState: LoginState.Logout,
+        imServerState: ErrorCodes.Timeout,
+      };
     }
   }
 
   /**
    * 通过firebase的token登录
-   * @param {string} userToken 
+   * @param {string} userToken
    * @returns {Promise<{id:number, loginState:LoginState, profile:UserProfile}>} id--用户id，loginState--当前登录状态，详见{@link Constants.LoginState}
    * @throws {{type:LoginExceptionType, code:number, msg:string}}}
    */
@@ -327,7 +341,11 @@ export default class LoginService {
       const data = response.data;
       if (data.code == 0) {
         const ret = data.retObject;
-        return { id: ret.accountId, loginState: ret.loginState, profile: ret.profile }
+        return {
+          id: ret.accountId,
+          loginState: ret.loginState,
+          profile: ret.profile,
+        };
       } else {
         throw {
           type: LoginExceptionType.AccountCenterError,
@@ -342,7 +360,7 @@ export default class LoginService {
 
   /**
    * 用户请求发送邮箱验证码
-   * @param {string} userToken 
+   * @param {string} userToken
    * @return {Promise<string>} 验证码token
    */
   async firebaseRequestSendVaildCode(userToken) {
@@ -364,7 +382,7 @@ export default class LoginService {
   }
 
   /**
-   * 
+   *
    * @param {number} accountId 用户id
    * @param {string} userToken firebase用户token
    * @param {string} codeToken 验证码token
@@ -384,9 +402,7 @@ export default class LoginService {
           msg: data.msg,
         };
       }
-    } catch (e) {
-
-    }
+    } catch (e) {}
     return false;
   }
 
@@ -400,9 +416,7 @@ export default class LoginService {
       const response = await Firebase.updateReferrer(userToken, referralCode);
       const data = response.data;
       return data.code;
-    } catch (e) {
-
-    }
+    } catch (e) {}
     return -1;
   }
 

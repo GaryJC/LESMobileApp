@@ -5,7 +5,7 @@ import * as SecureStore from "expo-secure-store";
 const CHANNEL_FIREBASE = "Firebase";
 const CHANNEL_DEFAULT = "Default";
 
-const serviceId = device => `les-im-${device}`;
+const serviceId = (device) => `les-im-${device}`;
 
 export const sendVerifyCodeRequest = async (email, password, referCode) => {
   return await axios.post(API.registerRequest(), {
@@ -75,15 +75,15 @@ export async function retrieveData(key) {
 
 export const Firebase = {
   /**
-   * 
-   * @param {userToken} token 
-   * @param {deviceId} device 
-   * @returns 
+   *
+   * @param {userToken} token
+   * @param {deviceId} device
+   * @returns
    */
   loginRequest: async (token, device) => {
     return await axios.post(API.loginRequestV2(), {
       username: token,
-      password: '',
+      password: "",
       channel: CHANNEL_FIREBASE,
       serviceId: serviceId(device),
     });
@@ -91,35 +91,34 @@ export const Firebase = {
 
   /**
    * 请求发送验证码邮件
-   * @param {string} token 
-   * @returns 
+   * @param {string} token
+   * @returns
    */
   sendVerifyCodeRequest: async (token) => {
-    return await axios.post(API.sendCodeRequest(), {
+    return await axios.postForm(API.sendCodeRequest(), {
       firebaseToken: token,
     });
   },
 
   /**
-   * 
-   * @param {string} firebaseToken 
-   * @param {string} verifyCodeToken 
-   * @param {string} code 
-   * @returns 
+   *
+   * @param {string} firebaseToken
+   * @param {string} verifyCodeToken
+   * @param {string} code
+   * @returns
    */
   verifyCode: async (firebaseToken, verifyCodeToken, code) => {
     return await axios.post(API.verifyCodeByToken(), {
       username: firebaseToken,
       token: verifyCodeToken,
-      code: code
+      code: code,
     });
   },
 
   updateReferrer: async (firebaseToken, referralCode) => {
-    return await axios.post(API.updateReferrer(), {
+    return await axios.postForm(API.updateReferrer(), {
       firebaseToken: firebaseToken,
-      referralCode: referralCode
+      referralCode: referralCode,
     });
-  }
-
-}
+  },
+};

@@ -20,6 +20,7 @@ import { Ionicons } from "@expo/vector-icons";
 import JSEvent from "../utils/JSEvent";
 import { DataEvents, UIEvents } from "../modules/Events";
 import Avatar from "../Components/Avatar";
+import { firebase } from "@react-native-firebase/auth";
 
 const userOptions = [
   { id: 1, title: "Account", link: "" },
@@ -122,6 +123,7 @@ export default function UserScreen() {
   );
 
   const onLogoutHandler = async () => {
+    await firebase.auth().signOut();
     try {
       await deleteAuthCache();
       // (DataCenter.userInfo = {

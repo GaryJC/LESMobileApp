@@ -9,6 +9,8 @@ import {
   Modal,
   Pressable,
   Button,
+  Image,
+  ImageBackground,
 } from "react-native";
 import InputLayout from "../Components/InputLayout";
 import { useState } from "react";
@@ -21,27 +23,15 @@ import IMFunctions from "../utils/IMFunctions";
 import LoginService from "../services/LoginService";
 import Constants from "../modules/Constants";
 import SigninButton from "../Components/SigninButton";
-
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import auth from "@react-native-firebase/auth";
+import auth, { firebase } from "@react-native-firebase/auth";
+import { ValidateEmailModal } from "../Components/ValidateEmailModal";
+import LoadingIndicator from "../Components/LoadingIndicator";
 
 GoogleSignin.configure({
   webClientId:
     "537080417457-k01qk24drifnbv425r7c6al4u2a8qp62.apps.googleusercontent.com",
 });
-
-async function onGoogleButtonPress() {
-  // Check if your device supports Google Play
-  await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-  // Get the users ID token
-  const { idToken } = await GoogleSignin.signIn();
-
-  // Create a Google credential with the token
-  const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-
-  // Sign-in the user with the credential
-  return auth().signInWithCredential(googleCredential);
-}
 
 export default function LoginScreen() {
   const [email, setEmail] = useState();
@@ -61,6 +51,7 @@ export default function LoginScreen() {
   }
 
   const closeEmailSigninModal = () => {
+    console.log("sasasa");
     setEmailSigninModalVisible(false);
   };
 
@@ -158,6 +149,25 @@ export default function LoginScreen() {
     navigation.navigate("Signup");
   }
 
+  async function onGoogleButtonPress() {
+    setIsLoading(true);
+    // Check if your device supports Google Play
+    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+    // Get the users ID token
+    const { idToken } = await GoogleSignin.signIn();
+
+    // Create a Google credential with the token
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+    // Sign-in the user with the credential
+
+    await auth().signInWithCredential(googleCredential);
+    const { loginState, id, imServerState } =
+      await LoginService.Inst.firebaseQuickLogin();
+    navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+    // console.log("google result; ", result);
+    setIsLoading(false);
+  }
+
   return (
     <View className="flex-1 justify-center w-[70vw] mx-auto">
       {/* {error && (
@@ -192,6 +202,13 @@ export default function LoginScreen() {
           </Text>
         </TouchableWithoutFeedback>
       </View> */}
+      {/* <View className="w-[60vw]"> */}
+      <Image
+        source={require("../../assets/img/logo_les.png")}
+        className="mx-[auto] w-[200px] h-[200px] mb-[30px]"
+      />
+      {/* </View> */}
+
       <View className="items-center">
         <SigninButton
           socialType={Constants.SigninButtonType.Email}
@@ -203,54 +220,11 @@ export default function LoginScreen() {
         />
         <SigninButton socialType={Constants.SigninButtonType.Twitter} />
       </View>
-      <Modal
-        animationType="fade"
-        visible={emailSigninModalVisible}
-        transparent={true}
-      >
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "rgba(0,0,0,0.6)",
-          }}
-        >
-          <Pressable
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-            }}
-            onPress={closeEmailSigninModal}
-          />
-          <View className="bg-[#2A2C37] w-[65vw] p-[15px] rounded">
-            {<CheckEmailModal />}
-          </View>
-        </View>
-      </Modal>
+      <ValidateEmailModal
+        emailSigninModalVisible={emailSigninModalVisible}
+        closeEmailSigninModal={closeEmailSigninModal}
+      />
+      <LoadingIndicator isLoading={isLoading} />
     </View>
   );
 }
-
-const CheckEmailModal = () => (
-  <View>
-    <Text className="text-white text-[18px] font-bold">Sign in with email</Text>
-    <Text className="text-[16px] font-bold text-white">Email</Text>
-    <TextInput />
-    <View className="flex-row justify-end">
-      <TouchableHighlight>
-        <View className="bg-[#393B44] px-[10px] py-[5px] w-[70px] mr-[10px] rounded">
-          <Text className="text-[#547AD5] text-center">Cancel</Text>
-        </View>
-      </TouchableHighlight>
-      <TouchableHighlight>
-        <View className="bg-[#4C89F9] px-[10px] py-[5px] w-[70px] rounded">
-          <Text className="text-white text-center">Next</Text>
-        </View>
-      </TouchableHighlight>
-    </View>
-  </View>
-);

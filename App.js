@@ -28,7 +28,13 @@ import {
   BottomSheetModalProvider,
 } from "@gorhom/bottom-sheet";
 import JSEvent from "./src/utils/JSEvent";
-import { View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  TouchableOpacity,
+  Button,
+} from "react-native";
 import { UIEvents, DataEvents } from "./src/modules/Events";
 import Constants from "./src/modules/Constants";
 import DatabaseService from "./src/services/DatabaseService";
@@ -38,8 +44,9 @@ import FriendAddScreen from "./src/Screens/FriendAddScreen";
 import GroupInfoScreen from "./src/Screens/GroupInfoScreen";
 import GroupCreateScreen from "./src/Screens/GroupCreateScreen";
 import GroupInviteScreen from "./src/Screens/GroupInviteScreen";
-import ChatScreenV2 from "./src/Screens/ChatScreenV2";
-import auth from "@react-native-firebase/auth";
+import auth, { firebase } from "@react-native-firebase/auth";
+import { VerifyEmailScreen } from "./src/Screens/VerifyEmailScreen";
+import { useNavigation } from "@react-navigation/native";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -385,6 +392,26 @@ export default function App() {
               component={LoginScreen}
               options={{
                 headerBackVisible: false,
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="VerifyEmail"
+              component={VerifyEmailScreen}
+              options={{
+                headerTitle: "Verify Email",
+                headerLeft: () => {
+                  const navigation = useNavigation();
+                  return (
+                    <Button
+                      title="Sign in"
+                      onPress={() => {
+                        navigation.navigate("Login");
+                        firebase.auth().signOut();
+                      }}
+                    />
+                  );
+                },
               }}
             />
             <Stack.Screen name="CreateName" component={CreateNameScreen} />
