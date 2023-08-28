@@ -10,12 +10,16 @@ import {
   AppState,
   AppStateStatus,
   NativeEventSubscription,
+  Platform,
 } from "react-native";
 import JSEvent from "../utils/JSEvent";
 import { DataEvents, UIEvents } from "../modules/Events";
 import Constants from "../modules/Constants";
 import NotificationService from "./NotificationService";
 import ChatGroupService from "./ChatGroupService";
+import { PermissionsAndroid } from "react-native";
+import messaging from "@react-native-firebase/messaging";
+import DataCenter from "../modules/DataCenter";
 
 const { ReloginState } = Constants;
 
@@ -70,6 +74,28 @@ export default class ServiceCenter {
    * 服务的init方法可以使同步方法，也可以是异步方法
    */
   async loadAllServices() {
+
+    let enabled = false;
+
+    if (Platform.OS == 'android') {
+      const permiStatus = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+      enabled = permiStatus != 'denied';
+    } else if (Platform.OS == 'ios') {
+      const authStatus = await messaging().requestPermission();
+      enabled = authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    }
+
+    if (!enabled) {
+      console.log("Permission Notification Request Failed: User Denied")
+    }
+
+    try {
+      const fcmToken = await messaging().getToken();
+      DataCenter.userInfo.fcmToken = fcmToken;
+    } catch (e) {
+      console.log("Get Fcm Token error:", e);
+    }
     this.#appStateSubscribtion = AppState.addEventListener("change", (state) =>
       this.#handleAppStateChanged(state)
     );

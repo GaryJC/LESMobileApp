@@ -117,7 +117,7 @@ const BottomTabNavigation = () => {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home-outline" color={color} size={size} />
           ),
-          title: "Light Esports",
+          title: "NexGami",
           headerShown: true,
         }}
       />

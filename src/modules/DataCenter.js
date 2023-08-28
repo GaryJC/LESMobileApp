@@ -45,6 +45,7 @@ const DataCenter = {
     email: "",
     loginKey: "",
 
+    fcmToken:"",
     /**
      * 用户账户信息
      * @type {UserProfile}

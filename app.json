@@ -1,8 +1,8 @@
 {
   "expo": {
     "jsEngine": "hermes",
-    "name": "LESMobileApp",
-    "slug": "LESMobileApp",
+    "name": "NexGami",
+    "slug": "NexGami",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -28,5 +28,5 @@
     },
     "sdkVersion": "48.0.0"
   },
-  "name": "lesmobileapp"
+  "name": "NexGami"
 }
