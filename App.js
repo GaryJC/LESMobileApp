@@ -47,6 +47,7 @@ import GroupInviteScreen from "./src/Screens/GroupInviteScreen";
 import auth, { firebase } from "@react-native-firebase/auth";
 import { VerifyEmailScreen } from "./src/Screens/VerifyEmailScreen";
 import { useNavigation } from "@react-navigation/native";
+import ChatScreenV2 from "./src/Screens/ChatScreenV2";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();

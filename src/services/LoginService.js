@@ -245,23 +245,24 @@ export default class LoginService {
 
       const result = await this.firebaseLogin(token);
       const { id, loginState, profile } = result;
+      let imResult;
 
       if (loginState == LoginState.Normal) {
         //登陆成功，连接im服务器
         try {
-          const result = await LesPlatformCenter.Inst.connect(
+          imResult = await LesPlatformCenter.Inst.connect(
             Constants.Address.IMServer,
             id,
             token,
             device,
             LoginChannel
           );
-
+          console.log("imresult: ", imResult);
           //登陆成功
           const imUserInfo = {
-            name: result.name,
-            tag: result.tag,
-            state: result.state,
+            name: imResult.name,
+            tag: imResult.tag,
+            state: imResult.state,
           };
 
           //保存当前用户数据
@@ -294,8 +295,8 @@ export default class LoginService {
         }
         return {
           loginState: loginState,
-          imServerState: ErrorCodes.Success,
-          // imServerState: result.state,
+          // imServerState: ErrorCodes.Success,
+          imServerState: imResult.state,
           id: id,
         };
       } else {

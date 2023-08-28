@@ -51,7 +51,7 @@ export default function LoginScreen() {
   }
 
   const closeEmailSigninModal = () => {
-    console.log("sasasa");
+    // console.log("sasasa");
     setEmailSigninModalVisible(false);
   };
 
