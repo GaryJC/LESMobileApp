@@ -63,11 +63,7 @@ export default function VerifyCodeModal({
         onPress={() => setModalVisible(false)}
       >
         <View className="w-[80%] h-[200px] p-[20px] bg-white justify-center rounded-lg">
-          {error && (
-            <View>
-              <Text className="text-red-500 text-center">{error}</Text>
-            </View>
-          )}
+          {error && <Text className="text-red-500 text-center">{error}</Text>}
           <Text className="text-center">
             A verification code has been sent to email address.
           </Text>

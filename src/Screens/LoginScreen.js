@@ -6,6 +6,11 @@ import {
   ActivityIndicator,
   TouchableWithoutFeedback,
   Platform,
+  Modal,
+  Pressable,
+  Button,
+  Image,
+  ImageBackground,
 } from "react-native";
 import InputLayout from "../Components/InputLayout";
 import { useState } from "react";
@@ -17,12 +22,23 @@ import { LesPlatformCenter, LesConstants } from "les-im-components";
 import IMFunctions from "../utils/IMFunctions";
 import LoginService from "../services/LoginService";
 import Constants from "../modules/Constants";
+import SigninButton from "../Components/SigninButton";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import auth, { firebase } from "@react-native-firebase/auth";
+import { ValidateEmailModal } from "../Components/ValidateEmailModal";
+import LoadingIndicator from "../Components/LoadingIndicator";
+
+GoogleSignin.configure({
+  webClientId:
+    "537080417457-k01qk24drifnbv425r7c6al4u2a8qp62.apps.googleusercontent.com",
+});
 
 export default function LoginScreen() {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
+  const [emailSigninModalVisible, setEmailSigninModalVisible] = useState(false);
 
   const navigation = useNavigation();
 
@@ -33,6 +49,15 @@ export default function LoginScreen() {
   function updatePasswordHandler(val) {
     setPassword(val);
   }
+
+  const closeEmailSigninModal = () => {
+    // console.log("sasasa");
+    setEmailSigninModalVisible(false);
+  };
+
+  const openEmailSigninModal = () => {
+    setEmailSigninModalVisible(true);
+  };
 
   async function loginHandler() {
     setIsLoading(true);
@@ -124,9 +149,28 @@ export default function LoginScreen() {
     navigation.navigate("Signup");
   }
 
+  async function onGoogleButtonPress() {
+    setIsLoading(true);
+    // Check if your device supports Google Play
+    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+    // Get the users ID token
+    const { idToken } = await GoogleSignin.signIn();
+
+    // Create a Google credential with the token
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+    // Sign-in the user with the credential
+
+    await auth().signInWithCredential(googleCredential);
+    const { loginState, id, imServerState } =
+      await LoginService.Inst.firebaseQuickLogin();
+    navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+    // console.log("google result; ", result);
+    setIsLoading(false);
+  }
+
   return (
     <View className="flex-1 justify-center w-[70vw] mx-auto">
-      {error && (
+      {/* {error && (
         <View>
           <Text className="text-red-500 text-center">{error}</Text>
         </View>
@@ -152,13 +196,35 @@ export default function LoginScreen() {
       />
       <View className="mt-[10px]">
         <Text className="text-white text-center">Not have an account yet?</Text>
-        {/* <AuthButton onPressHandler={navigateToSignup} title="Sign up" /> */}
         <TouchableWithoutFeedback onPress={navigateToSignup}>
           <Text className="text-[#A18EF8] text-center font-bold text-[15px] underline">
             Sign up
           </Text>
         </TouchableWithoutFeedback>
+      </View> */}
+      {/* <View className="w-[60vw]"> */}
+      <Image
+        source={require("../../assets/img/logo_les.png")}
+        className="mx-[auto] w-[200px] h-[200px] mb-[30px]"
+      />
+      {/* </View> */}
+
+      <View className="items-center">
+        <SigninButton
+          socialType={Constants.SigninButtonType.Email}
+          handler={openEmailSigninModal}
+        />
+        <SigninButton
+          socialType={Constants.SigninButtonType.Google}
+          handler={onGoogleButtonPress}
+        />
+        <SigninButton socialType={Constants.SigninButtonType.Twitter} />
       </View>
+      <ValidateEmailModal
+        emailSigninModalVisible={emailSigninModalVisible}
+        closeEmailSigninModal={closeEmailSigninModal}
+      />
+      <LoadingIndicator isLoading={isLoading} />
     </View>
   );
 }

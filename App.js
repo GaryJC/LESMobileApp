@@ -28,7 +28,13 @@ import {
   BottomSheetModalProvider,
 } from "@gorhom/bottom-sheet";
 import JSEvent from "./src/utils/JSEvent";
-import { View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  TouchableOpacity,
+  Button,
+} from "react-native";
 import { UIEvents, DataEvents } from "./src/modules/Events";
 import Constants from "./src/modules/Constants";
 import DatabaseService from "./src/services/DatabaseService";
@@ -38,6 +44,9 @@ import FriendAddScreen from "./src/Screens/FriendAddScreen";
 import GroupInfoScreen from "./src/Screens/GroupInfoScreen";
 import GroupCreateScreen from "./src/Screens/GroupCreateScreen";
 import GroupInviteScreen from "./src/Screens/GroupInviteScreen";
+import auth, { firebase } from "@react-native-firebase/auth";
+import { VerifyEmailScreen } from "./src/Screens/VerifyEmailScreen";
+import { useNavigation } from "@react-navigation/native";
 import ChatScreenV2 from "./src/Screens/ChatScreenV2";
 
 const BottomTab = createBottomTabNavigator();
@@ -65,20 +74,29 @@ const BottomTabNavigation = () => {
       countStr = count > 99 ? "99+" : count;
     }
     setNewMsgCount(countStr);
-  }
+  };
 
   const onNewMessageCountChanged = () => {
     updateMsgCountStr();
-  }
+  };
 
   useEffect(() => {
-    JSEvent.on(DataEvents.User.UserState_DataReady, onNewMessageCountChanged)
-    JSEvent.on(UIEvents.Message.Message_New_Count_Changed, onNewMessageCountChanged)
+    JSEvent.on(DataEvents.User.UserState_DataReady, onNewMessageCountChanged);
+    JSEvent.on(
+      UIEvents.Message.Message_New_Count_Changed,
+      onNewMessageCountChanged
+    );
     return () => {
-      JSEvent.remove(DataEvents.User.UserState_DataReady, onNewMessageCountChanged)
-      JSEvent.remove(UIEvents.Message.Message_New_Count_Changed, onNewMessageCountChanged)
-    }
-  }, [])
+      JSEvent.remove(
+        DataEvents.User.UserState_DataReady,
+        onNewMessageCountChanged
+      );
+      JSEvent.remove(
+        UIEvents.Message.Message_New_Count_Changed,
+        onNewMessageCountChanged
+      );
+    };
+  }, []);
 
   return (
     <BottomTab.Navigator
@@ -137,7 +155,7 @@ const BottomTabNavigation = () => {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="chatbubbles-outline" color={color} size={size} />
           ),
-          tabBarBadge: newMsgCountStr
+          tabBarBadge: newMsgCountStr,
         }}
       />
       <BottomTab.Screen
@@ -156,8 +174,14 @@ const BottomTabNavigation = () => {
               >
                 <MaterialIcons name="search" size={30} color="white" />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => navigation.navigate("FriendAdd")}>
-                <MaterialIcons name="person-add-alt-1" size={28} color="white" />
+              <TouchableOpacity
+                onPress={() => navigation.navigate("FriendAdd")}
+              >
+                <MaterialIcons
+                  name="person-add-alt-1"
+                  size={28}
+                  color="white"
+                />
               </TouchableOpacity>
             </View>
           ),
@@ -168,7 +192,11 @@ const BottomTabNavigation = () => {
         component={GamesScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="game-controller-outline" color={color} size={size} />
+            <Ionicons
+              name="game-controller-outline"
+              color={color}
+              size={size}
+            />
           ),
           headerShown: true,
         }}
@@ -183,7 +211,7 @@ const BottomTabNavigation = () => {
         }}
       />
     </BottomTab.Navigator>
-  )
+  );
 };
 
 export default function App() {
@@ -192,6 +220,20 @@ export default function App() {
 
   const [isLoading, setIsLoading] = useState(false);
   const navigationRef = useRef(null);
+
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
+
+  // Handle user state changes
+  function onAuthStateChanged(user) {
+    setUser(user);
+    if (initializing) setInitializing(false);
+  }
+
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
 
   function setLoading(state) {
     console.log("is loading? ", state);
@@ -351,6 +393,26 @@ export default function App() {
               component={LoginScreen}
               options={{
                 headerBackVisible: false,
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="VerifyEmail"
+              component={VerifyEmailScreen}
+              options={{
+                headerTitle: "Verify Email",
+                headerLeft: () => {
+                  const navigation = useNavigation();
+                  return (
+                    <Button
+                      title="Sign in"
+                      onPress={() => {
+                        navigation.navigate("Login");
+                        firebase.auth().signOut();
+                      }}
+                    />
+                  );
+                },
               }}
             />
             <Stack.Screen name="CreateName" component={CreateNameScreen} />
@@ -379,7 +441,7 @@ export default function App() {
             <Stack.Screen
               name="GroupInvite"
               component={GroupInviteScreen}
-            // options={{ headerTitle: "Group Information" }}
+              // options={{ headerTitle: "Group Information" }}
             />
           </Stack.Navigator>
         </NavigationContainer>

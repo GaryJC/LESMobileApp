@@ -122,11 +122,18 @@ class DataSavingService {
    * @param {{name:string, tag:number, email:string, state:IMUserState,userProfile:UserProfile}} imUserInfo
    */
   saveLoginDataToDataCenter(id, key, email, imUserInfo, userProfile) {
+    console.log("oooo22: ", id, key, email, imUserInfo, userProfile);
     DataCenter.userInfo.accountId = id;
     DataCenter.userInfo.loginKey = key;
     DataCenter.userInfo.email = email;
 
-    const userInfo = new IMUserInfo(id, imUserInfo.name, imUserInfo.tag, imUserInfo.state, LesConstants.IMUserOnlineState.Online);
+    const userInfo = new IMUserInfo(
+      id,
+      imUserInfo.name,
+      imUserInfo.tag,
+      imUserInfo.state,
+      LesConstants.IMUserOnlineState.Online
+    );
 
     DataCenter.userInfo.imUserInfo = userInfo;
     DataCenter.userInfo.userProfile = userProfile;

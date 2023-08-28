@@ -14,19 +14,22 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.lightesport.im.mobile"
+      "package": "com.lightesport.im.mobile",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "sdkVersion": "48.0.0"
+    "sdkVersion": "48.0.0",
+    "plugins": ["@react-native-google-signin/google-signin"]
   },
   "name": "NexGami"
 }

@@ -31,7 +31,7 @@ const Constants = {
     /**
      * 需要设置推荐人
      */
-    UpdateReferrer: 2
+    UpdateReferrer: 2,
   },
 
   ReloginState: {
@@ -49,6 +49,13 @@ const Constants = {
     ReloginFailed: 3,
   },
 
+  EmailState: {
+    Registered: "password",
+    UnRegistered: undefined,
+    RegisteredWithGoogle: "google.com",
+    Unchecked: "Unchecked",
+  },
+
   /**
    * 所有存入Secure Store的key
    */
@@ -61,7 +68,7 @@ const Constants = {
   LoginExceptionType: {
     AccountCenterError: "AccountCenterError",
     IMServerError: "IMServerError",
-    VerificationError: "VerificationError"
+    VerificationError: "VerificationError",
   },
 
   Notification: {
@@ -81,6 +88,12 @@ const Constants = {
   ChatListType: {
     Single: 0,
     Group: 1,
+  },
+
+  SigninButtonType: {
+    Twitter: 0,
+    Google: 1,
+    Email: 2,
   },
 };
 
