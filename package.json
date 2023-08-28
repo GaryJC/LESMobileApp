@@ -12,11 +12,8 @@
     "@gorhom/bottom-sheet": "^4.4.6",
     "@react-native-firebase/app": "^18.3.0",
     "@react-native-firebase/auth": "^18.3.0",
-<<<<<<< HEAD
     "@react-native-firebase/messaging": "^18.3.0",
-=======
     "@react-native-google-signin/google-signin": "^10.0.1",
->>>>>>> e768c83db382f264ed563062bc1909ae37f87267
     "@react-navigation/bottom-tabs": "^6.5.7",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/native-stack": "^6.9.12",
