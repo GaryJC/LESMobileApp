@@ -122,6 +122,7 @@ const messageReducer = (state, action) => {
 };
 
 const ChatScreen = () => {
+  console.log("===============render chat screen===================")
   // 输入框输入的消息
   // const [newMessage, setNewMessage] = useState("");
   // 当前chatid

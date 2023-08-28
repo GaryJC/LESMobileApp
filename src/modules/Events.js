@@ -196,6 +196,13 @@ export const UIEvents = {
      * @type {{chatId: string, targetId: number, data: MessageData[]}}
      */
     Message_Search_Updated: "UI_EVENT_Message_Search_Updated",
+
+    /**
+     * 新消息数量变化通知事件
+     * 
+     * @type {{chatId:string, currCount:number}}
+     */
+    Message_New_Count_Changed: "UI_EVENT_Message_New_Count_Changed",
   },
 
   ChatGroup: {

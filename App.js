@@ -38,6 +38,7 @@ import FriendAddScreen from "./src/Screens/FriendAddScreen";
 import GroupInfoScreen from "./src/Screens/GroupInfoScreen";
 import GroupCreateScreen from "./src/Screens/GroupCreateScreen";
 import GroupInviteScreen from "./src/Screens/GroupInviteScreen";
+import ChatScreenV2 from "./src/Screens/ChatScreenV2";
 import auth from "@react-native-firebase/auth";
 
 const BottomTab = createBottomTabNavigator();
@@ -55,95 +56,155 @@ const onAppDestroyed = async () => {
   ServiceCenter.Inst.onAppDestroyed();
 };
 
-const BottomTabNavigation = () => (
-  <BottomTab.Navigator
-    sceneContainerStyle={{ backgroundColor: "#080F14" }}
-    screenOptions={{
-      tabBarStyle: {
-        backgroundColor: "#131F2A",
-        height: bottomTabHeight,
-      },
-      tabBarShowLabel: false,
-      headerStyle: {
-        backgroundColor: "#080F14",
-      },
-      headerTitleStyle: {
-        marginLeft: 5,
-        color: "#ffffff",
-        fontSize: 30,
-        fontWeight: "bold",
-      },
-      headerTitleAlign: "left",
-      headerShadowVisible: false,
-      headerShown: false,
-      tabBarHideOnKeyboard: true,
-    }}
-    initialRouteName="Home"
-  >
-    <BottomTab.Screen
-      name="Home"
-      component={HomeScreen}
-      options={{
-        tabBarIcon: ({ color, size }) => (
-          <Ionicons name="home-outline" color={color} size={size} />
-        ),
-        title: "Light Esports",
-        headerShown: true,
+const BottomTabNavigation = () => {
+  const [newMsgCountStr, setNewMsgCount] = useState(null);
+
+  const updateMsgCountStr = () => {
+    const count = DataCenter.messageCache.getNewMessageCount();
+    let countStr = null;
+    if (count > 0) {
+      countStr = count > 99 ? "99+" : count;
+    }
+    setNewMsgCount(countStr);
+  };
+
+  const onNewMessageCountChanged = () => {
+    updateMsgCountStr();
+  };
+
+  useEffect(() => {
+    JSEvent.on(DataEvents.User.UserState_DataReady, onNewMessageCountChanged);
+    JSEvent.on(
+      UIEvents.Message.Message_New_Count_Changed,
+      onNewMessageCountChanged
+    );
+    return () => {
+      JSEvent.remove(
+        DataEvents.User.UserState_DataReady,
+        onNewMessageCountChanged
+      );
+      JSEvent.remove(
+        UIEvents.Message.Message_New_Count_Changed,
+        onNewMessageCountChanged
+      );
+    };
+  }, []);
+
+  return (
+    <BottomTab.Navigator
+      // screenListeners={{
+      //   focus: e => {
+      //     console.log("----", e);
+      //   }
+      // }}
+      sceneContainerStyle={{ backgroundColor: "#080F14" }}
+      screenOptions={{
+        tabBarStyle: {
+          backgroundColor: "#131F2A",
+          height: bottomTabHeight,
+        },
+        tabBarShowLabel: false,
+        headerStyle: {
+          backgroundColor: "#080F14",
+        },
+        headerTitleStyle: {
+          marginLeft: 5,
+          color: "#ffffff",
+          fontSize: 30,
+          fontWeight: "bold",
+        },
+        headerTitleAlign: "left",
+        headerShadowVisible: false,
+        headerShown: false,
+        tabBarHideOnKeyboard: true,
       }}
-    />
-    <BottomTab.Screen
-      name="Chats"
-      component={ChatScreen}
-      options={{
-        tabBarIcon: ({ color, size }) => (
-          <Ionicons name="chatbubbles-outline" color={color} size={size} />
-        ),
-      }}
-    />
-    <BottomTab.Screen
-      name="Friends"
-      component={FriendsScreen}
-      options={({ navigation }) => ({
-        tabBarIcon: ({ color, size }) => (
-          <Ionicons name="people-outline" color={color} size={size} />
-        ),
-        headerShown: true,
-        headerRight: () => (
-          <View className="flex-row items-center mr-[5vw]">
-            <TouchableOpacity
-              onPress={() => navigation.navigate("FriendSearch")}
-              className="mr-[2vw]"
-            >
-              <MaterialIcons name="search" size={30} color="white" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate("FriendAdd")}>
-              <MaterialIcons name="person-add-alt-1" size={28} color="white" />
-            </TouchableOpacity>
-          </View>
-        ),
-      })}
-    />
-    <BottomTab.Screen
-      name="Games"
-      component={GamesScreen}
-      options={{
-        tabBarIcon: ({ color, size }) => (
-          <Ionicons name="game-controller-outline" color={color} size={size} />
-        ),
-        headerShown: true,
-      }}
-    />
-    <BottomTab.Screen
-      name="User"
-      component={UserScreen}
-      options={{
-        tabBarIcon: ({ color, size }) => (
-          <Ionicons name="person-outline" color={color} size={size} />
-        ),
-      }}
-    />
-  </BottomTab.Navigator>
-);
+      initialRouteName="Home"
+    >
+      <BottomTab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home-outline" color={color} size={size} />
+          ),
+          title: "Light Esports",
+          headerShown: true,
+        }}
+      />
+      {/* <BottomTab.Screen
+        name="ChatsOld"
+        component={ChatScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="chatbubbles-outline" color={color} size={size} />
+          ),
+        }}
+      /> */}
+      <BottomTab.Screen
+        name="Chats"
+        component={ChatScreenV2}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="chatbubbles-outline" color={color} size={size} />
+          ),
+          tabBarBadge: newMsgCountStr,
+        }}
+      />
+      <BottomTab.Screen
+        name="Friends"
+        component={FriendsScreen}
+        options={({ navigation }) => ({
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="people-outline" color={color} size={size} />
+          ),
+          headerShown: true,
+          headerRight: () => (
+            <View className="flex-row items-center mr-[5vw]">
+              <TouchableOpacity
+                onPress={() => navigation.navigate("FriendSearch")}
+                className="mr-[2vw]"
+              >
+                <MaterialIcons name="search" size={30} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("FriendAdd")}
+              >
+                <MaterialIcons
+                  name="person-add-alt-1"
+                  size={28}
+                  color="white"
+                />
+              </TouchableOpacity>
+            </View>
+          ),
+        })}
+      />
+      <BottomTab.Screen
+        name="Games"
+        component={GamesScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons
+              name="game-controller-outline"
+              color={color}
+              size={size}
+            />
+          ),
+          headerShown: true,
+        }}
+      />
+      <BottomTab.Screen
+        name="User"
+        component={UserScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-outline" color={color} size={size} />
+          ),
+        }}
+      />
+    </BottomTab.Navigator>
+  );
+};
 
 export default function App() {
   const [isLoggedin, setIsLoggedin] = useState(false);

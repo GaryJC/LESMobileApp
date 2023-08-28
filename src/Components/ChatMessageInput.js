@@ -5,7 +5,9 @@ export const ChatMessageInput = ({ onMessageSendHandler }) => {
   const [newMessage, setNewMessage] = useState("");
   const onPressHandler = () => {
     setNewMessage("");
-    onMessageSendHandler(newMessage);
+    if (onMessageSendHandler != null && newMessage.length > 0) {
+      onMessageSendHandler(newMessage);
+    }
   };
   return (
     <View className="flex-row items-center py-[10px] h-[50px]">

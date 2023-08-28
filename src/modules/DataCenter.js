@@ -6,6 +6,7 @@ import MessageData from "../Models/MessageData";
 import { MessageCaches } from "../Models/MessageCaches";
 import { Notifications } from "../Models/Notifications";
 import IMUserInfo from "../Models/IMUserInfo";
+import UserProfile from "../Models/UserProfile";
 
 
 const services = [];
@@ -37,9 +38,18 @@ const DataCenter = {
    */
   userInfo: {
     accountId: "",
+    /**
+     * @deprecated
+     * 移到了userProfile中
+     */
     email: "",
     loginKey: "",
 
+    /**
+     * 用户账户信息
+     * @type {UserProfile}
+     */
+    userProfile: new UserProfile(),
     /**
      * im用户信息
      * @type {IMUserInfo}

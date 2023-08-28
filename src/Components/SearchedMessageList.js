@@ -26,7 +26,7 @@ const SearchedMessageList = ({ item, handleSheetEnd }) => {
   if (senderId === userInfo.accountId) {
     name = userInfo.imUserInfo.name;
   } else {
-    userInfo = IMUserInfoService.Inst.getUser(senderId).pop();
+    userInfo = IMUserInfoService.Inst.getCachedUser(senderId).pop();
     name = userInfo.name;
   }
 

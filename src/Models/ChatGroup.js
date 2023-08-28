@@ -130,7 +130,7 @@ class ChatGroup {
           if (stateFilter == null) {
             ms = members;
           } else {
-            ms = members.filter((v) => stateFilter(v));
+            ms = members.filter((v) => stateFilter(v.memberState));
           }
           resolve(ms);
         })
