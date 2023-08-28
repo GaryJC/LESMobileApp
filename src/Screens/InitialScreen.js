@@ -33,27 +33,33 @@ export default function InitialScreen() {
       await onAppInit();
       console.log("all services loaded");
       const loginService = LoginService.Inst;
-      const result = await loginService.firebaseQuickLogin();
-      console.log("firebase login result: ", result);
+      const { id, loginState, imServerState } =
+        await loginService.firebaseQuickLogin();
+      console.log("firebase login result: ", id, loginState, imServerState);
 
       //根据result.loginState决定显示哪个页面(注册、验证邮箱、设置referrer)
 
-      switch (result.loginState) {
+      switch (loginState) {
         case LoginState.Logout:
           //快速登录失败，跳到LoginScreen
           navigation.navigate("Login");
           break;
         case LoginState.Normal:
           //登陆成功了，跳转到主界面
-          navigation.navigate("BottomTab");
+          //连接IM Server
+          if (imServerState === LesConstants.ErrorCodes.NeedSetNameFirst) {
+            navigation.navigate("CreateName");
+          } else {
+            navigation.navigate("BottomTab");
+          }
           break;
         case LoginState.VerifyEmail:
           //跳转到验证邮箱界面
-
+          navigation.navigate("VerifyEmail", { id, loginState });
           break;
         case LoginState.UpdateReferrer:
           //跳转到更新推荐人界面
-
+          navigation.navigate("VerifyEmail", { id, loginState });
           break;
       }
 
