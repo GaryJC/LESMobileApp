@@ -7,6 +7,7 @@
 import { LesPlatformCenter, LesConstants } from "les-im-components";
 import JSEvent from "../utils/JSEvent";
 import { DataEvents } from "../modules/Events";
+import DataSavingService from "./DataSavingService";
 
 class IMListenerService {
   static #inst;
@@ -85,9 +86,10 @@ class IMListenerService {
     LesPlatformCenter.IMListeners.onUserInfoUpdated = (user, state) => {
       console.log(
         "状态更新：",
-        `[${user.getId()}]${user.getName()}#${user.getTag()} ${UserState[state]
+        `[${user.getId()}]${user.getName()}#${user.getTag()} ${LesConstants.IMUserState[state]
         }`
       );
+      DataSavingService.Inst.setImUserInfo({ id: user.getId(), name: user.getName(), tag: user.getTag(), state: state });
     };
   }
 

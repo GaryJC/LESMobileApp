@@ -7,6 +7,8 @@ import BottomSheet, {
 import { LesConstants, LesPlatformCenter } from "les-im-components";
 import { StateIndicator, makeStateReadable } from "./StateIndicator";
 import IMUserInfoService from "../services/IMUserInfoService";
+import DataCenter from "../modules/DataCenter";
+import DataSavingService from "../services/DataSavingService";
 
 export default function StatusBottomSheet({
   bottomSheetModalRef,
@@ -57,6 +59,9 @@ export default function StatusBottomSheet({
         // const readableState = makeStateReadable(state);
         // console.log("ssa: ", readableState);
         setUserStatus(state);
+
+        DataSavingService.Inst.setImUserInfo({ state: state });
+
         bottomSheetModalRef.current?.close();
       })
       .catch((code) => {

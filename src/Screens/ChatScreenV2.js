@@ -23,6 +23,7 @@ const ChatScreenV2 = () => {
     // }, []);
 
     const onMessageSendHandler = (newMessage) => {
+        if (currChatData == null) return;
         if (currChatData.type === LesConstants.IMMessageType.Single) {
             MessageService.Inst.sendMessage(currChatData.targetId, newMessage);
         } else {

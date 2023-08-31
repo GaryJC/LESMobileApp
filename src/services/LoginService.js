@@ -234,6 +234,7 @@ export default class LoginService {
       };
     }
     const token = await auth().currentUser.getIdToken();
+    const fcmToken = DataCenter.userInfo.fcmToken;
     try {
       const device = LesConstants.IMDevices[DataCenter.deviceName];
       if (isReconnect) {
@@ -243,11 +244,11 @@ export default class LoginService {
         );
       }
 
-      const result = await this.firebaseLogin(token);
+      const result = await this.firebaseLogin(token, fcmToken);
       const { id, loginState, profile } = result;
       let imResult;
 
-      if (loginState == LoginState.Normal) {
+      if (loginState == LoginState.Normal || loginState == LoginState.UpdateReferrer) {
         //登陆成功，连接im服务器
         try {
           imResult = await LesPlatformCenter.Inst.connect(
@@ -255,7 +256,8 @@ export default class LoginService {
             id,
             token,
             device,
-            LoginChannel
+            LoginChannel,
+            fcmToken
           );
           console.log("imresult: ", imResult);
           //登陆成功
@@ -268,7 +270,7 @@ export default class LoginService {
           //保存当前用户数据
           DataSavingService.Inst.saveLoginDataToDataCenter(
             id,
-            "",
+            token,
             "",
             imUserInfo,
             profile
@@ -332,13 +334,14 @@ export default class LoginService {
   /**
    * 通过firebase的token登录
    * @param {string} userToken
+   * @param {string} fcmToken
    * @returns {Promise<{id:number, loginState:LoginState, profile:UserProfile}>} id--用户id，loginState--当前登录状态，详见{@link Constants.LoginState}
    * @throws {{type:LoginExceptionType, code:number, msg:string}}}
    */
-  async firebaseLogin(userToken) {
+  async firebaseLogin(userToken, fcmToken) {
     const device = DataCenter.deviceName;
     try {
-      const response = await Firebase.loginRequest(userToken, device);
+      const response = await Firebase.loginRequest(userToken, device, fcmToken);
       const data = response.data;
       if (data.code == 0) {
         const ret = data.retObject;
@@ -403,7 +406,7 @@ export default class LoginService {
           msg: data.msg,
         };
       }
-    } catch (e) {}
+    } catch (e) { }
     return false;
   }
 
@@ -417,7 +420,7 @@ export default class LoginService {
       const response = await Firebase.updateReferrer(userToken, referralCode);
       const data = response.data;
       return data.code;
-    } catch (e) {}
+    } catch (e) { }
     return -1;
   }
 

@@ -78,14 +78,16 @@ export const Firebase = {
    *
    * @param {userToken} token
    * @param {deviceId} device
+   * @param {string} fcmToken
    * @returns
    */
-  loginRequest: async (token, device) => {
+  loginRequest: async (token, device, fcmToken) => {
     return await axios.post(API.loginRequestV2(), {
       username: token,
       password: "",
       channel: CHANNEL_FIREBASE,
       serviceId: serviceId(device),
+      fcmToken: fcmToken
     });
   },
 

@@ -1,32 +1,22 @@
+import { Ionicons } from "@expo/vector-icons";
+import { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  FlatList,
+  Button,
   ImageBackground,
   SectionList,
-  Button,
-  TextInput,
-  TouchableHighlight,
-  TouchableOpacity,
+  Text,
+  View
 } from "react-native";
-import { StatusBar } from "expo-status-bar";
-import { Ionicons } from "@expo/vector-icons";
-import { MaterialIcons } from "@expo/vector-icons";
-import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 //dummy data
+import { FriendButton } from "../Components/FriendButton";
+import { FriendList } from "../Components/FriendList";
+import FriendListChatButton from "../Components/FriendListChatButton";
 import { RecomFriendsData } from "../Data/dummyData";
 import DataCenter from "../modules/DataCenter";
-import JSEvent from "../utils/JSEvent";
-import { UIEvents, DataEvents } from "../modules/Events";
+import { DataEvents, UIEvents } from "../modules/Events";
 import FriendService from "../services/FriendService";
-import MockServer from "../utils/MockServer";
-import { LesPlatformCenter } from "les-im-components";
-import { FriendList } from "../Components/FriendList";
 import NotificationService from "../services/NotificationService";
-import { FriendButton } from "../Components/FriendButton";
-import FriendBottomSheet from "../Components/FriendBottomSheet";
-import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
-import FriendListChatButton from "../Components/FriendListChatButton";
+import JSEvent from "../utils/JSEvent";
 
 const friendButtonContent = [
   { title: "Friends Request", icon: "emoji-people", link: "" },

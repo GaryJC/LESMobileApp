@@ -243,7 +243,7 @@ class MessageCaches {
     let chatListItem = this.#chatListSorted.find(
       (item) => item.chatId == chatId
     );
-    if (!chatListItem) {
+    if (!chatListItem && chatId != null && chatId != "") {
       //没找到，建立一个并插入
       chatListItem = new ChatListItem(chatId);
       this.#chatListSorted.push(chatListItem);
@@ -336,7 +336,7 @@ class ChatListItem {
    * 当前对话最新的timelineId
    * 收到的消息的timelineId如果大于这个id，则计数新消息
    */
-  latestTimelineId;
+  latestTimelineId = 0;
 
   constructor(chatId) {
     this.#chatId = chatId;

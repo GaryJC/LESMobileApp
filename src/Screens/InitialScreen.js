@@ -47,7 +47,7 @@ export default function InitialScreen() {
         case LoginState.Normal:
           //登陆成功了，跳转到主界面
           //连接IM Server
-          if (imServerState === LesConstants.ErrorCodes.NeedSetNameFirst) {
+          if (imServerState === LesConstants.IMUserState.Init) {
             navigation.navigate("CreateName");
           } else {
             navigation.navigate("BottomTab");
@@ -102,7 +102,7 @@ export default function InitialScreen() {
   return (
     <View className="flex-1 justify-center items-center bg-[#080F14]">
       <Image
-        className="w-[250] h-[250]"
+        className="w-[250] h-[100]"
         source={require("../../assets/img/logo-nexg.png")}
       />
       <ActivityIndicator className="mt-[50px]" size="large" color="#9176F7" />

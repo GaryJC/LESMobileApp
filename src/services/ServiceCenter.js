@@ -17,9 +17,7 @@ import { DataEvents, UIEvents } from "../modules/Events";
 import Constants from "../modules/Constants";
 import NotificationService from "./NotificationService";
 import ChatGroupService from "./ChatGroupService";
-import { PermissionsAndroid } from "react-native";
-import messaging from "@react-native-firebase/messaging";
-import DataCenter from "../modules/DataCenter";
+import FirebaseMessagingService from "./FirebaseMessagingService";
 
 const { ReloginState } = Constants;
 
@@ -42,6 +40,8 @@ const { ReloginState } = Constants;
 export default class ServiceCenter {
   static #inst;
   #services;
+
+  #isLoading = false;
 
   /**
    * 当前app状态
@@ -75,27 +75,8 @@ export default class ServiceCenter {
    */
   async loadAllServices() {
 
-    let enabled = false;
+    this.#isLoading = true;
 
-    if (Platform.OS == 'android') {
-      const permiStatus = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
-      enabled = permiStatus != 'denied';
-    } else if (Platform.OS == 'ios') {
-      const authStatus = await messaging().requestPermission();
-      enabled = authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-    }
-
-    if (!enabled) {
-      console.log("Permission Notification Request Failed: User Denied")
-    }
-
-    try {
-      const fcmToken = await messaging().getToken();
-      DataCenter.userInfo.fcmToken = fcmToken;
-    } catch (e) {
-      console.log("Get Fcm Token error:", e);
-    }
     this.#appStateSubscribtion = AppState.addEventListener("change", (state) =>
       this.#handleAppStateChanged(state)
     );
@@ -121,6 +102,7 @@ export default class ServiceCenter {
       MessageService,
       NotificationService,
       ChatGroupService,
+      FirebaseMessagingService
     ];
 
     let services = [];
@@ -160,6 +142,8 @@ export default class ServiceCenter {
         }
       }
     }
+
+    this.#isLoading = false;
   }
 
   onAppDestroyed() {
@@ -227,20 +211,21 @@ export default class ServiceCenter {
       `app is changing state from [${this.#currentAppState}] to [${state}]`
     );
 
-    JSEvent.emit(UIEvents.AppState_UIUpdated, true);
-    for (let i = 0; i < this.#services.length; i++) {
-      const service = this.#services[i];
-      if (service.onAppStateChanged) {
-        try {
-          await service.onAppStateChanged(this.#currentAppState, state);
-          console.log("from state to state: ", this.#currentAppState, state);
-        } catch (e) {
-          console.error(`Service[${service.className}] onAppStateChanged`, e);
+    if (!this.#isLoading) {
+      JSEvent.emit(UIEvents.AppState_UIUpdated, true);
+      for (let i = 0; i < this.#services.length; i++) {
+        const service = this.#services[i];
+        if (service.onAppStateChanged) {
+          try {
+            await service.onAppStateChanged(this.#currentAppState, state);
+            console.log("from state to state: ", this.#currentAppState, state);
+          } catch (e) {
+            console.error(`Service[${service.className}] onAppStateChanged`, e);
+          }
         }
       }
+      JSEvent.emit(UIEvents.AppState_UIUpdated, false);
     }
-    JSEvent.emit(UIEvents.AppState_UIUpdated, false);
-
     //Promise.all(promises);
     this.#currentAppState = state;
     console.log(`app changed state to [${state}]`);
