@@ -77,8 +77,8 @@ export default function UserScreen() {
     updateUnreadCountHandler();
 
     const retriveUserInfoHandler = () => {
-      console.log("user name: ", DataCenter.userInfo.name);
-      console.log("user email: ", DataCenter.userInfo.email);
+      console.log("im user info: ", DataCenter.userInfo.imUserInfo);
+      console.log("user email: ", DataCenter.userInfo.userProfile.email);
       setUserInfo((pre) => {
         return {
           ...pre,
@@ -88,6 +88,7 @@ export default function UserScreen() {
           // avatar:DataCenter.userInfo.accountId
         };
       });
+      setUserStatus(DataCenter.userInfo.imUserInfo.state);
     };
 
     retriveUserInfoHandler();
@@ -98,6 +99,7 @@ export default function UserScreen() {
     );
 
     JSEvent.on(UIEvents.User.UserState_IsLoggedin, retriveUserInfoHandler);
+    JSEvent.on(DataEvents.User.UserInfo_Current_Updated, retriveUserInfoHandler);
 
     return () => {
       JSEvent.remove(
@@ -108,6 +110,7 @@ export default function UserScreen() {
         UIEvents.User.UserState_IsLoggedin,
         retriveUserInfoHandler
       );
+      JSEvent.remove(DataEvents.User.UserInfo_Current_Updated, retriveUserInfoHandler);
     };
   }, []);
 

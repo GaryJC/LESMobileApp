@@ -10,12 +10,14 @@ import {
   AppState,
   AppStateStatus,
   NativeEventSubscription,
+  Platform,
 } from "react-native";
 import JSEvent from "../utils/JSEvent";
 import { DataEvents, UIEvents } from "../modules/Events";
 import Constants from "../modules/Constants";
 import NotificationService from "./NotificationService";
 import ChatGroupService from "./ChatGroupService";
+import FirebaseMessagingService from "./FirebaseMessagingService";
 
 const { ReloginState } = Constants;
 
@@ -38,6 +40,8 @@ const { ReloginState } = Constants;
 export default class ServiceCenter {
   static #inst;
   #services;
+
+  #isLoading = false;
 
   /**
    * 当前app状态
@@ -70,6 +74,9 @@ export default class ServiceCenter {
    * 服务的init方法可以使同步方法，也可以是异步方法
    */
   async loadAllServices() {
+
+    this.#isLoading = true;
+
     this.#appStateSubscribtion = AppState.addEventListener("change", (state) =>
       this.#handleAppStateChanged(state)
     );
@@ -95,6 +102,7 @@ export default class ServiceCenter {
       MessageService,
       NotificationService,
       ChatGroupService,
+      FirebaseMessagingService
     ];
 
     let services = [];
@@ -134,6 +142,8 @@ export default class ServiceCenter {
         }
       }
     }
+
+    this.#isLoading = false;
   }
 
   onAppDestroyed() {
@@ -201,20 +211,21 @@ export default class ServiceCenter {
       `app is changing state from [${this.#currentAppState}] to [${state}]`
     );
 
-    JSEvent.emit(UIEvents.AppState_UIUpdated, true);
-    for (let i = 0; i < this.#services.length; i++) {
-      const service = this.#services[i];
-      if (service.onAppStateChanged) {
-        try {
-          await service.onAppStateChanged(this.#currentAppState, state);
-          console.log("from state to state: ", this.#currentAppState, state);
-        } catch (e) {
-          console.error(`Service[${service.className}] onAppStateChanged`, e);
+    if (!this.#isLoading) {
+      JSEvent.emit(UIEvents.AppState_UIUpdated, true);
+      for (let i = 0; i < this.#services.length; i++) {
+        const service = this.#services[i];
+        if (service.onAppStateChanged) {
+          try {
+            await service.onAppStateChanged(this.#currentAppState, state);
+            console.log("from state to state: ", this.#currentAppState, state);
+          } catch (e) {
+            console.error(`Service[${service.className}] onAppStateChanged`, e);
+          }
         }
       }
+      JSEvent.emit(UIEvents.AppState_UIUpdated, false);
     }
-    JSEvent.emit(UIEvents.AppState_UIUpdated, false);
-
     //Promise.all(promises);
     this.#currentAppState = state;
     console.log(`app changed state to [${state}]`);

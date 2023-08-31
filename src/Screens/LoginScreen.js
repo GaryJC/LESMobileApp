@@ -204,8 +204,8 @@ export default function LoginScreen() {
       </View> */}
       {/* <View className="w-[60vw]"> */}
       <Image
-        source={require("../../assets/img/logo_les.png")}
-        className="mx-[auto] w-[200px] h-[200px] mb-[30px]"
+        source={require("../../assets/img/logo-nexg.png")}
+        className="mx-[auto] w-[250px] h-[100px] mb-[30px]"
       />
       {/* </View> */}
 

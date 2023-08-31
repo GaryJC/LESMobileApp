@@ -66,7 +66,7 @@ export default ChatListBar = ({ onItemSelected }) => {
 
     useEffect(() => {
         //获得焦点时要清理掉当前选中聊天的newMessageCount
-        if (focus) {
+        if (focus && currSelId != "") {
             DataCenter.messageCache.touchChatData(currSelId);
         }
     }, [focus])

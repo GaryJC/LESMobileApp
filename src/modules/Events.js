@@ -3,6 +3,7 @@ import MessageData from "../Models/MessageData";
 import Constants from "./Constants";
 import { AppStateStatus } from "react-native";
 import ChatGroup from "../Models/ChatGroup";
+import IMUserInfo from "../Models/IMUserInfo";
 const { IMUserState, IMUserOnlineState, IMMessageType } = LesConstants;
 const { ReloginState } = Constants;
 export const DataEvents = {
@@ -39,6 +40,12 @@ export const DataEvents = {
      * 用户的详细数据，可通过IMUserInfoService.getUser(id)获取
      */
     UserState_Changed: "DATA_EVENT_UserState_Changed",
+
+    /**
+     * 当前用户数据变化，例如改了名字，改了上下线状态等等
+     * @type {info:IMUserInfo}
+     */
+    UserInfo_Current_Updated: "DATA_EVENT_UserInfo_Current_Updated"
   },
 
   /**

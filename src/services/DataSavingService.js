@@ -122,21 +122,43 @@ class DataSavingService {
    * @param {{name:string, tag:number, email:string, state:IMUserState,userProfile:UserProfile}} imUserInfo
    */
   saveLoginDataToDataCenter(id, key, email, imUserInfo, userProfile) {
-    console.log("oooo22: ", id, key, email, imUserInfo, userProfile);
     DataCenter.userInfo.accountId = id;
     DataCenter.userInfo.loginKey = key;
     DataCenter.userInfo.email = email;
-
-    const userInfo = new IMUserInfo(
-      id,
-      imUserInfo.name,
-      imUserInfo.tag,
-      imUserInfo.state,
-      LesConstants.IMUserOnlineState.Online
-    );
-
-    DataCenter.userInfo.imUserInfo = userInfo;
+    this.setImUserInfo({ id, name: imUserInfo.name, tag: imUserInfo.tag, state: imUserInfo.state, onlineState: LesConstants.IMUserOnlineState.Online });
     DataCenter.userInfo.userProfile = userProfile;
+  }
+
+
+
+
+  /**
+   * @param {{id: number | null, name: string | null, tag: number | null, state: IMUserState | null,  onlineState: IMUserOnlineState | null  } } userInfo 
+   */
+  setImUserInfo(userInfo) {
+    const { id, name, tag, state, onlineState } = userInfo;
+    if (DataCenter.userInfo.imUserInfo == null) {
+      DataCenter.userInfo.imUserInfo = new IMUserInfo(id, name, tag, state, onlineState);
+    } else {
+      const info = DataCenter.userInfo.imUserInfo;
+      if (id != null) {
+        info.id = id;
+      }
+      if (name != null) {
+        info.name = name;
+      }
+      if (tag != null) {
+        info.tag = tag;
+      }
+      if (state != null) {
+        info.state = state;
+      }
+      if (onlineState != null) {
+        info.onlineState = onlineState;
+      }
+    }
+
+    JSEvent.emit(DataEvents.User.UserInfo_Current_Updated, DataCenter.userInfo.imUserInfo);
   }
 
   /**

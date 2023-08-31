@@ -1,8 +1,8 @@
 {
   "expo": {
     "jsEngine": "hermes",
-    "name": "LESMobileApp",
-    "slug": "LESMobileApp",
+    "name": "NexGami",
+    "slug": "NexGami",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -10,9 +10,11 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#080F14"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "googleServicesFile": "./GoogleService-Info.plist"
@@ -29,7 +31,14 @@
       "favicon": "./assets/favicon.png"
     },
     "sdkVersion": "48.0.0",
-    "plugins": ["@react-native-google-signin/google-signin"]
+    "plugins": [
+      "@react-native-google-signin/google-signin"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "5f44be01-64a4-4fe0-b442-d9f92dd68282"
+      }
+    }
   },
-  "name": "lesmobileapp"
+  "name": "NexGami"
 }

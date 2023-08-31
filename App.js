@@ -48,6 +48,7 @@ import auth, { firebase } from "@react-native-firebase/auth";
 import { VerifyEmailScreen } from "./src/Screens/VerifyEmailScreen";
 import { useNavigation } from "@react-navigation/native";
 import ChatScreenV2 from "./src/Screens/ChatScreenV2";
+import WalletScreen from "./src/Screens/WalletScreen";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -135,7 +136,7 @@ const BottomTabNavigation = () => {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home-outline" color={color} size={size} />
           ),
-          title: "Light Esports",
+          title: "NexGami",
           headerShown: true,
         }}
       />
@@ -187,13 +188,27 @@ const BottomTabNavigation = () => {
           ),
         })}
       />
-      <BottomTab.Screen
+      {/* <BottomTab.Screen
         name="Games"
         component={GamesScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons
               name="game-controller-outline"
+              color={color}
+              size={size}
+            />
+          ),
+          headerShown: true,
+        }}
+      /> */}
+      <BottomTab.Screen
+        name="Wallet"
+        component={WalletScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons
+              name="wallet"
               color={color}
               size={size}
             />
@@ -441,7 +456,7 @@ export default function App() {
             <Stack.Screen
               name="GroupInvite"
               component={GroupInviteScreen}
-              // options={{ headerTitle: "Group Information" }}
+            // options={{ headerTitle: "Group Information" }}
             />
           </Stack.Navigator>
         </NavigationContainer>
