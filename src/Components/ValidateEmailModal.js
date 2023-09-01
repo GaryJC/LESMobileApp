@@ -45,7 +45,7 @@ export const ValidateEmailModal = ({
           backgroundColor: "rgba(0,0,0,0.6)",
         }}
       >
-        <Pressable
+        {/* <Pressable
           style={{
             position: "absolute",
             top: 0,
@@ -54,8 +54,8 @@ export const ValidateEmailModal = ({
             bottom: 0,
           }}
           onPress={closeModalHandler}
-        />
-        <View className="bg-[#2A2C37] w-[65vw] p-[15px] rounded">
+        /> */}
+        <View className="bg-[#2A2C37] w-[90vw] max-w-md p-[15px] rounded">
           <View>
             {/* {loginState===Constants.LoginState.Logout?} */}
             {emailState == Constants.EmailState.Unchecked ? (

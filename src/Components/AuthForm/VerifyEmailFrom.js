@@ -11,6 +11,7 @@ import { firebase } from "@react-native-firebase/auth";
 import LoginService from "../../services/LoginService";
 import VerifySucceedForm from "./VerifySucceedForm";
 import LoadingIndicator from "../LoadingIndicator";
+import HighlightButton from "../HighlightButton";
 
 const VerifyEmailForm = ({ userToken, userId, setLoginState }) => {
   const [email, setEmail] = useState();
@@ -93,19 +94,22 @@ const VerifyEmailForm = ({ userToken, userId, setLoginState }) => {
               </View>
             </TouchableHighlight> */}
             {isResendDisabled ? (
-              <TouchableHighlight>
-                <View className="bg-[#565365] px-[10px] py-[5px] rounded">
-                  <Text className="text-white">
-                    {"Retry after: " + countdown}
-                  </Text>
-                </View>
-              </TouchableHighlight>
+              // <TouchableHighlight>
+              //   <View className="bg-[#565365] px-[10px] py-[5px] rounded">
+              //     <Text className="text-white">
+              //       {"Retry after: " + countdown}
+              //     </Text>
+              //   </View>
+              // </TouchableHighlight>
+
+              <HighlightButton type="primary" text={"Retry after: " + countdown} disabled={true} />
             ) : (
-              <TouchableHighlight onPress={sendVerifyCodeHandler}>
-                <View className="bg-[#4C89F9] px-[10px] py-[5px] rounded">
-                  <Text className="text-white">Send</Text>
-                </View>
-              </TouchableHighlight>
+              <HighlightButton type="primary" text="Send" onPress={sendVerifyCodeHandler} />
+              // <TouchableHighlight onPress={sendVerifyCodeHandler}>
+              //   <View className="bg-[#4C89F9] px-[10px] py-[5px] rounded">
+              //     <Text className="text-white">Send</Text>
+              //   </View>
+              // </TouchableHighlight>
             )}
           </View>
           <View className="flex-row justify-between items-center">
@@ -120,19 +124,21 @@ const VerifyEmailForm = ({ userToken, userId, setLoginState }) => {
             </View>
             {verifyCode ? (
               <View className="flex-row justify-end">
-                <TouchableHighlight onPress={verifyEmailHandler}>
+                <HighlightButton type="primary" text="Verify" onPress={verifyEmailHandler} isLoading={isLoading} />
+                {/* <TouchableHighlight onPress={verifyEmailHandler}>
                   <View className="bg-[#4C89F9] px-[10px] py-[5px] rounded">
                     <Text className="text-white text-center">Verify</Text>
                   </View>
-                </TouchableHighlight>
+                </TouchableHighlight> */}
               </View>
             ) : (
               <View className="flex-row justify-end">
-                <TouchableHighlight>
+                <HighlightButton type="normal" text="Verify" disabled={true} />
+                {/* <TouchableHighlight>
                   <View className="bg-[#565365] px-[10px] py-[5px] rounded">
                     <Text className="text-white text-center">Verify</Text>
                   </View>
-                </TouchableHighlight>
+                </TouchableHighlight> */}
               </View>
             )}
           </View>

@@ -1,9 +1,12 @@
 import { View, Modal, Text, TextInput, TouchableHighlight } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { firebase } from "@react-native-firebase/auth";
 import LoginService from "../../services/LoginService";
 import LoadingIndicator from "../LoadingIndicator";
+import PasswordInput from "../PasswordInput";
+import HighlightButton from "../HighlightButton";
 
 const CreateAccountForm = ({ email, setEmail, closeModalHandler }) => {
   const [password, setPassword] = useState();
@@ -93,6 +96,7 @@ const CreateAccountForm = ({ email, setEmail, closeModalHandler }) => {
       </Text>
       <Text className="text-[16px] font-bold text-white mb-[5px]">Email</Text>
       <TextInput
+        editable={false}
         placeholder="Please input your email address"
         placeholderTextColor={"#C3C3C3"}
         value={email}
@@ -108,14 +112,9 @@ const CreateAccountForm = ({ email, setEmail, closeModalHandler }) => {
       <Text className="text-[16px] font-bold text-white mb-[5px]">
         Password
       </Text>
-      <TextInput
-        placeholder="Please input your password"
-        placeholderTextColor={"#C3C3C3"}
-        value={password}
-        // onChangeText={(value) => updateInputValueHandler("password", value)}
-        onChangeText={setPassword}
-        className="border-b-2 border-[#394879] text-white"
-      />
+      <PasswordInput initValue={password} onChangeText={e => {
+        setPassword(e);
+      }} />
       {/* {passwordError && (
         <View>
           <Text className="text-[#FF0000]">
@@ -131,18 +130,30 @@ const CreateAccountForm = ({ email, setEmail, closeModalHandler }) => {
       )} */}
       {error && <Text className="text-[#FF0000]">{error}</Text>}
       <View className="flex-row justify-end mt-[20px]">
-        <TouchableHighlight onPress={closeModalHandler}>
-          <View className="bg-[#393B44] px-[10px] py-[5px] mr-[10px] rounded">
+        <HighlightButton
+          type={"normal"}
+          text={"Cancel"}
+          onPress={closeModalHandler}
+        />
+        <HighlightButton
+          type={"primary"}
+          text={"Create"}
+          onPress={createAccountHandler}
+          isLoading={isLoading}
+        />
+
+        {/* <TouchableHighlight onPress={closeModalHandler} className= "mr-[10px] rounded">
+          <View className="bg-[#393B44] px-[10px] py-[5px] rounded">
             <Text className="text-[#547AD5] text-center">Cancel</Text>
           </View>
         </TouchableHighlight>
-        <TouchableHighlight onPress={createAccountHandler}>
-          <View className="bg-[#4C89F9] px-[10px] py-[5px] rounded">
+        <TouchableHighlight onPress={createAccountHandler} className="rounded">
+          <View className="bg-[#ff3300] px-[10px] py-[5px] rounded">
             <Text className="text-white text-center">Create</Text>
           </View>
-        </TouchableHighlight>
+        </TouchableHighlight> */}
       </View>
-      <LoadingIndicator isLoading={ture} />
+      <LoadingIndicator isLoading={isLoading} />
     </View>
   );
 };
