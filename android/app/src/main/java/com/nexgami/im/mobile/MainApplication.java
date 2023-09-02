@@ -1,4 +1,4 @@
-package com.lightesport.im.mobile;
+package com.nexgami.im.mobile;
 
 import android.app.Application;
 import android.content.res.Configuration;
