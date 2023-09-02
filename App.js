@@ -49,6 +49,7 @@ import { VerifyEmailScreen } from "./src/Screens/VerifyEmailScreen";
 import { useNavigation } from "@react-navigation/native";
 import ChatScreenV2 from "./src/Screens/ChatScreenV2";
 import WalletScreen from "./src/Screens/WalletScreen";
+import HighlightButton from "./src/Components/HighlightButton";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -419,18 +420,25 @@ export default function App() {
                 headerLeft: () => {
                   const navigation = useNavigation();
                   return (
-                    <Button
-                      title="Sign in"
-                      onPress={() => {
-                        navigation.navigate("Login");
-                        firebase.auth().signOut();
-                      }}
-                    />
+                    // <Button
+                    //   title="Sign in"
+                    //   onPress={() => {
+                    //     navigation.navigate("Login");
+                    //     firebase.auth().signOut();
+                    //   }}
+                    // />
+                    <HighlightButton type="opacity" text="Go to Sign in" onPress={() => {
+                      navigation.navigate("Login");
+                      firebase.auth().signOut();
+                    }} />
                   );
                 },
               }}
             />
-            <Stack.Screen name="CreateName" component={CreateNameScreen} />
+            <Stack.Screen name="CreateName" component={CreateNameScreen}
+              options={
+                { headerBackVisible: false }
+              } />
             <Stack.Screen name="Notification" component={NotificationScreen} />
             <Stack.Screen
               name="FriendRequest"

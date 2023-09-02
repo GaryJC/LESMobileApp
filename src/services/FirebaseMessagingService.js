@@ -1,5 +1,5 @@
 import { PermissionsAndroid } from "react-native";
-import messaging from "@react-native-firebase/messaging";
+import messaging  from "@react-native-firebase/messaging";
 import DataCenter from "../modules/DataCenter";
 
 class FirebaseMessagingService {
@@ -35,6 +35,7 @@ class FirebaseMessagingService {
 
         if (!enabled) {
             console.log("Permission Notification Request Failed: User Denied")
+        }else{
         }
 
         this.permissionsAllowed = enabled;

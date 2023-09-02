@@ -24,7 +24,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.lightesport.im.mobile",
+      "package": "com.nexgami.im.mobile",
       "googleServicesFile": "./google-services.json"
     },
     "web": {

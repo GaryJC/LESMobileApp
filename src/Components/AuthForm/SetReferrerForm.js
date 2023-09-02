@@ -3,6 +3,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import LoginService from "../../services/LoginService";
 import { useState } from "react";
 import LoadingIndicator from "../LoadingIndicator";
+import HighlightButton from "../HighlightButton";
 
 const SetReferrerForm = ({ userToken }) => {
   const [referralCode, setReferralCode] = useState();
@@ -38,11 +39,12 @@ const SetReferrerForm = ({ userToken }) => {
         className="mt-[20px] text-[16px] text-white"
       />
       <View className="flex-row justify-end mt-[20px]">
-        <TouchableHighlight onPress={updateReferrerHandler}>
+        {/* <TouchableHighlight onPress={updateReferrerHandler}>
           <View className="bg-[#4C89F9] px-[10px] py-[5px] rounded">
             <Text className="text-white text-center">Next</Text>
           </View>
-        </TouchableHighlight>
+        </TouchableHighlight> */}
+        <HighlightButton text="Next" type="primary" onPress={updateReferrerHandler} isLoading={isLoading} />
       </View>
       <LoadingIndicator isLoading={isLoading} />
     </View>

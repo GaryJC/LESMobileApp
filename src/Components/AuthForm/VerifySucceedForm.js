@@ -1,6 +1,7 @@
 import { View, Text, TextInput, TouchableHighlight } from "react-native";
 import Constants from "../../modules/Constants";
 import { FontAwesome } from "@expo/vector-icons";
+import HighlightButton from "../HighlightButton";
 
 const VerifySucceedForm = ({ setLoginState, email }) => {
   const clickNextHandler = () => {
@@ -20,12 +21,14 @@ const VerifySucceedForm = ({ setLoginState, email }) => {
       </View>
 
       <View className="flex-row justify-end">
-        <TouchableHighlight onPress={clickNextHandler}>
+        {/* <TouchableHighlight onPress={clickNextHandler}>
           <View className="bg-[#4C89F9] px-[10px] py-[5px] rounded">
             <Text className="text-white text-center">Next</Text>
           </View>
-        </TouchableHighlight>
+        </TouchableHighlight>*/}
+        <HighlightButton type="primary" text="Next" onPress={clickNextHandler} />
       </View>
+
     </View>
   );
 };

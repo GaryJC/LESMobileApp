@@ -6,6 +6,8 @@ import LoginService from "../../services/LoginService";
 import LoadingIndicator from "../LoadingIndicator";
 import Constants from "../../modules/Constants";
 import { LesConstants } from "les-im-components";
+import HighlightButton from "../HighlightButton";
+import PasswordInput from "../PasswordInput";
 
 const EmailSigninForm = ({ email, closeModalHandler }) => {
   const [password, setPassword] = useState();
@@ -48,16 +50,19 @@ const EmailSigninForm = ({ email, closeModalHandler }) => {
       <Text className="text-[16px] font-bold text-white mb-[5px]">
         Password
       </Text>
-      <TextInput
+      <PasswordInput initValue={""} onChangeText={setPassword} />
+      {/* <TextInput
         placeholder="Please input your password"
         placeholderTextColor={"#C3C3C3"}
         value={password}
         onChangeText={setPassword}
         className="border-b-2 border-[#394879] text-white"
-      />
+      /> */}
       {error && <Text className="text-[#FF0000]">{error}</Text>}
       <View className="flex-row justify-end mt-[20px]">
-        <TouchableHighlight onPress={closeModalHandler}>
+        <HighlightButton text="Cancel" onPress={closeModalHandler} disabled={isLoading} />
+        <HighlightButton text="Sign in" type="primary" onPress={signinHandler} isLoading={isLoading} />
+        {/* <TouchableHighlight onPress={closeModalHandler}>
           <View className="bg-[#393B44] px-[10px] py-[5px] mr-[10px] rounded">
             <Text className="text-[#547AD5] text-center">Cancel</Text>
           </View>
@@ -66,7 +71,7 @@ const EmailSigninForm = ({ email, closeModalHandler }) => {
           <View className="bg-[#4C89F9] px-[10px] py-[5px] rounded">
             <Text className="text-white text-center">Sign in</Text>
           </View>
-        </TouchableHighlight>
+        </TouchableHighlight> */}
       </View>
       <LoadingIndicator isLoading={isLoading} />
     </View>

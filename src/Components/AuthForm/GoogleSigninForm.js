@@ -5,6 +5,7 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import auth from "@react-native-firebase/auth";
 import LoadingIndicator from "../LoadingIndicator";
 import { useState } from "react";
+import HighlightButton from "../HighlightButton";
 
 const GoogleSigninForm = ({ email, closeModalHandler }) => {
   const navigation = useNavigation();
@@ -41,7 +42,9 @@ const GoogleSigninForm = ({ email, closeModalHandler }) => {
         in with Google to continue.
       </Text>
       <View className="flex-row justify-end mt-[20px]">
-        <TouchableHighlight onPress={closeModalHandler}>
+        <HighlightButton text="Cancel" onPress={closeModalHandler} />
+        <HighlightButton text="Sign in with Google" type="primary" onPress={onGoogleButtonPress} />
+        {/* <TouchableHighlight onPress={closeModalHandler}>
           <View className="bg-[#393B44] py-[5px] w-[70px] mr-[10px] rounded">
             <Text className="text-[#547AD5] text-center">Cancel</Text>
           </View>
@@ -50,7 +53,7 @@ const GoogleSigninForm = ({ email, closeModalHandler }) => {
           <View className="bg-[#4C89F9] px-[10px] py-[5px] rounded">
             <Text className="text-white text-center">Sign in with Google</Text>
           </View>
-        </TouchableHighlight>
+        </TouchableHighlight> */}
       </View>
       <LoadingIndicator isLoading={isLoading} />
     </View>
