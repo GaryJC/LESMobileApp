@@ -142,7 +142,7 @@ const CreateAccountForm = ({ email, setEmail, closeModalHandler }) => {
           </View>
         </TouchableHighlight>
       </View>
-      <LoadingIndicator isLoading={ture} />
+      <LoadingIndicator isLoading={isLoading} />
     </View>
   );
 };

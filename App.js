@@ -207,11 +207,7 @@ const BottomTabNavigation = () => {
         component={WalletScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons
-              name="wallet"
-              color={color}
-              size={size}
-            />
+            <Ionicons name="wallet" color={color} size={size} />
           ),
           headerShown: true,
         }}
@@ -456,7 +452,7 @@ export default function App() {
             <Stack.Screen
               name="GroupInvite"
               component={GroupInviteScreen}
-            // options={{ headerTitle: "Group Information" }}
+              // options={{ headerTitle: "Group Information" }}
             />
           </Stack.Navigator>
         </NavigationContainer>

@@ -12,20 +12,25 @@ const GoogleSigninForm = ({ email, closeModalHandler }) => {
 
   async function onGoogleButtonPress() {
     setIsLoading(true);
-    // Check if your device supports Google Play
-    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-    // Get the users ID token
-    const { idToken } = await GoogleSignin.signIn();
+    try {
+      // Check if your device supports Google Play
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
+      // Get the users ID token
+      const { idToken } = await GoogleSignin.signIn();
 
-    // Create a Google credential with the token
-    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-    // Sign-in the user with the credential
+      // Create a Google credential with the token
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      // Sign-in the user with the credential
 
-    await auth().signInWithCredential(googleCredential);
-    const { loginState, id, imServerState } =
-      await LoginService.Inst.firebaseQuickLogin();
-    console.log("google result; ", loginState, id, imServerState);
-    navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+      await auth().signInWithCredential(googleCredential);
+      const { loginState, id, imServerState } =
+        await LoginService.Inst.firebaseQuickLogin();
+      console.log("google result; ", loginState, id, imServerState);
+      navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+    } catch (e) {}
+
     setIsLoading(false);
   }
   return (

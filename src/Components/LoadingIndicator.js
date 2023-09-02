@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Modal, ActivityIndicator } from "react-native";
 
-const LoadingIndicator = ({ isLoading }) => {
-  <View className="flex-1">
+const LoadingIndicator = ({ isLoading }) => (
+  <View className="flex-1 absolute">
     <Modal
       transparent={true}
       animationType={"none"}
@@ -15,7 +15,7 @@ const LoadingIndicator = ({ isLoading }) => {
         <ActivityIndicator size="large" color="#ffffff" />
       </View>
     </Modal>
-  </View>;
-};
+  </View>
+);
 
 export default LoadingIndicator;

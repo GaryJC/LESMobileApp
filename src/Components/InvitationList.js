@@ -23,18 +23,26 @@ export default function InvitationList({ item }) {
             : "Group Invitation" + ` [${item.groupInfo.name}]`}
         </Text>
       </View>
-      <View className="flex-row justify-between items-center p-[10px]">
+      <View className="flex-row justify-between items-center px-[10px]">
         <View className="flex-row items-center">
-          <View className="h-[50px] w-[50px]">
+          <View className="h-[50px] w-[50px] justify-center">
             {type === LesConstants.IMNotificationType.FriendInvitation ? (
-              <Avatar tag={item.sender.tag} name={item.sender.name} size={{ w: 25, h: 25, font: 10 }} />
+              <Avatar
+                tag={item.sender.tag}
+                name={item.sender.name}
+                size={{ w: 25, h: 25, font: 10 }}
+              />
             ) : (
-              <Avatar tag={item.id} name={item.groupInfo.name} size={{ w: 25, h: 25, font: 10 }} />
+              <Avatar
+                tag={item.id}
+                name={item.groupInfo.name}
+                size={{ w: 25, h: 25, font: 10 }}
+              />
             )}
           </View>
-          <Text className="text-white font-bold text-[13px] pl-[10px]">
+          <Text className="text-white font-bold text-[13px]">
             {type === LesConstants.IMNotificationType.FriendInvitation
-              ? item.sender.name
+              ? item.recipient.name
               : item.sender.name + " invites you"}
           </Text>
         </View>
