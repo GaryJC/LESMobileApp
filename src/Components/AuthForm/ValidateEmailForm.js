@@ -3,6 +3,7 @@ import Constants from "../../modules/Constants";
 import { firebase } from "@react-native-firebase/auth";
 import { useState } from "react";
 import LoadingIndicator from "../LoadingIndicator";
+import HighlightButton from "../HighlightButton";
 
 const ValidateEmailForm = ({
   email,
@@ -15,6 +16,7 @@ const ValidateEmailForm = ({
 
   const validateEmailHandler = async () => {
     try {
+      if (email == null || email == "") return;
       const result = await firebase.auth().fetchSignInMethodsForEmail(email);
       if (result.includes("google.com")) {
         setEmailState(Constants.EmailState.RegisteredWithGoogle);
@@ -32,7 +34,7 @@ const ValidateEmailForm = ({
     }
   };
   return (
-    <View>
+    <View className="w-full">
       <Text className="text-white text-[18px] font-bold mb-[20px]">
         Sign in with email
       </Text>
@@ -45,19 +47,12 @@ const ValidateEmailForm = ({
         value={email}
         onChangeText={setEmail}
         className="border-b-2 border-[#394879] text-white"
+        keyboardType="email-address"
       />
       {error && <Text className="text-[#FF0000]">{error}</Text>}
       <View className="flex-row justify-end mt-[20px]">
-        <TouchableHighlight onPress={closeModalHandler}>
-          <View className="bg-[#393B44] px-[10px] py-[5px] mr-[10px] rounded">
-            <Text className="text-[#547AD5] text-center">Cancel</Text>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight onPress={validateEmailHandler}>
-          <View className="bg-[#4C89F9] px-[10px] py-[5px] rounded">
-            <Text className="text-white text-center">Next</Text>
-          </View>
-        </TouchableHighlight>
+        <HighlightButton text="Cancel" onPress={closeModalHandler} />
+        <HighlightButton type="primary" text="Next" onPress={validateEmailHandler} />
       </View>
       <LoadingIndicator isLoading={isLoading} />
     </View>

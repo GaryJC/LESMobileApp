@@ -151,12 +151,10 @@ export default function LoginScreen() {
 
   async function onGoogleButtonPress() {
     setIsLoading(true);
+    // Check if your device supports Google Play
+    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+    // Get the users ID token
     try {
-      // Check if your device supports Google Play
-      await GoogleSignin.hasPlayServices({
-        showPlayServicesUpdateDialog: true,
-      });
-      // Get the users ID token
       const { idToken } = await GoogleSignin.signIn();
 
       // Create a Google credential with the token
@@ -167,8 +165,10 @@ export default function LoginScreen() {
       const { loginState, id, imServerState } =
         await LoginService.Inst.firebaseQuickLogin();
       navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+      // console.log("google result; ", result);
     } catch (e) {
-      // setIsLoading(false);
+      console.log("error", e);
+      throw e;
     }
     setIsLoading(false);
   }

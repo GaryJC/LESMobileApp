@@ -32,7 +32,7 @@ export default function CreateNameScreen() {
 
   return (
     <View className="flex-1 justify-center">
-      <InputLayout label={"Create your username:"}>
+      <InputLayout label={"Create your Nickname:"}>
         <TextInput
           value={username}
           onChangeText={updateUsername}
