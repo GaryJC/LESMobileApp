@@ -17,6 +17,19 @@ public class MainActivity extends ReactActivity {
     // coloring the background, status bar, and navigation bar.
     // This is required for expo-splash-screen.
     setTheme(R.style.AppTheme);
+    
+    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+        NotificationChannel notificationChannel = new NotificationChannel("nexgami-notification", "MainChannel", NotificationManager.IMPORTANCE_HIGH);
+        notificationChannel.setShowBadge(true);
+        notificationChannel.setDescription("nexgami-notification");
+        notificationChannel.enableVibration(true);
+        notificationChannel.enableLights(true);
+        notificationChannel.setVibrationPattern(new long[]{400, 200, 400});
+        //notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+        NotificationManager manager = getSystemService(NotificationManager.class);
+        manager.createNotificationChannel(notificationChannel);
+    }
+
     super.onCreate(null);
   }
 
