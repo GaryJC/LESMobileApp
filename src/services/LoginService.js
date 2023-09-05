@@ -254,7 +254,10 @@ export default class LoginService {
       const { id, loginState, profile } = result;
       let imResult;
 
-      if (loginState == LoginState.Normal || loginState == LoginState.UpdateReferrer) {
+      if (
+        loginState == LoginState.Normal ||
+        loginState == LoginState.UpdateReferrer
+      ) {
         //登陆成功，连接im服务器
         try {
           imResult = await LesPlatformCenter.Inst.connect(
@@ -348,7 +351,10 @@ export default class LoginService {
     const device = DataCenter.deviceName;
     try {
       const response = await Firebase.loginRequest(userToken, device, fcmToken);
+      console.log("sasas: ", userToken);
+      console.log("pp: ", fcmToken);
       const data = response.data;
+      console.log("ddd: ", data);
       if (data.code == 0) {
         const ret = data.retObject;
         return {
@@ -412,7 +418,7 @@ export default class LoginService {
           msg: data.msg,
         };
       }
-    } catch (e) { }
+    } catch (e) {}
     return false;
   }
 
@@ -426,7 +432,7 @@ export default class LoginService {
       const response = await Firebase.updateReferrer(userToken, referralCode);
       const data = response.data;
       return data.code;
-    } catch (e) { }
+    } catch (e) {}
     return -1;
   }
 

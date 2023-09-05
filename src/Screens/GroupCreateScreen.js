@@ -189,21 +189,15 @@ const GroupCreateScreen = () => {
             }}
             onPress={closeCreateGroupModal}
           />
-          {/* <Pressable
-          className="flex-1 justify-center items-center bg-black/[0.6]"
-          onPress={closeCreateGroupModal}
-        > */}
           <View className="w-[70vw] h-[25vh] bg-[#262F38] justify-center items-center p-[15px] rounded-xl">
             <Text className="text-white text-[16px] text-center">
               Please create your group's name
             </Text>
-            {/* <View className="h-[30px] w-[100%] mt-[20px] bg-[#1B1B1B] rounded-lg"> */}
             <TextInput
               className="h-[30px] w-[100%] mt-[20px] bg-[#1B1B1B] rounded-lg text-white"
               value={groupName}
               onChangeText={setGroupName}
             />
-            {/* </View> */}
             {!isLoading ? (
               <TouchableHighlight
                 className="mt-[20px]"
@@ -221,7 +215,6 @@ const GroupCreateScreen = () => {
               </TouchableWithoutFeedback>
             )}
           </View>
-          {/* </Pressable> */}
         </View>
       </Modal>
     </View>

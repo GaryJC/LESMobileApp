@@ -4,6 +4,7 @@ import { useState } from "react";
 import AuthButton from "../Components/AuthButton";
 import IMFunctions from "../utils/IMFunctions";
 import { useNavigation } from "@react-navigation/native";
+import { LesPlatformCenter } from "les-im-components";
 
 export default function CreateNameScreen() {
   const [username, setUsername] = useState();
@@ -17,7 +18,7 @@ export default function CreateNameScreen() {
 
   const onPressHandler = () => {
     setIsLoading(true);
-    IMFunctions.setName(username)
+    LesPlatformCenter.IMFunctions.setName(username)
       .then((res) => {
         console.log("name create success: ", res);
         setIsLoading(false);

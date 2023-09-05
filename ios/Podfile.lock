@@ -47,6 +47,9 @@ PODS:
     - FirebaseAuth (~> 10.12.0)
   - Firebase/CoreOnly (10.12.0):
     - FirebaseCore (= 10.12.0)
+  - Firebase/Messaging (10.12.0):
+    - Firebase/CoreOnly
+    - FirebaseMessaging (~> 10.12.0)
   - FirebaseAppCheckInterop (10.14.0)
   - FirebaseAuth (10.12.0):
     - FirebaseAppCheckInterop (~> 10.0)
@@ -58,10 +61,30 @@ PODS:
     - FirebaseCoreInternal (~> 10.0)
     - GoogleUtilities/Environment (~> 7.8)
     - GoogleUtilities/Logger (~> 7.8)
+  - FirebaseCoreExtension (10.12.0):
+    - FirebaseCore (~> 10.0)
   - FirebaseCoreInternal (10.14.0):
     - "GoogleUtilities/NSData+zlib (~> 7.8)"
+  - FirebaseInstallations (10.14.0):
+    - FirebaseCore (~> 10.0)
+    - GoogleUtilities/Environment (~> 7.8)
+    - GoogleUtilities/UserDefaults (~> 7.8)
+    - PromisesObjC (~> 2.1)
+  - FirebaseMessaging (10.12.0):
+    - FirebaseCore (~> 10.0)
+    - FirebaseInstallations (~> 10.0)
+    - GoogleDataTransport (~> 9.2)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.8)
+    - GoogleUtilities/Environment (~> 7.8)
+    - GoogleUtilities/Reachability (~> 7.8)
+    - GoogleUtilities/UserDefaults (~> 7.8)
+    - nanopb (< 2.30910.0, >= 2.30908.0)
   - fmt (6.2.1)
   - glog (0.3.5)
+  - GoogleDataTransport (9.2.5):
+    - GoogleUtilities/Environment (~> 7.7)
+    - nanopb (< 2.30910.0, >= 2.30908.0)
+    - PromisesObjC (< 3.0, >= 1.2)
   - GoogleSignIn (7.0.0):
     - AppAuth (~> 1.5)
     - GTMAppAuth (< 3.0, >= 1.3)
@@ -81,6 +104,8 @@ PODS:
   - "GoogleUtilities/NSData+zlib (7.11.5)"
   - GoogleUtilities/Reachability (7.11.5):
     - GoogleUtilities/Logger
+  - GoogleUtilities/UserDefaults (7.11.5):
+    - GoogleUtilities/Logger
   - GTMAppAuth (2.0.0):
     - AppAuth/Core (~> 1.6)
     - GTMSessionFetcher/Core (< 4.0, >= 1.5)
@@ -89,6 +114,11 @@ PODS:
     - hermes-engine/Pre-built (= 0.71.8)
   - hermes-engine/Pre-built (0.71.8)
   - libevent (2.1.12)
+  - nanopb (2.30909.0):
+    - nanopb/decode (= 2.30909.0)
+    - nanopb/encode (= 2.30909.0)
+  - nanopb/decode (2.30909.0)
+  - nanopb/encode (2.30909.0)
   - PromisesObjC (2.3.1)
   - RCT-Folly (2021.07.22.00):
     - boost
@@ -347,6 +377,8 @@ PODS:
     - RCTTypeSafety
     - React-Core
     - ReactCommon/turbomodule/core
+  - react-native-webview (13.5.1):
+    - React-Core
   - React-perflogger (0.71.8)
   - React-RCTActionSheet (0.71.8):
     - React-Core/RCTActionSheetHeaders (= 0.71.8)
@@ -438,6 +470,11 @@ PODS:
     - Firebase/Auth (= 10.12.0)
     - React-Core
     - RNFBApp
+  - RNFBMessaging (18.3.0):
+    - Firebase/Messaging (= 10.12.0)
+    - FirebaseCoreExtension (= 10.12.0)
+    - React-Core
+    - RNFBApp
   - RNGestureHandler (2.9.0):
     - React-Core
   - RNGoogleSignin (10.0.1):
@@ -510,6 +547,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - react-native-webview (from `../node_modules/react-native-webview`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
@@ -525,6 +563,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
+  - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - "RNGoogleSignin (from `../node_modules/@react-native-google-signin/google-signin`)"
   - RNReanimated (from `../node_modules/react-native-reanimated`)
@@ -538,13 +577,18 @@ SPEC REPOS:
     - FirebaseAppCheckInterop
     - FirebaseAuth
     - FirebaseCore
+    - FirebaseCoreExtension
     - FirebaseCoreInternal
+    - FirebaseInstallations
+    - FirebaseMessaging
     - fmt
+    - GoogleDataTransport
     - GoogleSignIn
     - GoogleUtilities
     - GTMAppAuth
     - GTMSessionFetcher
     - libevent
+    - nanopb
     - PromisesObjC
 
 EXTERNAL SOURCES:
@@ -612,6 +656,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/logger"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-webview:
+    :path: "../node_modules/react-native-webview"
   React-perflogger:
     :path: "../node_modules/react-native/ReactCommon/reactperflogger"
   React-RCTActionSheet:
@@ -642,6 +688,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBAuth:
     :path: "../node_modules/@react-native-firebase/auth"
+  RNFBMessaging:
+    :path: "../node_modules/@react-native-firebase/messaging"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
   RNGoogleSignin:
@@ -674,15 +722,20 @@ SPEC CHECKSUMS:
   FirebaseAppCheckInterop: c87f1d5421c852413dd936b2b2340b21e62501a0
   FirebaseAuth: a66c1e14ec58f41d154a4b41ce1a23ea00ad4805
   FirebaseCore: f86a1394906b97ac445ae49c92552a9425831bed
+  FirebaseCoreExtension: 0ce5ac36042001cfa233ce7bfa28e5c313cf80f4
   FirebaseCoreInternal: d558159ee6cc4b823c2296ecc193de9f6d9a5bb3
+  FirebaseInstallations: f672b1eda64e6381c21d424a2f680a943fd83f3b
+  FirebaseMessaging: bb2c4f6422a753038fe137d90ae7c1af57251316
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
+  GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleSignIn: b232380cf495a429b8095d3178a8d5855b42e842
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
   GTMAppAuth: 99fb010047ba3973b7026e45393f51f27ab965ae
   GTMSessionFetcher: e8647203b65cee28c5f73d0f473d096653945e72
   hermes-engine: 47986d26692ae75ee7a17ab049caee8864f855de
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
+  nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: 8af6a32dfc2b65ec82193c2dee6e1011ff22ac2a
@@ -699,6 +752,7 @@ SPEC CHECKSUMS:
   React-jsinspector: c712f9e3bb9ba4122d6b82b4f906448b8a281580
   React-logger: 342f358b8decfbf8f272367f4eacf4b6154061be
   react-native-safe-area-context: 39c2d8be3328df5d437ac1700f4f3a4f75716acc
+  react-native-webview: 8baa0f5c6d336d6ba488e942bcadea5bf51f050a
   React-perflogger: d21f182895de9d1b077f8a3cd00011095c8c9100
   React-RCTActionSheet: 0151f83ef92d2a7139bba7dfdbc8066632a6d47b
   React-RCTAnimation: 5ec9c0705bb2297549c120fe6473aa3e4a01e215
@@ -714,6 +768,7 @@ SPEC CHECKSUMS:
   ReactCommon: 9957c7530467adbdf4a4a1476d636bd00b2e4dd8
   RNFBApp: f0b5cf917b0b91a0ae890fbbaec0fb5d3285ea46
   RNFBAuth: e3f51b2e4acc39e4664b24117f9106af493b2dd3
+  RNFBMessaging: dec20e8fa230fb776b94c33384676da33c605d2e
   RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
   RNGoogleSignin: ccaa4a81582cf713eea562c5dd9dc1961a715fd0
   RNReanimated: cc5e3aa479cb9170bcccf8204291a6950a3be128

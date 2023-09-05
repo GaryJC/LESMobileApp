@@ -3,23 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>537080417457-kdb1t7oi5lkdtu46r94mna9tskfkkvcv.apps.googleusercontent.com</string>
+	<string>310675491806-smq10a7cqe6evemb6r8r88anvqo7ai43.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.537080417457-kdb1t7oi5lkdtu46r94mna9tskfkkvcv</string>
-	<key>ANDROID_CLIENT_ID</key>
-	<string>537080417457-0mchunr41rav8o55sphbbbk3v9oh077u.apps.googleusercontent.com</string>
+	<string>com.googleusercontent.apps.310675491806-smq10a7cqe6evemb6r8r88anvqo7ai43</string>
 	<key>API_KEY</key>
-	<string>AIzaSyC-aBmtwQsk33uMtEDN-lCEM3FseL2Kv4A</string>
+	<string>AIzaSyDo9kSZdAaav0zPZjqlJVzZYTihLY5Vr88</string>
 	<key>GCM_SENDER_ID</key>
-	<string>537080417457</string>
+	<string>310675491806</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.lightesport.im.mobile</string>
 	<key>PROJECT_ID</key>
-	<string>les-web3-platform</string>
+	<string>nexgami-d9e01</string>
 	<key>STORAGE_BUCKET</key>
-	<string>les-web3-platform.appspot.com</string>
+	<string>nexgami-d9e01.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:537080417457:ios:72d3831c2c6bb8f8f06690</string>
+	<string>1:310675491806:ios:7ced5c9c33d5f85fdfab4f</string>
 </dict>
 </plist>

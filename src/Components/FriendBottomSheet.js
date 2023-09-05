@@ -9,7 +9,7 @@ import {
   Image,
   TouchableHighlight,
 } from "react-native";
-import { useRef, useCallback, useMemo, useEffect } from "react";
+import { useRef, useCallback, useMemo, useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -24,7 +24,21 @@ export default function FriendBottomSheet({
   bottomSheetModalRef,
   selectedFriend,
 }) {
-  // console.log("ssss", selectedFriend, selectedFriend?.tag);
+  const [isFriend, setIsFriend] = useState(false);
+  console.log("sss: ", selectedFriend);
+  useEffect(() => {
+    const checkIsFriend = async () => {
+      let friendList = await FriendService.Inst.getFriendList();
+      friendList = friendList.map((item) => item.id);
+      if (friendList.includes(selectedFriend.id)) {
+        setIsFriend(true);
+      } else {
+        setIsFriend(false);
+      }
+    };
+    checkIsFriend();
+  }, [selectedFriend]);
+
   const snapPoints = useMemo(() => ["60%", "50%"]);
   // const bottomSheetRef = useRef(null);
   const renderBackdrop = useCallback(
@@ -38,7 +52,6 @@ export default function FriendBottomSheet({
     []
   );
   const navigation = useNavigation();
-  // console.log("ssss", selectedFriend);
 
   const handleSheetChanges = useCallback((index) => {
     console.log("handleSheetChanges", index);
@@ -102,6 +115,18 @@ export default function FriendBottomSheet({
   //   }
   // }, [isSheetOpen]);
 
+  const BottomSheetButton = ({ handler, children, title }) => (
+    <TouchableHighlight
+      onPress={handler}
+      className="flex-1 h-[80px] rounded-lg overflow-hidden"
+    >
+      <View className="bg-[#131F2A] items-center justify-center w-[100%] h-[100%]">
+        {children}
+        <Text className="text-white font-bold text-[15px]">{title}</Text>
+      </View>
+    </TouchableHighlight>
+  );
+
   return (
     <BottomSheetModal
       ref={bottomSheetModalRef}
@@ -138,23 +163,21 @@ export default function FriendBottomSheet({
             #{selectedFriend?.tag}
           </Text>
         </View>
-        <View className="flex-row justify-between mt-[10px] mx-[5%]">
-          <TouchableHighlight
-            onPress={goChatHandler}
-            className="w-[45%] h-[80px] rounded-lg overflow-hidden"
-          >
-            <View className="bg-[#131F2A] items-center justify-center w-[100%] h-[100%]">
-              <Ionicons
-                name="chatbox-ellipses-outline"
-                size={30}
-                color="white"
-              />
-              <Text className="text-white font-bold text-[15px]">Chat</Text>
-            </View>
-          </TouchableHighlight>
-          <TouchableHighlight
+        {isFriend && (
+          <>
+            <View className="flex-row justify-between mt-[10px] mx-[5%]">
+              <BottomSheetButton handler={goChatHandler} title={"Chat"}>
+                {
+                  <Ionicons
+                    name="chatbox-ellipses-outline"
+                    size={30}
+                    color="white"
+                  />
+                }
+              </BottomSheetButton>
+              {/* <TouchableHighlight
             onPress={() => console.log("yes")}
-            className="w-[45%] h-[80px] rounded-lg overflow-hidden"
+            className="flex-1 h-[80px] rounded-lg overflow-hidden"
           >
             <View className="bg-[#131F2A] w-[100%] h-[100%] items-center justify-center">
               <MaterialIcons name="group-add" size={32} color="white" />
@@ -162,16 +185,20 @@ export default function FriendBottomSheet({
                 Invite to chat
               </Text>
             </View>
-          </TouchableHighlight>
-        </View>
-        <TouchableHighlight
-          className="mt-[20px] mx-[5%] rounded-lg overflow-hidden"
-          onPress={removeFriendHandler}
-        >
-          <View className="bg-[#131F2A] h-[35px] justify-center">
-            <Text className="text-[#FF0000] font-bold text-center">Delete</Text>
-          </View>
-        </TouchableHighlight>
+          </TouchableHighlight> */}
+            </View>
+            <TouchableHighlight
+              className="mt-[5vh] mx-[5%] rounded-lg overflow-hidden"
+              onPress={removeFriendHandler}
+            >
+              <View className="bg-[#131F2A] h-[35px] justify-center">
+                <Text className="text-[#FF0000] font-bold text-center">
+                  Delete
+                </Text>
+              </View>
+            </TouchableHighlight>
+          </>
+        )}
       </View>
     </BottomSheetModal>
   );
