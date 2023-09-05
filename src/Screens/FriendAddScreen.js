@@ -4,7 +4,6 @@ import { LesPlatformCenter } from "les-im-components";
 import { FriendList } from "../Components/FriendList";
 import LoadingIndicator from "../Components/LoadingIndicator";
 import FriendAddButton from "../Components/FriendAddButton";
-import { split } from "lodash";
 
 const FriendAddScreen = () => {
   const [searchWord, setSearchWord] = useState();

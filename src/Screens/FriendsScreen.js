@@ -1,12 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import {
-  Button,
-  ImageBackground,
-  SectionList,
-  Text,
-  View
-} from "react-native";
+import { Button, ImageBackground, SectionList, Text, View } from "react-native";
 //dummy data
 import { FriendButton } from "../Components/FriendButton";
 import { FriendList } from "../Components/FriendList";
@@ -17,6 +11,7 @@ import { DataEvents, UIEvents } from "../modules/Events";
 import FriendService from "../services/FriendService";
 import NotificationService from "../services/NotificationService";
 import JSEvent from "../utils/JSEvent";
+import { LesConstants } from "les-im-components";
 
 const friendButtonContent = [
   { title: "Friends Request", icon: "emoji-people", link: "" },
@@ -58,8 +53,12 @@ export default function FriendsScreen() {
     // const offline = FriendService.Inst.getFriendList((f) => !f.isOnline);
     const friendList = await FriendService.Inst.getFriendList();
     console.log("friend list: ", friendList);
-    const online = friendList.filter((item) => item.onlineState === 1);
-    const offline = friendList.filter((item) => item.onlineState === 2);
+    const online = friendList.filter(
+      (item) => item.onlineState === LesConstants.IMUserOnlineState.Online
+    );
+    const offline = friendList.filter(
+      (item) => item.onlineState !== LesConstants.IMUserOnlineState.Online
+    );
 
     setFriendsData([
       // { title: "Recommended Friends", data: [] },

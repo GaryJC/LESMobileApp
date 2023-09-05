@@ -213,7 +213,6 @@ class FriendService {
         u = user[0];
       }
       const friendData = new FriendData(f.id, f.time, user[0]);
-      // console.log("ffdsa: ", user[0]);
       if (filter == null) {
         friends.push(friendData);
       } else {
