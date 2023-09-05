@@ -77,6 +77,13 @@ const VerifyEmailForm = ({ userToken, userId, setLoginState }) => {
     }
   }, [countdown]); // This tells React to re-run the effect when `countdown` changes
 
+  useEffect(() => {
+    if (isVerified) {
+      //邮箱验证通过了，尝试连接im server
+      LoginService.Inst.firebaseQuickLogin();
+    }
+  }, [isVerified])
+
   return (
     <>
       {isVerified ? (

@@ -168,13 +168,13 @@ export default function UserScreen() {
         source={UserData.userBgImg}
         className="w-[100vw] h-[30vh] items-center relative"
       >
-        <View className="overflow-hidden rounded-full w-[100px] h-[100px] absolute bottom-[-50px]">
+        <View className="rounded-full w-[100px] h-[100px] absolute bottom-[-50px]">
           {/* <ImageBackground
             source={{ uri: `https://i.pravatar.cc/?img=${userInfo.accountId}` }}
             className="w-[100%] h-[100%]"
             resizeMode="cover"
           /> */}
-          <Avatar tag={userInfo.tag} name={userInfo.name} />
+          <Avatar tag={userInfo.tag} name={userInfo.name} size={{ w: 80, h: 80, font: 48 }} />
         </View>
         <TouchableOpacity
           onPress={navigateToNotification}

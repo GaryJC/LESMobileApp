@@ -28,6 +28,9 @@ import auth, { firebase } from "@react-native-firebase/auth";
 import { ValidateEmailModal } from "../Components/ValidateEmailModal";
 import LoadingIndicator from "../Components/LoadingIndicator";
 
+import { NativeModules } from 'react-native';
+const { RNTwitterSignIn } = NativeModules;
+
 GoogleSignin.configure({
   webClientId:
     "537080417457-k01qk24drifnbv425r7c6al4u2a8qp62.apps.googleusercontent.com",
@@ -149,6 +152,22 @@ export default function LoginScreen() {
     navigation.navigate("Signup");
   }
 
+  async function onTwitterButtonPress() {
+    setIsLoading(true);
+    try {
+      const { authToken, authTokenSecret } = await RNTwitterSignIn.logIn();
+      const twitterCredential = auth.TwitterAuthProvider.credential(authToken, authTokenSecret);
+      await auth().signInWithCredential(twitterCredential);
+      const { loginState, id, imServerState } = await LoginService.Inst.firebaseQuickLogin();
+      navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+    } catch (e) {
+      console.log("error", e);
+      throw e;
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   async function onGoogleButtonPress() {
     setIsLoading(true);
     // Check if your device supports Google Play
@@ -169,8 +188,9 @@ export default function LoginScreen() {
     } catch (e) {
       console.log("error", e);
       throw e;
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }
 
   return (
@@ -223,7 +243,8 @@ export default function LoginScreen() {
           socialType={Constants.SigninButtonType.Google}
           handler={onGoogleButtonPress}
         />
-        <SigninButton socialType={Constants.SigninButtonType.Twitter} />
+        <SigninButton socialType={Constants.SigninButtonType.Twitter}
+          handler={onTwitterButtonPress} />
       </View>
       <ValidateEmailModal
         emailSigninModalVisible={emailSigninModalVisible}

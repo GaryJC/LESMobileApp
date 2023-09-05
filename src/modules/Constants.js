@@ -11,7 +11,7 @@ const Address_Public_Test = {
 };
 
 const Address_Production = {
-  IMServer: "ws://15.222.78.167:19888/im/ws",
+  IMServer: "ws://3.98.76.182:19888/im/ws",
   AccountServer: "https://acc.metavirus.games/",
   WalletAddress: "http://wallet.metavirus.games"
 };

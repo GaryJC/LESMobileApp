@@ -7,10 +7,12 @@ import { DataEvents, UIEvents } from "../modules/Events";
 import { loginRequest, Firebase } from "../utils/auth";
 import { AppState, AppStateStatus } from "react-native";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import { NativeModules } from "react-native";
 import UserProfile from "../Models/UserProfile";
 
 const LoginChannel = "Firebase";
 
+const { RNTwitterSignIn } = NativeModules;
 const { LoginExceptionType, LoginState } = Constants;
 const { ErrorCodes, WebsocketState } = LesConstants;
 /**
@@ -56,6 +58,10 @@ export default class LoginService {
     //     console.log("===============", ret);
     //   });
 
+
+    RNTwitterSignIn.init('Dywh2ptHOaZvpHy6AmJgIIuUV', 'S9VhKJOzqAInFRLIKVD9XkBFDofoio02pE8J1FWES5RquGsU3J').then(() => {
+      console.log("==========Twitter SDK initialized==========");
+    })
     await this.#loadLoginData();
     LesPlatformCenter.IMListeners.onWebsocketStateChanged = (state) => {
       if (state == WebsocketState.Disconnected) {
@@ -391,7 +397,7 @@ export default class LoginService {
    * @param {string} userToken firebase用户token
    * @param {string} codeToken 验证码token
    * @param {string} code 验证码
-   * @returns {boolean} 验证结果
+   * @returns {Promise<boolean>} 验证结果
    */
   async firebaseRequestVerifyCode(accountId, userToken, codeToken, code) {
     try {
