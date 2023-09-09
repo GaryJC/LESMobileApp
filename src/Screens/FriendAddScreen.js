@@ -13,7 +13,9 @@ const FriendAddScreen = () => {
   const onSearchHandler = async () => {
     setIsLoading(true);
     let [username, tag] = searchWord.split("#");
-    tag = tag == undefined && 0;
+    if (!tag) {
+      tag = 0;
+    }
     console.log("username, tag", username, tag);
     try {
       const result = await LesPlatformCenter.IMFunctions.findUser(
@@ -27,9 +29,9 @@ const FriendAddScreen = () => {
         const id = userdata.getId();
         setUserData({ name: name, tag: tag, id: id, state: state });
       }
-      console.log("find user's result: ", userdata);
+      // console.log("find user's result: ", userData.getId());
     } catch (e) {
-      console.log("error", e);
+      console.log("errors", e);
     }
     setIsLoading(false);
   };
@@ -65,6 +67,7 @@ const FriendAddScreen = () => {
           {userData ? (
             <FriendList
               friend={userData}
+              hasTag={true}
               button={
                 <FriendAddButton
                   userData={userData}

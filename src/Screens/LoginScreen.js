@@ -27,13 +27,14 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import auth, { firebase } from "@react-native-firebase/auth";
 import { ValidateEmailModal } from "../Components/ValidateEmailModal";
 import LoadingIndicator from "../Components/LoadingIndicator";
+import { Firebase } from "../utils/auth";
 
-import { NativeModules } from 'react-native';
+import { NativeModules } from "react-native";
 const { RNTwitterSignIn } = NativeModules;
 
 GoogleSignin.configure({
   webClientId:
-    "537080417457-k01qk24drifnbv425r7c6al4u2a8qp62.apps.googleusercontent.com",
+    "310675491806-d44rhdib9l46g9tg6qs6nsbn1a7hnl4c.apps.googleusercontent.com",
 });
 
 export default function LoginScreen() {
@@ -152,13 +153,22 @@ export default function LoginScreen() {
     navigation.navigate("Signup");
   }
 
+  function onTwitterButtonPress() {
+    Firebase.twitterSignin();
+  }
+
+  /*
   async function onTwitterButtonPress() {
     setIsLoading(true);
     try {
       const { authToken, authTokenSecret } = await RNTwitterSignIn.logIn();
-      const twitterCredential = auth.TwitterAuthProvider.credential(authToken, authTokenSecret);
+      const twitterCredential = auth.TwitterAuthProvider.credential(
+        authToken,
+        authTokenSecret
+      );
       await auth().signInWithCredential(twitterCredential);
-      const { loginState, id, imServerState } = await LoginService.Inst.firebaseQuickLogin();
+      const { loginState, id, imServerState } =
+        await LoginService.Inst.firebaseQuickLogin();
       navigation.navigate("VerifyEmail", { id, loginState, imServerState });
     } catch (e) {
       console.log("error", e);
@@ -167,7 +177,9 @@ export default function LoginScreen() {
       setIsLoading(false);
     }
   }
+  */
 
+  /*
   async function onGoogleButtonPress() {
     setIsLoading(true);
     // Check if your device supports Google Play
@@ -183,6 +195,7 @@ export default function LoginScreen() {
       await auth().signInWithCredential(googleCredential);
       const { loginState, id, imServerState } =
         await LoginService.Inst.firebaseQuickLogin();
+      console.log("loginState: ", loginState);
       navigation.navigate("VerifyEmail", { id, loginState, imServerState });
       // console.log("google result; ", result);
     } catch (e) {
@@ -191,6 +204,13 @@ export default function LoginScreen() {
     } finally {
       setIsLoading(false);
     }
+  }
+  */
+
+  function onGoogleButtonPress() {
+    setIsLoading(true);
+    Firebase.googleSignin();
+    setIsLoading(false);
   }
 
   return (
@@ -243,8 +263,10 @@ export default function LoginScreen() {
           socialType={Constants.SigninButtonType.Google}
           handler={onGoogleButtonPress}
         />
-        <SigninButton socialType={Constants.SigninButtonType.Twitter}
-          handler={onTwitterButtonPress} />
+        <SigninButton
+          socialType={Constants.SigninButtonType.Twitter}
+          handler={onTwitterButtonPress}
+        />
       </View>
       <ValidateEmailModal
         emailSigninModalVisible={emailSigninModalVisible}

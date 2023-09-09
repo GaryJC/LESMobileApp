@@ -15,26 +15,26 @@ import DatabaseService from "../services/DatabaseService";
 import { MessageCaches } from "../Models/MessageCaches";
 import JSEvent from "../utils/JSEvent";
 import { UIEvents } from "../modules/Events";
+import Avatar from "./Avatar";
 
-const SearchedMessageList = ({ item, handleSheetEnd }) => {
+const ChatSearchList = ({ item, handleSheetEnd }) => {
   const { timestamp, senderId, recipientId, content, timelineId, messageId } =
     item;
   const chatId = MessageCaches.MakeChatID(senderId, recipientId);
 
-  let userInfo = DataCenter.userInfo;
-  let name;
-  if (senderId === userInfo.accountId) {
-    name = userInfo.imUserInfo.name;
-  } else {
-    userInfo = IMUserInfoService.Inst.getCachedUser(senderId).pop();
-    name = userInfo.name;
+  let userInfo = DataCenter.userInfo.imUserInfo;
+  if (senderId !== userInfo.id) {
+    userInfo = IMUserInfoService.Inst.getCachedUser(senderId).pop().imUserInfo;
   }
+  console.log("userinfo: ", userInfo);
+
+  useEffect(() => {}, []);
 
   const date = formatDate(new Date(timestamp));
 
   const onClickMsgHandler = async () => {
     const targetId =
-      DataCenter.userInfo.accountId === senderId ? recipientId : senderId;
+      DataCenter.userInfo.id === senderId ? recipientId : senderId;
     const messageList =
       DataCenter.messageCache.getChatDataByChatId(chatId).messageList;
     const count =
@@ -54,16 +54,19 @@ const SearchedMessageList = ({ item, handleSheetEnd }) => {
   return (
     <TouchableOpacity onPress={onClickMsgHandler}>
       <View className="flex-row py-[10px] justify-start border-b-2 border-[#5C5C5C]">
-        <View className="overflow-hidden rounded-full w-[30px] h-[30px]">
-          <ImageBackground
-            source={{ uri: `https://i.pravatar.cc/?img=${senderId}` }}
-            className="w-[100%] h-[100%]"
-            resizeMode="cover"
+        <View className="w-[30px] h-[30px]">
+          <Avatar
+            tag={userInfo.tag}
+            name={userInfo.name}
+            size={{ w: 30, h: 30 }}
           />
         </View>
+
         <View className="justify-evenly pl-[10px]">
           <View className="flex-row items-end">
-            <Text className="text-[12px] text-white font-bold">{name}</Text>
+            <Text className="text-[12px] text-white font-bold">
+              {userInfo.name}
+            </Text>
             <Text className="text-[10px] text-[#CFCFCF] pl-[10px]">{date}</Text>
           </View>
           <View className="flex-row">
@@ -75,4 +78,4 @@ const SearchedMessageList = ({ item, handleSheetEnd }) => {
   );
 };
 
-export default SearchedMessageList;
+export default ChatSearchList;

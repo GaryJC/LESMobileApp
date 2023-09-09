@@ -36,7 +36,7 @@ import IMUserInfoService from "../services/IMUserInfoService";
 import { ChatBubble } from "../Components/ChatBubble";
 import { ChatList } from "../Components/ChatList";
 import MessageData from "../Models/MessageData";
-import ChatSearchBottomSheet from "../Components/SearchBottomSheet";
+import ChatSearchBottomSheet from "../Components/ChatSearchBottomSheet";
 import { useNavigation } from "@react-navigation/native";
 import { debounce, result } from "lodash";
 import { LesConstants } from "les-im-components";
@@ -122,7 +122,7 @@ const messageReducer = (state, action) => {
 };
 
 const ChatScreen = () => {
-  console.log("===============render chat screen===================")
+  console.log("===============render chat screen===================");
   // 输入框输入的消息
   // const [newMessage, setNewMessage] = useState("");
   // 当前chatid

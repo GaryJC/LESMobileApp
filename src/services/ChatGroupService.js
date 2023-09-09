@@ -124,7 +124,6 @@ class ChatGroupService {
    * @param {Notification} noti
    */
   #onNotificationUpdated(noti) {
-    console.log("nnnn", noti);
     if (noti.type == IMNotificationType.GroupInvitation) {
       if (noti.state == IMNotificationState.Accepted) {
         //同意加入群聊
@@ -133,7 +132,7 @@ class ChatGroupService {
         cg.latestTimelineId = 0;
         this.#pushChatGroup(cg);
         this.#updateChatGroup(cg.id)
-          .then((cg) => { })
+          .then((cg) => {})
           .catch((err) =>
             console.error(`更新群[${cg.id}]失败，code：${err.toString(16)}`)
           );
@@ -334,7 +333,7 @@ class ChatGroupService {
         .then((id) => {
           this.#chatGroups[groupId] = null;
           delete this.#chatGroups[groupId];
-          DatabaseService.Inst.removeChatGroup(groupId);
+          DataCenter.messageCache.removeChatGroup(groupId);
           resolve(id);
         })
         .catch((err) => reject(err));

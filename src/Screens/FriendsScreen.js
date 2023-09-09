@@ -98,22 +98,22 @@ export default function FriendsScreen() {
     };
   }, []);
 
-  const temporyAddHander = () => {
-    // LesPlatformCenter.IMFunctions.sendFriendInvitation(8)
-    NotificationService.Inst.sendFriendInvitation(40)
-      .then((res) => {
-        console.log("Inivitation success: ", res);
-      })
-      .catch((e) => console.log("Invitiation failed: ", e));
-  };
+  // const temporyAddHander = () => {
+  //   // LesPlatformCenter.IMFunctions.sendFriendInvitation(8)
+  //   NotificationService.Inst.sendFriendInvitation(40)
+  //     .then((res) => {
+  //       console.log("Inivitation success: ", res);
+  //     })
+  //     .catch((e) => console.log("Invitiation failed: ", e));
+  // };
 
-  const TemporyAddButton = () => (
-    <Button title="Add" onPress={temporyAddHander} />
-  );
+  // const TemporyAddButton = () => (
+  //   <Button title="Add" onPress={temporyAddHander} />
+  // );
 
   return (
     <View className="flex-1 px-[5vw]">
-      <TemporyAddButton />
+      {/* <TemporyAddButton /> */}
       <View>
         {/* {friendButtonContent.map(({ title, icon, link }, index) => (
           <FriendButton title={title} icon={icon} link={link} index={index} />

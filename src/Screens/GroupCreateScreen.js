@@ -24,6 +24,7 @@ import { LesConstants } from "les-im-components";
 import GroupRoleBottomSheet from "../Components/GroupRoleBottomSheet";
 import FriendSelectButton from "../Components/FriendSelectButton";
 import DataCenter from "../modules/DataCenter";
+import LoadingIndicator from "../Components/LoadingIndicator";
 
 const GroupCreateScreen = () => {
   const [friendsData, setFriendsData] = useState([]);
@@ -44,7 +45,7 @@ const GroupCreateScreen = () => {
     //   type: LesConstants.IMMessageType.Group,
     // });
     const chatListItem = DataCenter.messageCache.getChatListItem(groupId);
-    console.log("bbb: ", chatListItem);
+
     // DataCenter.messageCache.setCurChatListItem(chatListItem);
     JSEvent.emit(UIEvents.User.User_Click_Chat_Updated, {
       // chatId: chatId,
@@ -132,7 +133,7 @@ const GroupCreateScreen = () => {
   return (
     <View className="flex-1 mx-[5vw]">
       <FriendSearchInput setSearchResults={setFriendsData} />
-      <View className="mt-[20px] h-[70vh]">
+      <View className="mt-[20px] h-[75vh]">
         <FlatList
           data={friendsData}
           keyExtractor={(item) => item.id.toString()}
@@ -198,7 +199,7 @@ const GroupCreateScreen = () => {
               value={groupName}
               onChangeText={setGroupName}
             />
-            {!isLoading ? (
+            {/* {!isLoading ? (
               <TouchableHighlight
                 className="mt-[20px]"
                 onPress={createGroupHandler}
@@ -213,10 +214,19 @@ const GroupCreateScreen = () => {
                   <ActivityIndicator size={"small"} />
                 </View>
               </TouchableWithoutFeedback>
-            )}
+            )} */}
+            <TouchableHighlight
+              className="mt-[20px]"
+              onPress={createGroupHandler}
+            >
+              <View className="w-[100px] h-[30px] bg-[#58AE69] rounded-lg justify-center items-center">
+                <Text className="text-white">Submit</Text>
+              </View>
+            </TouchableHighlight>
           </View>
         </View>
       </Modal>
+      <LoadingIndicator isLoading={isLoading} />
     </View>
   );
 };

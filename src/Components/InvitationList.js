@@ -6,6 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Avatar from "./Avatar";
 
 export default function InvitationList({ item }) {
+  console.log("ttt: ", item);
   const onRespondHandler = (notificationId, response) => {
     NotificationService.Inst.respondInvitation(notificationId, response)
       .then((res) => {
@@ -14,7 +15,7 @@ export default function InvitationList({ item }) {
       .catch((e) => console.error(e));
   };
 
-  const InvitationLayout = ({ type, children }) => (
+  const InvitationLayout = ({ type, avatar, name, children }) => (
     <View className="bg-[#262F38] rounded-lg overflow-hidden">
       <View className="bg-[#1A1E22] h-[30px] pl-[10px] justify-center">
         <Text className="text-white font-bold">
@@ -26,12 +27,9 @@ export default function InvitationList({ item }) {
       <View className="flex-row justify-between items-center px-[10px]">
         <View className="flex-row items-center">
           <View className="h-[50px] w-[50px] justify-center">
+            {console.log(avatar)}
             {type === LesConstants.IMNotificationType.FriendInvitation ? (
-              <Avatar
-                tag={item.sender.tag}
-                name={item.sender.name}
-                size={{ w: 25, h: 25, font: 10 }}
-              />
+              avatar
             ) : (
               <Avatar
                 tag={item.id}
@@ -42,7 +40,7 @@ export default function InvitationList({ item }) {
           </View>
           <Text className="text-white font-bold text-[13px]">
             {type === LesConstants.IMNotificationType.FriendInvitation
-              ? item.recipient.name
+              ? name
               : item.sender.name + " invites you"}
           </Text>
         </View>
@@ -52,7 +50,17 @@ export default function InvitationList({ item }) {
   );
 
   const SenderInvitation = ({ notificationId }) => (
-    <InvitationLayout type={item.type}>
+    <InvitationLayout
+      type={item.type}
+      avatar={
+        <Avatar
+          tag={item.recipient.tag}
+          name={item.recipient.name}
+          size={{ w: 25, h: 25, font: 10 }}
+        />
+      }
+      name={item.recipient.name}
+    >
       <TouchableHighlight
         onPress={() =>
           onRespondHandler(
@@ -69,7 +77,17 @@ export default function InvitationList({ item }) {
   );
 
   const RecipientInvitation = ({ notificationId }) => (
-    <InvitationLayout type={item.type}>
+    <InvitationLayout
+      type={item.type}
+      avatar={
+        <Avatar
+          tag={item.sender.tag}
+          name={item.sender.name}
+          size={{ w: 25, h: 25, font: 10 }}
+        />
+      }
+      name={item.sender.name}
+    >
       <TouchableOpacity
         onPress={() =>
           onRespondHandler(

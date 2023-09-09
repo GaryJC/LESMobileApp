@@ -19,18 +19,19 @@ import JSEvent from "../utils/JSEvent";
 import { UIEvents } from "../modules/Events";
 import FriendService from "../services/FriendService";
 import Avatar from "./Avatar";
+import DatabaseService from "../services/DatabaseService";
 
 export default function FriendBottomSheet({
   bottomSheetModalRef,
   selectedFriend,
 }) {
   const [isFriend, setIsFriend] = useState(false);
-  console.log("sss: ", selectedFriend);
+  console.log("selected friend: ", selectedFriend);
   useEffect(() => {
     const checkIsFriend = async () => {
       let friendList = await FriendService.Inst.getFriendList();
       friendList = friendList.map((item) => item.id);
-      if (friendList.includes(selectedFriend.id)) {
+      if (friendList.includes(selectedFriend?.id)) {
         setIsFriend(true);
       } else {
         setIsFriend(false);
@@ -64,10 +65,10 @@ export default function FriendBottomSheet({
   const goChatHandler = () => {
     bottomSheetModalRef.current?.close();
     const chatId = MessageCaches.MakeChatID(
-      selectedFriend.id,
+      selectedFriend?.id,
       DataCenter.userInfo.accountId
     );
-    console.log("go to chat id: ", chatId, selectedFriend.id);
+    // console.log("go to chat id: ", chatId, selectedFriend.id);
     const chatListItem = DataCenter.messageCache.getChatListItem(chatId);
     // DataCenter.messageCache.setCurChatListItem(chatListItem);
     navigation.navigate("Chats", { chatListItem: chatListItem });
@@ -84,26 +85,28 @@ export default function FriendBottomSheet({
   const removeFriendHandler = () => {
     console.log("delete");
     // JSEvent.emit(UIEvents.User.UserState_UIRefresh);
-    FriendService.Inst.removeFriend(selectedFriend.id)
+    FriendService.Inst.removeFriend(selectedFriend?.id)
       .then((res) => {
         console.log("delete friend success! ", res);
         // 刷新好友列表
         JSEvent.emit(UIEvents.User.UserState_UIRefresh);
         const chatId = MessageCaches.MakeChatID(
-          selectedFriend.id,
+          selectedFriend?.id,
           DataCenter.userInfo.accountId
         );
         // 移除缓存中对应的聊天列表
         DataCenter.messageCache.removeChatListItem(chatId);
-        // 刷新好友列表
-        JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, {
-          chatId,
-          action: "delete",
-        });
+        // DatabaseService.Inst.removeChatListItem(chatId);
+        // 刷新聊天列表
+        // JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, {
+        //   chatId,
+        //   action: "delete",
+        // });
+        JSEvent.emit(UIEvents.Message.Message_Chat_List_Removed, chatId);
         setIsSheetOpen(false);
       })
       .catch((e) => {
-        console.log("移除好友", recipientId, "失败, code:", code.toString(16));
+        console.log("移除好友失败, code:", e);
       });
   };
 

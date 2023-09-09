@@ -19,6 +19,7 @@ const FriendSearchInput = ({ setSearchResults }) => {
         className="flex-1 bg-[#1B1B1B] rounded h-[100%] p-[5px] text-[#CACACA]"
         onChangeText={onSearchHandler}
         placeholder="Search friends"
+        placeholderTextColor={"#C3C3C3"}
       />
     </View>
   );

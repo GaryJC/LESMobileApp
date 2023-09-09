@@ -91,7 +91,7 @@ class Notifications {
     if (index == -1) {
       this.notificationList.push(noti);
     } else {
-      this.notificationList[idx] = noti;
+      this.notificationList[index] = noti;
     }
     this.#sortList();
   }

@@ -423,18 +423,23 @@ export default function App() {
                     //     firebase.auth().signOut();
                     //   }}
                     // />
-                    <HighlightButton type="opacity" text="Go to Sign in" onPress={() => {
-                      navigation.navigate("Login");
-                      firebase.auth().signOut();
-                    }} />
+                    <HighlightButton
+                      type="opacity"
+                      text="Go to Sign in"
+                      onPress={() => {
+                        navigation.navigate("Login");
+                        firebase.auth().signOut();
+                      }}
+                    />
                   );
                 },
               }}
             />
-            <Stack.Screen name="CreateName" component={CreateNameScreen}
-              options={
-                { headerBackVisible: false }
-              } />
+            <Stack.Screen
+              name="CreateName"
+              component={CreateNameScreen}
+              options={{ headerBackVisible: false }}
+            />
             <Stack.Screen name="Notification" component={NotificationScreen} />
             <Stack.Screen
               name="FriendRequest"

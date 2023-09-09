@@ -1,19 +1,19 @@
 const Address_Local = {
   IMServer: "ws://localhost:8888/im/ws",
   AccountServer: "http://localhost:18881/",
-  WalletAddress: "http://localhost:3001"
+  WalletAddress: "http://localhost:3001",
 };
 
 const Address_Public_Test = {
   IMServer: "ws://15.222.78.167:19888/im/ws",
   AccountServer: "https://acc-test.metavirus.games/",
-  WalletAddress: "https://release-test.dao88movsiygm.amplifyapp.com/login"
+  WalletAddress: "https://release-test.dao88movsiygm.amplifyapp.com/login",
 };
 
 const Address_Production = {
   IMServer: "ws://3.98.76.182:19888/im/ws",
   AccountServer: "https://acc.metavirus.games/",
-  WalletAddress: "http://wallet.metavirus.games"
+  WalletAddress: "http://wallet.metavirus.games",
 };
 
 const AddressOverride = null;
@@ -63,6 +63,7 @@ const Constants = {
     Registered: "password",
     UnRegistered: undefined,
     RegisteredWithGoogle: "google.com",
+    RegisteredWithTwitter: "twitter.com",
     Unchecked: "Unchecked",
   },
 
@@ -73,7 +74,12 @@ const Constants = {
     LoginData: "LES_LoginData",
   },
 
-  Address: AddressOverride != null ? AddressOverride : (process.env.NODE_ENV == "production" ? Address_Production : Address_Public_Test),
+  Address:
+    AddressOverride != null
+      ? AddressOverride
+      : process.env.NODE_ENV == "production"
+      ? Address_Production
+      : Address_Public_Test,
 
   LoginExceptionType: {
     AccountCenterError: "AccountCenterError",

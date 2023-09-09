@@ -1,6 +1,11 @@
 import API from "../modules/Api";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import auth, { firebase } from "@react-native-firebase/auth";
+import LoginService from "../services/LoginService";
+import { NativeModules } from "react-native";
+const { RNTwitterSignIn } = NativeModules;
 
 const CHANNEL_FIREBASE = "Firebase";
 const CHANNEL_DEFAULT = "Default";
@@ -87,7 +92,7 @@ export const Firebase = {
       password: "",
       channel: CHANNEL_FIREBASE,
       serviceId: serviceId(device),
-      fcmToken: fcmToken
+      fcmToken: fcmToken,
     });
   },
 
@@ -122,5 +127,46 @@ export const Firebase = {
       firebaseToken: firebaseToken,
       referralCode: referralCode,
     });
+  },
+
+  googleSignin: async (navigation) => {
+    try {
+      // Check if your device supports Google Play
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
+      // Get the users ID token
+      const { idToken } = await GoogleSignin.signIn();
+
+      // Create a Google credential with the token
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      // Sign-in the user with the credential
+
+      await auth().signInWithCredential(googleCredential);
+      const { loginState, id, imServerState } =
+        await LoginService.Inst.firebaseQuickLogin();
+      navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+      // console.log("google result; ", result);
+    } catch (e) {
+      console.log("error", e);
+      throw e;
+    }
+  },
+
+  twitterSignin: async (navigation) => {
+    try {
+      const { authToken, authTokenSecret } = await RNTwitterSignIn.logIn();
+      const twitterCredential = auth.TwitterAuthProvider.credential(
+        authToken,
+        authTokenSecret
+      );
+      await auth().signInWithCredential(twitterCredential);
+      const { loginState, id, imServerState } =
+        await LoginService.Inst.firebaseQuickLogin();
+      navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+    } catch (e) {
+      console.log("error", e);
+      throw e;
+    }
   },
 };

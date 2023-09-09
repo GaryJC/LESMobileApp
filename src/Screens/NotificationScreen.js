@@ -121,35 +121,6 @@ export default function NotificationScreen() {
             payload: selfSentNotifications,
           });
         }
-
-        // switch (tab) {
-        //   case NotificationType.Notifications:
-        //     dispatchNotifications({
-        //       type: "GET_NOTIFICATIONS",
-        //       payload: allNotifications.filter((item) => item.type === 0),
-        //     });
-        //     break;
-        //   case NotificationType.SelfSent:
-        //     dispatchNotifications({
-        //       type: "GET_NOTIFICATIONS",
-        //       payload: allNotifications.filter(
-        //         (item) =>
-        //           item.mode === NotificationMode.Sender ||
-        //           item.mode === NotificationMode.SelfSentGroup
-        //       ),
-        //     });
-        //     break;
-        //   case NotificationType.Invitations:
-        //     dispatchNotifications({
-        //       type: "GET_NOTIFICATIONS",
-        //       payload: allNotifications.filter(
-        //         (item) =>
-        //           item.type !== 0 &&
-        //           item.mode !== NotificationMode.SelfSentGroup
-        //       ),
-        //     });
-        //     break;
-        // }
       }
     },
     [selectedTab]

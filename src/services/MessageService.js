@@ -137,15 +137,16 @@ class MessageService {
     switch (msgData.contentType) {
       case LesConstants.IMMessageContentType.Group_MemberKick:
         //当前用户被踢出了群组
-        JSEvent.emit(DataEvents.ChatGroup.ChatGroup_RemovedFromGroup, {
-          chatId: "group-" + msgData.groupId,
-          action: "delete",
-        });
-
+        // JSEvent.emit(DataEvents.ChatGroup.ChatGroup_RemovedFromGroup, {
+        //   chatId: "group-" + msgData.groupId,
+        //   action: "delete",
+        // });
         const chatId = MessageCaches.MakeChatIDByMsgData(msgData);
         // 移除缓存中对应的聊天列表
-        DataCenter.messageCache.removeChatListItem(chatId);
-        DatabaseService.Inst.removeChatGroup(msgData.groupId);
+        // DataCenter.messageCache.removeChatListItem(chatId);
+        // DatabaseService.Inst.removeChatGroup(msgData.groupId);
+        const groupId = "group-" + msgData.groupId;
+        // JSEvent.emit(UIEvents.Message.Message_Chat_List_Removed, groupId);
         break;
     }
   }

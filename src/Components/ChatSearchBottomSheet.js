@@ -1,16 +1,24 @@
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetModal,
+  BottomSheetFlatList,
 } from "@gorhom/bottom-sheet";
 import { useRef, useMemo, useCallback, useEffect, useState } from "react";
-import { View, TextInput, FlatList } from "react-native";
+import {
+  View,
+  TextInput,
+  Text,
+  FlatList,
+  KeyboardAvoidingView,
+  StyleSheet,
+} from "react-native";
 import DatabaseService from "../services/DatabaseService";
 import { debounce } from "lodash";
-import SearchedMessageList from "./SearchedMessageList";
+import ChatSearchList from "./ChatSearchList";
 
 const ChatSearchBottomSheet = ({ bottomSheetRef }) => {
   // variables
-  const snapPoints = useMemo(() => ["70%", "50"], []);
+  const snapPoints = useMemo(() => ["60%"], []);
 
   //   const [searchingWord, setSearchingWord] = useState();
 
@@ -30,13 +38,14 @@ const ChatSearchBottomSheet = ({ bottomSheetRef }) => {
       <BottomSheetBackdrop
         {...props}
         disappearsOnIndex={-1}
-        appearsOnIndex={0}
+        // appearsOnIndex={0}
       />
     ),
     []
   );
 
   const onSearchHandler = debounce(async (keyword) => {
+    console.log(keyword);
     try {
       const result = await DatabaseService.Inst.searchChatHistory(keyword);
       setSearchingResult(result);
@@ -54,10 +63,13 @@ const ChatSearchBottomSheet = ({ bottomSheetRef }) => {
   //     }
   //   }, [isSearchSheetOpen]);
 
+  const temp = [0, 1, 2, 3];
+
   return (
+    // <KeyboardAvoidingView>
     <BottomSheetModal
       ref={bottomSheetRef}
-      index={1} // 0 refers to the first snap point ('25%')
+      index={0} // 0 refers to the first snap point ('25%')
       snapPoints={snapPoints}
       enablePanDownToClose={true}
       onChange={handleSheetChanges}
@@ -65,8 +77,9 @@ const ChatSearchBottomSheet = ({ bottomSheetRef }) => {
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: "#262F38" }}
       handleIndicatorStyle={{ backgroundColor: "white" }}
+      keyboardBehavior="fillParent"
     >
-      <View className="px-[20px] mt-[10px]">
+      <View className="px-[20px] mt-[10px] flex-1">
         <View className="h-[30px]">
           <TextInput
             //   value={searchingWord}
@@ -76,21 +89,18 @@ const ChatSearchBottomSheet = ({ bottomSheetRef }) => {
             placeholder="Search chat history"
             placeholderTextColor="#CACACA"
           />
+          {/* <BottomSheetTextInput className="flex-1 bg-[#1B1B1B] rounded h-[100%] p-[5px] text-[#CACACA]" /> */}
         </View>
-        <View className="mt-[10px]">
-          <FlatList
-            data={searchingResult}
-            renderItem={({ item }) => (
-              <SearchedMessageList
-                item={item}
-                handleSheetEnd={handleSheetEnd}
-              />
-            )}
-            keyExtractor={(item) => item.messageId}
-          />
-        </View>
+        <BottomSheetFlatList
+          data={searchingResult}
+          renderItem={({ item }) => (
+            <ChatSearchList item={item} handleSheetEnd={handleSheetEnd} />
+          )}
+          keyExtractor={(item) => item.messageId}
+        />
       </View>
     </BottomSheetModal>
+    // </KeyboardAvoidingView>
   );
 };
 

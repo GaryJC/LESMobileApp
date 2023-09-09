@@ -144,17 +144,17 @@ class MessageCaches {
   }
 
   /**
-   * @param {string} chatId 
-   * @param {number} targetId 
-   * @param {IMMessageType} messageType 
+   * @param {string} chatId
+   * @param {number} targetId
+   * @param {IMMessageType} messageType
    * @return {ChatData}
    */
   #makeChatData(chatId, targetId, messageType) {
-    const chatData = this.#chatDatMap[chatId] = new ChatData(
+    const chatData = (this.#chatDatMap[chatId] = new ChatData(
       chatId,
       messageType,
       targetId
-    );
+    ));
     return chatData;
   }
 
@@ -210,7 +210,7 @@ class MessageCaches {
    */
   getNewMessageCount() {
     let count = 0;
-    this.#chatListSorted.forEach(item => {
+    this.#chatListSorted.forEach((item) => {
       count += item.newMessageCount;
     });
     return count;
@@ -230,6 +230,22 @@ class MessageCaches {
       this.#chatListSorted.splice(idx, 1);
       // JSEvent.emit(UIEvents.User.UserState_UIRefresh);
       DatabaseService.Inst.removeChatListItem(chatId);
+    }
+  }
+
+  /**
+   * 删除指定的群组数据
+   * 还需要从database里移除
+   * @param {string} chatId
+   */
+  removeChatGroup(groupId) {
+    const idx = this.#chatListSorted.findIndex(
+      (item) => item.targetId === groupId
+    );
+    if (idx > -1) {
+      this.#chatListSorted.splice(idx, 1);
+      // JSEvent.emit(UIEvents.User.UserState_UIRefresh);
+      DatabaseService.Inst.removeChatGroup(groupId);
     }
   }
 
@@ -263,7 +279,11 @@ class MessageCaches {
     let chatData = this.#chatDatMap[chatId];
     if (chatData == null && autoCreate && chatId != null && chatId != "") {
       const chatListItem = this.getChatListItem(chatId);
-      chatData = this.#makeChatData(chatId, chatListItem.targetId, chatListItem.type)
+      chatData = this.#makeChatData(
+        chatId,
+        chatListItem.targetId,
+        chatListItem.type
+      );
     }
     return chatData;
   }
@@ -373,7 +393,14 @@ class ChatListItem {
    * @param {number} updateTime
    * @param {string} latestMessage
    */
-  init(targetId, type, newMessageCount, updateTime, latestMessage, latestTimelineId) {
+  init(
+    targetId,
+    type,
+    newMessageCount,
+    updateTime,
+    latestMessage,
+    latestTimelineId
+  ) {
     this.targetId = targetId;
     this.type = type;
     this.#newMessageCount = newMessageCount;
@@ -406,13 +433,19 @@ class ChatListItem {
   incNewMsgCount(count) {
     if (count == null) count = 1;
     this.#newMessageCount += count;
-    JSEvent.emit(UIEvents.Message.Message_New_Count_Changed, { chatId: this.#chatId, currCount: this.#newMessageCount })
+    JSEvent.emit(UIEvents.Message.Message_New_Count_Changed, {
+      chatId: this.#chatId,
+      currCount: this.#newMessageCount,
+    });
     return this.#newMessageCount;
   }
 
   clearNewMsgCount() {
     this.#newMessageCount = 0;
-    JSEvent.emit(UIEvents.Message.Message_New_Count_Changed, { chatId: this.#chatId, currCount: this.#newMessageCount })
+    JSEvent.emit(UIEvents.Message.Message_New_Count_Changed, {
+      chatId: this.#chatId,
+      currCount: this.#newMessageCount,
+    });
   }
 
   refresh() {
@@ -495,7 +528,7 @@ class ChatData {
    * @param {string} messageId 消息id
    */
   indexOf(messageId) {
-    const idx = this.#messageList.findIndex(m => m.messageId == messageId);
+    const idx = this.#messageList.findIndex((m) => m.messageId == messageId);
     return idx;
   }
 

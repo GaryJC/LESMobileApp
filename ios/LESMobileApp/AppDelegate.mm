@@ -2,6 +2,7 @@
 #import <Firebase.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTLinkingManager.h>
+#import <TwitterKit/TWTRKit.h>
 
 @implementation AppDelegate
 
@@ -37,8 +38,13 @@
 }
 
 // Linking API
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-  return [super application:application openURL:url options:options] || [RCTLinkingManager application:application openURL:url options:options];
+// - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+//   BOOL twitterHandled = [[Twitter sharedInstance] application:application openURL:url options:options];
+//   BOOL reactHandled = [RCTLinkingManager application:application openURL:url options:options];
+//   return twitterHandled || reactHandled;
+// }
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options {
+  return [[Twitter sharedInstance] application:application openURL:url options:options];
 }
 
 // Universal Links

@@ -45,7 +45,7 @@ export const DataEvents = {
      * 当前用户数据变化，例如改了名字，改了上下线状态等等
      * @type {info:IMUserInfo}
      */
-    UserInfo_Current_Updated: "DATA_EVENT_UserInfo_Current_Updated"
+    UserInfo_Current_Updated: "DATA_EVENT_UserInfo_Current_Updated",
   },
 
   /**
@@ -196,6 +196,8 @@ export const UIEvents = {
      */
     Message_Chat_List_Updated: "UI_EVENT_Message_Chat_List_Updated",
 
+    Message_Chat_List_Removed: "UI_EVENT_Message_Chat_List_Updated",
+
     /**
      * 点击聊天记录后通知UI,指定对话有数据更新
      * 携带参数为对话Id, 聊天目标Id, 聊天数据
@@ -206,7 +208,7 @@ export const UIEvents = {
 
     /**
      * 新消息数量变化通知事件
-     * 
+     *
      * @type {{chatId:string, currCount:number}}
      */
     Message_New_Count_Changed: "UI_EVENT_Message_New_Count_Changed",

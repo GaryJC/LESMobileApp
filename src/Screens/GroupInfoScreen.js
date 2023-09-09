@@ -35,7 +35,6 @@ const GroupInfoScreen = () => {
   const navigation = useNavigation();
 
   const groupId = route.params?.targetId;
-  console.log("targetId: ", groupId);
 
   const processGroupMembers = (groupMembers) => {
     const confirmedMembers = groupMembers.filter(
@@ -45,8 +44,6 @@ const GroupInfoScreen = () => {
     const creators = [];
     const managers = [];
     const members = [];
-
-    console.log("ggg", groupMembers, confirmedMembers);
 
     confirmedMembers.forEach((item) => {
       if (item.memberRole === LesConstants.IMGroupMemberRole.Creator) {
@@ -90,7 +87,7 @@ const GroupInfoScreen = () => {
     setIsLoading(true);
     try {
       const groupMembers = await ChatGroupService.Inst.getGroupMembers(groupId);
-      console.log("group members: ", groupMembers, groupId);
+      // console.log("group members: ", groupMembers, groupId);
       const role = groupMembers.find(
         (item) => item.userInfo.id === DataCenter.userInfo.accountId
       ).memberRole;
@@ -147,8 +144,8 @@ const GroupInfoScreen = () => {
       );
 
       JSEvent.remove(
-        UIEvents.ChatGroup.ChatGroup_RemoveMember,
-        getGroupMembers
+        DataEvents.ChatGroup.ChatGroup_Updated,
+        updateGroupMembers
       );
 
       JSEvent.remove(
@@ -218,6 +215,19 @@ const GroupInfoScreen = () => {
     navigation.navigate("GroupInvite", { groupId: groupId });
   };
 
+  const quitGroupHandler = async () => {
+    try {
+      await ChatGroupService.Inst.quitChatGroup(groupId);
+      JSEvent.emit(
+        UIEvents.Message.Message_Chat_List_Removed,
+        "group-" + groupId
+      );
+      navigation.goBack();
+    } catch (e) {
+      console.log("quit group error: ", e);
+    }
+  };
+
   return (
     <View className="mx-[5vw]">
       <View className="flex-row justify-between">
@@ -257,11 +267,13 @@ const GroupInfoScreen = () => {
           )}
         />
       </View>
-      <TouchableHighlight onPress={() => console.log("")}>
-        <View className="justify-center items-center bg-[#131F2A] h-[35px] rounded-lg mt-[5vh]">
-          <Text className="text-[#FF0000] text-[17px] font-bold">Quit</Text>
-        </View>
-      </TouchableHighlight>
+      <View className="mt-[5vh]">
+        <TouchableHighlight onPress={quitGroupHandler}>
+          <View className="justify-center items-center bg-[#131F2A] h-[35px] rounded-lg ">
+            <Text className="text-[#FF0000] text-[17px] font-bold">Quit</Text>
+          </View>
+        </TouchableHighlight>
+      </View>
     </View>
   );
 };

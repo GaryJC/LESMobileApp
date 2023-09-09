@@ -5,10 +5,11 @@ import FriendBottomSheet from "./FriendBottomSheet";
 import FriendListChatButton from "./FriendListChatButton";
 import Avatar from "./Avatar";
 
-export const FriendList = ({ friend, button }) => {
+export const FriendList = ({ friend, button, hasTag }) => {
   // const avatar = `https://i.pravatar.cc/?img=${friend.id}`;
 
   // const navigation = useNavigation();
+  // console.log("ppp: ");
 
   const [selectedFriend, setSelectedFriend] = useState();
 
@@ -43,12 +44,20 @@ export const FriendList = ({ friend, button }) => {
               <Avatar tag={friend.tag} name={friend.name} />
             </TouchableOpacity>
             <View className="absolute bottom-[0] right-[5] justify-center items-center">
-              <StateIndicator state={friend.state} />
+              <StateIndicator
+                state={friend.state}
+                onlineState={friend.onlineState}
+              />
             </View>
           </View>
-          <Text className="text-white text-[20px] font-bold">
-            {friend.name}
-          </Text>
+          <View className="flex-row items-center">
+            <Text className="text-white text-[20px] font-bold">
+              {friend.name}
+            </Text>
+            {hasTag && (
+              <Text className="text-white text-[14px]"> #{friend.tag}</Text>
+            )}
+          </View>
         </View>
         {button}
       </View>

@@ -16,6 +16,8 @@ import EmailSigninForm from "./AuthForm/EmailSigninForm";
 import GoogleSigninForm from "./AuthForm/GoogleSigninForm";
 import ValidateEmailForm from "./AuthForm/ValidateEmailForm";
 import CreateAccountForm from "./AuthForm/CreateAccountForm";
+import SocialSigninForm from "./AuthForm/SocialSigninForm";
+import { Firebase } from "../utils/auth";
 
 export const ValidateEmailModal = ({
   emailSigninModalVisible,
@@ -23,6 +25,7 @@ export const ValidateEmailModal = ({
 }) => {
   const [email, setEmail] = useState();
   const [emailState, setEmailState] = useState(Constants.EmailState.Unchecked);
+  const navigation = useNavigation();
   // console.log("email state: ", emailState);
 
   const closeModalHandler = () => {
@@ -76,9 +79,18 @@ export const ValidateEmailModal = ({
                 setEmail={setEmail}
                 closeModalHandler={closeModalHandler}
               />
-            ) : (
-              <GoogleSigninForm
+            ) : emailState == Constants.EmailState.RegisteredWithGoogle ? (
+              <SocialSigninForm
                 email={email}
+                platForm={"Google"}
+                signinHandler={() => Firebase.googleSignin(navigation)}
+                closeModalHandler={closeModalHandler}
+              />
+            ) : (
+              <SocialSigninForm
+                email={email}
+                platForm={"Twitter"}
+                signinHandler={() => Firebase.twitterSignin(navigation)}
                 closeModalHandler={closeModalHandler}
               />
             )}
