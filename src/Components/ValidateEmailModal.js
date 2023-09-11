@@ -83,14 +83,20 @@ export const ValidateEmailModal = ({
               <SocialSigninForm
                 email={email}
                 platForm={"Google"}
-                signinHandler={() => Firebase.googleSignin(navigation)}
+                signinHandler={() => Firebase.googleSignin()
+                  .then(({ id, loginState, imServerState }) => {
+                    navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+                  })}
                 closeModalHandler={closeModalHandler}
               />
             ) : (
               <SocialSigninForm
                 email={email}
                 platForm={"Twitter"}
-                signinHandler={() => Firebase.twitterSignin(navigation)}
+                signinHandler={() => Firebase.twitterSignin()
+                  .then(({ id, loginState, imServerState }) => {
+                    navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+                  })}
                 closeModalHandler={closeModalHandler}
               />
             )}

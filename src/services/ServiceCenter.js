@@ -18,6 +18,7 @@ import Constants from "../modules/Constants";
 import NotificationService from "./NotificationService";
 import ChatGroupService from "./ChatGroupService";
 import FirebaseMessagingService from "./FirebaseMessagingService";
+import QuestService from "./QuestService";
 
 const { ReloginState } = Constants;
 
@@ -102,7 +103,8 @@ export default class ServiceCenter {
       MessageService,
       NotificationService,
       ChatGroupService,
-      FirebaseMessagingService
+      FirebaseMessagingService,
+      QuestService
     ];
 
     let services = [];
@@ -157,16 +159,21 @@ export default class ServiceCenter {
 
   async #onUserLogin() {
     console.log(`user login, start invoking service.onUserLogin`);
+    const ps = []
     for (let i = 0; i < this.#services.length; i++) {
       const service = this.#services[i];
       if (service.onUserLogin) {
         try {
-          service.onUserLogin();
+          ps.push(service.onUserLogin());
         } catch (e) {
           console.error(`Service[${service.className}] onUserLogin `, e);
         }
       }
     }
+
+    await Promise.all(ps);
+    console.log("service.onUserLogin done")
+    JSEvent.emit(UIEvents.User.UserState_IsLoggedin);
   }
 
   /**

@@ -210,7 +210,8 @@ export default class LoginService {
           Constants.ReloginState.ReloginSuccessful
         );
       } else {
-        JSEvent.emit(DataEvents.User.UserState_IsLoggedin);
+        //JSEvent.emit(DataEvents.User.UserState_IsLoggedin);
+        JSEvent.emit(DataEvents.User.UserState_LoginIm);
       }
 
       return LesConstants.ErrorCodes.Success;
@@ -292,7 +293,8 @@ export default class LoginService {
               Constants.ReloginState.ReloginSuccessful
             );
           } else {
-            JSEvent.emit(DataEvents.User.UserState_IsLoggedin);
+            //JSEvent.emit(DataEvents.User.UserState_IsLoggedin);
+            JSEvent.emit(DataEvents.User.UserState_LoginIm);
           }
         } catch (e) {
           if (isReconnect) {
@@ -418,7 +420,7 @@ export default class LoginService {
           msg: data.msg,
         };
       }
-    } catch (e) {}
+    } catch (e) { }
     return false;
   }
 
@@ -432,7 +434,7 @@ export default class LoginService {
       const response = await Firebase.updateReferrer(userToken, referralCode);
       const data = response.data;
       return data.code;
-    } catch (e) {}
+    } catch (e) { }
     return -1;
   }
 
@@ -488,7 +490,8 @@ export default class LoginService {
           this.#saveLoginData();
 
           //发送登陆成功事件
-          JSEvent.emit(DataEvents.User.UserState_IsLoggedin);
+          //JSEvent.emit(DataEvents.User.UserState_IsLoggedin);
+          JSEvent.emit(DataEvents.User.UserState_LoginIm);
           return result;
         } catch (e) {
           throw { type: LoginExceptionType.IMServerError, code: e };

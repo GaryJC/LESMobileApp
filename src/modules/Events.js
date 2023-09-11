@@ -24,16 +24,25 @@ export const DataEvents = {
     UserState_Relogin: "DATA_EVENT_UserState_Relogin",
 
     /**
-     * 用户登录状态更新（已登陆）
-     * 无携带参数
+     * 用户成功登陆IM服务器以后
+     * 
+     * 调用顺序
+     * UserState_LoginIm -> UserState_DataReady -> UserState_IsLoggedin
      */
-    UserState_IsLoggedin: "DATA_EVENT_UserState_IsLoggedin",
-
+    UserState_LoginIm: "DATA_EVENT_UserState_LoginIm",
     /**
-     * 用户登陆成功后，且数据库已准备好，会发送这个事件
+     * 用户登陆im服务器成功后，且数据库已准备好，会发送这个事件
      * 需要登陆且同时需要数据库数据的服务，监听这个事件
      */
     UserState_DataReady: "DATA_EVENT_UserState_DataReady",
+    
+    /**
+     * 用户登录状态更新（已登陆），且service都已调用过onUserLogin
+     * 无携带参数
+     * 
+     */
+    UserState_IsLoggedin: "DATA_EVENT_UserState_IsLoggedin",
+
     /**
      * 用户状态变化事件
      * @type {{id:number, state:IMUserState, onlineState:IMUserOnlineState}}

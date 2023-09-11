@@ -38,7 +38,7 @@ export default class DatabaseService {
   }
 
   init() {
-    JSEvent.on(DataEvents.User.UserState_IsLoggedin, () => {
+    JSEvent.on(DataEvents.User.UserState_LoginIm, () => {
       //用户登陆以后，打开用户对应的数据库
       this.#openDatabase(DataCenter.userInfo.accountId);
     });
