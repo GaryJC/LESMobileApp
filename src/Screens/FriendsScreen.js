@@ -68,7 +68,7 @@ export default function FriendsScreen() {
   };
 
   const updateUnreadCountHandler = () => {
-    const count = DataCenter.notifications.unreadCount();
+    const count = DataCenter.notifications?.unreadCount()??0;
     setUnreadCount(count);
   };
 

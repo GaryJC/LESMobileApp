@@ -333,7 +333,7 @@ class MessageService {
     // datas.forEach((data) => {
     //   this.#onTimelineUpdated(data);
     // });
-    JSEvent.emit(UIEvents.User.UserState_IsLoggedin);
+    //JSEvent.emit(UIEvents.User.UserState_IsLoggedin);
   }
 
   async onUserRelogin(state) {

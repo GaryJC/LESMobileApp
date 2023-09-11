@@ -154,7 +154,12 @@ export default function LoginScreen() {
   }
 
   function onTwitterButtonPress() {
-    Firebase.twitterSignin();
+    setIsLoading(true);
+    Firebase.twitterSignin()
+      .then(({ id, loginState, imServerState }) => {
+        setIsLoading(false);
+        navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+      });
   }
 
   /*
@@ -209,8 +214,11 @@ export default function LoginScreen() {
 
   function onGoogleButtonPress() {
     setIsLoading(true);
-    Firebase.googleSignin();
-    setIsLoading(false);
+    Firebase.googleSignin()
+      .then(({ id, loginState, imServerState }) => {
+        setIsLoading(false);
+        navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+      });
   }
 
   return (

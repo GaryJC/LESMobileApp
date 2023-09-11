@@ -7,7 +7,14 @@ module.exports = {
     "./Screens/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors:{
+        'clr-bglight':'#131F2A',
+        'clr-bgdark':'#080F14',
+        'clr-light':'#eeeeee',
+        'clr-link':'#60a5fa',
+      }
+    },
   },
   plugins: [],
 };

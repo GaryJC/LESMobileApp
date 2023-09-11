@@ -145,7 +145,11 @@ export const Firebase = {
       await auth().signInWithCredential(googleCredential);
       const { loginState, id, imServerState } =
         await LoginService.Inst.firebaseQuickLogin();
-      navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+
+      //修改为返回登录数据，交给ui执行跳转页面
+      return { id, loginState, imServerState };
+      //navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+
       // console.log("google result; ", result);
     } catch (e) {
       console.log("error", e);
@@ -163,7 +167,10 @@ export const Firebase = {
       await auth().signInWithCredential(twitterCredential);
       const { loginState, id, imServerState } =
         await LoginService.Inst.firebaseQuickLogin();
-      navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+
+      //修改为返回登录数据，交给ui执行跳转页面
+      return { id, loginState, imServerState };
+      //navigation.navigate("VerifyEmail", { id, loginState, imServerState });
     } catch (e) {
       console.log("error", e);
       throw e;

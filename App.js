@@ -50,6 +50,7 @@ import { useNavigation } from "@react-navigation/native";
 import ChatScreenV2 from "./src/Screens/ChatScreenV2";
 import WalletScreen from "./src/Screens/WalletScreen";
 import HighlightButton from "./src/Components/HighlightButton";
+import QuestScreen from "./src/Screens/QuestScreen";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -130,7 +131,7 @@ const BottomTabNavigation = () => {
       }}
       initialRouteName="Home"
     >
-      <BottomTab.Screen
+      {/* <BottomTab.Screen
         name="Home"
         component={HomeScreen}
         options={{
@@ -140,7 +141,7 @@ const BottomTabNavigation = () => {
           title: "NexGami",
           headerShown: true,
         }}
-      />
+      /> */}
       {/* <BottomTab.Screen
         name="ChatsOld"
         component={ChatScreen}
@@ -150,16 +151,6 @@ const BottomTabNavigation = () => {
           ),
         }}
       /> */}
-      <BottomTab.Screen
-        name="Chats"
-        component={ChatScreenV2}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="chatbubbles-outline" color={color} size={size} />
-          ),
-          tabBarBadge: newMsgCountStr,
-        }}
-      />
       <BottomTab.Screen
         name="Friends"
         component={FriendsScreen}
@@ -188,6 +179,29 @@ const BottomTabNavigation = () => {
             </View>
           ),
         })}
+      />
+
+      <BottomTab.Screen
+        name="Chats"
+        component={ChatScreenV2}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="chatbubbles-outline" color={color} size={size} />
+          ),
+          tabBarBadge: newMsgCountStr,
+        }}
+      />
+ 
+      <BottomTab.Screen
+        name="Quests"
+        component={QuestScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="bookmarks" color={color} size={size} />
+          ),
+          headerShown: true,
+          //tabBarBadge: newMsgCountStr,
+        }}
       />
       {/* <BottomTab.Screen
         name="Games"
@@ -465,7 +479,7 @@ export default function App() {
             <Stack.Screen
               name="GroupInvite"
               component={GroupInviteScreen}
-              // options={{ headerTitle: "Group Information" }}
+            // options={{ headerTitle: "Group Information" }}
             />
           </Stack.Navigator>
         </NavigationContainer>
