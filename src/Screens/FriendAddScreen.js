@@ -4,6 +4,7 @@ import { LesPlatformCenter } from "les-im-components";
 import { FriendList } from "../Components/FriendList";
 import LoadingIndicator from "../Components/LoadingIndicator";
 import FriendAddButton from "../Components/FriendAddButton";
+import DataCenter from "../modules/DataCenter";
 
 const FriendAddScreen = () => {
   const [searchWord, setSearchWord] = useState();
@@ -12,6 +13,7 @@ const FriendAddScreen = () => {
 
   const onSearchHandler = async () => {
     setIsLoading(true);
+    setUserData(null);
     let [username, tag] = searchWord.split("#");
     if (!tag) {
       tag = 0;
@@ -27,7 +29,10 @@ const FriendAddScreen = () => {
         const name = userdata.getName();
         const tag = userdata.getTag();
         const id = userdata.getId();
-        setUserData({ name: name, tag: tag, id: id, state: state });
+        // 排除搜索结果是自己的情况
+        if (id !== DataCenter.userInfo.accountId) {
+          setUserData({ name: name, tag: tag, id: id, state: state });
+        }
       }
       // console.log("find user's result: ", userData.getId());
     } catch (e) {

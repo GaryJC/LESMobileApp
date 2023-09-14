@@ -213,6 +213,7 @@ class FriendService {
         u = user[0];
       }
       const friendData = new FriendData(f.id, f.time, user[0]);
+      console.log("oii: ", friendData.onlineState);
       if (filter == null) {
         friends.push(friendData);
       } else {
@@ -249,6 +250,12 @@ class FriendService {
    */
   #onUserStateChanged(id, state, onlineState) {
     JSEvent.emit(UIEvents.User.UserState_UIRefresh, { id, state, onlineState });
+  }
+
+  async onUserRelogin(state) {
+    if (state == Constants.ReloginState.ReloginSuccessful) {
+      await this.#pullFriendsDataFromServer();
+    }
   }
 
   async onUserRelogin(state) {

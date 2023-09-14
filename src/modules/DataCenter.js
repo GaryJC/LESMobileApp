@@ -8,7 +8,6 @@ import { Notifications } from "../Models/Notifications";
 import IMUserInfo from "../Models/IMUserInfo";
 import UserProfile from "../Models/UserProfile";
 
-
 const services = [];
 // services.push(new FriendService());
 
@@ -17,7 +16,7 @@ const services = [];
 /**
  * DataCenter作为数据中心，负责app中所有数据的缓存
  * UI部分读取数据时可以直接从DataCenter读取
- * 
+ *
  * DataSavingService用于DataCenter数据的写入，其他服务和ui不要直接将数据写入DataCenter，可调用DataSavingService提供的方法进行数据保存
  */
 const DataCenter = {
@@ -27,10 +26,10 @@ const DataCenter = {
     Platform.OS === "ios"
       ? "IOS"
       : Platform.OS === "android"
-        ? "Android"
-        : Platform.OS === "web"
-          ? "Web"
-          : "PC",
+      ? "Android"
+      : Platform.OS === "web"
+      ? "Web"
+      : "PC",
   // deviceName: "IOS",
 
   /**
@@ -45,7 +44,7 @@ const DataCenter = {
     email: "",
     loginKey: "",
 
-    fcmToken:"",
+    fcmToken: "",
     /**
      * 用户账户信息
      * @type {UserProfile}
@@ -55,7 +54,7 @@ const DataCenter = {
      * im用户信息
      * @type {IMUserInfo}
      */
-    imUserInfo: new IMUserInfo()
+    imUserInfo: new IMUserInfo(),
   },
 
   /**
@@ -67,7 +66,7 @@ const DataCenter = {
     this.userInfo.loginKey = loginKey;
     // this.userInfo.serviceId = serviceId;
 
-    JSEvent.emit(DataEvents.User.UserState_IsLoggedin);
+    // JSEvent.emit(DataEvents.User.UserState_IsLoggedin);
   },
 
   // friendId, friendName, friendState, friendAvatar

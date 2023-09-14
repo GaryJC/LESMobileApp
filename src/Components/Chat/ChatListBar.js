@@ -128,6 +128,8 @@ export default ChatListBar = ({ onItemSelected }) => {
 
     JSEvent.on(UIEvents.Message.Message_Search_Updated, onSearchUpdateHandler);
 
+    // JSEvent.on(DataEvents.User.UserState_DataReady, );
+
     return () => {
       nav.removeListener("focus", focusListener);
       nav.removeListener("blur", focusListener);
@@ -136,6 +138,8 @@ export default ChatListBar = ({ onItemSelected }) => {
         UIEvents.Message.Message_Search_Updated,
         onSearchUpdateHandler
       );
+
+      //   JSEvent.remove(DataEvents.User.UserState_DataReady);
     };
   }, []);
 

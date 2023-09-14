@@ -1,15 +1,20 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import { Button, ImageBackground, SectionList, Text, View } from "react-native";
+import {
+  Button,
+  ImageBackground,
+  FlatList,
+  SectionList,
+  Text,
+  View,
+} from "react-native";
 //dummy data
 import { FriendButton } from "../Components/FriendButton";
 import { FriendList } from "../Components/FriendList";
 import FriendListChatButton from "../Components/FriendListChatButton";
-import { RecomFriendsData } from "../Data/dummyData";
 import DataCenter from "../modules/DataCenter";
 import { DataEvents, UIEvents } from "../modules/Events";
 import FriendService from "../services/FriendService";
-import NotificationService from "../services/NotificationService";
 import JSEvent from "../utils/JSEvent";
 import { LesConstants } from "les-im-components";
 
@@ -49,33 +54,44 @@ export default function FriendsScreen() {
 
   // 可传参数 { id, state, onlineState }
   const onFriendStateUIUpdated = async () => {
-    // const online = FriendService.Inst.getFriendList((f) => f.isOnline);
-    // const offline = FriendService.Inst.getFriendList((f) => !f.isOnline);
+    // const offline = FriendService.Inst.getFriendList((f) => f.onlineState.online);
+    // const offline = FriendService.Inst.getFriendList((f) => f.onlineState.Offline);
+
     const friendList = await FriendService.Inst.getFriendList();
     console.log("friend list: ", friendList);
-    const online = friendList.filter(
-      (item) => item.onlineState === LesConstants.IMUserOnlineState.Online
-    );
-    const offline = friendList.filter(
-      (item) => item.onlineState !== LesConstants.IMUserOnlineState.Online
-    );
-
-    setFriendsData([
-      // { title: "Recommended Friends", data: [] },
-      { title: "Online", data: online },
-      { title: "Offline", data: offline },
-    ]);
+    const online = friendList
+      .filter(
+        (item) =>
+          item.onlineState === LesConstants.IMUserOnlineState.Online &&
+          item.state !== LesConstants.IMUserState.Hiding
+      )
+      .sort((a, b) => a.name.localeCompare(b.name, { sensitivity: "base" }));
+    const offline = friendList
+      .filter(
+        (item) =>
+          item.onlineState !== LesConstants.IMUserOnlineState.Online ||
+          item.state === LesConstants.IMUserState.Hiding
+      )
+      .sort((a, b) => a.name.localeCompare(b.name, { sensitivity: "base" }));
+    // setFriendsData([
+    //   // { title: "Recommended Friends", data: [] },
+    //   { title: "Online", data: online },
+    //   { title: "Offline", data: offline },
+    // ]);
+    setFriendsData([...online, ...offline]);
   };
 
   const updateUnreadCountHandler = () => {
-    const count = DataCenter.notifications?.unreadCount()??0;
+    const count =
+      DataCenter.notifications?.unreadCount(
+        LesConstants.IMNotificationType.FriendInvitation
+      ) ?? 0;
     setUnreadCount(count);
   };
 
   useEffect(() => {
     const initFriendScreen = () => {
       onFriendStateUIUpdated();
-
       updateUnreadCountHandler();
     };
 
@@ -86,7 +102,8 @@ export default function FriendsScreen() {
       DataEvents.Notification.NotificationState_Updated,
       updateUnreadCountHandler
     );
-    JSEvent.on(UIEvents.User.UserState_IsLoggedin, initFriendScreen);
+    // JSEvent.on(UIEvents.User.UserState_IsLoggedin, initFriendScreen);
+    JSEvent.on(DataEvents.User.UserState_DataReady, initFriendScreen);
 
     return () => {
       JSEvent.remove(UIEvents.User.UserState_UIRefresh, onFriendStateUIUpdated);
@@ -94,26 +111,13 @@ export default function FriendsScreen() {
         DataEvents.Notification.NotificationState_Updated,
         updateUnreadCountHandler
       );
-      JSEvent.remove(UIEvents.User.UserState_IsLoggedin, initFriendScreen);
+      // JSEvent.remove(UIEvents.User.UserState_IsLoggedin, initFriendScreen);
+      JSEvent.remove(DataEvents.User.UserState_DataReady, initFriendScreen);
     };
   }, []);
 
-  // const temporyAddHander = () => {
-  //   // LesPlatformCenter.IMFunctions.sendFriendInvitation(8)
-  //   NotificationService.Inst.sendFriendInvitation(40)
-  //     .then((res) => {
-  //       console.log("Inivitation success: ", res);
-  //     })
-  //     .catch((e) => console.log("Invitiation failed: ", e));
-  // };
-
-  // const TemporyAddButton = () => (
-  //   <Button title="Add" onPress={temporyAddHander} />
-  // );
-
   return (
     <View className="flex-1 px-[5vw]">
-      {/* <TemporyAddButton /> */}
       <View>
         {/* {friendButtonContent.map(({ title, icon, link }, index) => (
           <FriendButton title={title} icon={icon} link={link} index={index} />
@@ -137,8 +141,11 @@ export default function FriendsScreen() {
         {/* <Text className="text-white font-bold text-[24px]">
           Recommended Friends
         </Text> */}
+        <Text className="text-white font-bold text-[24px] my-[10px]">
+          Friends
+        </Text>
         <View className="flex-1">
-          <SectionList
+          {/* <SectionList
             stickySectionHeadersEnabled={false}
             sections={friendsData}
             keyExtractor={(item, index) => item.id + index}
@@ -161,6 +168,16 @@ export default function FriendsScreen() {
               <Text className="text-white font-bold text-[24px] my-[10px]">
                 {title}
               </Text>
+            )}
+          /> */}
+          <FlatList
+            data={friendsData}
+            keyExtractor={(item, index) => item.id + index}
+            renderItem={({ item }) => (
+              <FriendList
+                friend={item}
+                button={<FriendListChatButton friend={item} />}
+              />
             )}
           />
         </View>

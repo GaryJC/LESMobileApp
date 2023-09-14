@@ -25,7 +25,7 @@ export const DataEvents = {
 
     /**
      * 用户成功登陆IM服务器以后
-     * 
+     *
      * 调用顺序
      * UserState_LoginIm -> UserState_DataReady -> UserState_IsLoggedin
      */
@@ -35,11 +35,11 @@ export const DataEvents = {
      * 需要登陆且同时需要数据库数据的服务，监听这个事件
      */
     UserState_DataReady: "DATA_EVENT_UserState_DataReady",
-    
+
     /**
      * 用户登录状态更新（已登陆），且service都已调用过onUserLogin
      * 无携带参数
-     * 
+     *
      */
     UserState_IsLoggedin: "DATA_EVENT_UserState_IsLoggedin",
 
@@ -175,7 +175,7 @@ export const UIEvents = {
      */
     User_Click_Chat_Updated: "UI_EVENT_User_Click_Chat_Updated",
 
-    UserState_IsLoggedin: "UI_EVENT_UserState_IsLoggedin",
+    // UserState_IsLoggedin: "UI_EVENT_UserState_IsLoggedin",
   },
 
   Message: {
@@ -205,6 +205,12 @@ export const UIEvents = {
      */
     Message_Chat_List_Updated: "UI_EVENT_Message_Chat_List_Updated",
 
+    /**
+     * 通知UI, 对话列表项被删除
+     * 包括群组聊天项和私人聊天项
+     * 发送事件通常伴随着从缓存和数据库删除数据
+     * @type {{chatId: string | groupId: string}}
+     */
     Message_Chat_List_Removed: "UI_EVENT_Message_Chat_List_Updated",
 
     /**

@@ -3,7 +3,6 @@ import NotificationService from "../services/NotificationService";
 import { MaterialIcons } from "@expo/vector-icons";
 import FeedBackModal from "./FeedbackModal";
 import { useState } from "react";
-import { LesConstants } from "les-im-components";
 
 const FriendAddButton = ({ userData, setIsLoading }) => {
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
@@ -18,7 +17,14 @@ const FriendAddButton = ({ userData, setIsLoading }) => {
       setFeedbak("You have sent the frend request sucessfully!");
     } catch (e) {
       console.log("send friend invit error: ", e);
-      setFeedbak("You have already sent the request.");
+      switch (e) {
+        case 8197:
+          setFeedbak("The user is already your friend.");
+          break;
+        case 3003:
+          setFeedbak("You have already sent the request.");
+          break;
+      }
     }
     setFeedbackModalOpen(true);
     setIsLoading(false);

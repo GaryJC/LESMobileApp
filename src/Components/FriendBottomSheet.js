@@ -83,7 +83,6 @@ export default function FriendBottomSheet({
    * 删除好友时调用
    */
   const removeFriendHandler = () => {
-    console.log("delete");
     // JSEvent.emit(UIEvents.User.UserState_UIRefresh);
     FriendService.Inst.removeFriend(selectedFriend?.id)
       .then((res) => {
@@ -96,12 +95,6 @@ export default function FriendBottomSheet({
         );
         // 移除缓存中对应的聊天列表
         DataCenter.messageCache.removeChatListItem(chatId);
-        // DatabaseService.Inst.removeChatListItem(chatId);
-        // 刷新聊天列表
-        // JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, {
-        //   chatId,
-        //   action: "delete",
-        // });
         JSEvent.emit(UIEvents.Message.Message_Chat_List_Removed, chatId);
         setIsSheetOpen(false);
       })
@@ -153,12 +146,12 @@ export default function FriendBottomSheet({
               }}
               className="w-[100px] h-[100px] rounded-full absolute bottom-[-50px] left-[25px]"
             /> */}
-            <View className="w-[100px] h-[100px] absolute bottom-[-50px] left-[25px]">
+            <View className="w-[100px] h-[100px] absolute bottom-[-75px] left-[5vw]">
               <Avatar tag={selectedFriend?.tag} name={selectedFriend?.name} />
             </View>
           </ImageBackground>
         </View>
-        <View className="mt-[55px] ml-[20px] flex-row items-end">
+        <View className="mt-[55px] ml-[5vw] flex-row items-end">
           <Text className="text-white font-bold text-[18px]">
             {selectedFriend?.name}
           </Text>
@@ -168,7 +161,7 @@ export default function FriendBottomSheet({
         </View>
         {isFriend && (
           <>
-            <View className="flex-row justify-between mt-[10px] mx-[5%]">
+            <View className="flex-row justify-between mt-[10px] mx-[5vw]">
               <BottomSheetButton handler={goChatHandler} title={"Chat"}>
                 {
                   <Ionicons
@@ -196,7 +189,7 @@ export default function FriendBottomSheet({
             >
               <View className="bg-[#131F2A] h-[35px] justify-center">
                 <Text className="text-[#FF0000] font-bold text-center">
-                  Delete
+                  Remove Friend
                 </Text>
               </View>
             </TouchableHighlight>

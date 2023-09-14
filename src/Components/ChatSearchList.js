@@ -28,8 +28,6 @@ const ChatSearchList = ({ item, handleSheetEnd }) => {
   }
   console.log("userinfo: ", userInfo);
 
-  useEffect(() => {}, []);
-
   const date = formatDate(new Date(timestamp));
 
   const onClickMsgHandler = async () => {

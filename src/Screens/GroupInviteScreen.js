@@ -30,11 +30,10 @@ const GroupInviteScreen = () => {
 
   useEffect(() => {
     const getInvitableFriends = async () => {
-      console.log("ss");
       const friendList = await FriendService.Inst.getFriendList();
-      console.log("hh");
+
       let members = await ChatGroupService.Inst.getGroupMembers(groupId);
-      console.log("members: ", members, friendList);
+
       members = members.map((item) => item.userInfo.id);
       const invitableFriends = friendList.filter(
         (item) => !members.includes(item.id)

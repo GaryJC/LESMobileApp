@@ -134,6 +134,7 @@ class MessageService {
    * @param {MessageData} msgData
    */
   #onReceiveSystemMessage(msgData) {
+    console.log("system message data: ", msgData);
     switch (msgData.contentType) {
       case LesConstants.IMMessageContentType.Group_MemberKick:
         //当前用户被踢出了群组
@@ -141,11 +142,12 @@ class MessageService {
         //   chatId: "group-" + msgData.groupId,
         //   action: "delete",
         // });
-        const chatId = MessageCaches.MakeChatIDByMsgData(msgData);
+        // const chatId = MessageCaches.MakeChatIDByMsgData(msgData);
         // 移除缓存中对应的聊天列表
         // DataCenter.messageCache.removeChatListItem(chatId);
+        // DataCenter.messageCache.removeChatGroup(msgData.groupId)
         // DatabaseService.Inst.removeChatGroup(msgData.groupId);
-        const groupId = "group-" + msgData.groupId;
+        // const groupId = "group-" + msgData.groupId;
         // JSEvent.emit(UIEvents.Message.Message_Chat_List_Removed, groupId);
         break;
     }
@@ -158,6 +160,7 @@ class MessageService {
   #onTimelineUpdated(timelineData) {
     //转化为  MessageData
     const msgData = this.#pbTimelineDataToMessageData(timelineData);
+    console.log("msgData: ", msgData);
     if (msgData.messageType == LesConstants.IMMessageType.System) {
       //这是一条系统消息
       this.#onReceiveSystemMessage(msgData);

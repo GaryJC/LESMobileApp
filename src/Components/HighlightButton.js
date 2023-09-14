@@ -52,13 +52,15 @@ const HighlightButton = ({ type, text, isLoading, disabled, onPress }) => {
       onPress={disabled ? null : onPressHandler}
       className="mx-[5px] rounded"
     >
-      <View className={bgClassName}>
+      <View className={bgClassName} style={{ backgroundColor: _clr.bg }}>
         {isLoading ? (
           <ActivityIndicator size="small" color="white" className="mr-2" />
         ) : (
           <></>
         )}
-        <Text className={fgClassName}>{text}</Text>
+        <Text className={fgClassName} style={{ color: _clr.fg }}>
+          {text}
+        </Text>
       </View>
     </TouchableHighlight>
   );

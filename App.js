@@ -70,6 +70,8 @@ const onAppDestroyed = async () => {
 const BottomTabNavigation = () => {
   const [newMsgCountStr, setNewMsgCount] = useState(null);
 
+  const [newNotiCount, setNewNotiCount] = useState(null);
+
   const updateMsgCountStr = () => {
     const count = DataCenter.messageCache.getNewMessageCount();
     let countStr = null;
@@ -83,20 +85,43 @@ const BottomTabNavigation = () => {
     updateMsgCountStr();
   };
 
+  const updateNotiCount = () => {
+    const count = DataCenter.notifications.unreadCount();
+    let unreadCount = null;
+    if (count > 0) {
+      unreadCount = count > 99 ? "99+" : count;
+    }
+    setNewNotiCount(unreadCount);
+  };
+
+  const onNewNotiCountChanged = () => {
+    updateNotiCount();
+  };
+
+  const updateBadgeCount = () => {
+    onNewNotiCountChanged();
+    onNewMessageCountChanged();
+  };
+
   useEffect(() => {
-    JSEvent.on(DataEvents.User.UserState_DataReady, onNewMessageCountChanged);
+    JSEvent.on(DataEvents.User.UserState_DataReady, updateBadgeCount);
     JSEvent.on(
       UIEvents.Message.Message_New_Count_Changed,
       onNewMessageCountChanged
     );
+    JSEvent.on(
+      DataEvents.Notification.NotificationState_Updated,
+      onNewNotiCountChanged
+    );
     return () => {
-      JSEvent.remove(
-        DataEvents.User.UserState_DataReady,
-        onNewMessageCountChanged
-      );
+      JSEvent.remove(DataEvents.User.UserState_DataReady, updateBadgeCount);
       JSEvent.remove(
         UIEvents.Message.Message_New_Count_Changed,
         onNewMessageCountChanged
+      );
+      JSEvent.remove(
+        DataEvents.Notification.NotificationState_Updated,
+        onNewNotiCountChanged
       );
     };
   }, []);
@@ -191,7 +216,7 @@ const BottomTabNavigation = () => {
           tabBarBadge: newMsgCountStr,
         }}
       />
- 
+
       <BottomTab.Screen
         name="Quests"
         component={QuestScreen}
@@ -234,6 +259,7 @@ const BottomTabNavigation = () => {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person-outline" color={color} size={size} />
           ),
+          tabBarBadge: newNotiCount,
         }}
       />
     </BottomTab.Navigator>
@@ -479,7 +505,7 @@ export default function App() {
             <Stack.Screen
               name="GroupInvite"
               component={GroupInviteScreen}
-            // options={{ headerTitle: "Group Information" }}
+              // options={{ headerTitle: "Group Information" }}
             />
           </Stack.Navigator>
         </NavigationContainer>

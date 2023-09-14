@@ -24,7 +24,8 @@ export default function CreateNameScreen() {
   };
 
   const hasSpecialCharacters = (str) => {
-    const regex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    // const regex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    const regex = /^(?![_\d])[\w]{2,15}$/;
     return regex.test(str);
   };
 

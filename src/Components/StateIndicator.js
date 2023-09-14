@@ -2,12 +2,16 @@ import { View } from "react-native";
 import { LesConstants } from "les-im-components";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons";
 
 export const StateIndicator = ({ state, onlineState }) => {
-  console.log("state ", state, onlineState);
   switch (state) {
     case LesConstants.IMUserOnlineState.Offline:
       return <OfflineIndicator />;
+    // case LesConstants.IMUserOnlineState.MobileOnline:
+    //   return <Entypo name="mobile" size={20} color="white" />;
+    // case LesConstants.IMUserOnlineState.MobileBackground:
+    //   return <Entypo name="mobile" size={20} color="green" />;
     case LesConstants.IMUserState.Away:
       return <Ionicons name="moon" size={20} color="#F6AB3B" />;
     case LesConstants.IMUserState.Busy:

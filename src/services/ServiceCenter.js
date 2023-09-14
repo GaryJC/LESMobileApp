@@ -75,7 +75,6 @@ export default class ServiceCenter {
    * 服务的init方法可以使同步方法，也可以是异步方法
    */
   async loadAllServices() {
-
     this.#isLoading = true;
 
     this.#appStateSubscribtion = AppState.addEventListener("change", (state) =>
@@ -104,7 +103,7 @@ export default class ServiceCenter {
       NotificationService,
       ChatGroupService,
       FirebaseMessagingService,
-      QuestService
+      QuestService,
     ];
 
     let services = [];
@@ -159,7 +158,7 @@ export default class ServiceCenter {
 
   async #onUserLogin() {
     console.log(`user login, start invoking service.onUserLogin`);
-    const ps = []
+    const ps = [];
     for (let i = 0; i < this.#services.length; i++) {
       const service = this.#services[i];
       if (service.onUserLogin) {
@@ -172,8 +171,8 @@ export default class ServiceCenter {
     }
 
     await Promise.all(ps);
-    console.log("service.onUserLogin done")
-    JSEvent.emit(UIEvents.User.UserState_IsLoggedin);
+    console.log("service.onUserLogin done");
+    // JSEvent.emit(UIEvents.User.UserState_IsLoggedin);
   }
 
   /**

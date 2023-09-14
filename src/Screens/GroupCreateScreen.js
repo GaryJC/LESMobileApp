@@ -25,6 +25,7 @@ import GroupRoleBottomSheet from "../Components/GroupRoleBottomSheet";
 import FriendSelectButton from "../Components/FriendSelectButton";
 import DataCenter from "../modules/DataCenter";
 import LoadingIndicator from "../Components/LoadingIndicator";
+import HighlightButton from "../Components/HighlightButton";
 
 const GroupCreateScreen = () => {
   const [friendsData, setFriendsData] = useState([]);
@@ -117,11 +118,6 @@ const GroupCreateScreen = () => {
       console.log("group info: ", groupInfo);
       const groupId = groupInfo.id;
       const invitedIds = selectedFriends.map((friend) => friend.id);
-      // const invitations = selectedFriends.map((friend) =>
-      //   NotificationService.Inst.sendGroupInvitation(groupId, friend.id)
-      // );
-      // console.log("invitations: ", invitations);
-      // const results = await Promise.all(invitations);
       await NotificationService.Inst.sendGroupInvitation(groupId, invitedIds);
       navigation.navigate("Chats");
     } catch (e) {
@@ -190,7 +186,7 @@ const GroupCreateScreen = () => {
             }}
             onPress={closeCreateGroupModal}
           />
-          <View className="w-[70vw] h-[25vh] bg-[#262F38] justify-center items-center p-[15px] rounded-xl">
+          <View className="w-[70vw] h-[20vh] bg-[#262F38] justify-center items-center p-[15px] rounded-xl">
             <Text className="text-white text-[16px] text-center">
               Please create your group's name
             </Text>
@@ -215,18 +211,28 @@ const GroupCreateScreen = () => {
                 </View>
               </TouchableWithoutFeedback>
             )} */}
-            <TouchableHighlight
+            {/* <TouchableHighlight
               className="mt-[20px]"
               onPress={createGroupHandler}
             >
               <View className="w-[100px] h-[30px] bg-[#58AE69] rounded-lg justify-center items-center">
                 <Text className="text-white">Submit</Text>
               </View>
-            </TouchableHighlight>
+            </TouchableHighlight> */}
+            <View className="mt-[20px]">
+              <HighlightButton
+                type={"primary"}
+                text="Create"
+                isLoading={isLoading}
+                disabled={isLoading}
+                onPress={createGroupHandler}
+              />
+            </View>
           </View>
         </View>
       </Modal>
-      <LoadingIndicator isLoading={isLoading} />
+
+      {/* <LoadingIndicator isLoading={true} /> */}
     </View>
   );
 };

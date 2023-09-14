@@ -71,7 +71,11 @@ export default function UserScreen() {
 
     const updateUnreadCountHandler = () => {
       const count = DataCenter.notifications.unreadCount();
-      setUnreadCount(count);
+      let unreadCount = 0;
+      if (count > 0) {
+        unreadCount = count > 99 ? "99+" : count;
+      }
+      setUnreadCount(unreadCount);
     };
 
     updateUnreadCountHandler();
@@ -97,20 +101,30 @@ export default function UserScreen() {
       DataEvents.Notification.NotificationState_Updated,
       updateUnreadCountHandler
     );
-
-    JSEvent.on(UIEvents.User.UserState_IsLoggedin, retriveUserInfoHandler);
-    JSEvent.on(DataEvents.User.UserInfo_Current_Updated, retriveUserInfoHandler);
+    // JSEvent.on(UIEvents.User.UserState_IsLoggedin, retriveUserInfoHandler);
+    JSEvent.on(DataEvents.User.UserState_DataReady, retriveUserInfoHandler);
+    JSEvent.on(
+      DataEvents.User.UserInfo_Current_Updated,
+      retriveUserInfoHandler
+    );
 
     return () => {
       JSEvent.remove(
         DataEvents.Notification.NotificationState_Updated,
         updateUnreadCountHandler
       );
+      // JSEvent.remove(
+      //   UIEvents.User.UserState_IsLoggedin,
+      //   retriveUserInfoHandler
+      // );
       JSEvent.remove(
-        UIEvents.User.UserState_IsLoggedin,
+        DataEvents.User.UserState_DataReady,
         retriveUserInfoHandler
       );
-      JSEvent.remove(DataEvents.User.UserInfo_Current_Updated, retriveUserInfoHandler);
+      JSEvent.remove(
+        DataEvents.User.UserInfo_Current_Updated,
+        retriveUserInfoHandler
+      );
     };
   }, []);
 
@@ -174,7 +188,11 @@ export default function UserScreen() {
             className="w-[100%] h-[100%]"
             resizeMode="cover"
           /> */}
-          <Avatar tag={userInfo.tag} name={userInfo.name} size={{ w: 80, h: 80, font: 48 }} />
+          <Avatar
+            tag={userInfo.tag}
+            name={userInfo.name}
+            size={{ w: 80, h: 80, font: 50 }}
+          />
         </View>
         <TouchableOpacity
           onPress={navigateToNotification}

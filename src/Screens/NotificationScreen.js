@@ -26,7 +26,6 @@ const notificationReducer = (state, action) => {
       return action.payload;
     case "UPDATE_NOTIFICATIONS":
       const notification = action.payload;
-      console.log("bbvv: ", state, action);
       // 用户点击accept以后也需要从列表里移除
       // if (
       //   notification.state ===

@@ -4,31 +4,29 @@ import {
   FlatList,
   SectionList,
   ActivityIndicator,
+  TouchableHighlight,
+  TouchableOpacity,
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { useState, useEffect, useRef } from "react";
 import ChatGroupService from "../services/ChatGroupService";
 import { LesConstants } from "les-im-components";
 import { FriendList } from "../Components/FriendList";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import DataCenter from "../modules/DataCenter";
-import GroupRoleBottomSheet from "../Components/GroupRoleBottomSheet";
-import { TouchableHighlight } from "@gorhom/bottom-sheet";
 import { Ionicons } from "@expo/vector-icons";
-import NotificationService from "../services/NotificationService";
-import Constants from "../modules/Constants";
 import JSEvent from "../utils/JSEvent";
 import { DataEvents, UIEvents } from "../modules/Events";
+import FeedBackModal from "../Components/FeedbackModal";
+import GroupAuthButton from "../Components/GroupAuthButton";
+import GroupAwaitResponse from "../Components/GroupAwaitResponse";
 
 const GroupInfoScreen = () => {
   const [groupMemberData, setGroupMemberData] = useState([]);
   const [groupInfo, setGroupInfo] = useState();
   const [ownRole, setOwnRole] = useState();
-  const [awaitingMembers, setAwaitingMembers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  const bottomSheetModalRef = useRef(null);
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
+  const [feedback, setFeedbak] = useState();
 
   const route = useRoute();
 
@@ -62,27 +60,6 @@ const GroupInfoScreen = () => {
     ]);
   };
 
-  const getConfirmingMembers = () => {
-    const confirmingMembers = DataCenter.notifications
-      .getAllNotifications(LesConstants.IMNotificationType.GroupInvitation)
-      .reduce((res, item) => {
-        if (item.groupInfo.id === groupId && item.mode === "sender") {
-          console.log(res, item);
-          return [
-            ...res,
-            {
-              ...item.recipient,
-              notiId: item.id,
-            },
-          ];
-        }
-        return res;
-      }, []);
-
-    console.log("confirming members: ", confirmingMembers);
-    setAwaitingMembers(confirmingMembers);
-  };
-
   const getGroupMembers = async () => {
     setIsLoading(true);
     try {
@@ -107,20 +84,6 @@ const GroupInfoScreen = () => {
 
   useEffect(() => {
     getGroupMembers();
-    getConfirmingMembers();
-    // getChatInfo();
-
-    const updateConfirmingMembers = (noti) => {
-      //   getGroupMembers();
-      //   console.log("bbb: ", noti, awaitingMembers);
-      //   const isFromThisGroup = awaitingMembers.find(
-      //     (item) => item.notiId === noti.id
-      //   );
-      //   if (isFromThisGroup) {
-      //     getConfirmingMembers();
-      //   }
-      getConfirmingMembers();
-    };
 
     const updateGroupMembers = (cg) => {
       if (cg.id === groupId) {
@@ -128,21 +91,11 @@ const GroupInfoScreen = () => {
       }
     };
 
-    JSEvent.on(
-      DataEvents.Notification.NotificationState_Updated,
-      updateConfirmingMembers
-    );
-
     JSEvent.on(DataEvents.ChatGroup.ChatGroup_Updated, updateGroupMembers);
 
     JSEvent.on(UIEvents.ChatGroup.ChatGroup_RemoveMember, getGroupMembers);
 
     return () => {
-      JSEvent.remove(
-        DataEvents.Notification.NotificationState_Updated,
-        updateConfirmingMembers
-      );
-
       JSEvent.remove(
         DataEvents.ChatGroup.ChatGroup_Updated,
         updateGroupMembers
@@ -154,62 +107,6 @@ const GroupInfoScreen = () => {
       );
     };
   }, []);
-
-  const openChangeRoleSheet = () => {
-    bottomSheetModalRef.current?.present();
-  };
-
-  const GroupAuthButton = ({ data }) => {
-    // 如果这个是用户自己，不显示
-    // 如果用户是creator, 那么除了自己都显示
-    // 如果用户是manager，那么只显示members
-    // 如果用户是member那么都不显示
-    if (data.id === DataCenter.userInfo.accountId) {
-      return null;
-    }
-    if (ownRole === LesConstants.IMGroupMemberRole.Member) {
-      return null;
-    } else if (
-      ownRole === LesConstants.IMGroupMemberRole.Manager &&
-      data.memberRole !== LesConstants.IMGroupMemberRole.Member
-    ) {
-      return null;
-    } else {
-      return (
-        <View className="justify-center items-center">
-          <TouchableOpacity onPress={openChangeRoleSheet}>
-            <MaterialCommunityIcons
-              name="account-key"
-              size={24}
-              color="white"
-            />
-          </TouchableOpacity>
-          <GroupRoleBottomSheet
-            bottomSheetModalRef={bottomSheetModalRef}
-            memberData={data}
-            groupId={groupId}
-          />
-        </View>
-      );
-    }
-  };
-
-  const onRespondHandler = (notificationId) => {
-    NotificationService.Inst.cancelInvitation(notificationId)
-      .then((res) => {
-        console.log("cancel success: ", res);
-        getConfirmingMembers();
-      })
-      .catch((e) => console.error(e));
-  };
-
-  const CancelButton = ({ item }) => (
-    <View className="justify-center">
-      <TouchableOpacity onPress={() => onRespondHandler(item.notiId)}>
-        <Text className="text-white font-bold">Cancel</Text>
-      </TouchableOpacity>
-    </View>
-  );
 
   const inviteFriendHandler = () => {
     navigation.navigate("GroupInvite", { groupId: groupId });
@@ -225,6 +122,8 @@ const GroupInfoScreen = () => {
       navigation.goBack();
     } catch (e) {
       console.log("quit group error: ", e);
+      setFeedbackModalOpen(true);
+      setFeedbak("You can not quit this group.");
     }
   };
 
@@ -244,7 +143,13 @@ const GroupInfoScreen = () => {
           renderItem={({ item }) => (
             <FriendList
               friend={item}
-              button={<GroupAuthButton data={item} />}
+              button={
+                <GroupAuthButton
+                  userData={item}
+                  ownRole={ownRole}
+                  groupId={groupId}
+                />
+              }
             />
           )}
           renderSectionHeader={({ section: { title } }) => (
@@ -256,17 +161,7 @@ const GroupInfoScreen = () => {
           )}
         />
       </View>
-      <View>
-        <Text className="text-white text-[15px] font-bold mt-[10px]">
-          Awaiting Responses:
-        </Text>
-        <FlatList
-          data={awaitingMembers}
-          renderItem={({ item }) => (
-            <FriendList friend={item} button={<CancelButton item={item} />} />
-          )}
-        />
-      </View>
+      <GroupAwaitResponse groupId={groupId} />
       <View className="mt-[5vh]">
         <TouchableHighlight onPress={quitGroupHandler}>
           <View className="justify-center items-center bg-[#131F2A] h-[35px] rounded-lg ">
@@ -274,6 +169,11 @@ const GroupInfoScreen = () => {
           </View>
         </TouchableHighlight>
       </View>
+      <FeedBackModal
+        feedbackModalOpen={feedbackModalOpen}
+        setFeedbackModalOpen={setFeedbackModalOpen}
+        feedback={feedback}
+      />
     </View>
   );
 };

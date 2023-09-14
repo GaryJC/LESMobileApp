@@ -155,11 +155,10 @@ export default function LoginScreen() {
 
   function onTwitterButtonPress() {
     setIsLoading(true);
-    Firebase.twitterSignin()
-      .then(({ id, loginState, imServerState }) => {
-        setIsLoading(false);
-        navigation.navigate("VerifyEmail", { id, loginState, imServerState });
-      });
+    Firebase.twitterSignin().then(({ id, loginState, imServerState }) => {
+      setIsLoading(false);
+      navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+    });
   }
 
   /*
@@ -212,13 +211,12 @@ export default function LoginScreen() {
   }
   */
 
-  function onGoogleButtonPress() {
+  async function onGoogleButtonPress() {
     setIsLoading(true);
-    Firebase.googleSignin()
-      .then(({ id, loginState, imServerState }) => {
-        setIsLoading(false);
-        navigation.navigate("VerifyEmail", { id, loginState, imServerState });
-      });
+    Firebase.googleSignin().then(({ id, loginState, imServerState }) => {
+      setIsLoading(false);
+      navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+    });
   }
 
   return (

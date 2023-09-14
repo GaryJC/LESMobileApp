@@ -75,7 +75,6 @@ export default function GroupRoleBottomSheet({
   );
 
   const removeGroupMemberHandler = async () => {
-    // ChatGroupService.Inst.removeGroupMember()
     try {
       await ChatGroupService.Inst.removeGroupMember(groupId, memberData.id);
       JSEvent.emit(UIEvents.ChatGroup.ChatGroup_RemoveMember);

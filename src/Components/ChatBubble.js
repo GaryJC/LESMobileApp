@@ -7,7 +7,6 @@ import Avatar from "./Avatar";
 import { LesConstants } from "les-im-components";
 import IMUserInfoService from "../services/IMUserInfoService";
 
-
 const showTimestamp = (preMessage, message) => {
   if (preMessage) {
     const timeDifference = message.timestamp - preMessage.timestamp;
@@ -16,25 +15,29 @@ const showTimestamp = (preMessage, message) => {
   return true; //Show timestamp for the first message
 };
 
-const SpecialMessage = ({ senderUserInfo, message }) => {
+const SpecialMessage = ({ message }) => {
   let content;
   // const username = userInfo.find(
   //   (user) => user.id === message.recipientId
   // )?.name;
-  const username = senderUserInfo?.name;
+  const [sender, recipient] = IMUserInfoService.Inst.getCachedUser([
+    message.senderId,
+    message.recipientId,
+  ]);
+
   switch (message?.contentType ?? 0) {
     case LesConstants.IMMessageContentType.Group_MemberAdded:
       if (message?.senderId === message?.recipientId) {
-        content = `${username} has created the group`;
+        content = `${sender.name} has created the group`;
       } else {
-        content = `${username} has been invited to the group`;
+        content = `${recipient.name} has been invited to the group`;
       }
       break;
     case LesConstants.IMMessageContentType.Group_MemberKick:
-      content = `${username} has been kicked from the group`;
+      content = `${recipient.name} has been kicked from the group`;
       break;
     case LesConstants.IMMessageContentType.Group_MemberQuit:
-      content = `${username} has quitted the group`;
+      content = `${recipient?.name} has quitted the group`;
       break;
   }
   return (
@@ -63,7 +66,11 @@ const Bubble = ({ isOwn, senderUserInfo, message }) => (
     {/* {!isOwn && <Avatar avatar={userInfo.avatar} />} */}
     {!isOwn && (
       <View className=" w-[45px] h-[45px]">
-        <Avatar tag={senderUserInfo?.tag} name={senderUserInfo?.name} size={{ w: 45, h: 45, font: 20 }} />
+        <Avatar
+          tag={senderUserInfo?.tag}
+          name={senderUserInfo?.name}
+          size={{ w: 45, h: 45, font: 20 }}
+        />
       </View>
     )}
     <View className="justify-evenly">
@@ -104,50 +111,69 @@ const Bubble = ({ isOwn, senderUserInfo, message }) => (
     {/* {isOwn && <Avatar avatar={userInfo.avatar} />} */}
     {isOwn && (
       <View className=" w-[45px] h-[45px]">
-        <Avatar tag={senderUserInfo?.tag} name={senderUserInfo?.name} size={{ w: 45, h: 45, font: 20 }} />
+        <Avatar
+          tag={senderUserInfo?.tag}
+          name={senderUserInfo?.name}
+          size={{ w: 45, h: 45, font: 20 }}
+        />
       </View>
     )}
   </View>
 );
 
+export const ChatBubbleV2 = React.memo(
+  ({ message, preMessage }) => {
+    const [senderUserInfo, setSender] = useState(
+      message == null
+        ? null
+        : IMUserInfoService.Inst.getCachedUser(message.senderId).pop()
+    );
 
-export const ChatBubbleV2 = React.memo(({ message, preMessage }) => {
-  const [senderUserInfo, setSender] = useState(message == null ? null : IMUserInfoService.Inst.getCachedUser(message.senderId).pop());
+    useEffect(() => {
+      const sender =
+        message == null
+          ? null
+          : IMUserInfoService.Inst.getCachedUser(message.senderId).pop();
+      setSender(sender);
+    }, [message]);
 
-  useEffect(() => {
-    const sender = message == null ? null : IMUserInfoService.Inst.getCachedUser(message.senderId).pop()
-    setSender(sender);
-  }, [message])
-
-  return (
-    <>
-
-      {message.contentType !== LesConstants.IMMessageContentType.Text ? (
-        <SpecialMessage senderUserInfo={senderUserInfo} message={message} />
-      ) : (
-        <Bubble isOwn={message.senderId == DataCenter.userInfo.accountId} message={message} senderUserInfo={senderUserInfo} />
-      )}
-      {showTimestamp(preMessage, message) && (
-        <TimeStamp date={formatDate(new Date(message?.timestamp))} />
-      )}
-    </>
-  );
-
-}, (prev, next) => {
-  if (prev.message != null && next.message != null) {
-    return prev.message.messageId == next.message.messageId && prev.message.status == next.message.status;
-  } else {
-    return prev.message == next.message;
+    return (
+      <>
+        {message.contentType !== LesConstants.IMMessageContentType.Text ? (
+          <SpecialMessage message={message} />
+        ) : (
+          <Bubble
+            isOwn={message.senderId == DataCenter.userInfo.accountId}
+            message={message}
+            senderUserInfo={senderUserInfo}
+          />
+        )}
+        {showTimestamp(preMessage, message) && (
+          <TimeStamp date={formatDate(new Date(message?.timestamp))} />
+        )}
+      </>
+    );
+  },
+  (prev, next) => {
+    if (prev.message != null && next.message != null) {
+      return (
+        prev.message.messageId == next.message.messageId &&
+        prev.message.status == next.message.status
+      );
+    } else {
+      return prev.message == next.message;
+    }
   }
-})
-
+);
 
 export const ChatBubble = ({ message, preMessage, userInfo }) => {
   //Calculate time difference and check if it's more than 5 minutes
 
   // const senderUserInfo = userInfo?.find((user) => user.id === message.senderId);
 
-  const [senderUserInfo, setSenderUserInfo] = useState(IMUserInfoService.Inst.getCachedUser(message.senderId).pop());
+  const [senderUserInfo, setSenderUserInfo] = useState(
+    IMUserInfoService.Inst.getCachedUser(message.senderId).pop()
+  );
 
   const showTimestamp = () => {
     if (preMessage) {
@@ -172,8 +198,10 @@ export const ChatBubble = ({ message, preMessage, userInfo }) => {
 
   const getSenderUserInfo = async () => {
     if (senderUserInfo == null) {
-      console.log("update sender user info...")
-      const data = (await IMUserInfoService.Inst.getUser(message.senderId)).pop();
+      console.log("update sender user info...");
+      const data = (
+        await IMUserInfoService.Inst.getUser(message.senderId)
+      ).pop();
       setSenderUserInfo(data);
     }
   };
