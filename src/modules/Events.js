@@ -55,6 +55,12 @@ export const DataEvents = {
      * @type {info:IMUserInfo}
      */
     UserInfo_Current_Updated: "DATA_EVENT_UserInfo_Current_Updated",
+
+    /**
+     * 任务用户数据发生变化
+     * 无数据，自行到DataCenter.userInfo.questUserInfo获取
+     */
+    QuestUser_Updated:"DATA_EVENT_QuestUser_Updated"
   },
 
   /**

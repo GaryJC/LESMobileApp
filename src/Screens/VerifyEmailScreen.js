@@ -40,7 +40,7 @@ export const VerifyEmailScreen = () => {
     <View className="flex-1 justify-center">
       <View className="bg-[#2A2C37] p-[20px]">
         {loginState == Constants.LoginState.VerifyEmail ? (
-          <VerifyEmailForm
+          <VerifyEmailForm 
             userToken={userToken}
             userId={userId}
             setLoginState={setLoginState}

@@ -62,7 +62,7 @@ const FriendAddScreen = () => {
               value={searchWord}
               className="flex-1 bg-[#424547] rounded h-[100%] p-[5px] text-[#CACACA]"
               onChangeText={setSearchWord}
-              placeholder="e.g. username/email#tag"
+              placeholder="e.g. username#tag/email"
               placeholderTextColor={"#979A9D"}
             />
           </View>

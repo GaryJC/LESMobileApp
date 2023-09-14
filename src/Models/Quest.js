@@ -1,6 +1,8 @@
 import { LesConstants } from "les-im-components";
 import DataCenter from "../modules/DataCenter";
 import { Text, View } from "react-native";
+import JSEvent from "../utils/JSEvent";
+import { DataEvents } from "../modules/Events";
 
 const { IMNotificationType, IMNotificationState } = LesConstants;
 
@@ -108,9 +110,18 @@ class QuestData {
     /**
      * 任务项目数据
      * entryId → QuestEntryData
-     * @type {{number:QuestEntryData}}
+     * @type {Map<number,QuestEntryData>}
      */
     entries;
+
+    getRewardPoints() {
+        let points = 0;
+        for (const id in this.entries) {
+            const entry = this.entries[id];
+            points += entry.rewardPoints;
+        }
+        return points;
+    }
 }
 
 class QuestEntryData {
@@ -158,11 +169,24 @@ class QuestEntryData {
      */
     params;
 
+    /**
+     * 
+     * @param {number} index 
+     * @returns {QuestEntryParamData}
+     */
+    getParam(index) {
+        if (index < this.params.length) {
+            return this.params[index];
+        }
+        return null;
+    }
+
     // /**
     //  * 用户当前进度
     //  * @type {QuestUserEntryProgress}
     //  */
     // progress;
+
 
 
     /**
@@ -233,6 +257,11 @@ class QuestUserProgress {
     userId;
 
     /**
+     * @type {boolean}
+     */
+    rewardClaimed;
+
+    /**
      * @type {{number:QuestUserEntryProgress}}
      */
     progress = {};
@@ -267,6 +296,108 @@ class QuestUserEntryProgress {
     }
 }
 
+class QuestUserData {
+    /**
+     * @type {number}
+     */
+    userId;
+    /**
+     * @type {number}
+     */
+    rewardPoints;
+    /**
+     * @type {number[]}
+     */
+    participateQuests;
+
+    /**
+     * @type {number[]}
+     */
+    endedQuests;
+
+    /**
+     * 更新现有user数据
+     * @param {QuestUserData} userData 
+     */
+    update(userData) {
+        const { rewardPoints, participateQuests, endedQuests } = userData;
+        if (rewardPoints != null) {
+            this.rewardPoints = rewardPoints;
+        }
+        if (participateQuests != null) {
+            this.participateQuests = participateQuests;
+        }
+        if (endedQuests != null) {
+            this.endedQuests = endedQuests;
+        }
+
+        JSEvent.emit(DataEvents.User.QuestUser_Updated);
+    }
+
+    /**
+     * 
+     * @param {QuestRewardType} type 
+     * @param {number} value 
+     */
+    addReward(type, value) {
+        if (type == QuestRewardType.Point) {
+            this.rewardPoints += value;
+        }
+        JSEvent.emit(DataEvents.User.QuestUser_Updated);
+    }
+
+}
+
+const QuestRewardType = {
+    Point: 0,
+    Token: 1,
+}
+
+class QuestRewardData {
+    questId;
+    /**
+     * @type {QuestRewardItem[]}
+     */
+    #rewards = [];
+
+    /**
+     * 
+     * @param {QuestRewardType} type 
+     * @param {number} amount 
+     * @param {number} total 
+     */
+    addReward(type, amount, total) {
+        const item = new QuestRewardItem();
+        item.type = type;
+        item.amount = amount;
+        item.total = total;
+        this.#rewards.push(item);
+    }
+
+    /**
+     * @type {QuestRewardItem[]}
+     */
+    get rewards() {
+        return [...this.#rewards];
+    }
+
+}
+
+class QuestRewardItem {
+    /**
+     * @type {QuestRewardType}
+     */
+    type;
+    /**
+     * @type {number}
+     */
+    amount;
+    /**
+     * @type {number}
+     */
+    total;
+}
+
 /**
  * 返回当前entry是否需要显示progress
  * @param {QuestEntryData} entry 
@@ -279,4 +410,8 @@ const hasProgress = (entry) => {
         ;
 }
 
-export { QuestData, QuestEntryData, QuestEntryParamData, CommunityData, QuestUserProgress, QuestUserEntryProgress, hasProgress }
+export {
+    QuestUserData, QuestData, QuestEntryData, QuestEntryParamData, CommunityData,
+    QuestUserProgress, QuestUserEntryProgress, QuestRewardData, QuestRewardItem,
+    QuestRewardType, EntryTemplateType, hasProgress
+}

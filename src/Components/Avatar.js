@@ -90,7 +90,11 @@ const Avatar = ({ tag, name, isGroup, isSelected, size, children }) => {
         className={viewClass}
         style={{ backgroundColor: avatarColor }}
       >
-        <Text className={fontClass} style={{ fontSize: size.font }}>
+        <Text
+          className={fontClass}
+          style={{ fontSize: size.font }}
+          style={{ fontSize: size.font }}
+        >
           {initLetter}
         </Text>
       </View>

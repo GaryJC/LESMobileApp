@@ -18,6 +18,10 @@ const SetReferrerForm = ({ userToken }) => {
         referralCode
       );
       if (result !== -1) {
+
+        //连接imServer
+        const loginResult = await LoginService.Inst.firebaseQuickLogin();
+
         navigation.navigate("CreateName");
         // setLoginState(Constants.LoginState.Normal);
       }

@@ -58,10 +58,12 @@ export default class LoginService {
     //     console.log("===============", ret);
     //   });
 
-
-    RNTwitterSignIn.init('Dywh2ptHOaZvpHy6AmJgIIuUV', 'S9VhKJOzqAInFRLIKVD9XkBFDofoio02pE8J1FWES5RquGsU3J').then(() => {
+    RNTwitterSignIn.init(
+      "Dywh2ptHOaZvpHy6AmJgIIuUV",
+      "S9VhKJOzqAInFRLIKVD9XkBFDofoio02pE8J1FWES5RquGsU3J"
+    ).then(() => {
       console.log("==========Twitter SDK initialized==========");
-    })
+    });
     await this.#loadLoginData();
     LesPlatformCenter.IMListeners.onWebsocketStateChanged = (state) => {
       if (state == WebsocketState.Disconnected) {
@@ -254,10 +256,9 @@ export default class LoginService {
       const result = await this.firebaseLogin(token, fcmToken);
       const { id, loginState, profile } = result;
       let imResult;
-
+      console.log("llll: ", loginState);
       if (
-        loginState == LoginState.Normal ||
-        loginState == LoginState.UpdateReferrer
+        loginState == LoginState.Normal //|| loginState == LoginState.UpdateReferrer
       ) {
         //登陆成功，连接im服务器
         try {
@@ -420,7 +421,7 @@ export default class LoginService {
           msg: data.msg,
         };
       }
-    } catch (e) { }
+    } catch (e) {}
     return false;
   }
 
@@ -434,7 +435,7 @@ export default class LoginService {
       const response = await Firebase.updateReferrer(userToken, referralCode);
       const data = response.data;
       return data.code;
-    } catch (e) { }
+    } catch (e) {}
     return -1;
   }
 
