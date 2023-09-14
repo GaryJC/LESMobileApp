@@ -7,7 +7,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "expo-status-bar";
 import { LesConstants } from "les-im-components";
 import { useEffect, useState, useRef } from "react";
-import { Dimensions } from "react-native";
+import { Dimensions, Image } from "react-native";
 import ChatScreen from "./src/Screens/ChatScreen";
 import CreateNameScreen from "./src/Screens/CreateNameScreen";
 import FriendsScreen from "./src/Screens/FriendsScreen";
@@ -51,6 +51,7 @@ import ChatScreenV2 from "./src/Screens/ChatScreenV2";
 import WalletScreen from "./src/Screens/WalletScreen";
 import HighlightButton from "./src/Components/HighlightButton";
 import QuestScreen from "./src/Screens/QuestScreen";
+import QuestUserPointPanel from "./src/Components/Quest/QuestUserPointPanel";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -83,21 +84,14 @@ const BottomTabNavigation = () => {
     updateMsgCountStr();
   };
 
+
+
   useEffect(() => {
     JSEvent.on(DataEvents.User.UserState_DataReady, onNewMessageCountChanged);
-    JSEvent.on(
-      UIEvents.Message.Message_New_Count_Changed,
-      onNewMessageCountChanged
-    );
+    JSEvent.on(UIEvents.Message.Message_New_Count_Changed, onNewMessageCountChanged);
     return () => {
-      JSEvent.remove(
-        DataEvents.User.UserState_DataReady,
-        onNewMessageCountChanged
-      );
-      JSEvent.remove(
-        UIEvents.Message.Message_New_Count_Changed,
-        onNewMessageCountChanged
-      );
+      JSEvent.remove(DataEvents.User.UserState_DataReady, onNewMessageCountChanged);
+      JSEvent.remove(UIEvents.Message.Message_New_Count_Changed, onNewMessageCountChanged);
     };
   }, []);
 
@@ -191,7 +185,7 @@ const BottomTabNavigation = () => {
           tabBarBadge: newMsgCountStr,
         }}
       />
- 
+
       <BottomTab.Screen
         name="Quests"
         component={QuestScreen}
@@ -200,6 +194,9 @@ const BottomTabNavigation = () => {
             <Ionicons name="bookmarks" color={color} size={size} />
           ),
           headerShown: true,
+          headerRight: () => (
+            <QuestUserPointPanel />
+          )
           //tabBarBadge: newMsgCountStr,
         }}
       />

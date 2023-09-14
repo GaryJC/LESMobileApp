@@ -3,8 +3,8 @@
  * @param {Date} date
  * @returns {formattedDate}
  */
-export default function formatDate(date) {
-  const options = {
+export default function formatDate(date, options) {
+  const op = options ?? {
     year: "2-digit",
     month: "2-digit",
     day: "2-digit",
@@ -14,7 +14,7 @@ export default function formatDate(date) {
 
   let formattedDate;
   //   if (timestamp) {
-  formattedDate = new Intl.DateTimeFormat("en-US", options).format(date);
+  formattedDate = new Intl.DateTimeFormat("en-US", op).format(date);
   //   }
   return formattedDate;
 }

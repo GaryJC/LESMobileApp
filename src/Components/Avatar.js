@@ -77,7 +77,7 @@ const Avatar = ({ tag, name, isGroup, isSelected, size, children }) => {
 
   borderClass += isSelected ? " opacity-80" : " hidden";
 
-  const fontClass = "text-white font-bold text-[" + size.font + "px]";
+  const fontClass = "text-white font-bold ";
 
   return (
     <View className={`absolute w-[${size.w}px] h-[${size.h}px]`}>
@@ -87,7 +87,7 @@ const Avatar = ({ tag, name, isGroup, isSelected, size, children }) => {
         className={viewClass}
         style={{ backgroundColor: avatarColor }}
       >
-        <Text className={fontClass}>
+        <Text className={fontClass} style={{ fontSize: size.font}}>
           {initLetter}
         </Text>
       </View>

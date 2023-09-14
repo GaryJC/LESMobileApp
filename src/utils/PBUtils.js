@@ -1,6 +1,6 @@
 import ChatGroup from "../Models/ChatGroup";
 import MessageData from "../Models/MessageData";
-import { CommunityData, QuestData, QuestEntryData, QuestEntryParamData, QuestUserEntryProgress, QuestUserProgress } from "../Models/Quest";
+import { CommunityData, QuestData, QuestEntryData, QuestEntryParamData, QuestUserData, QuestUserEntryProgress, QuestUserProgress } from "../Models/Quest";
 import Constants from "../modules/Constants";
 
 const PBUtils = {
@@ -104,6 +104,7 @@ const PBUtils = {
         const p = new QuestUserProgress();
         p.questId = pb.getQuestid();
         p.userId = pb.getUserid();
+        p.rewardClaimed = pb.getRewardclaimed();
         pb.getProgressesList().map(pp => {
             var ep = this.pbQuestEntryProgressToData(pp);
             p.progress[ep.entryId] = ep;
@@ -145,6 +146,15 @@ const PBUtils = {
         c.verified = comPb.getVerified();
         c.createTime = comPb.getCreatetime();
         return c;
+    },
+
+    pbQuestUserDataToData(pb){
+        const u = new QuestUserData();
+        u.userId = pb.getUserid();
+        u.rewardPoints = pb.getRewardpoints();
+        u.participateQuests = pb.getParticipatequestsList();
+        u.endedQuests = pb.getEndedquestsList();
+        return u;
     }
 }
 
