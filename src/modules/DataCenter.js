@@ -7,6 +7,7 @@ import { MessageCaches } from "../Models/MessageCaches";
 import { Notifications } from "../Models/Notifications";
 import IMUserInfo from "../Models/IMUserInfo";
 import UserProfile from "../Models/UserProfile";
+import { QuestUserData } from "../Models/Quest";
 
 
 const services = [];
@@ -45,7 +46,7 @@ const DataCenter = {
     email: "",
     loginKey: "",
 
-    fcmToken:"",
+    fcmToken: "",
     /**
      * 用户账户信息
      * @type {UserProfile}
@@ -55,7 +56,12 @@ const DataCenter = {
      * im用户信息
      * @type {IMUserInfo}
      */
-    imUserInfo: new IMUserInfo()
+    imUserInfo: new IMUserInfo(),
+
+    /**
+     * 用户任务信息
+     */
+    questUserInfo: new QuestUserData(),
   },
 
   /**

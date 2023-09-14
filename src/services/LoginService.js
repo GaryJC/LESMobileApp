@@ -256,8 +256,7 @@ export default class LoginService {
       let imResult;
 
       if (
-        loginState == LoginState.Normal ||
-        loginState == LoginState.UpdateReferrer
+        loginState == LoginState.Normal //|| loginState == LoginState.UpdateReferrer
       ) {
         //登陆成功，连接im服务器
         try {

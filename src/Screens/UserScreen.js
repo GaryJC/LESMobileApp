@@ -21,6 +21,7 @@ import JSEvent from "../utils/JSEvent";
 import { DataEvents, UIEvents } from "../modules/Events";
 import Avatar from "../Components/Avatar";
 import { firebase } from "@react-native-firebase/auth";
+import { LesPlatformCenter } from "les-im-components";
 
 const userOptions = [
   { id: 1, title: "Account", link: "" },
@@ -127,6 +128,7 @@ export default function UserScreen() {
 
   const onLogoutHandler = async () => {
     await firebase.auth().signOut();
+    LesPlatformCenter.Inst.disconnect();
     try {
       await deleteAuthCache();
       // (DataCenter.userInfo = {
@@ -174,7 +176,7 @@ export default function UserScreen() {
             className="w-[100%] h-[100%]"
             resizeMode="cover"
           /> */}
-          <Avatar tag={userInfo.tag} name={userInfo.name} size={{ w: 80, h: 80, font: 48 }} />
+          <Avatar tag={userInfo.tag} name={userInfo.name} size={{ w: 80, h: 80, font: 40 }} />
         </View>
         <TouchableOpacity
           onPress={navigateToNotification}

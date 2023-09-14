@@ -490,6 +490,39 @@ export default class DatabaseService {
   }
 
   /**
+   * 删除user1 和 user2 之间的聊天记录
+   * @param {number} user1 
+   * @param {number} user2 
+   */
+  deleteSingleMessages(user1, user2) {
+    return new Promise((resolve, reject) => {
+      if (this.#currDb == null) reject(ERROR_DB_ISNULL);
+      this.#currDb.transaction((tx) => {
+        tx.executeSql("delete from tbl_message where messageType = ? and (senderId = ? or senderId = ?) and (recipientId = ? or recipientId = ?)",
+          [LesConstants.IMMessageType.Single, user1, user2, user1, user2], (_, r) => {
+            resolve(r);
+          }, (_, e) => {
+            reject(e)
+          })
+      });
+    })
+  }
+
+  deleteGroupMessages(groupId) {
+    return new Promise((resolve, reject) => {
+      if (this.#currDb == null) reject(ERROR_DB_ISNULL);
+      this.#currDb.transaction((tx) => {
+        tx.executeSql("delete from tbl_message where messageType = ? and groupId = ?",
+          [LesConstants.IMMessageType.Group, groupId], (_, r) => {
+            resolve(r);
+          }, (_, e) => {
+            reject(e)
+          })
+      });
+    })
+  }
+
+  /**
    * Searches chat history for a keyword.
    * @param {string} keyword
    * @returns {Promise}
@@ -736,18 +769,22 @@ export default class DatabaseService {
   }
 
   removeChatGroup(groupId) {
-    console.log("groupId, ", groupId);
-    if (this.#currDb == null) reject(ERROR_DB_ISNULL);
-    this.#currDb.transaction((tx) => {
-      tx.executeSql(
-        "DELETE FROM tbl_chatgroup WHERE groupId = ?",
-        [groupId],
-        (_, r) => resolve(groupId),
-        (_, e) => {
-          reject(e);
-        }
-      );
-    });
+    return new Promise((resolve, reject) => {
+      console.log("groupId, ", groupId);
+      if (this.#currDb == null) reject(ERROR_DB_ISNULL);
+      this.#currDb.transaction((tx) => {
+        tx.executeSql(
+          "DELETE FROM tbl_chatgroup WHERE groupId = ?",
+          [groupId],
+          (_, r) => {
+            resolve(groupId)
+          },
+          (_, e) => {
+            reject(e);
+          }
+        );
+      });
+    })
   }
 
   loadMessage() {
@@ -758,7 +795,6 @@ export default class DatabaseService {
           "select * from tbl_message",
           null,
           (statement, r) => {
-            console.log(r);
             resolve(r);
           },
           (s, error) => {

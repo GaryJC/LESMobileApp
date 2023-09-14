@@ -1,13 +1,17 @@
 import { LesPlatformCenter } from "les-im-components";
-import { QuestData, QuestUserProgress } from "../Models/Quest";
+import { QuestData, QuestRewardData, QuestUserProgress } from "../Models/Quest";
 import PBUtils from "../utils/PBUtils";
+import DataCenter from "../modules/DataCenter";
 
 class QuestService {
     static #inst;
 
-    #questMap = [];
+    /**
+     * @type {Map<number, QuestData>}
+     */
+    #questMap = {};
 
-    #communityMap = [];
+    #communityMap = {};
 
     /**
      * @returns {QuestService}
@@ -77,9 +81,47 @@ class QuestService {
         })
     }
 
+    getQuestUserInfo() {
+        return new Promise((resolve, reject) => {
+            LesPlatformCenter.IMFunctions.getQuestUserData().then(pb => {
+                const user = PBUtils.pbQuestUserDataToData(pb);
+                resolve(user);
+            }).catch(e => {
+                reject(e);
+            })
+        })
+    }
+
+    /**
+     * 
+     * @param {number} questId 
+     * @returns {Promise<QuestRewardData>}
+     */
+    claimReward(questId) {
+        return new Promise((resolve, reject) => {
+            LesPlatformCenter.IMFunctions.clamiQuestReward(questId).then(r => {
+                const rewards = r.rewardPoints;
+                const questReward = new QuestRewardData();
+                questReward.questId = questId;
+                rewards.map(r => {
+                    questReward.addReward(r.getType(), r.getAmount(), r.getTotal());
+                })
+
+                questReward.rewards.forEach(r => {
+                    DataCenter.userInfo.questUserInfo.addReward(r.type, r.amount);
+                })
+
+                resolve(questReward);
+            }).catch(e => { reject(e) })
+        })
+    }
+
     async onUserLogin() {
+        this.getQuestUserInfo().then(u => {
+            DataCenter.userInfo.questUserInfo.update(u);
+        })
+
         const q = await this.getQuestInfo();
-        console.log(q);
     }
 
 }

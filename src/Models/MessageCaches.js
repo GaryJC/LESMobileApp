@@ -227,9 +227,17 @@ class MessageCaches {
       (item) => item.chatId === chatId
     );
     if (idx > -1) {
+      const item = this.#chatListSorted[idx];
       this.#chatListSorted.splice(idx, 1);
       // JSEvent.emit(UIEvents.User.UserState_UIRefresh);
       DatabaseService.Inst.removeChatListItem(chatId);
+
+      if (item.type == IMMessageType.Single) {
+        DatabaseService.Inst.deleteSingleMessages(this.#currUserId, item.targetId)
+      } else if (item.type == IMMessageType.Group) {
+        DatabaseService.Inst.deleteGroupMessages(item.targetId);
+      }
+
     }
   }
 
@@ -239,12 +247,13 @@ class MessageCaches {
    * @param {string} chatId
    */
   removeChatGroup(groupId) {
-    const idx = this.#chatListSorted.findIndex(
+    const item = this.#chatListSorted.find(
       (item) => item.targetId === groupId
     );
-    if (idx > -1) {
-      this.#chatListSorted.splice(idx, 1);
+    if (item != null) {
+      //this.#chatListSorted.splice(idx, 1);
       // JSEvent.emit(UIEvents.User.UserState_UIRefresh);
+      this.removeChatListItem(item.chatId);
       DatabaseService.Inst.removeChatGroup(groupId);
     }
   }
