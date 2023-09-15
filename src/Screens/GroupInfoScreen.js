@@ -218,10 +218,6 @@ const GroupInfoScreen = () => {
   const quitGroupHandler = async () => {
     try {
       await ChatGroupService.Inst.quitChatGroup(groupId);
-      JSEvent.emit(
-        UIEvents.Message.Message_Chat_List_Removed,
-        "group-" + groupId
-      );
       navigation.goBack();
     } catch (e) {
       console.log("quit group error: ", e);
