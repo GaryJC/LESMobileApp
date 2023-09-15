@@ -235,6 +235,10 @@ class DataSavingService {
   }
 
   #onReceiveMessage(msgData) {
+    //System类型的消息不存储
+    if (msgData.messageType == LesConstants.IMMessageType.System) {
+      return;
+    }
     //将收到的消息异步存库
     DatabaseService.Inst.saveMessage(msgData)
       .then((succ) => console.log("save success: ", succ))

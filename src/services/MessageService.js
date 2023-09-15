@@ -149,6 +149,8 @@ class MessageService {
         // DatabaseService.Inst.removeChatGroup(msgData.groupId);
         // const groupId = "group-" + msgData.groupId;
         // JSEvent.emit(UIEvents.Message.Message_Chat_List_Removed, groupId);
+        DataCenter.messageCache.removeChatGroup(msgData.groupId);
+        console.log("you've been kicked from group[" + msgData.groupId + "]");
         break;
     }
   }
@@ -166,6 +168,8 @@ class MessageService {
       this.#onReceiveSystemMessage(msgData);
       //发布新消息事件，供service使用
       JSEvent.emit(DataEvents.Message.TimelineState_Updated, msgData);
+      //更新当前timelinId
+      this.#updateTimelineId(msgData.timelineId);
       return;
     }
 
