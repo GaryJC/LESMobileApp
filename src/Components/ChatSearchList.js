@@ -22,10 +22,10 @@ const ChatSearchList = ({ item, handleSheetEnd }) => {
     item;
   const chatId = MessageCaches.MakeChatID(senderId, recipientId);
 
-  let userInfo = DataCenter.userInfo.imUserInfo;
-  if (senderId !== userInfo.id) {
-    userInfo = IMUserInfoService.Inst.getCachedUser(senderId).pop().imUserInfo;
-  }
+  // let userInfo = DataCenter.userInfo.imUserInfo;
+  // if (senderId !== userInfo.id) {
+  const [userInfo] = IMUserInfoService.Inst.getCachedUser(senderId);
+  // }
   console.log("userinfo: ", userInfo);
 
   const date = formatDate(new Date(timestamp));
@@ -54,7 +54,7 @@ const ChatSearchList = ({ item, handleSheetEnd }) => {
       <View className="flex-row py-[10px] justify-start border-b-2 border-[#5C5C5C]">
         <View className="w-[30px] h-[30px]">
           <Avatar
-            tag={userInfo.tag}
+            // tag={userInfo?.tag}
             name={userInfo.name}
             size={{ w: 30, h: 30 }}
           />

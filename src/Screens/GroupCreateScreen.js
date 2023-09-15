@@ -33,6 +33,7 @@ const GroupCreateScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [groupName, setGroupName] = useState();
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState();
 
   const navigation = useNavigation();
 
@@ -110,20 +111,35 @@ const GroupCreateScreen = () => {
     setModalVisible(false);
   };
 
+  const validateGroupName = () => {
+    const regex = /^(?![_\d])[a-zA-Z_]{3,20}$/;
+    return regex.test(groupName);
+  };
+
   const createGroupHandler = async () => {
     console.log("group name: ", groupName);
-    setIsLoading(true);
-    try {
-      const groupInfo = await ChatGroupService.Inst.createChatGroup(groupName);
-      console.log("group info: ", groupInfo);
-      const groupId = groupInfo.id;
-      const invitedIds = selectedFriends.map((friend) => friend.id);
-      await NotificationService.Inst.sendGroupInvitation(groupId, invitedIds);
-      navigation.navigate("Chats");
-    } catch (e) {
-      console.log("create group error: ", e);
+    const isValid = validateGroupName(groupName);
+    if (isValid) {
+      setIsLoading(true);
+      setErrorMsg(null);
+      try {
+        const groupInfo = await ChatGroupService.Inst.createChatGroup(
+          groupName
+        );
+        console.log("group info: ", groupInfo);
+        const groupId = groupInfo.id;
+        const invitedIds = selectedFriends.map((friend) => friend.id);
+        await NotificationService.Inst.sendGroupInvitation(groupId, invitedIds);
+        navigation.navigate("Chats");
+      } catch (e) {
+        console.log("create group error: ", e);
+      }
+      setIsLoading(false);
+    } else {
+      setErrorMsg(
+        "Minimum of 3 words, a maximum of 20 words, no special symbols other than underscores allowed"
+      );
     }
-    setIsLoading(false);
   };
 
   return (
@@ -186,7 +202,7 @@ const GroupCreateScreen = () => {
             }}
             onPress={closeCreateGroupModal}
           />
-          <View className="w-[70vw] h-[20vh] bg-[#262F38] justify-center items-center p-[15px] rounded-xl">
+          <View className="w-[70vw] bg-[#262F38] justify-center items-center p-[15px] rounded-xl">
             <Text className="text-white text-[16px] text-center">
               Please create your group's name
             </Text>
@@ -219,6 +235,9 @@ const GroupCreateScreen = () => {
                 <Text className="text-white">Submit</Text>
               </View>
             </TouchableHighlight> */}
+            {errorMsg && (
+              <Text className="text-clr-error-red mt-[10px]">{errorMsg}</Text>
+            )}
             <View className="mt-[20px]">
               <HighlightButton
                 type={"primary"}

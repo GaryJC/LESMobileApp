@@ -256,7 +256,7 @@ export default class LoginService {
       const result = await this.firebaseLogin(token, fcmToken);
       const { id, loginState, profile } = result;
       let imResult;
-      console.log("llll: ", loginState);
+
       if (
         loginState == LoginState.Normal //|| loginState == LoginState.UpdateReferrer
       ) {

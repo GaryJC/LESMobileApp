@@ -184,6 +184,7 @@ const BottomTabNavigation = () => {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="people-outline" color={color} size={size} />
           ),
+          headerTitle: "Social",
           headerShown: true,
           headerRight: () => (
             <View className="flex-row items-center mr-[5vw]">
@@ -226,9 +227,7 @@ const BottomTabNavigation = () => {
             <Ionicons name="bookmarks" color={color} size={size} />
           ),
           headerShown: true,
-          headerRight: () => (
-            <QuestUserPointPanel />
-          )
+          headerRight: () => <QuestUserPointPanel />,
           //tabBarBadge: newMsgCountStr,
         }}
       />

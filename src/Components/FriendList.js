@@ -30,34 +30,30 @@ export const FriendList = ({ friend, button, hasTag }) => {
     <View>
       <View className="flex-row justify-between mb-[10px]">
         <View className="flex-row items-center">
-          <View className="relative">
-            <TouchableOpacity
-              onPress={openSheet}
-              className="w-[55px] h-[55px] mr-[10px]"
-            >
-              {/* <View className="w-[55px] h-[55px] rounded-full overflow-hidden mr-[10px]">
-                <ImageBackground
-                  source={{ uri: `https://i.pravatar.cc/?img=${friend.id}` }}
-                  className="w-[100%] h-[100%]"
-                />
-              </View> */}
-              <Avatar tag={friend.tag} name={friend.name} />
-            </TouchableOpacity>
-            <View className="absolute bottom-[0] right-[5] justify-center items-center">
-              <StateIndicator
-                state={friend.state}
-                onlineState={friend.onlineState}
-              />
+          <TouchableOpacity onPress={openSheet}>
+            <View className="flex-row">
+              <View className="relative">
+                <View className="w-[55px] h-[55px] mr-[10px]">
+                  <Avatar tag={friend.tag} name={friend.name} />
+                </View>
+
+                <View className="absolute bottom-[0] right-[5]">
+                  <StateIndicator
+                    state={friend.state}
+                    onlineState={friend.onlineState}
+                  />
+                </View>
+              </View>
+              <View className="flex-row items-center">
+                <Text className="text-white text-[20px] font-bold">
+                  {friend.name}
+                </Text>
+                {hasTag && (
+                  <Text className="text-white text-[14px]"> #{friend.tag}</Text>
+                )}
+              </View>
             </View>
-          </View>
-          <View className="flex-row items-center">
-            <Text className="text-white text-[20px] font-bold">
-              {friend.name}
-            </Text>
-            {hasTag && (
-              <Text className="text-white text-[14px]"> #{friend.tag}</Text>
-            )}
-          </View>
+          </TouchableOpacity>
         </View>
         {button}
       </View>

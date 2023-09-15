@@ -135,7 +135,7 @@ export default function FriendsScreen() {
             </View>
           )}
         </FriendButton>
-        <FriendButton title="Blocked" icon="block" link="Blocked" />
+        {/* <FriendButton title="Blocked" icon="block" link="Blocked" /> */}
       </View>
       <View className="mt-[30px] flex-1">
         {/* <Text className="text-white font-bold text-[24px]">

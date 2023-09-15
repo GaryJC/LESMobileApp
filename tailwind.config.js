@@ -15,6 +15,7 @@ module.exports = {
         "clr-link": "#60a5fa",
         "clr-emphasize": "#C8FF00",
         "clr-emphasize-light": "#F5FFCE",
+        "clr-error-red": "#FF0000",
       },
     },
   },

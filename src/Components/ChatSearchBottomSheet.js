@@ -46,12 +46,14 @@ const ChatSearchBottomSheet = ({ bottomSheetRef }) => {
 
   const onSearchHandler = debounce(async (keyword) => {
     console.log(keyword);
-    try {
-      const result = await DatabaseService.Inst.searchChatHistory(keyword);
-      setSearchingResult(result);
-      console.log("search result: ", result);
-    } catch (e) {
-      console.log("search error");
+    if (keyword) {
+      try {
+        const result = await DatabaseService.Inst.searchChatHistory(keyword);
+        setSearchingResult(result);
+        console.log("search result: ", result);
+      } catch (e) {
+        console.log("search error");
+      }
     }
   }, 500); // the search function will be called 500 ms after the user stops typing
 
