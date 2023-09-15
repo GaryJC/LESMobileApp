@@ -341,6 +341,16 @@ class ChatGroupService {
   }
 
   /**
+   * 移除群聊，包括聊天记录
+   * @param {number} groupId 
+   */
+  removeChatGroupData(groupId){
+    this.#chatGroups[groupId] = null;
+    delete this.#chatGroups[groupId];
+    DataCenter.messageCache.removeChatGroup(groupId);
+  }
+
+  /**
    * 移除群内成员
    * @param {number} groupId
    * @param {number} memberId

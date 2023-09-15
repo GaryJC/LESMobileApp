@@ -255,8 +255,13 @@ class MessageCaches {
       // JSEvent.emit(UIEvents.User.UserState_UIRefresh);
       this.removeChatListItem(item.chatId);
       DatabaseService.Inst.removeChatGroup(groupId);
+      JSEvent.emit(
+        UIEvents.Message.Message_Chat_List_Removed,
+        "group-" + groupId
+      );
     }
   }
+
 
   /**
    * 返回chatId对应的chatListItem
