@@ -22,6 +22,7 @@ import { DataEvents, UIEvents } from "../modules/Events";
 import Avatar from "../Components/Avatar";
 import { firebase } from "@react-native-firebase/auth";
 import { LesPlatformCenter } from "les-im-components";
+import RedDotIcon from "../Components/RedDotIcon";
 
 const userOptions = [
   { id: 1, title: "Account", link: "" },
@@ -196,7 +197,12 @@ export default function UserScreen() {
             size={{ w: 80, h: 80, font: 40 }}
           />
         </View>
-        <TouchableOpacity
+
+        <View className="absolute left-[5vw] top-[5vh] ">
+          <RedDotIcon iconName="notifications" iconSize={30} count={unreadCount} onPress={navigateToNotification} />
+        </View>
+
+        {/* <TouchableOpacity
           onPress={navigateToNotification}
           className="absolute left-[5vw] top-[8vh]"
         >
@@ -208,7 +214,7 @@ export default function UserScreen() {
               </Text>
             </View>
           )}
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </ImageBackground>
       <View className="mx-[5vw] mt-[50px] items-center">
         <Text className="text-white font-bold text-[30px]">

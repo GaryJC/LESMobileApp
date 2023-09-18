@@ -82,10 +82,11 @@ export default function FriendsScreen() {
   };
 
   const updateUnreadCountHandler = () => {
-    const count =
-      DataCenter.notifications?.unreadCount(
-        LesConstants.IMNotificationType.FriendInvitation
-      ) ?? 0;
+    // const count =
+    //   DataCenter.notifications?.unreadCount(
+    //     LesConstants.IMNotificationType.FriendInvitation
+    //   ) ?? 0;
+    const count = DataCenter.notifications?.unreadCount();
     setUnreadCount(count);
   };
 
@@ -123,21 +124,22 @@ export default function FriendsScreen() {
           <FriendButton title={title} icon={icon} link={link} index={index} />
         ))} */}
         <FriendButton
-          title="Friend Request"
+          title="You Have Pending Requests"
           icon="emoji-people"
-          link="FriendRequest"
+          link="Notification"
+          unreadCount={unreadCount}
         >
-          {unreadCount !== 0 && (
+          {/* {unreadCount !== 0 && (
             <View className="w-[20px] h-[20px] bg-[#FF3737] rounded-full relative bottom-[15px] right-[5px]">
               <Text className="font-bold text-white text-center">
                 {unreadCount}
               </Text>
             </View>
-          )}
+          )} */}
         </FriendButton>
         {/* <FriendButton title="Blocked" icon="block" link="Blocked" /> */}
       </View>
-      <View className="mt-[30px] flex-1">
+      <View className="mt-[10px] flex-1">
         {/* <Text className="text-white font-bold text-[24px]">
           Recommended Friends
         </Text> */}

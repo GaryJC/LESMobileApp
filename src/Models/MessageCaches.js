@@ -198,10 +198,15 @@ class MessageCaches {
    *
    * 返回的列表为已排序过的
    *
+   * @param {IMMessageType|null} type
    * @returns {ChatListItem[]}
    */
-  getChatList() {
-    return [...this.#chatListSorted];
+  getChatList(type) {
+    if (type == null) {
+      return [...this.#chatListSorted];
+    } else {
+      return this.#chatListSorted.filter(item => item.type == type);
+    }
   }
 
   /**

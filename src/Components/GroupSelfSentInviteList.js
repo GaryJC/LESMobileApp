@@ -30,7 +30,7 @@ const GroupSelfSentInviteList = ({ item }) => {
       <View className="bg-[#262F38] rounded-lg overflow-hidden">
         <View className="bg-[#1A1E22] h-[40px] px-[10px] flex-row items-center">
           <View className="w-[30] h-[30] mr-[10px]">
-            <Avatar tag={groupId} name={name} size={{ w: 30, h: 30, font: 15 }} />
+            <Avatar tag={groupId} name={name} size={{ w: 30, h: 30, font: 15 }} isGroup={true} />
           </View>
 
           <Text className="text-white font-bold">
