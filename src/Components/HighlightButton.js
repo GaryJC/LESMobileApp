@@ -1,5 +1,6 @@
 import { View, Text, TouchableHighlight, Image } from "react-native";
 import { ActivityIndicator } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
 
 const colorTable = {
   normal: {
@@ -59,9 +60,8 @@ const HighlightButton = ({
   };
 
   const _clr = disabled ? colorTable.disabled : clr;
-  const bgClassName = `px-[10px] py-[5px] items-center rounded flex flex-row  ${
-    isLoading ? "opacity-50" : ""
-  }`;
+  const bgClassName = `px-[10px] py-[5px] items-center rounded flex flex-row  ${isLoading ? "opacity-50" : ""
+    }`;
   const fgClassName = "text-center";
 
   return (
@@ -79,12 +79,15 @@ const HighlightButton = ({
         {icon == null ? (
           <></>
         ) : (
-          <Image source={icon} className="w-[18px] h-[18px] mr-2" />
+          <View className="mr-2">
+            {icon}
+          </View>
         )}
 
         <Text className={fgClassName} style={{ color: _clr.fg }}>
           {text}
         </Text>
+
       </View>
     </TouchableHighlight>
   );

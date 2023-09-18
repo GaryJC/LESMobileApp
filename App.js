@@ -52,6 +52,7 @@ import WalletScreen from "./src/Screens/WalletScreen";
 import HighlightButton from "./src/Components/HighlightButton";
 import QuestScreen from "./src/Screens/QuestScreen";
 import QuestUserPointPanel from "./src/Components/Quest/QuestUserPointPanel";
+import RedDotIcon from "./src/Components/RedDotIcon";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -186,6 +187,7 @@ const BottomTabNavigation = () => {
           ),
           headerTitle: "Social",
           headerShown: true,
+          tabBarBadge: newNotiCount,
           headerRight: () => (
             <View className="flex-row items-center mr-[5vw]">
               <TouchableOpacity
@@ -203,6 +205,11 @@ const BottomTabNavigation = () => {
                   color="white"
                 />
               </TouchableOpacity>
+              <View className="pl-2">
+                <RedDotIcon iconName="notifications" iconSize={25} count={newNotiCount} onPress={() => {
+                  navigation.navigate("Notification");
+                }} />
+              </View>
             </View>
           ),
         })}
@@ -262,7 +269,6 @@ const BottomTabNavigation = () => {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person-outline" color={color} size={size} />
           ),
-          tabBarBadge: newNotiCount,
         }}
       />
     </BottomTab.Navigator>
@@ -493,12 +499,12 @@ export default function App() {
             <Stack.Screen
               name="GroupCreate"
               component={GroupCreateScreen}
-              options={{ headerTitle: "Create Group" }}
+              options={{ headerTitle: "Create a Group" }}
             />
             <Stack.Screen
               name="FriendAdd"
               component={FriendAddScreen}
-              options={{ headerTitle: "Add Friend" }}
+              options={{ headerTitle: "Add a Friend" }}
             />
             <Stack.Screen
               name="GroupInfo"
@@ -508,7 +514,7 @@ export default function App() {
             <Stack.Screen
               name="GroupInvite"
               component={GroupInviteScreen}
-              // options={{ headerTitle: "Group Information" }}
+            // options={{ headerTitle: "Group Information" }}
             />
           </Stack.Navigator>
         </NavigationContainer>

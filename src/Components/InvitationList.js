@@ -21,22 +21,13 @@ export default function InvitationList({ item }) {
         <Text className="text-white font-bold">
           {type === LesConstants.IMNotificationType.FriendInvitation
             ? "Friend Request"
-            : "Group Invitation" + ` [${item.groupInfo.name}]`}
+            : "Group Invitation"}
         </Text>
       </View>
       <View className="flex-row justify-between items-center px-[10px]">
         <View className="flex-row items-center">
           <View className="h-[50px] w-[50px] justify-center">
-            {console.log(avatar)}
-            {type === LesConstants.IMNotificationType.FriendInvitation ? (
-              avatar
-            ) : (
-              <Avatar
-                tag={item.id}
-                name={item.groupInfo.name}
-                size={{ w: 25, h: 25, font: 10 }}
-              />
-            )}
+            {avatar}
           </View>
           <Text className="text-white font-bold text-[13px]">
             {type === LesConstants.IMNotificationType.FriendInvitation
@@ -53,11 +44,17 @@ export default function InvitationList({ item }) {
     <InvitationLayout
       type={item.type}
       avatar={
-        <Avatar
-          tag={item.recipient.tag}
-          name={item.recipient.name}
-          size={{ w: 25, h: 25, font: 10 }}
-        />
+        item.type == LesConstants.IMNotificationType.FriendInvitation ?
+          <Avatar
+            tag={item.recipient.tag}
+            name={item.recipient.name}
+            size={{ w: 25, h: 25, font: 12 }}
+          /> : <Avatar
+            tag={item.id}
+            name={item.groupInfo.name}
+            size={{ w: 30, h: 30, font: 15}}
+            isGroup={true}
+          />
       }
       name={item.recipient.name}
     >
@@ -80,11 +77,17 @@ export default function InvitationList({ item }) {
     <InvitationLayout
       type={item.type}
       avatar={
-        <Avatar
-          tag={item.sender.tag}
-          name={item.sender.name}
-          size={{ w: 25, h: 25, font: 10 }}
-        />
+        item.type == LesConstants.IMNotificationType.FriendInvitation ?
+          <Avatar
+            tag={item.sender.tag}
+            name={item.sender.name}
+            size={{ w: 25, h: 25, font: 12 }}
+          /> : <Avatar
+            tag={item.id}
+            name={item.groupInfo.name}
+            size={{ w: 30, h: 30, font: 15 }}
+            isGroup={true}
+          />
       }
       name={item.sender.name}
     >

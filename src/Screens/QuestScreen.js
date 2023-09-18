@@ -7,6 +7,7 @@ import QuestService from '../services/QuestService';
 import HighlightButton from '../Components/HighlightButton';
 import DataCenter from '../modules/DataCenter';
 import formatDate from '../utils/formatDate';
+import { MaterialIcons } from "@expo/vector-icons";
 
 const QuestScreen = ({ }) => {
 
@@ -247,11 +248,13 @@ const EntryButtons = ({ entry, entryProgress }) => {
     switch (entry.templateId) {
         case EntryTemplateType.NexGamiReferNewUsers:
             const referralCode = DataCenter.userInfo.userProfile.referralCode;
-            dom = <HighlightButton type="light" text={"Copy Code: " + referralCode} />
+            dom = <HighlightButton type="light" text={referralCode} icon={<MaterialIcons name="file-copy" size={20} color="black" />}/>
             break;
         case EntryTemplateType.TwitterFollow:
             dom = <View className="flex flex-row">
-                <HighlightButton icon={require("../../assets/img/twitter_icon.png")} type="light" text="Follow"></HighlightButton>
+                <HighlightButton icon={
+                    <Image source={require("../../assets/img/twitter_icon.png")} className="w-[18px] h-[18px]" />
+                } type="light" text="Follow"></HighlightButton>
                 <HighlightButton type="emphasize" text="Verify"></HighlightButton>
             </View>
             break;

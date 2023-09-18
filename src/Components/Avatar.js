@@ -66,12 +66,16 @@ const Avatar = ({ tag, name, isGroup, isSelected, size, children }) => {
 
   const border = " border-[#5EB857] border-4";
 
+  const roundedSize = Math.min(size.w / 5, 15)
+
+  const roundStyle = isGroup ? { borderRadius: roundedSize } : {};
+
   let viewClass = isGroup
-    ? `w-[${size.w}px] h-[${size.h}px] justify-center items-center rounded-xl absolute left-0 top-0`
+    ? `w-[${size.w}px] h-[${size.h}px] justify-center items-center rounded-[${12}px] absolute left-0 top-0`
     : `w-[${size.w}px] h-[${size.h}px] justify-center items-center rounded-full absolute left-0 top-0`;
 
   let borderClass = isGroup
-    ? `w-[${size.w}px] h-[${size.h}px] justify-center items-center rounded-xl ${border} absolute left-0 top-0`
+    ? `w-[${size.w}px] h-[${size.h}px] justify-center items-center rounded-[${12}px] ${border} absolute left-0 top-0`
     : `w-[${size.w}px] h-[${size.h}px] justify-center items-center rounded-full ${border} absolute left-0 top-0`;
 
   borderClass += isSelected ? " opacity-80" : " hidden";
@@ -88,13 +92,13 @@ const Avatar = ({ tag, name, isGroup, isSelected, size, children }) => {
         //ref={avatarRef}
         //onLayout={handleLayout}
         className={viewClass}
-        style={{ backgroundColor: avatarColor }}
+        style={{ backgroundColor: avatarColor, ...roundStyle }}
       >
         <Text className={fontClass} style={{ fontSize: size.font }}>
           {initLetter}
         </Text>
       </View>
-      <View className={borderClass}></View>
+      <View className={borderClass} style={roundStyle}></View>
       {children}
     </View>
   );
