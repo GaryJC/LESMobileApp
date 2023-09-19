@@ -23,16 +23,19 @@ export default function CreateNameScreen() {
     setUsername(val);
   };
 
-  const hasSpecialCharacters = (str) => {
+  const validateInput = (str) => {
     // const regex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
-    const regex = /^(?![_\d])[\w]{2,15}$/;
+    const regex = /^(?![\d_])[a-zA-Z\u4e00-\u9fa5_\d]{2,15}$/;
+    // const regex = /^[\w]{3,20}$/;
     return regex.test(str);
   };
 
   const doublecheckHandler = () => {
-    if (hasSpecialCharacters(username)) {
+    if (!validateInput(username)) {
       setFeedbackModalOpen(true);
-      setFeedbak("Name can not contain any special characters");
+      setFeedbak(
+        "Name has to be more than 2 characters, less than 15 characters; can not contain any special characters except '_'; initial letter can not be numbers  '_'"
+      );
       setIsValidated(false);
       return;
     }
