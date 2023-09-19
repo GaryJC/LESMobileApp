@@ -60,7 +60,7 @@ export const DataEvents = {
      * 任务用户数据发生变化
      * 无数据，自行到DataCenter.userInfo.questUserInfo获取
      */
-    QuestUser_Updated:"DATA_EVENT_QuestUser_Updated"
+    QuestUser_Updated: "DATA_EVENT_QuestUser_Updated",
   },
 
   /**
@@ -181,7 +181,7 @@ export const UIEvents = {
      */
     User_Click_Chat_Updated: "UI_EVENT_User_Click_Chat_Updated",
 
-    // UserState_IsLoggedin: "UI_EVENT_UserState_IsLoggedin",
+    UserState_IsLoggedin: "UI_EVENT_UserState_IsLoggedin",
   },
 
   Message: {

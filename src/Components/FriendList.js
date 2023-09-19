@@ -2,7 +2,7 @@ import { View, Text, ImageBackground, TouchableOpacity } from "react-native";
 import { StateIndicator } from "./StateIndicator";
 import { useState, useRef, useCallback } from "react";
 import FriendBottomSheet from "./FriendBottomSheet";
-import FriendListChatButton from "./FriendListChatButton";
+import FriendListChatButton from "./SocialListChatButton";
 import Avatar from "./Avatar";
 
 export const FriendList = ({ friend, button, hasTag }) => {

@@ -42,23 +42,28 @@ export default function InitialScreen() {
       switch (loginState) {
         case LoginState.Logout:
           //快速登录失败，跳到LoginScreen
+          navigation.reset({ index: 0, routes: [{ name: "Login" }] });
           navigation.navigate("Login");
           break;
         case LoginState.Normal:
           //登陆成功了，跳转到主界面
           //连接IM Server
           if (imServerState === LesConstants.IMUserState.Init) {
+            navigation.reset({ index: 0, routes: [{ name: "CreateName" }] });
             navigation.navigate("CreateName");
           } else {
+            // navigation.reset({ index: 0, routes: [{ name: "BottomTab" }] });
             navigation.navigate("BottomTab");
           }
           break;
         case LoginState.VerifyEmail:
           //跳转到验证邮箱界面
+          navigation.reset({ index: 0, routes: [{ name: "VerifyEmail" }] });
           navigation.navigate("VerifyEmail", { id, loginState });
           break;
         case LoginState.UpdateReferrer:
           //跳转到更新推荐人界面
+          navigation.reset({ index: 0, routes: [{ name: "VerifyEmail" }] });
           navigation.navigate("VerifyEmail", { id, loginState });
           break;
       }

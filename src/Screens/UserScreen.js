@@ -104,7 +104,7 @@ export default function UserScreen() {
       updateUnreadCountHandler
     );
     // JSEvent.on(UIEvents.User.UserState_IsLoggedin, retriveUserInfoHandler);
-    JSEvent.on(DataEvents.User.UserState_DataReady, retriveUserInfoHandler);
+    JSEvent.on(DataEvents.User.UserState_IsLoggedin, retriveUserInfoHandler);
     JSEvent.on(
       DataEvents.User.UserInfo_Current_Updated,
       retriveUserInfoHandler
@@ -120,7 +120,7 @@ export default function UserScreen() {
       //   retriveUserInfoHandler
       // );
       JSEvent.remove(
-        DataEvents.User.UserState_DataReady,
+        DataEvents.User.UserState_IsLoggedin,
         retriveUserInfoHandler
       );
       JSEvent.remove(
@@ -199,7 +199,12 @@ export default function UserScreen() {
         </View>
 
         <View className="absolute left-[5vw] top-[5vh] ">
-          <RedDotIcon iconName="notifications" iconSize={30} count={unreadCount} onPress={navigateToNotification} />
+          <RedDotIcon
+            iconName="notifications"
+            iconSize={30}
+            count={unreadCount}
+            onPress={navigateToNotification}
+          />
         </View>
 
         {/* <TouchableOpacity

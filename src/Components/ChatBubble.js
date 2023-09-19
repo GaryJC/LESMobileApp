@@ -20,21 +20,21 @@ const SpecialMessage = ({ message }) => {
   // const username = userInfo.find(
   //   (user) => user.id === message.recipientId
   // )?.name;
-  const [sender, recipient] = IMUserInfoService.Inst.getCachedUser([
-    message.senderId,
+  const [recipient, sender] = IMUserInfoService.Inst.getCachedUser([
     message.recipientId,
+    message.senderId,
   ]);
 
   switch (message?.contentType ?? 0) {
     case LesConstants.IMMessageContentType.Group_MemberAdded:
       if (message?.senderId === message?.recipientId) {
-        content = `${sender.name} has created the group`;
+        content = `${sender?.name} has created the group`;
       } else {
-        content = `${recipient.name} has been invited to the group`;
+        content = `${recipient?.name} has been invited to the group`;
       }
       break;
     case LesConstants.IMMessageContentType.Group_MemberKick:
-      content = `${recipient.name} has been kicked from the group`;
+      content = `${recipient?.name} has been kicked from the group`;
       break;
     case LesConstants.IMMessageContentType.Group_MemberQuit:
       content = `${recipient?.name} has quitted the group`;
@@ -316,7 +316,15 @@ export const ChatBubble = ({ message, preMessage, userInfo }) => {
   return (
     <>
       {showTimestamp(preMessage, message) && (
-        <TimeStamp date={formatDate(new Date(message?.timestamp))} />
+        <TimeStamp
+          date={formatDate(new Date(message?.timestamp), {
+            year: "0-digit",
+            month: "0-digit",
+            day: "0-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        />
       )}
       {message.contentType !== LesConstants.IMMessageContentType.Text ? (
         <SpecialMessage />

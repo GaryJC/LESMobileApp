@@ -15,6 +15,7 @@ import Constants from "../modules/Constants";
 import NotificationList from "../Components/NotificationList";
 import InvitationList from "../Components/InvitationList";
 import GroupSelfSentInviteList from "../Components/GroupSelfSentInviteList";
+import TabButton from "../Components/TabButton";
 
 const NotificationType = Constants.Notification.NotificationType;
 const NotificationMode = Constants.Notification.NotificationMode;
@@ -176,7 +177,6 @@ export default function NotificationScreen() {
   }, []);
 
   useEffect(() => {
-    console.log("oooo: ", selectedTab);
     const onNotiUpdatedHandler = (notification) => {
       console.log("updated noti: ", notification);
       // const curType =
@@ -214,40 +214,60 @@ export default function NotificationScreen() {
   }, [selectedTab]);
   // useEffect(() => {}, [selectedTab]);
 
-  const TabButton = ({ notiType, title }) => (
-    <TouchableOpacity
-      className="flex-1"
-      onPress={() => switchTabHandler(notiType)}
-    >
+  /*
+  const TabButton = ({ type, title, handler }) => (
+    <TouchableOpacity className="flex-1" onPress={() => handler(type)}>
       <View
         className={
-          selectedTab === notiType
+          selectedTab === type
             ? "h-[100%] rounded-lg bg-[#535F6A] justify-center"
             : ""
         }
       >
         <View className="flex-row items-center justify-center">
           <Text className="text-white font-bold text-center">{title}</Text>
-          {unreadCount[notiType] !== 0 && (
+          {unreadCount[type] !== 0 && (
             <View className="w-[10px] h-[10px] ml-[10px] bg-[#FF3737] rounded-full"></View>
           )}
         </View>
       </View>
     </TouchableOpacity>
   );
+  */
 
   return (
     <View className="flex-1 mx-[5vw]">
       <View className="flex-row justify-between bg-[#262F38] h-[4vh] rounded-lg items-center">
         <TabButton
-          notiType={NotificationType.Notifications}
+          type={NotificationType.Notifications}
+          selectedTab={selectedTab}
           title="Notifications"
-        />
+          handler={switchTabHandler}
+        >
+          {unreadCount[NotificationType.Notifications] !== 0 && (
+            <View className="w-[10px] h-[10px] ml-[10px] bg-[#FF3737] rounded-full"></View>
+          )}
+        </TabButton>
         <TabButton
-          notiType={NotificationType.Invitations}
+          type={NotificationType.Invitations}
+          selectedTab={selectedTab}
           title="Invitations"
-        />
-        <TabButton notiType={NotificationType.SelfSent} title="Self-Sent" />
+          handler={switchTabHandler}
+        >
+          {unreadCount[NotificationType.Invitations] !== 0 && (
+            <View className="w-[10px] h-[10px] ml-[10px] bg-[#FF3737] rounded-full"></View>
+          )}
+        </TabButton>
+        <TabButton
+          type={NotificationType.SelfSent}
+          selectedTab={selectedTab}
+          title="Self-Sent"
+          handler={switchTabHandler}
+        >
+          {unreadCount[NotificationType.SelfSent] !== 0 && (
+            <View className="w-[10px] h-[10px] ml-[10px] bg-[#FF3737] rounded-full"></View>
+          )}
+        </TabButton>
       </View>
       <View className="mt-[20px] h-[80vh]">
         <FlatList
