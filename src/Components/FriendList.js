@@ -34,15 +34,18 @@ export const FriendList = ({ friend, button, hasTag }) => {
             <View className="flex-row">
               <View className="relative">
                 <View className="w-[55px] h-[55px] mr-[10px]">
-                  <Avatar tag={friend.tag} name={friend.name} />
+                  <Avatar tag={friend.tag} name={friend.name} >
+                    <View className="absolute right-0 bottom-0">
+                      <StateIndicator
+                        state={friend.state}
+                        onlineState={friend.onlineState}
+                        bgColor={'#080F14'}
+                      />
+                    </View>
+                  </Avatar>
                 </View>
 
-                <View className="absolute bottom-[0] right-[5]">
-                  <StateIndicator
-                    state={friend.state}
-                    onlineState={friend.onlineState}
-                  />
-                </View>
+
               </View>
               <View className="flex-row items-center">
                 <Text className="text-white text-[20px] font-bold">
@@ -60,7 +63,7 @@ export const FriendList = ({ friend, button, hasTag }) => {
       <FriendBottomSheet
         bottomSheetModalRef={bottomSheetModalRef}
         selectedFriend={selectedFriend}
-        // openSheet={() => openSheet(item)}
+      // openSheet={() => openSheet(item)}
       />
     </View>
   );

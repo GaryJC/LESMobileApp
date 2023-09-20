@@ -21,7 +21,7 @@ import JSEvent from "../utils/JSEvent";
 import { DataEvents, UIEvents } from "../modules/Events";
 import Avatar from "../Components/Avatar";
 import { firebase } from "@react-native-firebase/auth";
-import { LesPlatformCenter } from "les-im-components";
+import { LesConstants, LesPlatformCenter } from "les-im-components";
 import RedDotIcon from "../Components/RedDotIcon";
 
 const userOptions = [
@@ -195,7 +195,16 @@ export default function UserScreen() {
             tag={userInfo.tag}
             name={userInfo.name}
             size={{ w: 80, h: 80, font: 40 }}
-          />
+          >
+            <View className="absolute right-0 bottom-0">
+              <StateIndicator
+                state={userStatus}
+                onlineState={LesConstants.IMUserOnlineState.Online}
+                bgColor={'#080F14'}
+                size={22}
+              />
+            </View>
+          </Avatar>
         </View>
 
         <View className="absolute left-[5vw] top-[5vh] ">
