@@ -106,7 +106,7 @@ const BottomTabNavigation = () => {
   };
 
   useEffect(() => {
-    JSEvent.on(DataEvents.User.UserState_DataReady, updateBadgeCount);
+    JSEvent.on(DataEvents.User.UserState_IsLoggedin, updateBadgeCount);
     JSEvent.on(
       UIEvents.Message.Message_New_Count_Changed,
       onNewMessageCountChanged
@@ -116,7 +116,7 @@ const BottomTabNavigation = () => {
       onNewNotiCountChanged
     );
     return () => {
-      JSEvent.remove(DataEvents.User.UserState_DataReady, updateBadgeCount);
+      JSEvent.remove(DataEvents.User.UserState_IsLoggedin, updateBadgeCount);
       JSEvent.remove(
         UIEvents.Message.Message_New_Count_Changed,
         onNewMessageCountChanged
@@ -156,7 +156,7 @@ const BottomTabNavigation = () => {
         headerShown: false,
         tabBarHideOnKeyboard: true,
       }}
-      initialRouteName="Home"
+      initialRouteName="Friends"
     >
       {/* <BottomTab.Screen
         name="Home"
@@ -206,9 +206,14 @@ const BottomTabNavigation = () => {
                 />
               </TouchableOpacity>
               <View className="pl-2">
-                <RedDotIcon iconName="notifications" iconSize={25} count={newNotiCount} onPress={() => {
-                  navigation.navigate("Notification");
-                }} />
+                <RedDotIcon
+                  iconName="notifications"
+                  iconSize={25}
+                  count={newNotiCount}
+                  onPress={() => {
+                    navigation.navigate("Notification");
+                  }}
+                />
               </View>
             </View>
           ),
@@ -514,7 +519,7 @@ export default function App() {
             <Stack.Screen
               name="GroupInvite"
               component={GroupInviteScreen}
-            // options={{ headerTitle: "Group Information" }}
+              // options={{ headerTitle: "Group Information" }}
             />
           </Stack.Navigator>
         </NavigationContainer>

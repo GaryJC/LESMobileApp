@@ -5,19 +5,23 @@ import { MessageCaches } from "../Models/MessageCaches";
 import JSEvent from "../utils/JSEvent";
 import DataCenter from "../modules/DataCenter";
 import { UIEvents } from "../modules/Events";
+import { LesConstants } from "les-im-components";
 
-const FriendListChatButton = ({ friend }) => {
+const SocialListChatButton = ({ item, type }) => {
   const navigation = useNavigation();
   const goChatHandler = () => {
     const chatId = MessageCaches.MakeChatID(
-      friend?.id,
-      DataCenter.userInfo.accountId
+      DataCenter.userInfo.accountId,
+      item.id,
+      type
     );
-    console.log("go to chat id: ", chatId, friend?.id);
+    console.log("go to chat id: ", chatId, item?.id);
     const chatListItem = DataCenter.messageCache.getChatListItem(chatId);
     console.log("chatListItem: ", chatListItem);
     // DataCenter.messageCache.setCurChatListItem(chatListItem);
     navigation.navigate("Chats");
+    // JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, chatId);
+    DataCenter.messageCache.touchChatData(chatId);
     JSEvent.emit(UIEvents.User.User_Click_Chat_Updated, {
       // chatId: chatId,
       // targetId: friend?.id,
@@ -39,4 +43,4 @@ const FriendListChatButton = ({ friend }) => {
   );
 };
 
-export default FriendListChatButton;
+export default SocialListChatButton;

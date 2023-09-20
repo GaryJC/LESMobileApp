@@ -111,6 +111,11 @@ const Constants = {
     Google: 1,
     Email: 2,
   },
+
+  SocialTabButtonType: {
+    Friends: "Friends",
+    Groups: "Groups",
+  },
 };
 
 export default Constants;

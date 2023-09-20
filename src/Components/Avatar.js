@@ -45,7 +45,6 @@ const defaultSize = { w: 55, h: 55, font: 25 };
 const Avatar = ({ tag, name, isGroup, isSelected, size, children }) => {
   //const [fontSize, setFontSize] = useState(16);
   //const avatarRef = useRef(null);
-
   if (size == null) {
     size = defaultSize;
   }
@@ -66,16 +65,20 @@ const Avatar = ({ tag, name, isGroup, isSelected, size, children }) => {
 
   const border = " border-[#5EB857] border-4";
 
-  const roundedSize = Math.min(size.w / 5, 15)
+  const roundedSize = Math.min(size.w / 5, 15);
 
   const roundStyle = isGroup ? { borderRadius: roundedSize } : {};
 
   let viewClass = isGroup
-    ? `w-[${size.w}px] h-[${size.h}px] justify-center items-center rounded-[${12}px] absolute left-0 top-0`
+    ? `w-[${size.w}px] h-[${
+        size.h
+      }px] justify-center items-center rounded-[${12}px] absolute left-0 top-0`
     : `w-[${size.w}px] h-[${size.h}px] justify-center items-center rounded-full absolute left-0 top-0`;
 
   let borderClass = isGroup
-    ? `w-[${size.w}px] h-[${size.h}px] justify-center items-center rounded-[${12}px] ${border} absolute left-0 top-0`
+    ? `w-[${size.w}px] h-[${
+        size.h
+      }px] justify-center items-center rounded-[${12}px] ${border} absolute left-0 top-0`
     : `w-[${size.w}px] h-[${size.h}px] justify-center items-center rounded-full ${border} absolute left-0 top-0`;
 
   borderClass += isSelected ? " opacity-80" : " hidden";

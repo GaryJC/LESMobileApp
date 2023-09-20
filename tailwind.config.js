@@ -13,6 +13,7 @@ module.exports = {
         "clr-bgdark": "#080F14",
         "clr-light": "#eeeeee",
         "clr-link": "#60a5fa",
+        "clr-gray": "#D9D9D9",
         "clr-emphasize": "#C8FF00",
         "clr-emphasize-light": "#F5FFCE",
         "clr-error-red": "#FF0000",

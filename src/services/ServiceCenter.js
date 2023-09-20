@@ -172,7 +172,7 @@ export default class ServiceCenter {
 
     await Promise.all(ps);
     console.log("service.onUserLogin done");
-    // JSEvent.emit(UIEvents.User.UserState_IsLoggedin);
+    JSEvent.emit(DataEvents.User.UserState_IsLoggedin);
   }
 
   /**
