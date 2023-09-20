@@ -4,32 +4,45 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 
-export const StateIndicator = ({ state, onlineState }) => {
+export const StateIndicator = ({ state, onlineState, bgColor, size }) => {
+
+  const bgStyle = bgColor == null ? {} : { backgroundColor: bgColor }
+
+  return <View className="flex justify-center items-center rounded-full" style={bgStyle}>
+    <StateIcon state={state} onlineState={onlineState} size={size} />
+  </View>
+};
+const StateIcon = ({ state, onlineState, size }) => {
+  const s = size == null ? 18 : size;
   switch (state) {
     case LesConstants.IMUserOnlineState.Offline:
-      return <OfflineIndicator />;
+      //return <MaterialIcons name="stop-circle" size={s} color="#605D6A" />
+      return <OfflineIndicator size={size} />
     // case LesConstants.IMUserOnlineState.MobileOnline:
     //   return <Entypo name="mobile" size={20} color="white" />;
     // case LesConstants.IMUserOnlineState.MobileBackground:
     //   return <Entypo name="mobile" size={20} color="green" />;
     case LesConstants.IMUserState.Away:
-      return <Ionicons name="moon" size={20} color="#F6AB3B" />;
+      return <MaterialIcons name="timelapse" size={s} color="#F6AB3B" />
     case LesConstants.IMUserState.Busy:
-      return (
-        <MaterialIcons name="do-not-disturb-on" size={20} color="#FB3D76" />
-      );
+      return <MaterialIcons name="do-not-disturb-on" size={s} color="#FB3D76" />
     case LesConstants.IMUserState.Online:
-      return <View className="bg-[#5EB857] w-[17] h-[17] rounded-full" />;
+      return <MaterialIcons name="stop-circle" size={s} color="#5EB857" />
     case LesConstants.IMUserState.Hiding:
-      return <OfflineIndicator />;
+      //return <MaterialIcons name="stop-circle" size={s} color="#605D6A" />
+      return <OfflineIndicator size={size} />
     default:
       break;
   }
-};
+}
 
-const OfflineIndicator = () => (
-  <View className="bg-[#605D6A] w-[17] h-[17] rounded-full" />
-);
+const OfflineIndicator = ({ size }) => {
+  const s = size == null ? 18 : size;
+  const style = { width: s - 5, height: s - 5 }
+  return <View className="flex justify-center items-center bg-clr-bgdark rounded-full" style={{ width: s, height: s }}>
+    <View className="bg-clr-bgdark rounded-full border-[2px] border-[#605D6A]" style={style} />
+  </View>
+};
 
 export const makeStateReadable = (state) => {
   switch (state) {

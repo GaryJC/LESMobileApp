@@ -14,6 +14,7 @@ import ChatGroupService from "../../services/ChatGroupService";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import ChatSearchBottomSheet from "../ChatSearchBottomSheet";
+import { StateIndicator } from "../StateIndicator";
 
 const { IMMessageType } = LesConstants;
 /**
@@ -279,7 +280,12 @@ const ChatListBarItem = ({ chatListItemData, isSelected, onClick }) => {
       : "absolute bottom-0 right-0 rounded-full w-[20px] h-[20px] bg-[#FF3737] justify-center items-center";
   const countBadge =
     itemData[0].newMessageCount == 0 || isSelected ? (
-      <></>
+      itemData[0].type == IMMessageType.Group ? <></> : <View className="absolute right-0 bottom-0">
+        <StateIndicator
+          state={target?.data?.state}
+          onlineState={target?.data?.onlineState}
+          bgColor={'#080F14'}
+        /></View>
     ) : (
       <View className={countBadgeClass}>
         <Text className="text-white font-bold text-[10px]">
