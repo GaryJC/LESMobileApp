@@ -13,12 +13,6 @@ const onAppInit = async () => {
   await ServiceCenter.Inst.loadAllServices();
 };
 
-const onAppDestroyed = async () => {
-  //保存页面会刷新app，此处重置event，否则会出现重复监听问题
-  JSEvent.reset();
-  ServiceCenter.Inst.onAppDestroyed();
-};
-
 export default function InitialScreen() {
   const navigation = useNavigation();
 
@@ -99,7 +93,7 @@ export default function InitialScreen() {
     // JSEvent.on(DataEvents.User.UserState_Relogin, reloginFailedHandler);
 
     return () => {
-      onAppDestroyed();
+      //onAppDestroyed();
       // JSEvent.remove(DataEvents.User.UserState_Relogin);
     };
   }, []);

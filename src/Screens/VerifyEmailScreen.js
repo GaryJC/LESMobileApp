@@ -32,7 +32,7 @@ export const VerifyEmailScreen = () => {
       navigation.navigate("BottomTab");
     }
     setLoginState(loginState);
-  }, []);
+  }, [route.params?.loginState]);
 
   const userId = route.params?.id;
 

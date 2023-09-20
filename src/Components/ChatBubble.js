@@ -73,13 +73,18 @@ const Bubble = ({ isOwn, senderUserInfo, message }) => (
         />
       </View>
     )}
-    <View className="justify-evenly">
-      <View className="flex-row items-end">
+
+    <View className="justify-evenly ">
+      <View className={
+        isOwn
+          ? "flex-row items-end justify-end pr-[1px]"
+          : "flex-row items-end justify-start"
+      }>
         <Text
           className={
             isOwn
-              ? "text-[10px] text-white mr-[5px]"
-              : "text-[10px] text-white ml-[5px]"
+              ? "text-[12px] text-white mr-[5px]"
+              : "text-[12px] text-white ml-[5px]"
           }
         >
           {senderUserInfo?.name}
