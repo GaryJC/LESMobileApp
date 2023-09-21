@@ -93,7 +93,9 @@ const Avatar = ({ tag, name, isGroup, isSelected, badgeNumber, size, children })
   const groupFontSize = size.groupMarkFont ?? defaultSize.groupMarkFont;
   const groupBadge =
     isGroup ? (
-      <View className={"w-[" + groupMarkSize + "px] h-[" + groupMarkSize + "px] rounded-tr-[" + roundedSize + "px] rounded-bl-lg bg-[#6E5EDB] absolute right-0 top-0 justify-center items-center"}>
+      <View className={"bg-[#6E5EDB] absolute right-0 top-0 justify-center items-center"}
+        style={{ width: groupMarkSize, height: groupMarkSize, borderTopRightRadius: roundedSize, borderBottomLeftRadius: roundedSize }}
+      >
         <Text className="text-white" style={{ fontSize: groupFontSize }}>G</Text>
       </View>
     ) : (
@@ -101,7 +103,7 @@ const Avatar = ({ tag, name, isGroup, isSelected, badgeNumber, size, children })
     );
 
   return (
-    <View className={`absolute w-[${size.w}px] h-[${size.h}px]`}>
+    <View className={`absolute w-[${size.w}px] h-[${size.h}px] `}>
       <View
         //ref={avatarRef}
         //onLayout={handleLayout}
