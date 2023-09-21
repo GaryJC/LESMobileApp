@@ -52,7 +52,7 @@ export default function InvitationList({ item }) {
           /> : <Avatar
             tag={item.id}
             name={item.groupInfo.name}
-            size={{ w: 30, h: 30, font: 15}}
+            size={{ w: 30, h: 30, font: 15, groupMark: 10, groupMarkFont: 10 }}
             isGroup={true}
           />
       }
@@ -85,7 +85,7 @@ export default function InvitationList({ item }) {
           /> : <Avatar
             tag={item.id}
             name={item.groupInfo.name}
-            size={{ w: 30, h: 30, font: 15 }}
+            size={{ w: 30, h: 30, font: 15, groupMark: 12, groupMarkFont: 8 }}
             isGroup={true}
           />
       }

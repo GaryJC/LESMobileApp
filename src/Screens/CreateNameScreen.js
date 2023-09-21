@@ -8,7 +8,7 @@ import { LesPlatformCenter } from "les-im-components";
 import LoadingIndicator from "../Components/LoadingIndicator";
 import AuthFormInput from "../Components/AuthForm/AuthFormInput";
 import HighlightButton from "../Components/HighlightButton";
-import FeedBackModal from "../Components/FeedbackModal";
+import FeedBackModal, { DialogButton, DialogModal } from "../Components/FeedbackModal";
 
 export default function CreateNameScreen() {
   const [username, setUsername] = useState("");
@@ -34,7 +34,7 @@ export default function CreateNameScreen() {
     if (!validateInput(username)) {
       setFeedbackModalOpen(true);
       setFeedbak(
-        "Name has to be more than 2 characters, less than 15 characters; can not contain any special characters except '_'; initial letter can not be numbers  '_'"
+        "Name has to be more than 2 characters, less than 15 characters; can not contain any special characters except '_'; initial letter can not be numbers or '_'"
       );
       setIsValidated(false);
       return;
@@ -82,7 +82,21 @@ export default function CreateNameScreen() {
         </View>
         {/* <LoadingIndicator isLoading={isLoading} /> */}
       </View>
-      <FeedBackModal
+
+      <DialogModal
+        content={feedback}
+        visible={feedbackModalOpen}
+        onButtonPressed={btn => {
+          setFeedbackModalOpen(false);
+          if (isValidated) {
+            setNameHandler();
+          }
+        }}
+      />
+
+
+
+      {/* <FeedBackModal
         feedbackModalOpen={feedbackModalOpen}
         feedback={feedback}
         setFeedbackModalOpen={setFeedbackModalOpen}
@@ -96,7 +110,7 @@ export default function CreateNameScreen() {
             disabled={isLoading}
           />
         )}
-      </FeedBackModal>
+      </FeedBackModal> */}
     </View>
   );
 }

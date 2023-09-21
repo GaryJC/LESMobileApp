@@ -16,7 +16,7 @@ import DataCenter from "../modules/DataCenter";
 import { Ionicons } from "@expo/vector-icons";
 import JSEvent from "../utils/JSEvent";
 import { DataEvents, UIEvents } from "../modules/Events";
-import FeedBackModal from "../Components/FeedbackModal";
+import FeedBackModal, { DialogModal } from "../Components/FeedbackModal";
 import GroupAuthButton from "../Components/GroupAuthButton";
 import GroupAwaitResponse from "../Components/GroupAwaitResponse";
 
@@ -165,11 +165,20 @@ const GroupInfoScreen = () => {
           </View>
         </TouchableHighlight>
       </View>
-      <FeedBackModal
+
+      <DialogModal
+        visible={feedbackModalOpen}
+        content={feedback}
+        onButtonPressed={btn => {
+          setFeedbackModalOpen(false);
+        }}
+      />
+
+      {/* <FeedBackModal
         feedbackModalOpen={feedbackModalOpen}
         setFeedbackModalOpen={setFeedbackModalOpen}
         feedback={feedback}
-      />
+      /> */}
     </View>
   );
 };

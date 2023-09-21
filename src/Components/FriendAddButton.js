@@ -1,7 +1,7 @@
 import { View, TouchableHighlight } from "react-native";
 import NotificationService from "../services/NotificationService";
 import { MaterialIcons } from "@expo/vector-icons";
-import FeedBackModal from "./FeedbackModal";
+import FeedBackModal, { DialogModal } from "./FeedbackModal";
 import { useState } from "react";
 
 const FriendAddButton = ({ userData, setIsLoading }) => {
@@ -37,10 +37,16 @@ const FriendAddButton = ({ userData, setIsLoading }) => {
           <MaterialIcons name="person-add-alt-1" size={24} color="white" />
         </View>
       </TouchableHighlight>
-      <FeedBackModal
+      {/* <FeedBackModal
         feedbackModalOpen={feedbackModalOpen}
         setFeedbackModalOpen={setFeedbackModalOpen}
         feedback={feedback}
+      /> */}
+
+      <DialogModal
+        visible={feedbackModalOpen}
+        onButtonPressed={btn => { setFeedbackModalOpen(false) }}
+        content={feedback}
       />
     </>
   );

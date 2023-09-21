@@ -7,7 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
  * 带数字红点的图标
  * 图标使用Ionicons
  * 
- * @param {{iconName:string, iconSize:number, color:string count:number, onPress:()=>{}}} p
+ * @param {{iconName:string, iconSize:number, color:string, count:number, onPress:()=>{}}} p
  */
 export default RedDotIcon = ({ iconName, iconSize, color, count, onPress }) => {
 
