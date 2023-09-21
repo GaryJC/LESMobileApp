@@ -217,7 +217,7 @@ export const UIEvents = {
      * 发送事件通常伴随着从缓存和数据库删除数据
      * @type {{chatId: string | groupId: string}}
      */
-    Message_Chat_List_Removed: "UI_EVENT_Message_Chat_List_Updated",
+    Message_Chat_List_Removed: "UI_EVENT_Message_Chat_List_Removed",
 
     /**
      * 点击聊天记录后通知UI,指定对话有数据更新

@@ -27,6 +27,14 @@ const StateIcon = ({ state, onlineState, size }) => {
     case LesConstants.IMUserState.Busy:
       return <MaterialIcons name="do-not-disturb-on" size={s} color="#FB3D76" />
     case LesConstants.IMUserState.Online:
+      // if (onlineState == LesConstants.IMUserOnlineState.MobileBackground) {
+      //   //移动设备后台在线
+      //   return <View className="flex justify-center items-center rounded-full bg-clr-bgdark" style={{ width: s, height: s }}>
+      //     <View className="flex justify-center items-center rounded-full bg-[#5EB857]" style={{ width: s - 4, height: s - 4 }}>
+      //       <Ionicons name="ios-phone-portrait" size={s - 6} color="white" />
+      //     </View>
+      //   </View>
+      // }
       return <MaterialIcons name="stop-circle" size={s} color="#5EB857" />
     case LesConstants.IMUserState.Hiding:
       //return <MaterialIcons name="stop-circle" size={s} color="#605D6A" />

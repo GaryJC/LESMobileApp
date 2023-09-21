@@ -22,8 +22,9 @@ const { IMMessageType } = LesConstants;
  * @param {{onItemSelected:(item:ChatListItem, focusMsgId:string|null)=>void}} params
  */
 export default ChatListBar = ({ onItemSelected }) => {
+
   const [chatList, setChatList] = useState(
-    DataCenter.messageCache.getChatList()
+    DataCenter.messageCache.getChatList() ?? []
   );
 
   const [currSelId, setCurrSelId] = useState("");
@@ -84,7 +85,7 @@ export default ChatListBar = ({ onItemSelected }) => {
     return () => {
       JSEvent.remove(UIEvents.Message.Message_Chat_List_Updated, onItemUpdated);
       JSEvent.remove(UIEvents.User.User_Click_Chat_Updated, onClickChatHandler);
-      JSEvent.remove(UIEvents.Message_Chat_List_Removed, onItemRemoved);
+      JSEvent.remove(UIEvents.Message.Message_Chat_List_Removed, onItemRemoved);
     };
   }, [currSelId, focus]);
 
@@ -258,21 +259,9 @@ const ChatListBarItem = ({ chatListItemData, isSelected, onClick }) => {
     return () => {
       JSEvent.remove(UIEvents.Message.Message_Chat_List_Updated, onItemUpdated);
       JSEvent.remove(DataEvents.User.UserState_Changed, onUserDataUpdated);
-      JSEvent.remove(
-        DataEvents.ChatGroup.ChatGroup_Updated,
-        onChatGroupUpdated
-      );
+      JSEvent.remove(DataEvents.ChatGroup.ChatGroup_Updated, onChatGroupUpdated);
     };
   }, []);
-
-  const groupBadge =
-    itemData[0].type == IMMessageType.Group ? (
-      <View className="w-[20px] h-[20px] rounded-tr-xl rounded-bl-lg bg-[#6E5EDB] absolute right-0 top-0 justify-center items-center">
-        <Text className="text-white">G</Text>
-      </View>
-    ) : (
-      <></>
-    );
 
   const countBadgeClass =
     itemData[0].type == IMMessageType.Group
@@ -305,13 +294,12 @@ const ChatListBarItem = ({ chatListItemData, isSelected, onClick }) => {
       >
         <View className="relative w-20 h-[70px] justify-center items-center">
           <Avatar
-            size={{ w: 55, h: 55, font: 25 }}
+            size={{ w: 50, h: 50, font: 20, groupMark: 20 }}
             tag={target?.data?.tag ?? 0}
             name={target?.data?.name ?? "?"}
             isGroup={itemData[0]?.type === Constants.ChatListType.Group && true}
             isSelected={selected}
           >
-            {groupBadge}
             {countBadge}
           </Avatar>
         </View>

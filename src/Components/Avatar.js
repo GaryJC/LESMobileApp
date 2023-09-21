@@ -35,14 +35,15 @@ const AvatarOld = ({ tag, name, isGroup }) => {
   );
 };
 
-const defaultSize = { w: 55, h: 55, font: 25 };
+const defaultSize = { w: 50, h: 50, font: 20, groupMark: 20, groupMarkFont: 13 };
 
 /**
- *
- * @param {{tag:number, name:string,isGroup:boolean,isSelected:boolean, size:{w:number,h:number,font:number}}} params
+ * badgeNumber 显示的角标数字 0表示隐藏
+ * 
+ * @param {{tag:number, name:string,isGroup:boolean,isSelected:boolean, badgeNumber:number|null,size:{w:number,h:number,font:number,groupMark:number,groupMarkFont:number}}} params
  * @returns
  */
-const Avatar = ({ tag, name, isGroup, isSelected, size, children }) => {
+const Avatar = ({ tag, name, isGroup, isSelected, badgeNumber, size, children }) => {
   //const [fontSize, setFontSize] = useState(16);
   //const avatarRef = useRef(null);
   if (size == null) {
@@ -70,15 +71,13 @@ const Avatar = ({ tag, name, isGroup, isSelected, size, children }) => {
   const roundStyle = isGroup ? { borderRadius: roundedSize } : {};
 
   let viewClass = isGroup
-    ? `w-[${size.w}px] h-[${
-        size.h
-      }px] justify-center items-center rounded-[${12}px] absolute left-0 top-0`
+    ? `w-[${size.w}px] h-[${size.h
+    }px] justify-center items-center absolute left-0 top-0`
     : `w-[${size.w}px] h-[${size.h}px] justify-center items-center rounded-full absolute left-0 top-0`;
 
   let borderClass = isGroup
-    ? `w-[${size.w}px] h-[${
-        size.h
-      }px] justify-center items-center rounded-[${12}px] ${border} absolute left-0 top-0`
+    ? `w-[${size.w}px] h-[${size.h
+    }px] justify-center items-center ${border} absolute left-0 top-0`
     : `w-[${size.w}px] h-[${size.h}px] justify-center items-center rounded-full ${border} absolute left-0 top-0`;
 
   borderClass += isSelected ? " opacity-80" : " hidden";
@@ -88,6 +87,18 @@ const Avatar = ({ tag, name, isGroup, isSelected, size, children }) => {
     idx <= 4
       ? `text-[${AvatarColorPlatte.textColor.dark}] font-bold text-[${size.font}px]`
       : `text-[${AvatarColorPlatte.textColor.light}] font-bold text-[${size.font}px]`;
+
+
+  const groupMarkSize = size.groupMark ?? defaultSize.groupMark;
+  const groupFontSize = size.groupMarkFont ?? defaultSize.groupMarkFont;
+  const groupBadge =
+    isGroup ? (
+      <View className={"w-[" + groupMarkSize + "px] h-[" + groupMarkSize + "px] rounded-tr-[" + roundedSize + "px] rounded-bl-lg bg-[#6E5EDB] absolute right-0 top-0 justify-center items-center"}>
+        <Text className="text-white" style={{ fontSize: groupFontSize }}>G</Text>
+      </View>
+    ) : (
+      <></>
+    );
 
   return (
     <View className={`absolute w-[${size.w}px] h-[${size.h}px]`}>
@@ -103,6 +114,7 @@ const Avatar = ({ tag, name, isGroup, isSelected, size, children }) => {
       </View>
       <View className={borderClass} style={roundStyle}></View>
       {children}
+      {groupBadge}
     </View>
   );
 };

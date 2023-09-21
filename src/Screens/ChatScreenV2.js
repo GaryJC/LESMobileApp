@@ -38,7 +38,7 @@ const ChatScreenV2 = () => {
   };
 
   useEffect(() => {
-    const chatData = DataCenter.messageCache.getChatDataByChatId(
+    const chatData = DataCenter.messageCache?.getChatDataByChatId(
       currChatItem.item?.chatId ?? "",
       true
     );

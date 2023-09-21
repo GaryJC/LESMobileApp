@@ -298,7 +298,13 @@ export default function App() {
 
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber; // unsubscribe on unmount
+    return ()=>{
+      //保存页面会刷新app，此处重置event，否则会出现重复监听问题
+      JSEvent.reset();
+      ServiceCenter.Inst.onAppDestroyed();
+      // unsubscribe on unmount
+      subscriber();
+    }; 
   }, []);
 
   function setLoading(state) {

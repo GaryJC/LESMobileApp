@@ -230,6 +230,11 @@ export default class LoginService {
     }
   }
 
+  async firebaseLogout() {
+    await auth().signOut();
+    await LesPlatformCenter.Inst.signOut();
+  }
+
   /**
    * firebase快速登录
    * @returns {Promise<{loginState:LoginState, imServerState:ErrorCodes}>} id--用户id，loginState--当前登录状态，详见{@link Constants.LoginState}
@@ -421,7 +426,7 @@ export default class LoginService {
           msg: data.msg,
         };
       }
-    } catch (e) {}
+    } catch (e) { }
     return false;
   }
 
@@ -435,7 +440,7 @@ export default class LoginService {
       const response = await Firebase.updateReferrer(userToken, referralCode);
       const data = response.data;
       return data.code;
-    } catch (e) {}
+    } catch (e) { }
     return -1;
   }
 

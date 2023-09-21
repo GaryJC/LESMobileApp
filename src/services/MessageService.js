@@ -181,15 +181,30 @@ class MessageService {
 
     const chatId = MessageCaches.MakeChatIDByMsgData(msgData);
 
-    //发布新消息事件，供service使用
-    JSEvent.emit(DataEvents.Message.TimelineState_Updated, msgData);
 
-    //发布UI事件，通知ui指定对话有更新
-    JSEvent.emit(UIEvents.Message.Message_Chat_Updated, { chatId, msgData });
-    //更新对话列表，携带有更新的chatId
-    JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, { chatId });
+    // //发布新消息事件，供service使用
+    // JSEvent.emit(DataEvents.Message.TimelineState_Updated, msgData);
+    // //发布UI事件，通知ui指定对话有更新
+    // JSEvent.emit(UIEvents.Message.Message_Chat_Updated, { chatId, msgData });
+    // //更新对话列表，携带有更新的chatId
+    // JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, { chatId });
 
+    this.#fireMessageEvents(chatId, msgData);
     return msgData;
+  }
+
+  /**
+   * 
+   * @param {string} chatId 
+   * @param {MessageData} msgData 
+   */
+  #fireMessageEvents(chatId, msgData) {
+      //发布新消息事件，供service使用
+      JSEvent.emit(DataEvents.Message.TimelineState_Updated, msgData);
+      //发布UI事件，通知ui指定对话有更新
+      JSEvent.emit(UIEvents.Message.Message_Chat_Updated, { chatId, msgData });
+      //更新对话列表，携带有更新的chatId
+      JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, { chatId });
   }
 
   /**

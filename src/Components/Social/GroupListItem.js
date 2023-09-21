@@ -20,6 +20,8 @@ const GroupListItem = ({ groupData }) => {
   );
   console.log("groupInfo: ", groupInfo);
 
+  const countBadgeClass = "absolute bottom-[-2px] right-[-5px] rounded-full w-[20px] h-[20px] bg-[#FF3737] justify-center items-center";
+
   return (
     <View className="mb-[10px] flex-row justify-between">
       <View className="flex-row">
@@ -27,12 +29,11 @@ const GroupListItem = ({ groupData }) => {
           <Avatar
             name={groupInfo?.name}
             isGroup={true}
-            size={{ w: 50, h: 50, font: 20 }}
           />
           {groupData.newMessageCount !== 0 && (
-            <View className="absolute top-[0] right-[0] rounded-full w-[20px] h-[20px] bg-[#FF3737] justify-center items-center">
+            <View className={countBadgeClass}>
               <Text className="text-white font-bold text-[12px]">
-                {groupData.newMessageCount}
+                {groupData.newMessageCount > 99 ? "99+" : groupData.newMessageCount}
               </Text>
             </View>
           )}

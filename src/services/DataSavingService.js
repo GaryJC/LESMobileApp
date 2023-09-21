@@ -239,6 +239,7 @@ class DataSavingService {
     if (msgData.messageType == LesConstants.IMMessageType.System) {
       return;
     }
+
     //将收到的消息异步存库
     DatabaseService.Inst.saveMessage(msgData)
       .then((succ) => console.log("save success: ", succ))
@@ -247,7 +248,6 @@ class DataSavingService {
     const chatId = MessageCaches.MakeChatIDByMsgData(msgData);
     //保存chatlist
     const item = DataCenter.messageCache.getChatListItem(chatId);
-    console.log("iiiii: ", item);
     if (item != null) {
       DatabaseService.Inst.saveChatListItem(item);
     }
