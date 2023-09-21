@@ -50,7 +50,7 @@ const GroupListItem = ({ groupData }) => {
               </Text>
             </View>
           </View>
-          <Text className="text-clr-gray">
+          <Text className="text-clr-gray-light">
             {truncate(groupData.latestMessage, {
               length: 20,
             })}

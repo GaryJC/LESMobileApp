@@ -2,11 +2,12 @@ import { View, Text, TouchableHighlight, TouchableOpacity } from "react-native";
 import { LesConstants } from "les-im-components";
 import NotificationService from "../services/NotificationService";
 import Constants from "../modules/Constants";
-import { Ionicons } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons";
 import Avatar from "./Avatar";
+import formatDate from "../utils/formatDate";
+import NotificationRespondButton from "./NotificationRespondButton";
 
 export default function InvitationList({ item }) {
-  console.log("ttt: ", item);
   const onRespondHandler = (notificationId, response) => {
     NotificationService.Inst.respondInvitation(notificationId, response)
       .then((res) => {
@@ -15,28 +16,52 @@ export default function InvitationList({ item }) {
       .catch((e) => console.error(e));
   };
 
-  const InvitationLayout = ({ type, avatar, name, children }) => (
-    <View className="bg-[#262F38] rounded-lg overflow-hidden">
-      <View className="bg-[#1A1E22] h-[30px] pl-[10px] justify-center">
+  const onCancelHandler = (notificationId) => {
+    NotificationService.Inst.cancelInvitation(notificationId)
+      .then((res) => {
+        console.log("response: ", res);
+      })
+      .catch((e) => console.error(e));
+  };
+
+  const InvitationLayout = ({ type, avatar, user, name, children }) => (
+    <View
+      // className="bg-[#262F38] rounded-lg overflow-hidden"
+      className="my-[5px]"
+    >
+      <View
+      // className="bg-[#1A1E22] h-[30px] pl-[10px] justify-center"
+      >
         <Text className="text-white font-bold">
           {type === LesConstants.IMNotificationType.FriendInvitation
-            ? "Friend Request"
-            : "Group Invitation"}
+            ? "New Friend Request"
+            : "New Group Invitation"}
         </Text>
       </View>
-      <View className="flex-row justify-between items-center px-[10px]">
+      <View className="flex-row justify-between items-center pt-[10px]">
         <View className="flex-row items-center">
-          <View className="h-[50px] w-[50px] justify-center">
-            {avatar}
+          <View className="h-[30px] w-[30px] justify-center">{avatar}</View>
+          <View className="ml-[10px]">
+            {type === LesConstants.IMNotificationType.GroupInvitation && (
+              <Text className="text-white font-bold">
+                {item.groupInfo.name}
+              </Text>
+            )}
+            <Text className="text-white">
+              {type === LesConstants.IMNotificationType.FriendInvitation
+                ? `${user.name}#${user.tag}`
+                : `Invited by ${user.name}#${user.tag}`}
+            </Text>
           </View>
-          <Text className="text-white font-bold text-[13px]">
-            {type === LesConstants.IMNotificationType.FriendInvitation
-              ? name
-              : item.sender.name + " invites you"}
-          </Text>
         </View>
-        <View className="flex-row">{children}</View>
+        <Text className="text-white text-[12px]">
+          {formatDate(new Date(item.time), {
+            month: "2-digit",
+            day: "2-digit",
+          })}
+        </Text>
       </View>
+      <View className="flex-row justify-end">{children}</View>
     </View>
   );
 
@@ -44,32 +69,28 @@ export default function InvitationList({ item }) {
     <InvitationLayout
       type={item.type}
       avatar={
-        item.type == LesConstants.IMNotificationType.FriendInvitation ?
+        item.type == LesConstants.IMNotificationType.FriendInvitation ? (
           <Avatar
             tag={item.recipient.tag}
             name={item.recipient.name}
-            size={{ w: 25, h: 25, font: 12 }}
-          /> : <Avatar
+            size={{ w: 30, h: 30, font: 15 }}
+          />
+        ) : (
+          <Avatar
             tag={item.id}
             name={item.groupInfo.name}
-            size={{ w: 30, h: 30, font: 15}}
+            size={{ w: 30, h: 30, font: 15 }}
             isGroup={true}
           />
+        )
       }
-      name={item.recipient.name}
+      // name={item.recipient.name}
+      user={item.recipient}
     >
-      <TouchableHighlight
-        onPress={() =>
-          onRespondHandler(
-            notificationId,
-            LesConstants.IMNotificationState.Canceled
-          )
-        }
-      >
-        <View>
-          <Text className="text-white font-bold">Cancel</Text>
-        </View>
-      </TouchableHighlight>
+      <NotificationRespondButton
+        type={Constants.Notification.ResponseType.Cancel}
+        handler={() => onCancelHandler(notificationId)}
+      />
     </InvitationLayout>
   );
 
@@ -77,41 +98,45 @@ export default function InvitationList({ item }) {
     <InvitationLayout
       type={item.type}
       avatar={
-        item.type == LesConstants.IMNotificationType.FriendInvitation ?
+        item.type == LesConstants.IMNotificationType.FriendInvitation ? (
           <Avatar
             tag={item.sender.tag}
             name={item.sender.name}
             size={{ w: 25, h: 25, font: 12 }}
-          /> : <Avatar
+          />
+        ) : (
+          <Avatar
             tag={item.id}
             name={item.groupInfo.name}
             size={{ w: 30, h: 30, font: 15 }}
             isGroup={true}
           />
+        )
       }
-      name={item.sender.name}
+      // name={item.sender.name}
+      user={item.sender}
     >
-      <TouchableOpacity
-        onPress={() =>
-          onRespondHandler(
-            notificationId,
-            LesConstants.IMNotificationState.Accepted
-          )
-        }
-        className="pr-[5px]"
-      >
-        <Ionicons name="checkmark-circle" size={34} color="green" />
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() =>
+      <View className="mr-[5px]">
+        <NotificationRespondButton
+          type={Constants.Notification.ResponseType.Accept}
+          handler={() =>
+            onRespondHandler(
+              notificationId,
+              LesConstants.IMNotificationState.Accepted
+            )
+          }
+        />
+      </View>
+
+      <NotificationRespondButton
+        type={Constants.Notification.ResponseType.Decline}
+        handler={() =>
           onRespondHandler(
             notificationId,
             LesConstants.IMNotificationState.Rejected
           )
         }
-      >
-        <Ionicons name="close-circle" size={34} color="grey" />
-      </TouchableOpacity>
+      />
     </InvitationLayout>
   );
 
