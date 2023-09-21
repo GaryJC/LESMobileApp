@@ -16,6 +16,7 @@ import NotificationList from "../Components/NotificationList";
 import InvitationList from "../Components/InvitationList";
 import GroupSelfSentInviteList from "../Components/GroupSelfSentInviteList";
 import TabButton from "../Components/TabButton";
+import Divider from "../Components/Divider";
 
 const NotificationType = Constants.Notification.NotificationType;
 const NotificationMode = Constants.Notification.NotificationMode;
@@ -33,15 +34,16 @@ const notificationReducer = (state, action) => {
       //   (LesConstants.IMNotificationState.Rejected ||
       //     LesConstants.IMNotificationState.Canceled)
       // ) {
-      return state.filter((item) => item.id !== notification.id);
+      const isExisted = state.find((item) => item.id === notification.id);
+      return isExisted
+        ? state.filter((item) => item.id !== notification.id)
+        : [...state, notification];
     // }
   }
 };
 
 export default function NotificationScreen() {
-  const [selectedTab, setSelectedTab] = useState(
-    NotificationType.Notifications
-  );
+  const [selectedTab, setSelectedTab] = useState(NotificationType.Invitations);
 
   // const [noticiations, setNotifications] = useState([]);
   const [notifications, dispatchNotifications] = useReducer(
@@ -129,12 +131,15 @@ export default function NotificationScreen() {
   useEffect(() => {
     // 挂载时获取所有推送信息
     // 默认选项是推送（不包括邀请）
-    const notifications = DataCenter.notifications.getAllNotifications(
-      LesConstants.IMNotificationType.Notification
-    );
+    const notifications = DataCenter.notifications.getAllNotifications();
+
     dispatchNotifications({
       type: "GET_NOTIFICATIONS",
-      payload: notifications.filter((item) => item.type === 0),
+      payload: notifications.filter(
+        (item) =>
+          item.mode === NotificationMode.Recipient &&
+          item.type !== LesConstants.IMNotificationType.Notification
+      ),
     });
     console.log("all noticiations: ", notifications);
 
@@ -235,19 +240,13 @@ export default function NotificationScreen() {
   );
   */
 
+  const UnreadIndicator = () => (
+    <View className="w-[10px] h-[10px] ml-[10px] bg-[#FF3737] rounded-full" />
+  );
+
   return (
     <View className="flex-1 mx-[5vw]">
       <View className="flex-row justify-between bg-[#262F38] h-[4vh] rounded-lg items-center">
-        <TabButton
-          type={NotificationType.Notifications}
-          selectedTab={selectedTab}
-          title="Notifications"
-          handler={switchTabHandler}
-        >
-          {unreadCount[NotificationType.Notifications] !== 0 && (
-            <View className="w-[10px] h-[10px] ml-[10px] bg-[#FF3737] rounded-full"></View>
-          )}
-        </TabButton>
         <TabButton
           type={NotificationType.Invitations}
           selectedTab={selectedTab}
@@ -255,7 +254,17 @@ export default function NotificationScreen() {
           handler={switchTabHandler}
         >
           {unreadCount[NotificationType.Invitations] !== 0 && (
-            <View className="w-[10px] h-[10px] ml-[10px] bg-[#FF3737] rounded-full"></View>
+            <UnreadIndicator />
+          )}
+        </TabButton>
+        <TabButton
+          type={NotificationType.Notifications}
+          selectedTab={selectedTab}
+          title="Notifications"
+          handler={switchTabHandler}
+        >
+          {unreadCount[NotificationType.Notifications] !== 0 && (
+            <UnreadIndicator />
           )}
         </TabButton>
         <TabButton
@@ -264,9 +273,7 @@ export default function NotificationScreen() {
           title="Self-Sent"
           handler={switchTabHandler}
         >
-          {unreadCount[NotificationType.SelfSent] !== 0 && (
-            <View className="w-[10px] h-[10px] ml-[10px] bg-[#FF3737] rounded-full"></View>
-          )}
+          {unreadCount[NotificationType.SelfSent] !== 0 && <UnreadIndicator />}
         </TabButton>
       </View>
       <View className="mt-[20px] h-[80vh]">
@@ -284,6 +291,7 @@ export default function NotificationScreen() {
           }
           // renderItem={({ item }) => console.log(item)}
           keyExtractor={(item, index) => index.toString()}
+          ItemSeparatorComponent={Divider}
         />
       </View>
     </View>

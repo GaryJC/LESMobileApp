@@ -2,8 +2,11 @@ import { LesConstants } from "les-im-components";
 import { View, Text, TouchableOpacity } from "react-native";
 import NotificationService from "../services/NotificationService";
 import Avatar from "./Avatar";
+import NotificationRespondButton from "./NotificationRespondButton";
+import Constants from "../modules/Constants";
 
 const GroupSelfSentInviteList = ({ item }) => {
+  console.log("iip: ", item);
   const { data } = item;
   const groupId = item.id;
   const name = data[0].groupInfo.name;
@@ -14,7 +17,6 @@ const GroupSelfSentInviteList = ({ item }) => {
       tag: item.recipient.tag,
     };
   });
-  console.log("iii: ", item, recipients);
 
   const onRespondHandler = (notificationId) => {
     console.log("pp: ", notificationId);
@@ -26,28 +28,38 @@ const GroupSelfSentInviteList = ({ item }) => {
   };
 
   return (
-    <View className="mb-[10px]">
-      <View className="bg-[#262F38] rounded-lg overflow-hidden">
-        <View className="bg-[#1A1E22] h-[40px] px-[10px] flex-row items-center">
-          <View className="w-[30] h-[30] mr-[10px]">
-            <Avatar tag={groupId} name={name} size={{ w: 30, h: 30, font: 15 }} isGroup={true} />
+    <View className="my-[5px]">
+      <View
+      // className="flex-row items-center"
+      // className="bg-[#1A1E22] h-[40px] px-[10px] flex-row items-center"
+      >
+        <Text className="text-white font-bold mb-[5px]">Group Invitation</Text>
+        <View className="flex-row items-center">
+          <View className="w-[40px] h-[40px] mr-[10px]">
+            <Avatar
+              tag={groupId}
+              name={name}
+              size={{ w: 40, h: 40, font: 15 }}
+              isGroup={true}
+            />
           </View>
-
-          <Text className="text-white font-bold">
-            Group Invitation {`[${name}]`}
-          </Text>
+          <Text className="text-white font-bold">{name}</Text>
         </View>
-        {recipients.map((item) => (
-          <View key={item.notiId} className="p-[10px] flex-row justify-between">
-            <Text className="text-white">
-              Invited <Text className="font-bold text-[16px]">{item.name}</Text>
-            </Text>
-            <TouchableOpacity onPress={() => onRespondHandler(item.notiId)}>
-              <Text className="text-white font-bold text-[16px]">Cancel</Text>
-            </TouchableOpacity>
-          </View>
-        ))}
       </View>
+      {recipients.map((item) => (
+        <View
+          key={item.notiId}
+          className="flex-row justify-between items-center mb-[5px]"
+        >
+          <Text className="text-white">
+            {`Invited ${item.name}#${item.tag}`}
+          </Text>
+          <NotificationRespondButton
+            type={Constants.Notification.ResponseType.Cancel}
+            handler={() => onRespondHandler(item.notiId)}
+          />
+        </View>
+      ))}
     </View>
   );
 };

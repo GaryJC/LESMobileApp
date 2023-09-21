@@ -16,7 +16,7 @@ const Address_Production = {
   WalletAddress: "http://wallet.metavirus.games",
 };
 
-const AddressOverride = null;
+const AddressOverride = Address_Public_Test;
 
 const Constants = {
   deliveryState: {
@@ -98,6 +98,12 @@ const Constants = {
       Sender: "sender",
       Recipient: "recipient",
       SelfSentGroup: "SelfSentGroup",
+    },
+
+    ResponseType: {
+      Decline: "Decline",
+      Cancel: "Cancel",
+      Accept: "Accept",
     },
   },
 
