@@ -23,6 +23,7 @@ import Avatar from "../Components/Avatar";
 import { firebase } from "@react-native-firebase/auth";
 import { LesConstants, LesPlatformCenter } from "les-im-components";
 import RedDotIcon from "../Components/RedDotIcon";
+import LoginService from "../services/LoginService";
 
 const userOptions = [
   { id: 1, title: "Account", link: "" },
@@ -142,30 +143,8 @@ export default function UserScreen() {
   );
 
   const onLogoutHandler = async () => {
-    await firebase.auth().signOut();
-    LesPlatformCenter.Inst.disconnect();
-    try {
-      await deleteAuthCache();
-      // (DataCenter.userInfo = {
-      //   accountId: "",
-      //   email: "",
-      //   loginKey: "",
-
-      //   /**
-      //    * im用户信息
-      //    */
-      //   imUserInfo: {
-      //     name: "",
-      //     tag: 0,
-      //     state: 0,
-      //   },
-      // }),
-      navigation.navigate("Login");
-    } catch {
-      (e) => {
-        console.log("log out error: ", e);
-      };
-    }
+    await LoginService.Inst.firebaseLogout();
+    navigation.navigate("Login");
   };
 
   const navigateToNotification = () => {

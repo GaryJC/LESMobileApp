@@ -26,21 +26,16 @@ export default function InvitationList({ item }) {
 
   const InvitationLayout = ({ type, avatar, user, name, children }) => (
     <View
-      // className="bg-[#262F38] rounded-lg overflow-hidden"
-      className="my-[5px]"
+    // className="bg-[#262F38] rounded-lg overflow-hidden"
     >
-      <View
-      // className="bg-[#1A1E22] h-[30px] pl-[10px] justify-center"
-      >
-        <Text className="text-white font-bold">
-          {type === LesConstants.IMNotificationType.FriendInvitation
-            ? "New Friend Request"
-            : "New Group Invitation"}
-        </Text>
-      </View>
+      <Text className="text-white font-bold">
+        {type === LesConstants.IMNotificationType.FriendInvitation
+          ? "New Friend Request"
+          : "New Group Invitation"}
+      </Text>
       <View className="flex-row justify-between items-center pt-[10px]">
         <View className="flex-row items-center">
-          <View className="h-[30px] w-[30px] justify-center">{avatar}</View>
+          <View className="h-[40px] w-[40px] justify-center">{avatar}</View>
           <View className="ml-[10px]">
             {type === LesConstants.IMNotificationType.GroupInvitation && (
               <Text className="text-white font-bold">
@@ -73,13 +68,13 @@ export default function InvitationList({ item }) {
           <Avatar
             tag={item.recipient.tag}
             name={item.recipient.name}
-            size={{ w: 30, h: 30, font: 15 }}
+            size={{ w: 40, h: 40, font: 15 }}
           />
         ) : (
           <Avatar
             tag={item.id}
             name={item.groupInfo.name}
-            size={{ w: 30, h: 30, font: 15 }}
+            size={{ w: 40, h: 40, font: 15 }}
             isGroup={true}
           />
         )
@@ -102,13 +97,13 @@ export default function InvitationList({ item }) {
           <Avatar
             tag={item.sender.tag}
             name={item.sender.name}
-            size={{ w: 25, h: 25, font: 12 }}
+            size={{ w: 40, h: 40, font: 15 }}
           />
         ) : (
           <Avatar
             tag={item.id}
             name={item.groupInfo.name}
-            size={{ w: 30, h: 30, font: 15 }}
+            size={{ w: 40, h: 40, font: 15 }}
             isGroup={true}
           />
         )
@@ -141,7 +136,7 @@ export default function InvitationList({ item }) {
   );
 
   return (
-    <View className="mb-[10px]">
+    <View className="my-[5px]">
       {item.mode === Constants.Notification.NotificationMode.Sender ? (
         <SenderInvitation notificationId={item.id} />
       ) : (
