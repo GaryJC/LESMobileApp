@@ -8,7 +8,10 @@ import { LesPlatformCenter } from "les-im-components";
 import LoadingIndicator from "../Components/LoadingIndicator";
 import AuthFormInput from "../Components/AuthForm/AuthFormInput";
 import HighlightButton from "../Components/HighlightButton";
-import FeedBackModal, { DialogButton, DialogModal } from "../Components/FeedbackModal";
+import FeedBackModal, {
+  DialogButton,
+  DialogModal,
+} from "../Components/FeedbackModal";
 
 export default function CreateNameScreen() {
   const [username, setUsername] = useState("");
@@ -49,7 +52,7 @@ export default function CreateNameScreen() {
     LesPlatformCenter.IMFunctions.setName(username)
       .then((res) => {
         console.log("name create success: ", res);
-        navigation.navigate("BottomTab");
+        navigation.navigate("MainNavigation");
         setFeedbackModalOpen(false);
       })
       .catch((e) => {
@@ -86,15 +89,13 @@ export default function CreateNameScreen() {
       <DialogModal
         content={feedback}
         visible={feedbackModalOpen}
-        onButtonPressed={btn => {
+        onButtonPressed={(btn) => {
           setFeedbackModalOpen(false);
           if (isValidated) {
             setNameHandler();
           }
         }}
       />
-
-
 
       {/* <FeedBackModal
         feedbackModalOpen={feedbackModalOpen}

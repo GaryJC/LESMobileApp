@@ -1,4 +1,5 @@
 // import { StatusBar } from "expo-status-bar";
+import "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -53,9 +54,12 @@ import HighlightButton from "./src/Components/HighlightButton";
 import QuestScreen from "./src/Screens/QuestScreen";
 import QuestUserPointPanel from "./src/Components/Quest/QuestUserPointPanel";
 import RedDotIcon from "./src/Components/RedDotIcon";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import UserDrawer from "./src/Components/UserDrawer";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
+const Drawer = createDrawerNavigator();
 
 const deviceHeight = Dimensions.get("screen").height;
 const bottomTabHeight = deviceHeight * 0.08;
@@ -67,6 +71,27 @@ const onAppDestroyed = async () => {
   //保存页面会刷新app，此处重置event，否则会出现重复监听问题
   JSEvent.reset();
   ServiceCenter.Inst.onAppDestroyed();
+};
+
+function CustomDrawerContent(props) {
+  return <View>{/* You can put any custom content you want here */}</View>;
+}
+
+const DrawerNavigation = () => {
+  return (
+    <Drawer.Navigator
+      drawerContent={(props) => <UserDrawer />}
+      screenOptions={{
+        drawerPosition: "left",
+        drawerType: "slide",
+        headerShown: false,
+        drawerStyle: { width: "85%" },
+        swipeEdgeWidth: 200,
+      }}
+    >
+      <Drawer.Screen name="BottomTab" component={BottomTabNavigation} />
+    </Drawer.Navigator>
+  );
 };
 
 const BottomTabNavigation = () => {
@@ -178,6 +203,7 @@ const BottomTabNavigation = () => {
           ),
         }}
       /> */}
+      {/* <BottomTab.Screen name="Drawer" component={DrawerNavigation} /> */}
       <BottomTab.Screen
         name="Friends"
         component={FriendsScreen}
@@ -298,13 +324,13 @@ export default function App() {
 
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return ()=>{
+    return () => {
       //保存页面会刷新app，此处重置event，否则会出现重复监听问题
       JSEvent.reset();
       ServiceCenter.Inst.onAppDestroyed();
       // unsubscribe on unmount
       subscriber();
-    }; 
+    };
   }, []);
 
   function setLoading(state) {
@@ -450,10 +476,15 @@ export default function App() {
               options={{ headerShown: false }}
             />
             <Stack.Screen
+              name="MainNavigation" // This is the combined BottomTab + Drawer navigation
+              component={DrawerNavigation}
+              options={{ headerShown: false }}
+            />
+            {/* <Stack.Screen
               name="BottomTab"
               component={BottomTabNavigation}
               options={{ headerShown: false }}
-            />
+            /> */}
             <Stack.Screen
               name="GameDetails"
               component={GameDetailsScreen}

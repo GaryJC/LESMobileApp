@@ -46,8 +46,11 @@ export default function InitialScreen() {
             navigation.reset({ index: 0, routes: [{ name: "CreateName" }] });
             navigation.navigate("CreateName");
           } else {
-            navigation.reset({ index: 0, routes: [{ name: "BottomTab" }] });
-            navigation.navigate("BottomTab");
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "MainNavigation" }],
+            });
+            navigation.navigate("MainNavigation");
           }
           break;
         case LoginState.VerifyEmail:

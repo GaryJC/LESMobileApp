@@ -2,7 +2,6 @@ import { Modal, Text, View } from "react-native";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import HighlightButton from "./HighlightButton";
 
-
 class DialogButton {
   /**
    * @type {string}
@@ -29,10 +28,10 @@ class DialogButton {
   }
 
   /**
-   * 
+   *
    * @param {string} id button id
-   * @param {string} text 
-   * @param {'normal'|'primary'|'danger'|'emphasize'|'dark'|'light'|'opacity'|null} type 
+   * @param {string} text
+   * @param {'normal'|'primary'|'danger'|'emphasize'|'dark'|'light'|'opacity'|null} type
    * @param {boolean} isLoading
    * @returns {DialogButton}
    */
@@ -41,74 +40,78 @@ class DialogButton {
   }
 
   static Ok() {
-    return DialogButton.New("ok", "Ok", "primary")
+    return DialogButton.New("ok", "Ok", "primary");
   }
 
   static Cancel() {
-    return DialogButton.New("cancel", "Cancel", "normal")
+    return DialogButton.New("cancel", "Cancel", "normal");
   }
-
 }
 
-const defaultButton = [
-  DialogButton.Ok()
-];
+const defaultButton = [DialogButton.Ok()];
 
 /**
- * 
+ *
  * 弹出对话框
- * 
+ *
  * 默认显示一个Ok按钮
- * 
+ *
  * 自定义按钮方式
- * 
- * <DialogModal 
- * 
+ *
+ * <DialogModal
+ *
  *    content={content}
- * 
+ *
  *    visible={visible}
- * 
+ *
  *    buttons={[
- * 
+ *
  *      DialogButton.OK(),
  *      DialogButton.Cancel(),
  *      DialogButton.New("custom","Custom","normal",isLoading)
- * 
+ *
  *    ]}
  * />
- * 
- * @param {{visible:boolean, onButtonPressed:(button:DialogButton)=>void, title:string|null, content:string, buttons: DialogButton[]|DialogButton|null}} p 
- * @returns 
+ *
+ * @param {{visible:boolean, onButtonPressed:(button:DialogButton)=>void, title:string|null, content:string, buttons: DialogButton[]|DialogButton|null}} p
+ * @returns
  */
 const DialogModal = ({ visible, onButtonPressed, title, content, buttons }) => {
+  const btns =
+    buttons == null
+      ? defaultButton
+      : Array.isArray(buttons)
+      ? buttons
+      : [buttons];
 
-  const btns = buttons == null
-    ? defaultButton
-    : Array.isArray(buttons) ? buttons : [buttons];
-
-  const onBtnPressed = btn => {
+  const onBtnPressed = (btn) => {
     if (onButtonPressed != null) {
       onButtonPressed(btn);
     }
-  }
+  };
 
-  const btnDoms = btns.map(btn => {
-    return <HighlightButton
-      type={btn.type}
-      text={btn.text}
-      isLoading={btn.isLoading}
-      onPress={() => {
-        onBtnPressed(btn);
-      }}
-    />
-  })
+  const btnDoms = btns.map((btn) => {
+    return (
+      <HighlightButton
+        type={btn.type}
+        text={btn.text}
+        isLoading={btn.isLoading}
+        onPress={() => {
+          onBtnPressed(btn);
+        }}
+      />
+    );
+  });
 
-  const titleDom = (title == null || title == "")
-    ? <View className="pt-[10px]"></View>
-    : <View className="flex justify-start">
-      <Text className=" text-xl text-white font-bold">{title}</Text>
-      <View className="h-[2px] bg-clr-bgdark my-[5px]"></View>
-    </View>
+  const titleDom =
+    title == null || title == "" ? (
+      <View className="pt-[10px]"></View>
+    ) : (
+      <View className="flex justify-start">
+        <Text className=" text-xl text-white font-bold">{title}</Text>
+        <View className="h-[2px] bg-clr-bgdark my-[5px]"></View>
+      </View>
+    );
 
   return (
     <Modal visible={visible} transparent={true} className="flex">
@@ -123,7 +126,7 @@ const DialogModal = ({ visible, onButtonPressed, title, content, buttons }) => {
       </View>
     </Modal>
   );
-}
+};
 
 /**
  * @deprecated 改用DialogModal
@@ -154,4 +157,4 @@ const FeedBackModal = ({
 };
 
 export default FeedBackModal;
-export { DialogModal, DialogButton }
+export { DialogModal, DialogButton };

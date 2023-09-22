@@ -78,7 +78,7 @@ export default function LoginScreen() {
         navigation.navigate("CreateName");
       } else {
         //TODO 跳转到主界面
-        navigation.navigate("BottomTab");
+        navigation.navigate("MainNavigation");
       }
       setError(null);
     } catch (e) {
