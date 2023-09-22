@@ -17,13 +17,15 @@ const FriendAddButton = ({ userData, setIsLoading }) => {
       console.log("send friend invite success: ", userData);
       setFeedbak("You have sent the frend request sucessfully!");
     } catch (e) {
-      console.log("send friend invit error: ", e);
       switch (e) {
-        case 8197:
+        case LesConstants.ErrorCodes.UsersAreFriend:
           setFeedbak("The user is already your friend.");
           break;
-        case 3003:
+        case LesConstants.ErrorCodes.InvitationAlreadySent:
           setFeedbak("You have already sent the request.");
+          break;
+        default:
+          setFeedbak("Error: ", e);
           break;
       }
     }
@@ -46,7 +48,9 @@ const FriendAddButton = ({ userData, setIsLoading }) => {
 
       <DialogModal
         visible={feedbackModalOpen}
-        onButtonPressed={btn => { setFeedbackModalOpen(false) }}
+        onButtonPressed={(btn) => {
+          setFeedbackModalOpen(false);
+        }}
         content={feedback}
       />
     </>
