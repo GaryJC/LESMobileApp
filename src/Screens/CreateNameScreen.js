@@ -36,9 +36,7 @@ export default function CreateNameScreen() {
   const doublecheckHandler = () => {
     if (!validateInput(username)) {
       setFeedbackModalOpen(true);
-      setFeedbak(
-        "Name has to be more than 2 characters, less than 15 characters; can not contain any special characters except '_'; initial letter can not be numbers or '_'"
-      );
+      setFeedbak("Username must contain letters, numbers, and underscores.");
       setIsValidated(false);
       return;
     }

@@ -112,7 +112,7 @@ const GroupCreateScreen = () => {
   };
 
   const validateGroupName = () => {
-    const regex = /^(?![_\d])[a-zA-Z_]{3,20}$/;
+    const regex = /^[\w\u4e00-\u9fa5]{3,20}$/;
     return regex.test(groupName);
   };
 
