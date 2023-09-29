@@ -504,6 +504,7 @@ export default function App() {
               component={VerifyEmailScreen}
               options={{
                 headerTitle: "Verify Email",
+                headerTitleAlign: "center",
                 headerLeft: () => {
                   const navigation = useNavigation();
                   return (
@@ -529,7 +530,7 @@ export default function App() {
             <Stack.Screen
               name="CreateName"
               component={CreateNameScreen}
-              options={{ headerBackVisible: false }}
+              options={{ headerBackVisible: false, headerShown: false }}
             />
             <Stack.Screen name="Notification" component={NotificationScreen} />
             <Stack.Screen
@@ -537,7 +538,11 @@ export default function App() {
               component={FriendRequestScreen}
               options={{ headerTitle: "Friend Request" }}
             />
-            <Stack.Screen name="FriendSearch" component={FriendSearchScreen} />
+            <Stack.Screen
+              name="FriendSearch"
+              component={FriendSearchScreen}
+              options={{ headerTitle: "Friend Search" }}
+            />
             <Stack.Screen
               name="GroupCreate"
               component={GroupCreateScreen}
