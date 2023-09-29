@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Modal } from "react-native";
+import { View, Text, TextInput, Modal, Image } from "react-native";
 import InputLayout from "../Components/InputLayout";
 import { useEffect, useState } from "react";
 import AuthButton from "../Components/AuthButton";
@@ -65,37 +65,42 @@ export default function CreateNameScreen() {
 
   return (
     <View className="flex-1 justify-center">
-      <View className="bg-[#2A2C37] p-[20px]">
-        <Text className="text-white text-[18px] font-bold">
-          Create your nickname
-        </Text>
-        <View className="mt-[20px]">
-          <AuthFormInput value={username} onChangeHandler={updateUsername} />
+      <View>
+        <Image
+          source={require("../../assets/img/logo-nexg.png")}
+          className="mx-[auto] w-[250px] h-[100px] mb-[30px] relative"
+        />
+        <View className="bg-[#2A2C37] p-[20px]">
+          <Text className="text-white text-[18px] font-bold">
+            Create your nickname
+          </Text>
+          <View className="mt-[20px]">
+            <AuthFormInput value={username} onChangeHandler={updateUsername} />
+          </View>
+          <View className="items-center mt-[20px]">
+            <HighlightButton
+              type={"primary"}
+              text={"Submit"}
+              isLoading={isLoading}
+              disabled={isLoading || !username.length}
+              onPress={doublecheckHandler}
+            />
+          </View>
+          {/* <LoadingIndicator isLoading={isLoading} /> */}
         </View>
-        <View className="items-center mt-[20px]">
-          <HighlightButton
-            type={"primary"}
-            text={"Submit"}
-            isLoading={isLoading}
-            disabled={isLoading || !username.length}
-            onPress={doublecheckHandler}
-          />
-        </View>
-        {/* <LoadingIndicator isLoading={isLoading} /> */}
-      </View>
 
-      <DialogModal
-        content={feedback}
-        visible={feedbackModalOpen}
-        onButtonPressed={(btn) => {
-          setFeedbackModalOpen(false);
-          if (isValidated) {
-            setNameHandler();
-          }
-        }}
-      />
+        <DialogModal
+          content={feedback}
+          visible={feedbackModalOpen}
+          onButtonPressed={(btn) => {
+            setFeedbackModalOpen(false);
+            if (isValidated) {
+              setNameHandler();
+            }
+          }}
+        />
 
-      {/* <FeedBackModal
+        {/* <FeedBackModal
         feedbackModalOpen={feedbackModalOpen}
         feedback={feedback}
         setFeedbackModalOpen={setFeedbackModalOpen}
@@ -110,6 +115,7 @@ export default function CreateNameScreen() {
           />
         )}
       </FeedBackModal> */}
+      </View>
     </View>
   );
 }
