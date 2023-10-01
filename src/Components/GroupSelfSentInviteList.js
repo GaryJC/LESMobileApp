@@ -6,7 +6,6 @@ import NotificationRespondButton from "./NotificationRespondButton";
 import Constants from "../modules/Constants";
 
 const GroupSelfSentInviteList = ({ item }) => {
-  console.log("iip: ", item);
   const { data } = item;
   const groupId = item.id;
   const name = data[0].groupInfo.name;
@@ -19,7 +18,6 @@ const GroupSelfSentInviteList = ({ item }) => {
   });
 
   const onRespondHandler = (notificationId) => {
-    console.log("pp: ", notificationId);
     NotificationService.Inst.cancelInvitation(notificationId)
       .then((res) => {
         console.log("response: ", res);
@@ -39,7 +37,13 @@ const GroupSelfSentInviteList = ({ item }) => {
             <Avatar
               tag={groupId}
               name={name}
-              size={{ w: 40, h: 40, font: 15 }}
+              size={{
+                w: 40,
+                h: 40,
+                font: 15,
+                groupMark: 18,
+                groupMarkFont: 10,
+              }}
               isGroup={true}
             />
           </View>

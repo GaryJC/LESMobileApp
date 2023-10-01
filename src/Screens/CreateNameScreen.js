@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Modal } from "react-native";
+import { View, Text, TextInput, Modal, Image } from "react-native";
 import InputLayout from "../Components/InputLayout";
 import { useEffect, useState } from "react";
 import AuthButton from "../Components/AuthButton";
@@ -8,7 +8,10 @@ import { LesPlatformCenter } from "les-im-components";
 import LoadingIndicator from "../Components/LoadingIndicator";
 import AuthFormInput from "../Components/AuthForm/AuthFormInput";
 import HighlightButton from "../Components/HighlightButton";
-import FeedBackModal, { DialogButton, DialogModal } from "../Components/FeedbackModal";
+import FeedBackModal, {
+  DialogButton,
+  DialogModal,
+} from "../Components/FeedbackModal";
 
 export default function CreateNameScreen() {
   const [username, setUsername] = useState("");
@@ -33,9 +36,7 @@ export default function CreateNameScreen() {
   const doublecheckHandler = () => {
     if (!validateInput(username)) {
       setFeedbackModalOpen(true);
-      setFeedbak(
-        "Name has to be more than 2 characters, less than 15 characters; can not contain any special characters except '_'; initial letter can not be numbers or '_'"
-      );
+      setFeedbak("Username must contain letters, numbers, and underscores.");
       setIsValidated(false);
       return;
     }
@@ -49,7 +50,7 @@ export default function CreateNameScreen() {
     LesPlatformCenter.IMFunctions.setName(username)
       .then((res) => {
         console.log("name create success: ", res);
-        navigation.navigate("BottomTab");
+        navigation.navigate("MainNavigation");
         setFeedbackModalOpen(false);
       })
       .catch((e) => {
@@ -64,39 +65,42 @@ export default function CreateNameScreen() {
 
   return (
     <View className="flex-1 justify-center">
-      <View className="bg-[#2A2C37] p-[20px]">
-        <Text className="text-white text-[18px] font-bold">
-          Create your nickname
-        </Text>
-        <View className="mt-[20px]">
-          <AuthFormInput value={username} onChangeHandler={updateUsername} />
+      <View>
+        <Image
+          source={require("../../assets/img/logo-nexg.png")}
+          className="mx-[auto] w-[250px] h-[100px] mb-[30px] relative"
+        />
+        <View className="bg-[#2A2C37] p-[20px]">
+          <Text className="text-white text-[18px] font-bold">
+            Create your nickname
+          </Text>
+          <View className="mt-[20px]">
+            <AuthFormInput value={username} onChangeHandler={updateUsername} />
+          </View>
+          <View className="items-center mt-[20px]">
+            <HighlightButton
+              type={"primary"}
+              text={"Submit"}
+              isLoading={isLoading}
+              disabled={isLoading || !username.length}
+              onPress={doublecheckHandler}
+            />
+          </View>
+          {/* <LoadingIndicator isLoading={isLoading} /> */}
         </View>
-        <View className="items-center mt-[20px]">
-          <HighlightButton
-            type={"primary"}
-            text={"Submit"}
-            isLoading={isLoading}
-            disabled={isLoading || !username.length}
-            onPress={doublecheckHandler}
-          />
-        </View>
-        {/* <LoadingIndicator isLoading={isLoading} /> */}
-      </View>
 
-      <DialogModal
-        content={feedback}
-        visible={feedbackModalOpen}
-        onButtonPressed={btn => {
-          setFeedbackModalOpen(false);
-          if (isValidated) {
-            setNameHandler();
-          }
-        }}
-      />
+        <DialogModal
+          content={feedback}
+          visible={feedbackModalOpen}
+          onButtonPressed={(btn) => {
+            setFeedbackModalOpen(false);
+            if (isValidated) {
+              setNameHandler();
+            }
+          }}
+        />
 
-
-
-      {/* <FeedBackModal
+        {/* <FeedBackModal
         feedbackModalOpen={feedbackModalOpen}
         feedback={feedback}
         setFeedbackModalOpen={setFeedbackModalOpen}
@@ -111,6 +115,7 @@ export default function CreateNameScreen() {
           />
         )}
       </FeedBackModal> */}
+      </View>
     </View>
   );
 }

@@ -18,7 +18,7 @@ import ChatSearchList from "./ChatSearchList";
 
 const ChatSearchBottomSheet = ({ bottomSheetRef }) => {
   // variables
-  const snapPoints = useMemo(() => ["60%"], []);
+  const snapPoints = useMemo(() => ["70%"], []);
 
   //   const [searchingWord, setSearchingWord] = useState();
 
@@ -81,6 +81,10 @@ const ChatSearchBottomSheet = ({ bottomSheetRef }) => {
       handleIndicatorStyle={{ backgroundColor: "white" }}
       keyboardBehavior="fillParent"
     >
+      {/* <KeyboardAvoidingView
+        className="flex-1"
+        behavior={Platform.OS === "ios" ? "padding" : null}
+      > */}
       <View className="px-[20px] mt-[10px] flex-1">
         <View className="h-[30px]">
           <TextInput
@@ -101,6 +105,7 @@ const ChatSearchBottomSheet = ({ bottomSheetRef }) => {
           keyExtractor={(item) => item.messageId}
         />
       </View>
+      {/* </KeyboardAvoidingView> */}
     </BottomSheetModal>
     // </KeyboardAvoidingView>
   );

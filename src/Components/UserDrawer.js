@@ -8,21 +8,18 @@ import {
 } from "react-native";
 import { UserData } from "../Data/dummyData";
 import { useEffect, useState, useRef, useMemo, useCallback } from "react";
-import StatusBottomSheet from "../Components/StatusBottomSheet";
-import {
-  StateIndicator,
-  makeStateReadable,
-} from "../Components/StateIndicator";
+import StatusBottomSheet from "./StatusBottomSheet";
+import { StateIndicator, makeStateReadable } from "./StateIndicator";
 import DataCenter from "../modules/DataCenter";
 import { useNavigation } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 import { Ionicons } from "@expo/vector-icons";
 import JSEvent from "../utils/JSEvent";
 import { DataEvents, UIEvents } from "../modules/Events";
-import Avatar from "../Components/Avatar";
+import Avatar from "./Avatar";
 import { firebase } from "@react-native-firebase/auth";
 import { LesConstants, LesPlatformCenter } from "les-im-components";
-import RedDotIcon from "../Components/RedDotIcon";
+import RedDotIcon from "./RedDotIcon";
 import LoginService from "../services/LoginService";
 
 const userOptions = [
@@ -37,7 +34,7 @@ const UserOptionButton = (key, title, link) => (
   </View>
 );
 
-export default function UserScreen() {
+export default function UserDrawer() {
   // const [userData, setUserData] = useState();
   const [userStatus, setUserStatus] = useState(
     DataCenter.userInfo.imUserInfo.state
@@ -81,7 +78,7 @@ export default function UserScreen() {
       setUnreadCount(unreadCount);
     };
 
-    updateUnreadCountHandler();
+    // updateUnreadCountHandler();
 
     const retriveUserInfoHandler = () => {
       console.log("im user info: ", DataCenter.userInfo.imUserInfo);
@@ -133,9 +130,9 @@ export default function UserScreen() {
 
   const SwitchStatusButton = () => (
     <TouchableHighlight onPress={openSheet}>
-      <View className="w-[25vw] h-[5vh] bg-[#853DFB] rounded-lg flex-row justify-evenly items-center">
+      <View className="p-[10px] bg-clr-bglight rounded-lg flex-row justify-evenly items-center">
         <StateIndicator state={userStatus} />
-        <Text className="text-white text-[16px] font-bold">
+        <Text className="ml-[5px] text-white text-[16px] font-bold">
           {makeStateReadable(userStatus)}
         </Text>
       </View>
@@ -159,10 +156,10 @@ export default function UserScreen() {
   };
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 bg-black">
       <ImageBackground
         source={UserData.userBgImg}
-        className="w-[100vw] h-[30vh] items-center relative"
+        className="w-[100%] h-[30vh] items-center relative"
       >
         <View className="rounded-full w-[100px] h-[100px] absolute bottom-[-50px]">
           {/* <ImageBackground
@@ -186,7 +183,7 @@ export default function UserScreen() {
           </Avatar>
         </View>
 
-        <View className="absolute left-[5vw] top-[5vh] ">
+        <View className="absolute left-[5%] top-[5vh] ">
           <RedDotIcon
             iconName="notifications"
             iconSize={30}
@@ -197,7 +194,7 @@ export default function UserScreen() {
 
         {/* <TouchableOpacity
           onPress={navigateToNotification}
-          className="absolute left-[5vw] top-[8vh]"
+          className="absolute left-[5%] top-[8vh]"
         >
           <Ionicons name="notifications" size={30} color="white" />
           {unreadCount !== 0 && (
@@ -209,16 +206,16 @@ export default function UserScreen() {
           )}
         </TouchableOpacity> */}
       </ImageBackground>
-      <View className="mx-[5vw] mt-[50px] items-center">
+      <View className="mx-[5%] mt-[35px] items-center">
         <Text className="text-white font-bold text-[30px]">
           {userInfo.name}
         </Text>
         <Text className="text-white text-[15px]">#{userInfo.tag}</Text>
         <View className="flex-row items-center justify-between mt-[3vh]">
-          <Text className="text-white text-[20px] pr-[20px]">Set Status:</Text>
+          <Text className="text-white text-[16px] mr-[10px]">Set Status:</Text>
           <SwitchStatusButton />
         </View>
-        <View className="bg-[#131F2B] rounded-lg w-[100%] mt-[3vh]">
+        <View className="bg-clr-bglight rounded-lg w-[100%] mt-[3vh]">
           <ScrollView className="divide-y-2 divide-[#5C5C5C] px-[10px]">
             {userOptions.map((item, index) =>
               UserOptionButton(item.id, item.title, item.link)
@@ -226,7 +223,7 @@ export default function UserScreen() {
           </ScrollView>
         </View>
         <TouchableHighlight className="w-[100%]" onPress={onLogoutHandler}>
-          <View className="bg-[#131F2B] rounded-lg w-[100%] mt-[3vh] items-center">
+          <View className="bg-clr-bglight rounded-lg w-[100%] mt-[3vh] items-center">
             <Text className="py-[10px] text-[#FF0000] text-[15px]">
               Log Out
             </Text>

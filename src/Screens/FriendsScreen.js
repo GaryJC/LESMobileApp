@@ -31,6 +31,7 @@ export default function FriendsScreen() {
     Constants.SocialTabButtonType.Friends
   );
 
+  /*
   useEffect(() => {
     const handleBackPress = () => {
       // Prevent back button default behavior
@@ -46,6 +47,7 @@ export default function FriendsScreen() {
       backHandler.remove();
     };
   }, []);
+  */
 
   const updateUnreadCountHandler = () => {
     // const count =

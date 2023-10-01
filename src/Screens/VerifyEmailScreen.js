@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, Image } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import Constants from "../modules/Constants";
 import { useEffect, useState } from "react";
@@ -29,7 +29,7 @@ export const VerifyEmailScreen = () => {
     //   navigation.navigate("CreateName")
     // }else if(loginState === Constants.LoginState.Normal&&serverState===LesConstants.ErrorCodes.Success)
     if (loginState === Constants.LoginState.Normal) {
-      navigation.navigate("BottomTab");
+      navigation.navigate("MainNavigation");
     }
     setLoginState(loginState);
   }, [route.params?.loginState]);
@@ -38,18 +38,24 @@ export const VerifyEmailScreen = () => {
 
   return (
     <View className="flex-1 justify-center">
-      <View className="bg-[#2A2C37] p-[20px]">
-        {loginState == Constants.LoginState.VerifyEmail ? (
-          <VerifyEmailForm 
-            userToken={userToken}
-            userId={userId}
-            setLoginState={setLoginState}
-          />
-        ) : loginState == Constants.LoginState.UpdateReferrer ? (
-          <SetReferrerForm userToken={userToken} />
-        ) : (
-          <Text className="text-white">{loginState}</Text>
-        )}
+      <View className="mb-[20vh]">
+        <Image
+          source={require("../../assets/img/logo-nexg.png")}
+          className="mx-[auto] w-[250px] h-[100px] mb-[30px] relative"
+        />
+        <View className="bg-[#2A2C37] p-[20px]">
+          {loginState == Constants.LoginState.VerifyEmail ? (
+            <VerifyEmailForm
+              userToken={userToken}
+              userId={userId}
+              setLoginState={setLoginState}
+            />
+          ) : loginState == Constants.LoginState.UpdateReferrer ? (
+            <SetReferrerForm userToken={userToken} />
+          ) : (
+            <Text className="text-white">{loginState}</Text>
+          )}
+        </View>
       </View>
     </View>
   );
