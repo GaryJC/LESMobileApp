@@ -79,6 +79,12 @@ export async function retrieveData(key) {
 }
 
 export const Firebase = {
+  Twitter: {
+    //   getToken: async () => {
+    //     return await axios.post(API.twitterGetToken());
+    //   }
+  },
+
   /**
    *
    * @param {userToken} token
@@ -152,19 +158,22 @@ export const Firebase = {
 
       // console.log("google result; ", result);
     } catch (e) {
-      console.log("error", e);
       throw e;
     }
   },
 
   twitterSignin: async (navigation) => {
+    const loginResult = await RNTwitterSignIn.logIn();
+    const { authToken, authTokenSecret } = loginResult;
+    const twitterCredential = auth.TwitterAuthProvider.credential(
+      authToken,
+      authTokenSecret
+    );
+
+    console.log("auth token: ", authToken, authTokenSecret)
     try {
-      const { authToken, authTokenSecret } = await RNTwitterSignIn.logIn();
-      const twitterCredential = auth.TwitterAuthProvider.credential(
-        authToken,
-        authTokenSecret
-      );
-      await auth().signInWithCredential(twitterCredential);
+      const credential = await auth().signInWithCredential(twitterCredential);
+
       const { loginState, id, imServerState } =
         await LoginService.Inst.firebaseQuickLogin();
 
@@ -172,8 +181,25 @@ export const Firebase = {
       return { id, loginState, imServerState };
       //navigation.navigate("VerifyEmail", { id, loginState, imServerState });
     } catch (e) {
-      console.log("error", e);
-      throw e;
+      const p = await Firebase.fetchSignInProvider(loginResult.email);
+      throw { code: e.code, email: loginResult.email, credential: twitterCredential, provider: p };
     }
   },
+
+  /**
+   * 
+   * @param {string} email 
+   * @param {"google.com"|"twitter.com"} loginProvider 
+   * @param {} pendingCred 
+   */
+  onDifferentCredential: async (email, loginProvider, pendingCred) => {
+
+  },
+
+  fetchSignInProvider: async (email) => {
+    const providers = await auth().fetchSignInMethodsForEmail(email)
+    if (providers.length > 0) {
+      return providers[0];
+    }
+  }
 };

@@ -13,7 +13,7 @@ import {
   ImageBackground,
 } from "react-native";
 import InputLayout from "../Components/InputLayout";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import AuthButton from "../Components/AuthButton";
 import { loginRequest, saveData, loginCheck } from "../utils/auth";
 import { useNavigation } from "@react-navigation/native";
@@ -30,6 +30,9 @@ import LoadingIndicator from "../Components/LoadingIndicator";
 import { Firebase } from "../utils/auth";
 
 import { NativeModules } from "react-native";
+import SocialSigninForm from "../Components/AuthForm/SocialSigninForm";
+import { DialogButton, DialogModal } from "../Components/FeedbackModal";
+import { diff } from "react-native-reanimated";
 const { RNTwitterSignIn } = NativeModules;
 
 GoogleSignin.configure({
@@ -43,6 +46,11 @@ export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
   const [emailSigninModalVisible, setEmailSigninModalVisible] = useState(false);
+  /**
+   * @type {[differentLoginForm:"Google"|"Twitter"|"",setDifferentLoginForm:(value:"Google"|"Twitter"|"")=>null]}
+   */
+  const [differentLoginForm, setDifferentLoginForm] = useState("");
+  const [pendingLogin, setPendingLogin] = useState(null);
 
   const navigation = useNavigation();
 
@@ -62,6 +70,18 @@ export default function LoginScreen() {
   const openEmailSigninModal = () => {
     setEmailSigninModalVisible(true);
   };
+
+  const processDifferentCredential = (email, pendingCred, provider) => {
+    setPendingLogin({ email: email, pendingCred: pendingCred })
+    switch (provider) {
+      case "google.com":
+        setDifferentLoginForm("Google");
+        break;
+      case "twitter.com":
+        setDifferentLoginForm("Twitter");
+        break;
+    }
+  }
 
   async function loginHandler() {
     setIsLoading(true);
@@ -159,59 +179,13 @@ export default function LoginScreen() {
       .then(({ id, loginState, imServerState }) => {
         // setIsLoading(false);
         navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+      }).catch(e => {
+        if (e.code == "auth/account-exists-with-different-credential") {
+          processDifferentCredential(e.email, e.credential, e.provider);
+        }
       })
       .finally(() => setIsLoading(false));
   }
-
-  /*
-  async function onTwitterButtonPress() {
-    setIsLoading(true);
-    try {
-      const { authToken, authTokenSecret } = await RNTwitterSignIn.logIn();
-      const twitterCredential = auth.TwitterAuthProvider.credential(
-        authToken,
-        authTokenSecret
-      );
-      await auth().signInWithCredential(twitterCredential);
-      const { loginState, id, imServerState } =
-        await LoginService.Inst.firebaseQuickLogin();
-      navigation.navigate("VerifyEmail", { id, loginState, imServerState });
-    } catch (e) {
-      console.log("error", e);
-      throw e;
-    } finally {
-      setIsLoading(false);
-    }
-  }
-  */
-
-  /*
-  async function onGoogleButtonPress() {
-    setIsLoading(true);
-    // Check if your device supports Google Play
-    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-    // Get the users ID token
-    try {
-      const { idToken } = await GoogleSignin.signIn();
-
-      // Create a Google credential with the token
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-      // Sign-in the user with the credential
-
-      await auth().signInWithCredential(googleCredential);
-      const { loginState, id, imServerState } =
-        await LoginService.Inst.firebaseQuickLogin();
-      console.log("loginState: ", loginState);
-      navigation.navigate("VerifyEmail", { id, loginState, imServerState });
-      // console.log("google result; ", result);
-    } catch (e) {
-      console.log("error", e);
-      throw e;
-    } finally {
-      setIsLoading(false);
-    }
-  }
-  */
 
   async function onGoogleButtonPress() {
     setIsLoading(true);
@@ -219,8 +193,75 @@ export default function LoginScreen() {
       .then(({ id, loginState, imServerState }) => {
         // setIsLoading(false);
         navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+      }).catch(e => {
+        if (e.code == "auth/account-exists-with-different-credential") {
+          processDifferentCredential(e.email, e.credential, e.provider);
+        }
       })
       .finally(() => setIsLoading(false));
+  }
+
+  const onButtonPressed = useCallback((btn) => {
+    if (btn.id == "cancel") {
+      setDifferentLoginForm("");
+      setPendingLogin({});
+    } else {
+      setIsLoading(true);
+      switch (differentLoginForm) {
+        case "Google":
+          Firebase.googleSignin()
+            .then(({ id, loginState, imServerState }) => {
+              //绑定账号
+              if (auth().currentUser.email == pendingLogin.email) {
+                auth().currentUser.linkWithCredential(pendingLogin.pendingCred)
+                  .then(r => {
+                    console.log("link with credential ", r);
+                  })
+                  .catch(e => {
+                    console.log("link with credential failed ", e)
+                  }).finally(
+                    () => {
+                      navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+                    }
+                  );
+              }
+            }).catch(e => {
+
+            }).finally(() => {
+              setIsLoading(false);
+            });
+          break;
+        case "Twitter":
+          break;
+      }
+    }
+  }, [differentLoginForm, pendingLogin])
+
+  let loginFormDom = <></>
+
+  switch (differentLoginForm) {
+    case "Google":
+      loginFormDom = <SocialSigninForm
+        email={pendingLogin.email}
+        platForm={"Google"}
+        signinHandler={() => Firebase.googleSignin()
+          .then(({ id, loginState, imServerState }) => {
+            navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+          })}
+      //closeModalHandler={closeModalHandler}
+      />
+      break;
+    case "Twitter":
+      <SocialSigninForm
+        email={pendingLogin.email}
+        platForm={"Twitter"}
+        signinHandler={() => Firebase.twitterSignin()
+          .then(({ id, loginState, imServerState }) => {
+            navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+          })}
+      //closeModalHandler={closeModalHandler}
+      />
+      break;
   }
 
   return (
@@ -281,6 +322,16 @@ export default function LoginScreen() {
       <ValidateEmailModal
         emailSigninModalVisible={emailSigninModalVisible}
         closeEmailSigninModal={closeEmailSigninModal}
+      />
+      <DialogModal
+        visible={differentLoginForm != ""}
+        title="You already have an account"
+        content={`You have already used ${pendingLogin?.email}. Sign in with ${differentLoginForm} to continue`}
+        buttons={[
+          DialogButton.New("cancel", "Cancel", "normal", false),
+          DialogButton.New(differentLoginForm, "Sign in with " + differentLoginForm, "primary", false)
+        ]}
+        onButtonPressed={btn => onButtonPressed(btn)}
       />
       <LoadingIndicator isLoading={isLoading} />
     </View>

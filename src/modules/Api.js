@@ -4,6 +4,7 @@ import Constants from "./Constants";
 
 const API = {
   account: Constants.Address.AccountServer + "account/",
+  twitter: Constants.Address.AccountServer + "oauth/twitter/",
 
   registerRequest: () => API.account + "registerRequest",
   verifyCode: () => API.account + "verifyCode",
@@ -14,6 +15,8 @@ const API = {
   sendCodeRequest: () => API.account + "requestSendCode",
   verifyCodeByToken: () => API.account + "verifyCodeByToken",
   updateReferrer: () => API.account + "updateReferrer",
+  
+  twitterGetToken: () => API.twitter +"get_token_sec"
 };
 
 export default API;

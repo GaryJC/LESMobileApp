@@ -84,10 +84,12 @@ const HighlightButton = ({
           </View>
         )}
 
-        <Text className={fgClassName} style={{ color: _clr.fg }}>
-          {text}
-        </Text>
-
+        {
+          typeof (text) == 'string' ?
+            <Text className={fgClassName} style={{ color: _clr.fg }}>
+              {text}
+            </Text> : text
+        }
       </View>
     </TouchableHighlight>
   );

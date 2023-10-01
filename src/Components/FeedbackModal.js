@@ -94,6 +94,7 @@ const DialogModal = ({ visible, onButtonPressed, title, content, buttons }) => {
 
   const btnDoms = btns.map(btn => {
     return <HighlightButton
+      key={btn.id}
       type={btn.type}
       text={btn.text}
       isLoading={btn.isLoading}

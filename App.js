@@ -6,8 +6,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "expo-status-bar";
 import { LesConstants } from "les-im-components";
-import { useEffect, useState, useRef } from "react";
-import { Dimensions, Image } from "react-native";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { Dimensions, Image, Linking } from "react-native";
 import ChatScreen from "./src/Screens/ChatScreen";
 import CreateNameScreen from "./src/Screens/CreateNameScreen";
 import FriendsScreen from "./src/Screens/FriendsScreen";
@@ -298,13 +298,13 @@ export default function App() {
 
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return ()=>{
+    return () => {
       //保存页面会刷新app，此处重置event，否则会出现重复监听问题
       JSEvent.reset();
       ServiceCenter.Inst.onAppDestroyed();
       // unsubscribe on unmount
       subscriber();
-    }; 
+    };
   }, []);
 
   function setLoading(state) {
@@ -525,7 +525,7 @@ export default function App() {
             <Stack.Screen
               name="GroupInvite"
               component={GroupInviteScreen}
-              // options={{ headerTitle: "Group Information" }}
+            // options={{ headerTitle: "Group Information" }}
             />
           </Stack.Navigator>
         </NavigationContainer>

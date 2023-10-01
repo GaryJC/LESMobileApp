@@ -126,11 +126,8 @@ class DataSavingService {
     DataCenter.userInfo.loginKey = key;
     DataCenter.userInfo.email = email;
     this.setImUserInfo({ id, name: imUserInfo.name, tag: imUserInfo.tag, state: imUserInfo.state, onlineState: LesConstants.IMUserOnlineState.Online });
-    DataCenter.userInfo.userProfile = userProfile;
+    DataCenter.userInfo.userProfile.update(userProfile);
   }
-
-
-
 
   /**
    * @param {{id: number | null, name: string | null, tag: number | null, state: IMUserState | null,  onlineState: IMUserOnlineState | null  } } userInfo 
