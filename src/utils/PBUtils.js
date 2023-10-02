@@ -1,6 +1,7 @@
 import ChatGroup from "../Models/ChatGroup";
 import MessageData from "../Models/MessageData";
 import { CommunityData, QuestData, QuestEntryData, QuestEntryParamData, QuestUserData, QuestUserEntryProgress, QuestUserProgress } from "../Models/Quest";
+import { SocialMediaBindInfo } from "../Models/UserProfile";
 import Constants from "../modules/Constants";
 
 const PBUtils = {
@@ -148,13 +149,25 @@ const PBUtils = {
         return c;
     },
 
-    pbQuestUserDataToData(pb){
+    pbQuestUserDataToData(pb) {
         const u = new QuestUserData();
         u.userId = pb.getUserid();
         u.rewardPoints = pb.getRewardpoints();
         u.participateQuests = pb.getParticipatequestsList();
         u.endedQuests = pb.getEndedquestsList();
         return u;
+    },
+
+    pbBindInfoToData(pb) {
+        const b = new SocialMediaBindInfo();
+        b.accountId = pb.getAccountid();
+        b.mediaType = pb.getMediatype();
+        b.socialId = pb.getSocialid();
+        b.socialName = pb.getSocialname();
+        b.timestamp = pb.getTimestamp();
+        b.reconnectCd = pb.getReconnectcd();
+        b.connect = pb.getConnect();
+        return b;
     }
 }
 

@@ -285,7 +285,7 @@ export default class LoginService {
 
           //保存当前用户数据
           DataSavingService.Inst.saveLoginDataToDataCenter(
-            id,
+          id,
             token,
             "",
             imUserInfo,

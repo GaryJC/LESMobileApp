@@ -7,8 +7,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "expo-status-bar";
 import { LesConstants } from "les-im-components";
-import { useEffect, useState, useRef } from "react";
-import { Dimensions, Image } from "react-native";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { Dimensions, Image, Linking } from "react-native";
 import ChatScreen from "./src/Screens/ChatScreen";
 import CreateNameScreen from "./src/Screens/CreateNameScreen";
 import FriendsScreen from "./src/Screens/FriendsScreen";
@@ -561,7 +561,7 @@ export default function App() {
             <Stack.Screen
               name="GroupInvite"
               component={GroupInviteScreen}
-              // options={{ headerTitle: "Group Information" }}
+            // options={{ headerTitle: "Group Information" }}
             />
           </Stack.Navigator>
         </NavigationContainer>

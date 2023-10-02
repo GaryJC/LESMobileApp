@@ -35,7 +35,7 @@ class QuestService {
      */
     getUserQuestProgress(questId) {
         return new Promise((resolve, reject) => {
-            LesPlatformCenter.IMFunctions.getUserQuestProgress(questId).then(pb => {
+            LesPlatformCenter.QuestFunctions.getUserQuestProgress(questId).then(pb => {
                 const p = PBUtils.pbQuestProgressToData(pb);
                 resolve(p);
             }).catch(e => {
@@ -54,7 +54,7 @@ class QuestService {
             if (this.#questMap[questId] != null) {
                 resolve(this.#questMap[questId]);
             } else {
-                LesPlatformCenter.IMFunctions.getQuestInfo(questId).then(questPb => {
+                LesPlatformCenter.QuestFunctions.getQuestInfo(questId).then(questPb => {
                     const quest = PBUtils.pbQuestDataToQuestData(questPb);
                     this.#questMap[quest.questId] = quest;
                     resolve(quest);
@@ -70,7 +70,7 @@ class QuestService {
             if (this.#communityMap[communityId] != null) {
                 resolve(this.#communityMap[communityId]);
             } else {
-                LesPlatformCenter.IMFunctions.getCommunityInfo(communityId).then(comPb => {
+                LesPlatformCenter.QuestFunctions.getCommunityInfo(communityId).then(comPb => {
                     const community = PBUtils.pbCommunityDataToData(comPb);
                     this.#communityMap[community.id] = community;
                     resolve(community);
@@ -83,7 +83,7 @@ class QuestService {
 
     getQuestUserInfo() {
         return new Promise((resolve, reject) => {
-            LesPlatformCenter.IMFunctions.getQuestUserData().then(pb => {
+            LesPlatformCenter.QuestFunctions.getQuestUserData().then(pb => {
                 const user = PBUtils.pbQuestUserDataToData(pb);
                 resolve(user);
             }).catch(e => {
@@ -99,7 +99,7 @@ class QuestService {
      */
     claimReward(questId) {
         return new Promise((resolve, reject) => {
-            LesPlatformCenter.IMFunctions.clamiQuestReward(questId).then(r => {
+            LesPlatformCenter.QuestFunctions.clamiQuestReward(questId).then(r => {
                 const rewards = r.rewardPoints;
                 const questReward = new QuestRewardData();
                 questReward.questId = questId;
@@ -112,6 +112,20 @@ class QuestService {
                 })
 
                 resolve(questReward);
+            }).catch(e => { reject(e) })
+        })
+    }
+
+    /**
+     * 
+     * @param {number} questId 
+     * @param {number} entryId 
+     * @returns {Promise<{questId:number, entryId:number, verified:boolean}>}
+     */
+    verifyQuestEntry(questId, entryId) {
+        return new Promise((resolve, reject) => {
+            LesPlatformCenter.QuestFunctions.verifyQuestEntry(questId, entryId).then(r => {
+                resolve(r);
             }).catch(e => { reject(e) })
         })
     }
