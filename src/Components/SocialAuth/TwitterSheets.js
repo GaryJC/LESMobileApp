@@ -255,20 +255,20 @@ const TwitterFollowVerifySheet = React.forwardRef((props, ref) => {
         }
     });
 
-    const onOpen = () => {
-        if (visible) {
+    const onIndexChanged = (index) => {
+        if (index == 0) {
             QuestService.Inst.verifyQuestEntry(params.questId, params.entryId)
                 .then(r => {
-                    setTimeout(() => {
-                        setVisible(false);
-                        params.onVerified(r);
-                    }, 2000)
+                    // setTimeout(() => {
+                    setVisible(false);
+                    params.onVerified(r);
+                    // }, 2000)
                 })
         }
     }
 
     return <CommonBottomSheetModal
-        onOpen={onOpen}
+        onIndexChanged={onIndexChanged}
         closable={false}
         visible={visible}
         snapPoints={["30%"]}
@@ -304,7 +304,7 @@ const TwitterConnector = React.forwardRef((props, ref) => {
              */
             doConnect: (onResult) => {
                 SocialMediaService.Inst.TwitterAuthMode = "oauth2";
-                var bindInfo = SocialMediaService.Inst.getSocialMediaBindInfo(SocialType.Twitter);
+                var bindInfo = SocialMediaService.Inst.getSocialMediaBindInfo(SocialType.Twitter_OAuth2);
                 if (bindInfo == null || !bindInfo.connect) {
                     setOnResult({ callback: onResult });
                     setShow(true);

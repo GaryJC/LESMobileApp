@@ -108,15 +108,6 @@ const QuestScreen = ({ }) => {
                 })
                 break;
             case QuestBtnId.TwitterVerify:
-                // QuestService.Inst.verifyQuestEntry(quest.questId, entry.entryId)
-                //     .then(r => {
-                //         if (r.verified) {
-                //             const p = questProgress[0].getEntryProgress(r.entryId);
-                //             p.completed = true;
-                //             setQuestProgress([...questProgress]);
-                //         }
-                //     })
-
                 twitterVerifier?.current.verify(quest.questId, entry.entryId, r => {
                     if (r.verified) {
                         const p = questProgress[0].getEntryProgress(r.entryId);
@@ -313,6 +304,7 @@ const EntryProgress = ({ entry, entryProgress }) => {
  */
 const EntryButtons = ({ entry, entryProgress, onEntryBtnPressed }) => {
     let dom = null;
+    const [verifyCooldown, setVerifyCooldown] = useState(0);
 
     if (entryProgress?.completed) {
         dom = <View></View>
@@ -338,8 +330,9 @@ const EntryButtons = ({ entry, entryProgress, onEntryBtnPressed }) => {
                             onEntryBtnPressed(QuestBtnId.TwitterFollow, entry)
                         }
                     }}></HighlightButton>
-                    <HighlightButton type="emphasize" text="Verify" onPress={() => {
+                    <HighlightButton type="emphasize" text="Verify" cooldown={verifyCooldown} onPress={() => {
                         if (onEntryBtnPressed) {
+                            setVerifyCooldown(60);
                             onEntryBtnPressed(QuestBtnId.TwitterVerify, entry)
                         }
                     }}></HighlightButton>

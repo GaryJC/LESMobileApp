@@ -237,33 +237,6 @@ export default function LoginScreen() {
     }
   }, [differentLoginForm, pendingLogin])
 
-  let loginFormDom = <></>
-
-  switch (differentLoginForm) {
-    case "Google":
-      loginFormDom = <SocialSigninForm
-        email={pendingLogin.email}
-        platForm={"Google"}
-        signinHandler={() => Firebase.googleSignin()
-          .then(({ id, loginState, imServerState }) => {
-            navigation.navigate("VerifyEmail", { id, loginState, imServerState });
-          })}
-      //closeModalHandler={closeModalHandler}
-      />
-      break;
-    case "Twitter":
-      <SocialSigninForm
-        email={pendingLogin.email}
-        platForm={"Twitter"}
-        signinHandler={() => Firebase.twitterSignin()
-          .then(({ id, loginState, imServerState }) => {
-            navigation.navigate("VerifyEmail", { id, loginState, imServerState });
-          })}
-      //closeModalHandler={closeModalHandler}
-      />
-      break;
-  }
-
   return (
     <View className="flex-1 justify-center w-[70vw] mx-auto">
       {/* {error && (

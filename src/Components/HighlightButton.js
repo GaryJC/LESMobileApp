@@ -1,6 +1,5 @@
-import { View, Text, TouchableHighlight, Image } from "react-native";
-import { ActivityIndicator } from "react-native";
-import { Ionicons } from '@expo/vector-icons';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ActivityIndicator, Animated, Text, TouchableHighlight, View } from "react-native";
 
 const colorTable = {
   normal: {
@@ -37,8 +36,9 @@ const colorTable = {
   },
 };
 
+const CD_INTERVAL = 50;
 /**
- * @param {{type:'normal'|'primary'|'danger'|'emphasize'|'dark'|'light'|'opacity'|null, isLoading:boolean|null, disabled:boolean|null, text:string, onPress:()=>void}} params
+ * @param {{type:'normal'|'primary'|'danger'|'emphasize'|'dark'|'light'|'opacity'|null, isLoading:boolean|null, disabled:boolean|null, text:string,cooldown:number, onPress:()=>void}} params
  */
 const HighlightButton = ({
   icon,
@@ -46,8 +46,40 @@ const HighlightButton = ({
   text,
   isLoading,
   disabled,
+  cooldown,
   onPress,
 }) => {
+  const [cdTotal, setCdTotal] = useState(0);
+  const [cdCurr, setCdCurr] = useState(0);
+
+  const loadAnmi = useRef(new Animated.Value(0)).current;
+  loadAnmi.addListener(v => {
+    const curr = v.value.toFixed(4);
+    setCdCurr(curr)
+  })
+
+  const isDisabled = useCallback(() => {
+    return disabled || (cdTotal > 0 && cdCurr < cdTotal)
+  }, [disabled, isLoading, cdCurr, cdTotal])
+
+  useEffect(() => {
+    setCdTotal(cooldown);
+    if (cooldown > 0) {
+      Animated.timing(loadAnmi, {
+        toValue: cooldown,
+        duration: cooldown * 1000,
+        useNativeDriver: false,
+        easing: v => v,
+      }).start();
+    }
+  }, [cooldown])
+
+  useEffect(() => {
+    if (cdTotal > 0 && cdCurr >= cdTotal) {
+      setCdTotal(0);
+    }
+  }, [cdTotal, cdCurr])
+
   let clr = colorTable[type];
   if (type == null) {
     clr = colorTable["normal"];
@@ -59,37 +91,49 @@ const HighlightButton = ({
     }
   };
 
-  const _clr = disabled ? colorTable.disabled : clr;
-  const bgClassName = `px-[10px] py-[5px] items-center rounded flex flex-row  ${isLoading ? "opacity-50" : ""
+  const _clr = isDisabled() ? colorTable.disabled : clr;
+  const bgClassName = `px-[10px] py-[5px] items-center rounded flex flex-col  ${isLoading ? "opacity-50" : ""
     }`;
   const fgClassName = "text-center";
 
+  let cooldownDom = null;
+
+  if (cdTotal > 0 && cdCurr < cdTotal) {
+    const width = (cdCurr / cdTotal * 100) + "%";
+    cooldownDom = <View className="h-[3px] w-full mt-[1px]" style={{ backgroundColor: _clr.fg }}>
+      <View className="h-[3px]" style={{ width: width, backgroundColor: _clr.bg }}></View>
+    </View>
+  }
+
   return (
     <TouchableHighlight
-      disabled={isLoading}
-      onPress={disabled ? null : onPressHandler}
+      disabled={isLoading || isDisabled()}
+      onPress={isDisabled() ? null : onPressHandler}
       className="mx-[5px] rounded"
     >
       <View className={bgClassName} style={{ backgroundColor: _clr.bg }}>
-        {isLoading ? (
-          <ActivityIndicator size="small" color="white" className="mr-2" />
-        ) : (
-          <></>
-        )}
-        {icon == null ? (
-          <></>
-        ) : (
-          <View className="mr-2">
-            {icon}
-          </View>
-        )}
+        <View className="flex flex-row">
+          {isLoading ? (
+            <ActivityIndicator size="small" color="white" className="mr-2" />
+          ) : (
+            <></>
+          )}
+          {icon == null ? (
+            <></>
+          ) : (
+            <View className="mr-2">
+              {icon}
+            </View>
+          )}
 
-        {
-          typeof (text) == 'string' ?
-            <Text className={fgClassName} style={{ color: _clr.fg }}>
-              {text}
-            </Text> : text
-        }
+          {
+            typeof (text) == 'string' ?
+              <Text className={fgClassName} style={{ color: _clr.fg }}>
+                {text}
+              </Text> : text
+          }
+        </View>
+        {cooldownDom}
       </View>
     </TouchableHighlight>
   );
