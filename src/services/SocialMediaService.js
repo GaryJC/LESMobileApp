@@ -65,7 +65,7 @@ export default class SocialMediaService {
      * @returns {Promise<{socialType:SocialType, oauthToken:string}>}
      */
     requestTwitterOauthToken() {
-        const mediaType = this.#twitterAuthMode == "oauth1" ? SocialType.Twitter : SocialType.Twitter_Oauth2;
+        const mediaType = this.#twitterAuthMode == "oauth1" ? SocialType.Twitter : SocialType.Twitter_OAuth2;
         return LesPlatformCenter.SocialMediaFunctions.requestOauthToken(mediaType);
     }
 
@@ -76,7 +76,7 @@ export default class SocialMediaService {
      * @returns {Promise<{retCode:number, socialType:SocialType, socialId:string, socialName:string}>}
      */
     requestTwitterConnect(oauthToken, tokenVerifier) {
-        const mediaType = this.#twitterAuthMode == "oauth1" ? SocialType.Twitter : SocialType.Twitter_Oauth2;
+        const mediaType = this.#twitterAuthMode == "oauth1" ? SocialType.Twitter : SocialType.Twitter_OAuth2;
 
         return LesPlatformCenter.SocialMediaFunctions
             .connectSocialMedia(mediaType, oauthToken, tokenVerifier)
