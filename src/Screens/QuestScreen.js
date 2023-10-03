@@ -384,9 +384,9 @@ const EntryButtons = ({ entry, entryProgress, onEntryBtnPressed }) => {
   let dom = null;
   const [verifyCooldown, setVerifyCooldown] = useState(0);
 
-  if (entryProgress?.completed) {
-    dom = <View></View>;
-  } else
+    if (entryProgress?.completed) {
+        dom = <View></View>
+    } else
     switch (entry.templateId) {
       case EntryTemplateType.NexGamiReferNewUsers:
         const referralCode = DataCenter.userInfo.userProfile.referralCode;
