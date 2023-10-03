@@ -33,12 +33,12 @@ import { LesConstants } from "les-im-components";
 import Clipboard from "@react-native-clipboard/clipboard";
 
 const QuestBtnId = {
-  TwitterFollow: "twitter_follow",
-  TwitterVerify: "twitter_verify",
-  Tweet: "tweet",
-  Retweet: "retweet",
-  CopyReferralCode: "copy_referral_code",
-};
+    TwitterFollow: "twitter_follow",
+    TwitterFollowVerify: "twitter_follow_verify",
+    TwitterQuote: "twitter_quote",
+    TwitterRetweet: "twitter_retweet",
+    CopyReferralCode: "copy_referral_code",
+}
 
 const QuestScreen = ({}) => {
   /**
@@ -115,29 +115,51 @@ const QuestScreen = ({}) => {
     (btnId, entry) => {
       console.log(btnId, entry);
 
-      switch (btnId) {
-        case QuestBtnId.TwitterFollow:
-          twitterConnector?.current.doConnect((r) => {
-            if (r.code == LesConstants.ErrorCodes.Success) {
-              const url = SocialMediaService.Inst.getTwitterFollowLink(
-                entry.getParam(0).paramValue
-              );
-              if (Linking.canOpenURL(url)) {
-                Linking.openURL(url);
-              } else {
-                setFollowName(entry.getParam(0).paramValue);
-              }
-            }
-          });
-          break;
-        case QuestBtnId.TwitterVerify:
-          twitterVerifier?.current.verify(quest.questId, entry.entryId, (r) => {
-            if (r.verified) {
-              const p = questProgress[0].getEntryProgress(r.entryId);
-              p.completed = true;
-              setQuestProgress([...questProgress]);
-            }
-          });
+        switch (btnId) {
+            case QuestBtnId.TwitterFollow:
+                twitterConnector?.current.doConnect((r) => {
+                    if (r.code == LesConstants.ErrorCodes.Success) {
+                        const url = SocialMediaService.Inst.getTwitterFollowLink(entry.getParam(0).paramValue);
+                        if (Linking.canOpenURL(url)) {
+                            Linking.openURL(url);
+                        } else {
+                            setFollowName(entry.getParam(0).paramValue)
+                        }
+                    }
+                })
+                break;
+            case QuestBtnId.TwitterRetweet:
+                twitterConnector?.current.doConnect((r) => {
+                    if (r.code == LesConstants.ErrorCodes.Success) {
+                        const url = SocialMediaService.Inst.getTwitterRetweetLink(entry.getParam(1).paramValue);
+                        if (Linking.canOpenURL(url)) {
+                            Linking.openURL(url);
+                        } else {
+                            setFollowName(entry.getParam(1).paramValue)
+                        }
+                    }
+                })
+                break;
+            case QuestBtnId.TwitterQuote:
+                twitterConnector?.current.doConnect((r) => {
+                    if (r.code == LesConstants.ErrorCodes.Success) {
+                        const url = SocialMediaService.Inst.getTwitterQuoteLink(entry.getParam(2).paramValue, entry.getParam(1).paramValue, entry.getParam(0).paramValue);
+                        if (Linking.canOpenURL(url)) {
+                            Linking.openURL(url);
+                        } else {
+                            setFollowName(entry.getParam(1).paramValue)
+                        }
+                    }
+                })
+                break;
+            case QuestBtnId.TwitterFollowVerify:
+                twitterVerifier?.current.verify(quest.questId, entry.entryId, r => {
+                    if (r.verified) {
+                        const p = questProgress[0].getEntryProgress(r.entryId);
+                        p.completed = true;
+                        setQuestProgress([...questProgress]);
+                    }
+                })
 
           break;
         case QuestBtnId.CopyReferralCode:

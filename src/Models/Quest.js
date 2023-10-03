@@ -13,7 +13,7 @@ const EntryTemplateType = {
     NexGamiSendMessage: 4,
     TwitterFollow: 5,
     TwitterRetweet: 6,
-    TwitterTweet: 7,
+    TwitterQuote: 7,
 
 }
 
@@ -194,29 +194,42 @@ class QuestEntryData {
      */
     getEntryTitleDom() {
         let t = this.title;
-        if (this.templateId == EntryTemplateType.TwitterFollow) {
-            return this.#getTwitterTitle();
+
+        switch (this.templateId) {
+            case EntryTemplateType.TwitterFollow:
+            case EntryTemplateType.TwitterRetweet:
+                return this.#getTwitterTitle();
+            case EntryTemplateType.TwitterQuote:
+                return this.#getQuoteTweetTitle();
         }
 
-        return <Text className="text-clr-light text-md">{t}</Text>;
+        return <Text className=" text-white text-[16px]">{t}</Text>;
     }
 
     #getTwitterTitle() {
+        return this.#replaceParamToAtName(0);
+    }
+
+    #getQuoteTweetTitle() {
+        return this.#replaceParamToAtName(1);
+    }
+
+
+    #replaceParamToAtName(paramIndex) {
         let t = this.title;
-        const idx = t.indexOf("%param0%");
+        const idx = t.indexOf(`%param${paramIndex}%`);
         if (idx == -1) {
-            return <Text className="text-clr-light text-md">{t}</Text>
+            return <Text className="text-clr-light text-[16px]">{t}</Text>
         }
         const ts = t.slice(0, idx);
         const te = t.slice(idx + 8, t.length);
 
         return <View className="flex flex-row">
-            <Text className="text-clr-light text-md">{ts}</Text>
-            <Text className="text-clr-link font-bold text-md">@{this.params[0].paramValue}</Text>
-            <Text className="text-clr-light text-md">{te}</Text>
+            <Text className="text-clr-light text-[16px]">{ts}</Text>
+            <Text className="text-clr-link font-bold text-[16px]">@{this.params[paramIndex].paramValue}</Text>
+            <Text className="text-clr-light text-[16px]">{te}</Text>
         </View>
     }
-
 }
 
 EntryParamType = {

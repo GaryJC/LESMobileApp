@@ -61,6 +61,16 @@ export default class SocialMediaService {
     return "https://twitter.com/intent/follow?screen_name=" + screenName;
   }
 
+    getTwitterRetweetLink(twitterId){
+        return "https://twitter.com/intent/retweet?tweet_id=" + twitterId;
+    }
+
+    getTwitterQuoteLink(twitterId, twitterPosterName, post) {
+        const p = `${post} https://twitter.com/${twitterPosterName}/status/${twitterId}`;
+        const text = encodeURI(p)
+        return "https://twitter.com/intent/tweet?text=" + text;
+    }
+
     /**
      * 
      * @returns {Promise<{socialType:SocialType, oauthToken:string}>}
