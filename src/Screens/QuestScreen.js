@@ -13,9 +13,9 @@ import { LesConstants } from 'les-im-components';
 
 const QuestBtnId = {
     TwitterFollow: "twitter_follow",
-    TwitterVerify: "twitter_verify",
-    Tweet: "tweet",
-    Retweet: "retweet",
+    TwitterFollowVerify: "twitter_follow_verify",
+    TwitterQuote: "twitter_quote",
+    TwitterRetweet: "twitter_retweet",
     CopyReferralCode: "copy_referral_code",
 }
 
@@ -107,7 +107,31 @@ const QuestScreen = ({ }) => {
                     }
                 })
                 break;
-            case QuestBtnId.TwitterVerify:
+            case QuestBtnId.TwitterRetweet:
+                twitterConnector?.current.doConnect((r) => {
+                    if (r.code == LesConstants.ErrorCodes.Success) {
+                        const url = SocialMediaService.Inst.getTwitterRetweetLink(entry.getParam(1).paramValue);
+                        if (Linking.canOpenURL(url)) {
+                            Linking.openURL(url);
+                        } else {
+                            setFollowName(entry.getParam(1).paramValue)
+                        }
+                    }
+                })
+                break;
+            case QuestBtnId.TwitterQuote:
+                twitterConnector?.current.doConnect((r) => {
+                    if (r.code == LesConstants.ErrorCodes.Success) {
+                        const url = SocialMediaService.Inst.getTwitterQuoteLink(entry.getParam(2).paramValue, entry.getParam(1).paramValue, entry.getParam(0).paramValue);
+                        if (Linking.canOpenURL(url)) {
+                            Linking.openURL(url);
+                        } else {
+                            setFollowName(entry.getParam(1).paramValue)
+                        }
+                    }
+                })
+                break;
+            case QuestBtnId.TwitterFollowVerify:
                 twitterVerifier?.current.verify(quest.questId, entry.entryId, r => {
                     if (r.verified) {
                         const p = questProgress[0].getEntryProgress(r.entryId);
@@ -249,7 +273,7 @@ const QuestEntryBar = ({ entry, entryProgress, onEntryBtnPressed }) => {
         + (entryProgress?.completed ? " border-green-300 " : "")
 
     return <View className={viewClass}>
-        <View className="flex flex-1 flex-row h-[24px]">
+        <View className="flex flex-row h-[24px]">
             <View className="flex-1">
                 {entry.getEntryTitleDom()}
             </View>
@@ -306,51 +330,61 @@ const EntryButtons = ({ entry, entryProgress, onEntryBtnPressed }) => {
     let dom = null;
     const [verifyCooldown, setVerifyCooldown] = useState(0);
 
-    if (entryProgress?.completed) {
-        dom = <View></View>
-    } else
-        switch (entry.templateId) {
-            case EntryTemplateType.NexGamiReferNewUsers:
-                const referralCode = DataCenter.userInfo.userProfile.referralCode;
-                dom = <HighlightButton type="light"
-                    text={referralCode} icon={<MaterialIcons name="file-copy" size={20} color="black" />}
-                    onPress={() => {
+    // if (entryProgress?.completed) {
+    //     dom = <View></View>
+    // } else
+    switch (entry.templateId) {
+        case EntryTemplateType.NexGamiReferNewUsers:
+            const referralCode = DataCenter.userInfo.userProfile.referralCode;
+            dom = <HighlightButton type="light"
+                text={referralCode} icon={<MaterialIcons name="file-copy" size={20} color="black" />}
+                onPress={() => {
+                    if (onEntryBtnPressed) {
+                        onEntryBtnPressed(QuestBtnId.CopyReferralCode, entry)
+                    }
+                }}
+            />
+            break;
+        case EntryTemplateType.TwitterFollow:
+            dom = <View className="flex flex-row">
+                <HighlightButton icon={
+                    <Image source={require("../../assets/img/twitter_icon.png")} className="w-[18px] h-[18px]" />
+                } type="light" text="Follow" onPress={() => {
+                    if (onEntryBtnPressed) {
+                        onEntryBtnPressed(QuestBtnId.TwitterFollow, entry)
+                    }
+                }}></HighlightButton>
+                <HighlightButton type="emphasize" text="Verify" cooldown={verifyCooldown} onPress={() => {
+                    if (onEntryBtnPressed) {
+                        setVerifyCooldown(60);
+                        onEntryBtnPressed(QuestBtnId.TwitterFollowVerify, entry)
+                    }
+                }}></HighlightButton>
+            </View>
+            break;
+        case EntryTemplateType.TwitterQuote:
+            dom = <View className="flex flex-row">
+                <HighlightButton icon={<Image source={require("../../assets/img/twitter_icon.png")} className="w-[18px] h-[18px]" />}
+                    type="light" text="Quote" onPress={() => {
                         if (onEntryBtnPressed) {
-                            onEntryBtnPressed(QuestBtnId.CopyReferralCode, entry)
-                        }
-                    }}
-                />
-                break;
-            case EntryTemplateType.TwitterFollow:
-                dom = <View className="flex flex-row">
-                    <HighlightButton icon={
-                        <Image source={require("../../assets/img/twitter_icon.png")} className="w-[18px] h-[18px]" />
-                    } type="light" text="Follow" onPress={() => {
-                        if (onEntryBtnPressed) {
-                            onEntryBtnPressed(QuestBtnId.TwitterFollow, entry)
+                            onEntryBtnPressed(QuestBtnId.TwitterQuote, entry)
                         }
                     }}></HighlightButton>
-                    <HighlightButton type="emphasize" text="Verify" cooldown={verifyCooldown} onPress={() => {
+                <HighlightButton type="emphasize" text="Verify"></HighlightButton>
+            </View>
+            break;
+        case EntryTemplateType.TwitterRetweet:
+            dom = <View className="flex flex-row">
+                <HighlightButton icon={<Image source={require("../../assets/img/twitter_icon.png")} className="w-[18px] h-[18px]" />}
+                    type="light" text="Retweet" onPress={() => {
                         if (onEntryBtnPressed) {
-                            setVerifyCooldown(60);
-                            onEntryBtnPressed(QuestBtnId.TwitterVerify, entry)
+                            onEntryBtnPressed(QuestBtnId.TwitterRetweet, entry)
                         }
                     }}></HighlightButton>
-                </View>
-                break;
-            case EntryTemplateType.TwitterTweet:
-                dom = <View className="flex flex-row">
-                    <HighlightButton icon={require("../../assets/img/twitter_icon.png")} type="light" text="Tweet"></HighlightButton>
-                    <HighlightButton type="emphasize" text="Verify"></HighlightButton>
-                </View>
-                break;
-            case EntryTemplateType.TwitterRetweet:
-                dom = <View className="flex flex-row">
-                    <HighlightButton icon={require("../../assets/img/twitter_icon.png")} type="light" text="Retweet"></HighlightButton>
-                    <HighlightButton type="emphasize" text="Verify"></HighlightButton>
-                </View>
-                break;
-        }
+                <HighlightButton type="emphasize" text="Verify"></HighlightButton>
+            </View>
+            break;
+    }
 
     return dom;
 }

@@ -130,7 +130,8 @@ const HighlightButton = ({
             typeof (text) == 'string' ?
               <Text className={fgClassName} style={{ color: _clr.fg }}>
                 {text}
-              </Text> : text
+              </Text> 
+              : text
           }
         </View>
         {cooldownDom}
