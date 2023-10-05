@@ -16,7 +16,7 @@ const Address_Production = {
   WalletAddress: "http://wallet.metavirus.games",
 };
 
-const AddressOverride = Address_Local;
+const AddressOverride = null;
 
 const Constants = {
   deliveryState: {
