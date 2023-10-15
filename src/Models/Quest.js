@@ -15,6 +15,8 @@ const EntryTemplateType = {
     TwitterRetweet: 6,
     TwitterQuote: 7,
 
+    DiscordJoin: 31,
+
 }
 
 class CommunityData {
@@ -201,21 +203,27 @@ class QuestEntryData {
                 return this.#getTwitterTitle();
             case EntryTemplateType.TwitterQuote:
                 return this.#getQuoteTweetTitle();
+            case EntryTemplateType.DiscordJoin:
+                return this.#getDiscordTitle();
         }
 
         return <Text className=" text-white text-[16px]">{t}</Text>;
     }
 
+    #getDiscordTitle() {
+        return this.#replaceParamToName(1);
+    }
+
     #getTwitterTitle() {
-        return this.#replaceParamToAtName(0);
+        return this.#replaceParamToName(0, "@");
     }
 
     #getQuoteTweetTitle() {
-        return this.#replaceParamToAtName(1);
+        return this.#replaceParamToName(1, "@");
     }
 
 
-    #replaceParamToAtName(paramIndex) {
+    #replaceParamToName(paramIndex, prefix = "") {
         let t = this.title;
         const idx = t.indexOf(`%param${paramIndex}%`);
         if (idx == -1) {
@@ -226,7 +234,7 @@ class QuestEntryData {
 
         return <View className="flex flex-row">
             <Text className="text-clr-light text-[16px]">{ts}</Text>
-            <Text className="text-clr-link font-bold text-[16px]">@{this.params[paramIndex].paramValue}</Text>
+            <Text className="text-clr-link font-bold text-[16px]">{prefix}{this.params[paramIndex].paramValue}</Text>
             <Text className="text-clr-light text-[16px]">{te}</Text>
         </View>
     }

@@ -1,81 +1,17 @@
-import { BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet"
+import { LesConstants } from "les-im-components";
 import React, { useCallback, useEffect, useImperativeHandle, useRef, useState } from "react"
-import WebView from "react-native-webview"
+import SocialMediaService from "../../services/SocialMediaService"
 import CommonBottomSheetModal from "../CommonBottomSheetModal"
+import WebView from "react-native-webview"
 import HighlightButton from "../HighlightButton"
 import { Image, Text, View, ActivityIndicator } from "react-native"
-import { LesConstants, LesPlatformCenter } from "les-im-components"
-import PBUtils from "../../utils/PBUtils"
-import DataCenter from "../../modules/DataCenter"
 import { FontAwesome } from "@expo/vector-icons";
-import { SocialMediaBindInfo } from "../../Models/UserProfile"
-import SocialMediaService from "../../services/SocialMediaService"
-import QuestService from "../../services/QuestService"
+import PBUtils from "../../utils/PBUtils";
+import DataCenter from "../../modules/DataCenter";
 
 const { ErrorCodes, SocialType } = LesConstants;
 
-const TwitterBindingSheet = ({ show, onClosed }) => {
-    const [visible, setVisible] = useState(show);
-
-    useEffect(() => {
-        setVisible(show);
-    }, [show])
-    return <CommonBottomSheetModal
-        closable={false}
-        visible={visible}
-        onClosed={onClosed}
-        snapPoints={["30%"]}
-        index={0}
-    >
-        <View className="flex-1 flex m-5 items-center">
-            <Text className="text-white text-xl font-bold pb-2">
-                Binding
-            </Text>
-            <Text className="text-white pb-3 text-xs">
-                The account is connecting, please wait amoment...
-            </Text>
-            <ActivityIndicator size="large" color="white" className="mr-2" />
-        </View>
-    </CommonBottomSheetModal>
-}
-
-/**
- * 
- * @param {{show:boolean, token:string, onClosed:()=>void, onRecvAuthData:(oauthToken:string, tokenVerifier:string)=>void}} param0 
- * @returns 
- */
-const TwitterAuthSheet = ({ show, token, onClosed, onRecvAuthData }) => {
-    const [visible, setVisible] = useState(show);
-
-    useEffect(() => {
-        setVisible(show);
-    }, [show])
-
-    return <CommonBottomSheetModal
-        visible={visible}
-        onClosed={onClosed}
-        snapPoints={["90%"]}
-        index={0}
-    >
-        <WebView
-            source={{ uri: SocialMediaService.Inst.getTwitterAuthLink(token) }}
-            style={{ flex: 1 }}
-            javaScriptEnabled={true}
-            onMessage={data => {
-                const msg = JSON.parse(data.nativeEvent.data);
-                console.log("receive message:", msg);
-                if (msg.command == "twitter_auth") {
-                    setVisible(false);
-                    if (onRecvAuthData != null) {
-                        onRecvAuthData(msg.oauth_token, msg.oauth_verifier);
-                    }
-                }
-            }}
-        />
-    </CommonBottomSheetModal>
-}
-
-const TwitterPreConnectSheet = ({ show, onClosed, onTokenGot }) => {
+const DiscordPreConnectSheet = ({ show, onClosed, onTokenGot }) => {
     const [visible, setVisible] = useState(show);
     const [loading, setLoading] = useState(false);
 
@@ -85,7 +21,7 @@ const TwitterPreConnectSheet = ({ show, onClosed, onTokenGot }) => {
 
     const getToken = () => {
         setLoading(true);
-        SocialMediaService.Inst.requestTwitterOauthToken()
+        SocialMediaService.Inst.requestDiscordOauthToken()
             .then(token => {
                 setLoading(false);
                 if (onTokenGot != null) {
@@ -120,27 +56,64 @@ const TwitterPreConnectSheet = ({ show, onClosed, onTokenGot }) => {
     >
         <View className="flex-1 flex m-5 items-center">
             <Text className="text-white text-xl font-bold pb-2">
-                Connect your Twitter account
+                Connect your Discord account
             </Text>
             <Text className="text-white pb-3 text-xs">
-                Twitter account is not connected. Please connect your Twitter account.
+                Discord account is not connected. Please connect your Discord account.
             </Text>
             <View className="">
                 <HighlightButton
                     onPress={getToken}
                     isLoading={loading}
                     icon={
-                        <Image source={require("../../../assets/img/twitter_icon.png")} className="w-[30px] h-[30px]" />
+                        <Image source={require("../../../assets/img/discord_icon.png")} className="w-[30px] h-[30px]" />
                     }
                     type="light"
-                    text={<Text className="text-xl font-bold">Connect Twitter</Text>}
+                    text={<Text className="text-xl font-bold">Connect Discord</Text>}
                 />
             </View>
         </View>
     </CommonBottomSheetModal>
 }
 
-const TwitterConnectSheet = ({ show, onClosed, onBindResult, oauthToken, tokenVerifier }) => {
+/**
+ * 
+ * @param {{show:boolean, token:string, onClosed:()=>void, onRecvAuthData:(oauthToken:string, tokenVerifier:string)=>void}} param0 
+ * @returns 
+ */
+const DiscordAuthSheet = ({ show, token, onClosed, onRecvAuthData }) => {
+    const [visible, setVisible] = useState(show);
+
+    useEffect(() => {
+        setVisible(show);
+    }, [show])
+
+    return <CommonBottomSheetModal
+        visible={visible}
+        onClosed={onClosed}
+        snapPoints={["90%"]}
+        index={0}
+    >
+        <WebView
+            source={{ uri: token }}
+            style={{ flex: 1 }}
+            javaScriptEnabled={true}
+            onMessage={data => {
+                const msg = JSON.parse(data.nativeEvent.data);
+                console.log("receive message:", msg);
+                if (msg.command == "twitter_auth") {
+                    setVisible(false);
+                    if (onRecvAuthData != null) {
+                        onRecvAuthData(msg.oauth_token, msg.oauth_verifier);
+                    }
+                }
+            }}
+        />
+    </CommonBottomSheetModal>
+}
+
+
+const DiscordConnectSheet = ({ show, onClosed, onBindResult, oauthToken, tokenVerifier }) => {
     const [visible, setVisible] = useState(show);
     const [loading, setLoading] = useState(false);
     const [bindInfo, setBindInfo] = useState(null);
@@ -156,7 +129,7 @@ const TwitterConnectSheet = ({ show, onClosed, onBindResult, oauthToken, tokenVe
 
     const onOpen = () => {
         setLoading(true);
-        SocialMediaService.Inst.requestTwitterConnect(oauthToken, tokenVerifier)
+        SocialMediaService.Inst.requestDiscordConnect(oauthToken, tokenVerifier)
             .then(r => {
                 setLoading(false);
                 const bindInfo = PBUtils.pbBindInfoToData(r);
@@ -176,11 +149,13 @@ const TwitterConnectSheet = ({ show, onClosed, onBindResult, oauthToken, tokenVe
         if (onBindResult != null) onBindResult({ code: errorCode, bindInfo });
         if (onClosed != null) onClosed();
         setLoading(false);
+        setErrorCode(0);
     }
 
     let body = <ActivityIndicator size="large" color="white" className="mr-2" />;
     let info = "The account is connecting, please wait amoment...";
     let title = "Connecting"
+
 
     if (!loading) {
         if (errorCode == ErrorCodes.Success) {
@@ -189,13 +164,13 @@ const TwitterConnectSheet = ({ show, onClosed, onBindResult, oauthToken, tokenVe
             body = <View className="flex justify-center items-center">
                 <FontAwesome name="check-circle" size={40} color="green" />
                 <View className="flex flex-row py-2 items-center">
-                    <Image source={require("../../../assets/img/twitter_icon.png")} className="w-[24px] h-[24px] mr-2" />
-                    <Text className="text-white font-bold">@{bindInfo?.socialName}</Text>
+                    <Image source={require("../../../assets/img/discord_icon.png")} className="w-[24px] h-[24px] mr-2" />
+                    <Text className="text-white font-bold">{bindInfo?.socialName}</Text>
                 </View>
                 <HighlightButton text=" Ok " type="primary" onPress={() => setVisible(false)} />
             </View>
         } else {
-            info = "Connect to Twitter failed, please try again later.";
+            info = "Connect to Discord failed, please try again later.";
             title = "Connect Failed"
             body = <HighlightButton text="Close" type="primary" onPress={() => {
                 setVisible(false);
@@ -226,79 +201,10 @@ const TwitterConnectSheet = ({ show, onClosed, onBindResult, oauthToken, tokenVe
 
 }
 
-const TwitterFollowSheet = ({ show, onClosed, followName, onRecvAuthData }) => {
-    const [visible, setVisible] = useState(show);
-
-    useEffect(() => {
-        setVisible(show);
-    }, [show])
-
-    return <CommonBottomSheetModal
-        visible={visible}
-        onClosed={onClosed}
-        snapPoints={["90%"]}
-        index={0}
-    >
-        <WebView
-            source={{ uri: SocialMediaService.Inst.getTwitterFollowLink(followName) }}
-            style={{ flex: 1 }}
-            javaScriptEnabled={true}
-        />
-    </CommonBottomSheetModal>
-}
-
-//({ show, onClosed, questId, entryId, onVerified }) => {
-
-const TwitterFollowVerifySheet = React.forwardRef((props, ref) => {
-    const [visible, setVisible] = useState(false);
-    const [params, setParams] = useState(null);
-
-    useImperativeHandle(ref, () => {
-        return {
-            verify: (questId, entryId, onVerified) => {
-                setParams({ questId, entryId, onVerified })
-                setVisible(true);
-            }
-        }
-    });
-
-    const onIndexChanged = (index) => {
-        if (index == 0) {
-            QuestService.Inst.verifyQuestEntry(params.questId, params.entryId)
-                .then(r => {
-                    // setTimeout(() => {
-                    setVisible(false);
-                    params.onVerified(r);
-                    // }, 2000)
-                }).catch(e => {
-                    setVisible(false);
-                });
-        }
-    }
-
-    return <CommonBottomSheetModal
-        onIndexChanged={onIndexChanged}
-        closable={false}
-        visible={visible}
-        snapPoints={["30%"]}
-        index={0}
-    >
-        <View className="flex-1 flex m-5 items-center">
-            <Text className="text-white text-xl font-bold pb-2">
-                Verifying
-            </Text>
-            <Text className="text-white pb-3 text-xs">
-                Please wait amoment...
-            </Text>
-            <ActivityIndicator size="large" color="white" className="mr-2" />
-        </View>
-    </CommonBottomSheetModal>
-})
-
 /**
- * 连接twitter账号
+ * 连接Discord账号
  */
-const TwitterConnector = React.forwardRef((props, ref) => {
+const DiscordConnector = React.forwardRef((props, ref) => {
     const [show, setShow] = useState(false);
     const [showAuth, setShowAuth] = useState(false);
     const [showBinding, setShowBinding] = useState(false);
@@ -312,8 +218,7 @@ const TwitterConnector = React.forwardRef((props, ref) => {
              * @param {(code:ErrorCodes,bindInfo:SocialMediaBindInfo)=> void} onResult
              */
             doConnect: (onResult) => {
-                SocialMediaService.Inst.TwitterAuthMode = "oauth2";
-                var bindInfo = SocialMediaService.Inst.getSocialMediaBindInfo(SocialType.Twitter_OAuth2);
+                var bindInfo = null;//SocialMediaService.Inst.getSocialMediaBindInfo(SocialType.Discord);
                 if (bindInfo == null || !bindInfo.connect) {
                     setOnResult({ callback: onResult });
                     setShow(true);
@@ -338,12 +243,12 @@ const TwitterConnector = React.forwardRef((props, ref) => {
     }, [onResult])
 
     return <>
-        <TwitterPreConnectSheet show={show} onClosed={() => setShow(false)} onTokenGot={token => {
+        <DiscordPreConnectSheet show={show} onClosed={() => setShow(false)} onTokenGot={token => {
             setShowAuth(true);
             setToken(token);
         }} />
 
-        <TwitterAuthSheet
+        <DiscordAuthSheet
             show={showAuth}
             token={token}
             onClosed={() => {
@@ -356,8 +261,7 @@ const TwitterConnector = React.forwardRef((props, ref) => {
                 setTokenVerifier(verifier);
             }}
         />
-
-        <TwitterConnectSheet
+        <DiscordConnectSheet
             show={showBinding}
             oauthToken={token}
             tokenVerifier={tokenVerifier}
@@ -367,5 +271,4 @@ const TwitterConnector = React.forwardRef((props, ref) => {
 
     </>
 })
-
-export { TwitterConnector, TwitterFollowSheet, TwitterFollowVerifySheet }
+export { DiscordConnector }
