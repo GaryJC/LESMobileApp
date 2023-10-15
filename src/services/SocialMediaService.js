@@ -60,7 +60,7 @@ export default class SocialMediaService {
         return "https://twitter.com/intent/follow?screen_name=" + screenName
     }
 
-    getTwitterRetweetLink(twitterId){
+    getTwitterRetweetLink(twitterId) {
         return "https://twitter.com/intent/retweet?tweet_id=" + twitterId;
     }
 
@@ -90,6 +90,15 @@ export default class SocialMediaService {
 
         return LesPlatformCenter.SocialMediaFunctions
             .connectSocialMedia(mediaType, oauthToken, tokenVerifier)
+    }
+
+    requestDiscordOauthToken() {
+        return LesPlatformCenter.SocialMediaFunctions.requestOauthToken(SocialType.Discord);
+    }
+
+    requestDiscordConnect(oauthToken, tokenVerifier) {
+        return LesPlatformCenter.SocialMediaFunctions
+            .connectSocialMedia(SocialType.Discord, oauthToken, tokenVerifier)
     }
 
 }
