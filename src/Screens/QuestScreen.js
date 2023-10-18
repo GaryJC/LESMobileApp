@@ -201,7 +201,6 @@ const QuestScreen = ({ }) => {
             ref={discordConnector}
         />
     </View>
-  );
 };
 /**
  *
@@ -336,7 +335,6 @@ const QuestEntryBar = ({ entry, entryProgress, onEntryBtnPressed }) => {
             <EntryButtons entry={entry} entryProgress={entryProgress} onEntryBtnPressed={onEntryBtnPressed} />
         </View>
     </View>
-  );
 };
 
 /**
