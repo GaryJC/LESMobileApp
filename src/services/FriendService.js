@@ -257,12 +257,6 @@ class FriendService {
       await this.#pullFriendsDataFromServer();
     }
   }
-
-  async onUserRelogin(state) {
-    if (state == Constants.ReloginState.ReloginSuccessful) {
-      await this.#pullFriendsDataFromServer();
-    }
-  }
 }
 
 export default FriendService;

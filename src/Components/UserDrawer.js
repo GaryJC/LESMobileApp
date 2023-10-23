@@ -68,6 +68,10 @@ export default function UserDrawer(props) {
     setIsSheetOpen(false);
   }, []);
 
+  const onDrawerOpen = useCallback(() => {
+    props.navigation.openDrawer();
+  }, [props.navigation])
+
   useEffect(() => {
     setUserStatus(DataCenter.userInfo.imUserInfo.state);
 
@@ -81,10 +85,6 @@ export default function UserDrawer(props) {
     };
 
     // updateUnreadCountHandler();
-
-    const onDrawerOpen = () => {
-      props.navigation.openDrawer();
-    }
 
     const retriveUserInfoHandler = () => {
       console.log("im user info: ", DataCenter.userInfo.imUserInfo);
@@ -213,7 +213,7 @@ export default function UserDrawer(props) {
         <View className="w-full my-3">
           <Divider />
         </View>
-        
+
         <FriendButton
           title="You Have Pending Requests"
           icon="emoji-people"
