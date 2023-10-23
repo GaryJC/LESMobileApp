@@ -50,13 +50,14 @@ const SpecialMessage = ({ message }) => {
 const TimeStamp = ({ date }) => (
   <View className="px-[10px] flex-row items-center">
     <View className="h-[1px] flex-1 bg-[#494949] mr-[5px]" />
-    <Text className="text-[12px] text-[#CFCFCF]">{date}</Text>
+    <Text className=" text-[#CFCFCF]" style={{ fontSize: DataCenter.userInfo.userSetting.getChatFontSize() }}>{date}</Text>
     <View className="h-[1px] flex-1 bg-[#494949] ml-[5px]" />
   </View>
 );
 
-const Bubble = ({ isOwn, senderUserInfo, message }) => (
-  <View
+const Bubble = ({ isOwn, senderUserInfo, message }) => {
+  const fontSize = DataCenter.userInfo.userSetting.getChatFontSize();
+  return <View
     className={
       isOwn
         ? "flex-row py-[10px] justify-end"
@@ -74,7 +75,11 @@ const Bubble = ({ isOwn, senderUserInfo, message }) => (
       </View>
     )}
 
-    <View className="justify-evenly ">
+    <View className={
+      isOwn
+        ? "flex items-end"
+        : "flex items-start"
+    }>
       <View className={
         isOwn
           ? "flex-row items-end justify-end pr-[1px]"
@@ -83,9 +88,10 @@ const Bubble = ({ isOwn, senderUserInfo, message }) => (
         <Text
           className={
             isOwn
-              ? "text-[12px] text-white mr-[5px]"
-              : "text-[12px] text-white ml-[5px]"
+              ? "text-white mr-[5px]"
+              : "text-white ml-[5px]"
           }
+          style={{ fontSize: fontSize }}
         >
           {senderUserInfo?.name}
         </Text>
@@ -99,8 +105,9 @@ const Bubble = ({ isOwn, senderUserInfo, message }) => (
       >
         <Text
           className={
-            isOwn ? "text-[12px] text-black" : "text-[12px] text-white"
+            isOwn ? "text-black max-w-[50vw]" : "text-white max-w-[50vw]"
           }
+          style={{ fontSize: fontSize }}
         >
           {message?.content}
         </Text>
@@ -124,7 +131,7 @@ const Bubble = ({ isOwn, senderUserInfo, message }) => (
       </View>
     )}
   </View>
-);
+};
 
 export const ChatBubbleV2 = React.memo(
   ({ message, preMessage }) => {

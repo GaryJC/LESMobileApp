@@ -285,8 +285,10 @@ const ChatListBarItem = ({ chatListItemData, isSelected, onClick }) => {
       </View>
     );
 
+  const bgClass = isSelected ? "bg-[#262F38]" : ""
+
   return (
-    <View>
+    <View className={bgClass}>
       <TouchableHighlight
         onPress={() => {
           if (onClick != null) onClick(itemData[0]);

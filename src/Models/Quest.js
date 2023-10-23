@@ -240,7 +240,7 @@ class QuestEntryData {
     }
 }
 
-EntryParamType = {
+const EntryParamType = {
     String: 0,
     Number: 1,
     Bool: 2,

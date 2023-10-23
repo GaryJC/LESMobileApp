@@ -218,7 +218,7 @@ const DiscordConnector = React.forwardRef((props, ref) => {
              * @param {(code:ErrorCodes,bindInfo:SocialMediaBindInfo)=> void} onResult
              */
             doConnect: (onResult) => {
-                var bindInfo = null;//SocialMediaService.Inst.getSocialMediaBindInfo(SocialType.Discord);
+                var bindInfo = SocialMediaService.Inst.getSocialMediaBindInfo(SocialType.Discord);
                 if (bindInfo == null || !bindInfo.connect) {
                     setOnResult({ callback: onResult });
                     setShow(true);

@@ -8,7 +8,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "expo-status-bar";
 import { LesConstants } from "les-im-components";
 import { useEffect, useState, useRef, useCallback } from "react";
-import { Dimensions, Image, Linking } from "react-native";
+import { Dimensions, Image, Linking, Platform } from "react-native";
 import ChatScreen from "./src/Screens/ChatScreen";
 import CreateNameScreen from "./src/Screens/CreateNameScreen";
 import FriendsScreen from "./src/Screens/FriendsScreen";
@@ -56,13 +56,14 @@ import QuestUserPointPanel from "./src/Components/Quest/QuestUserPointPanel";
 import RedDotIcon from "./src/Components/RedDotIcon";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import UserDrawer from "./src/Components/UserDrawer";
+import UserHeader from "./src/Components/UserHeader";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
 const deviceHeight = Dimensions.get("screen").height;
-const bottomTabHeight = deviceHeight * 0.08;
+const bottomTabHeight = Platform.OS == "ios" ? deviceHeight * 0.1 : deviceHeight * 0.08;
 
 const onAppInit = async () => {
   await ServiceCenter.Inst.loadAllServices();
@@ -80,7 +81,7 @@ function CustomDrawerContent(props) {
 const DrawerNavigation = () => {
   return (
     <Drawer.Navigator
-      drawerContent={(props) => <UserDrawer />}
+      drawerContent={(props) => <UserDrawer {...props} />}
       screenOptions={{
         drawerPosition: "left",
         drawerType: "slide",
@@ -209,9 +210,12 @@ const BottomTabNavigation = () => {
         component={FriendsScreen}
         options={({ navigation }) => ({
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="people-outline" color={color} size={size} />
+            <View className="flex justify-center items-center">
+              <Ionicons name="people-outline" color={color} size={size} />
+              <Text className="text-white text-xs" style={{ color: color }}>Social</Text>
+            </View>
           ),
-          headerTitle: "Social",
+          headerTitle: () => (<UserHeader />),
           headerShown: true,
           tabBarBadge: newNotiCount,
           headerRight: () => (
@@ -231,7 +235,7 @@ const BottomTabNavigation = () => {
                   color="white"
                 />
               </TouchableOpacity>
-              <View className="pl-2">
+              {/* <View className="pl-2">
                 <RedDotIcon
                   iconName="notifications"
                   iconSize={25}
@@ -240,7 +244,7 @@ const BottomTabNavigation = () => {
                     navigation.navigate("Notification");
                   }}
                 />
-              </View>
+              </View> */}
             </View>
           ),
         })}
@@ -251,7 +255,10 @@ const BottomTabNavigation = () => {
         component={ChatScreenV2}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="chatbubbles-outline" color={color} size={size} />
+            <View className="flex justify-center items-center">
+              <Ionicons name="chatbubbles-outline" color={color} size={size} />
+              <Text className="text-white text-xs" style={{ color: color }}>Chats</Text>
+            </View>
           ),
           tabBarBadge: newMsgCountStr,
         }}
@@ -262,9 +269,13 @@ const BottomTabNavigation = () => {
         component={QuestScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="bookmarks" color={color} size={size} />
+            <View className="flex justify-center items-center">
+              <Ionicons name="bookmarks" color={color} size={size} />
+              <Text className="text-white text-xs" style={{ color: color }}>Quests</Text>
+            </View>
           ),
           headerShown: true,
+          headerTitle: () => <UserHeader />,
           headerRight: () => <QuestUserPointPanel />,
           //tabBarBadge: newMsgCountStr,
         }}
@@ -288,12 +299,16 @@ const BottomTabNavigation = () => {
         component={WalletScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="wallet" color={color} size={size} />
+            <View className="flex justify-center items-center">
+              <Ionicons name="wallet" color={color} size={size} />
+              <Text className="text-white text-xs" style={{ color: color }}>Wallet</Text>
+            </View>
           ),
           headerShown: true,
+          headerTitle: () => (<UserHeader />),
         }}
       />
-      <BottomTab.Screen
+      {/* <BottomTab.Screen
         name="User"
         component={UserScreen}
         options={{
@@ -301,7 +316,7 @@ const BottomTabNavigation = () => {
             <Ionicons name="person-outline" color={color} size={size} />
           ),
         }}
-      />
+      /> */}
     </BottomTab.Navigator>
   );
 };

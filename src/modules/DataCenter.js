@@ -8,6 +8,7 @@ import { Notifications } from "../Models/Notifications";
 import IMUserInfo from "../Models/IMUserInfo";
 import UserProfile from "../Models/UserProfile";
 import { QuestUserData } from "../Models/Quest";
+import UserSetting from "../Models/UserSetting";
 
 const services = [];
 // services.push(new FriendService());
@@ -27,10 +28,10 @@ const DataCenter = {
     Platform.OS === "ios"
       ? "IOS"
       : Platform.OS === "android"
-      ? "Android"
-      : Platform.OS === "web"
-      ? "Web"
-      : "PC",
+        ? "Android"
+        : Platform.OS === "web"
+          ? "Web"
+          : "PC",
   // deviceName: "IOS",
 
   /**
@@ -61,6 +62,8 @@ const DataCenter = {
      * 用户任务信息
      */
     questUserInfo: new QuestUserData(),
+
+    userSetting: new UserSetting(),
   },
 
   /**

@@ -21,6 +21,8 @@ import { firebase } from "@react-native-firebase/auth";
 import { LesConstants, LesPlatformCenter } from "les-im-components";
 import RedDotIcon from "./RedDotIcon";
 import LoginService from "../services/LoginService";
+import Divider from "./Divider";
+import { FriendButton } from "./FriendButton";
 
 const userOptions = [
   { id: 1, title: "Account", link: "" },
@@ -34,7 +36,7 @@ const UserOptionButton = (key, title, link) => (
   </View>
 );
 
-export default function UserDrawer() {
+export default function UserDrawer(props) {
   // const [userData, setUserData] = useState();
   const [userStatus, setUserStatus] = useState(
     DataCenter.userInfo.imUserInfo.state
@@ -80,6 +82,10 @@ export default function UserDrawer() {
 
     // updateUnreadCountHandler();
 
+    const onDrawerOpen = () => {
+      props.navigation.openDrawer();
+    }
+
     const retriveUserInfoHandler = () => {
       console.log("im user info: ", DataCenter.userInfo.imUserInfo);
       console.log("user email: ", DataCenter.userInfo.userProfile.email);
@@ -102,6 +108,7 @@ export default function UserDrawer() {
       updateUnreadCountHandler
     );
     // JSEvent.on(UIEvents.User.UserState_IsLoggedin, retriveUserInfoHandler);
+    JSEvent.on(UIEvents.Drawer.Drawer_Open, onDrawerOpen)
     JSEvent.on(DataEvents.User.UserState_IsLoggedin, retriveUserInfoHandler);
     JSEvent.on(
       DataEvents.User.UserInfo_Current_Updated,
@@ -109,22 +116,10 @@ export default function UserDrawer() {
     );
 
     return () => {
-      JSEvent.remove(
-        DataEvents.Notification.NotificationState_Updated,
-        updateUnreadCountHandler
-      );
-      // JSEvent.remove(
-      //   UIEvents.User.UserState_IsLoggedin,
-      //   retriveUserInfoHandler
-      // );
-      JSEvent.remove(
-        DataEvents.User.UserState_IsLoggedin,
-        retriveUserInfoHandler
-      );
-      JSEvent.remove(
-        DataEvents.User.UserInfo_Current_Updated,
-        retriveUserInfoHandler
-      );
+      JSEvent.remove(DataEvents.Notification.NotificationState_Updated, updateUnreadCountHandler);
+      JSEvent.remove(DataEvents.User.UserState_IsLoggedin, retriveUserInfoHandler);
+      JSEvent.remove(DataEvents.User.UserInfo_Current_Updated, retriveUserInfoHandler);
+      JSEvent.remove(UIEvents.Drawer.Drawer_Open, onDrawerOpen)
     };
   }, []);
 
@@ -156,7 +151,7 @@ export default function UserDrawer() {
   };
 
   return (
-    <View className="flex-1 bg-black">
+    <View className="flex-1 " style={{ backgroundColor: "#080F14" }} >
       <ImageBackground
         source={UserData.userBgImg}
         className="w-[100%] h-[30vh] items-center relative"
@@ -212,9 +207,20 @@ export default function UserDrawer() {
         </Text>
         <Text className="text-white text-[15px]">#{userInfo.tag}</Text>
         <View className="flex-row items-center justify-between mt-[3vh]">
-          <Text className="text-white text-[16px] mr-[10px]">Set Status:</Text>
+          <Text className="text-white text-[16px] mr-[10px]">Your friends see you as:</Text>
           <SwitchStatusButton />
         </View>
+        <View className="w-full my-3">
+          <Divider />
+        </View>
+        
+        <FriendButton
+          title="You Have Pending Requests"
+          icon="emoji-people"
+          link="Notification"
+          unreadCount={unreadCount}
+        />
+
         <View className="bg-clr-bglight rounded-lg w-[100%] mt-[3vh]">
           <ScrollView className="divide-y-2 divide-[#5C5C5C] px-[10px]">
             {userOptions.map((item, index) =>

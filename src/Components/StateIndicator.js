@@ -61,7 +61,7 @@ export const makeStateReadable = (state) => {
     case LesConstants.IMUserState.Away:
       return "Away";
     case LesConstants.IMUserState.Hiding:
-      return "Hiding";
+      return "Offline";
     default:
       return "Init";
   }

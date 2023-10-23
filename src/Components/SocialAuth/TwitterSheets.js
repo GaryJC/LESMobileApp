@@ -31,7 +31,7 @@ const TwitterBindingSheet = ({ show, onClosed }) => {
             <Text className="text-white text-xl font-bold pb-2">
                 Binding
             </Text>
-            <Text className="text-white pb-3 text-xs">
+            <Text className="text-white pb-3 text-sm">
                 The account is connecting, please wait amoment...
             </Text>
             <ActivityIndicator size="large" color="white" className="mr-2" />
@@ -122,7 +122,7 @@ const TwitterPreConnectSheet = ({ show, onClosed, onTokenGot }) => {
             <Text className="text-white text-xl font-bold pb-2">
                 Connect your Twitter account
             </Text>
-            <Text className="text-white pb-3 text-xs">
+            <Text className="text-white pb-3 text-sm">
                 Twitter account is not connected. Please connect your Twitter account.
             </Text>
             <View className="">
@@ -195,7 +195,36 @@ const TwitterConnectSheet = ({ show, onClosed, onBindResult, oauthToken, tokenVe
                 <HighlightButton text=" Ok " type="primary" onPress={() => setVisible(false)} />
             </View>
         } else {
-            info = "Connect to Twitter failed, please try again later.";
+            const twitterAcc = bindInfo == null ? "" : `(@${bindInfo.socialName})`;
+            switch (errorCode) {
+                case ErrorCodes.SocialMediaConnectInCD:
+                    const cd = 86400000 + 3600000 * 8 + 60000 * 5;//bindInfo.reconnectCd;
+                    const day = cd / (86400000);
+                    const hour = (cd % (86400000)) / (3600000);
+                    const minute = (cd % 3600000) / (60000);
+
+                    let cdStr = "";
+                    if (day > 0) {
+                        cdStr = day.toFixed(0) + " days ";
+                    }
+                    if (hour > 0 || day > 0) {
+                        cdStr += hour.toFixed(0) + " hours ";
+                    }
+                    if (minute > 0) {
+                        cdStr += minute.toFixed(0) + " minutes "
+                    }
+
+                    info = `This Twitter${twitterAcc} has been disconnected. Please try in ${cdStr}later.`;
+                    break;
+                case ErrorCodes.SocialMediaAlreadyBound:
+                    info = `Your Twitter${twitterAcc} has been already bound to another account.`;
+                    break;
+                default:
+                    info = "Connect to Twitter failed, please try again later.";
+                    break;
+            }
+
+
             title = "Connect Failed"
             body = <HighlightButton text="Close" type="primary" onPress={() => {
                 setVisible(false);
@@ -215,7 +244,7 @@ const TwitterConnectSheet = ({ show, onClosed, onBindResult, oauthToken, tokenVe
             <Text className="text-white text-xl font-bold pb-2">
                 {title}
             </Text>
-            <Text className="text-white pb-3 text-xs">
+            <Text className="text-white pb-3 text-base">
                 {info}
             </Text>
             <View className="">
@@ -287,7 +316,7 @@ const TwitterFollowVerifySheet = React.forwardRef((props, ref) => {
             <Text className="text-white text-xl font-bold pb-2">
                 Verifying
             </Text>
-            <Text className="text-white pb-3 text-xs">
+            <Text className="text-white pb-3 text-sm">
                 Please wait amoment...
             </Text>
             <ActivityIndicator size="large" color="white" className="mr-2" />
@@ -314,6 +343,7 @@ const TwitterConnector = React.forwardRef((props, ref) => {
             doConnect: (onResult) => {
                 SocialMediaService.Inst.TwitterAuthMode = "oauth2";
                 var bindInfo = SocialMediaService.Inst.getSocialMediaBindInfo(SocialType.Twitter_OAuth2);
+                console.log(bindInfo)
                 if (bindInfo == null || !bindInfo.connect) {
                     setOnResult({ callback: onResult });
                     setShow(true);
