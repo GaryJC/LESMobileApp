@@ -38,6 +38,7 @@ const colorTable = {
 
 const CD_INTERVAL = 50;
 /**
+ * 如果cooldown值>0，则点击一次按钮，触发一次cooldown
  * @param {{type:'normal'|'primary'|'danger'|'emphasize'|'dark'|'light'|'opacity'|null, isLoading:boolean|null, disabled:boolean|null, text:string,cooldown:number, onPress:()=>void}} params
  */
 const HighlightButton = ({
@@ -62,17 +63,17 @@ const HighlightButton = ({
     return disabled || (cdTotal > 0 && cdCurr < cdTotal)
   }, [disabled, isLoading, cdCurr, cdTotal])
 
-  useEffect(() => {
-    setCdTotal(cooldown);
-    if (cooldown > 0) {
-      Animated.timing(loadAnmi, {
-        toValue: cooldown,
-        duration: cooldown * 1000,
-        useNativeDriver: false,
-        easing: v => v,
-      }).start();
-    }
-  }, [cooldown])
+  // useEffect(() => {
+  //   setCdTotal(cooldown);
+  //   if (cooldown > 0) {
+  //     Animated.timing(loadAnmi, {
+  //       toValue: cooldown,
+  //       duration: cooldown * 1000,
+  //       useNativeDriver: false,
+  //       easing: v => v,
+  //     }).start();
+  //   }
+  // }, [cooldown])
 
   useEffect(() => {
     if (cdTotal > 0 && cdCurr >= cdTotal) {
@@ -86,6 +87,17 @@ const HighlightButton = ({
   }
 
   const onPressHandler = () => {
+    if (cooldown > 0) {
+      setCdTotal(cooldown);
+      setCdCurr(0);
+      loadAnmi.setValue(0);
+      Animated.timing(loadAnmi, {
+        toValue: cooldown,
+        duration: cooldown * 1000,
+        useNativeDriver: false,
+        easing: v => v,
+      }).start();
+    }
     if (onPress != null && isLoading != true) {
       onPress();
     }
@@ -130,7 +142,8 @@ const HighlightButton = ({
             typeof (text) == 'string' ?
               <Text className={fgClassName} style={{ color: _clr.fg }}>
                 {text}
-              </Text> : text
+              </Text>
+              : text
           }
         </View>
         {cooldownDom}

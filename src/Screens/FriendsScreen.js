@@ -79,12 +79,12 @@ export default function FriendsScreen() {
   return (
     <View className="flex-1 px-[5vw]">
       <View>
-        <FriendButton
+        {/* <FriendButton
           title="You Have Pending Requests"
           icon="emoji-people"
           link="Notification"
           unreadCount={unreadCount}
-        />
+        /> */}
         {/* <FriendButton title="Blocked" icon="block" link="Blocked" /> */}
       </View>
       <View className="flex-row justify-between my-[15px] bg-[#262F38] h-[4vh] rounded-lg items-center">

@@ -7,7 +7,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "build:ios": "react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'"
+    "build:ios": "react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios' --assets-dest='./ios/bundle'"
   },
   "dependencies": {
     "@gorhom/bottom-sheet": "^4.4.6",
@@ -29,7 +29,7 @@
     "expo-sqlite": "~11.1.1",
     "expo-status-bar": "~1.4.4",
     "js-base64": "^3.7.5",
-    "les-im-components": "^1.1.29",
+    "les-im-components": "^1.1.30",
     "lodash": "^4.17.21",
     "nativewind": "^2.0.11",
     "react": "18.2.0",

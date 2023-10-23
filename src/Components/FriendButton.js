@@ -24,16 +24,16 @@ export const FriendButton = ({ title, icon, link, unreadCount, children }) => {
   return (
     <Animated.View style={{ height: heightAnim }}>
       <Pressable onPress={() => navigation.navigate(link)}>
-        <View className="flex-row justify-between mt-1 mb-1">
+        <View className="flex-row mt-1 mb-1">
           <View className="flex-row items-center">
-            <MaterialIcons name={icon} color="white" size={28} />
+            <MaterialIcons name={icon} color="white" size={24} />
             {children}
             {count > 0 ? <View className="w-[20px] h-[20px] bg-[#FF3737] rounded-full relative top-[-6px] left-[-3px]">
               <Text className="font-bold text-white text-center">
                 {count}
               </Text>
             </View> : <></>}
-            <Text className="text-white font-bold text-lg pl-[5px]">
+            <Text className="text-white font-bold text-sm pl-[5px]">
               {title}
             </Text>
           </View>

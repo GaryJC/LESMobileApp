@@ -103,7 +103,7 @@ const Avatar = ({ tag, name, isGroup, isSelected, badgeNumber, size, children })
     );
 
   return (
-    <View className={`absolute w-[${size.w}px] h-[${size.h}px] `}>
+    <View className={`w-[${size.w}px] h-[${size.h}px] `}>
       <View
         //ref={avatarRef}
         //onLayout={handleLayout}

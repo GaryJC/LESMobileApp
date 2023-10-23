@@ -247,4 +247,8 @@ export const UIEvents = {
      */
     ChatGroup_GroupMember_Updated: "UI_EVENT_ChatGroup_GroupInfo_Updated",
   },
+
+  Drawer: {
+    Drawer_Open: "UI_EVENT_Drawer_Open"
+  }
 };

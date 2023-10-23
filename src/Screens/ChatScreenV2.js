@@ -88,7 +88,7 @@ const ChatScreenV2 = () => {
             <ChatListBar onItemSelected={onChatListItemSelected} />
           </View>
           {/* 右侧聊天区域 */}
-          <View className="flex-1 bg-[#262F38] rounded-lg pl-2 pr-2">
+          <View className="flex-1 bg-[#262F38]  pl-2 pr-2">
             {/* 聊天框标题 */}
             <MessageTitle chatObj={currChatData} />
             {/* 聊天面板 */}

@@ -57,38 +57,55 @@ export default class SocialMediaService {
     }
   }
 
-  getTwitterFollowLink(screenName) {
-    return "https://twitter.com/intent/follow?screen_name=" + screenName;
+  getTwitterFollowLink(screenName, scheme = false) {
+    if (scheme) {
+      return "twitter://user?screen_name=" + screenName;
+    }
+    return "https://twitter.com/intent/user?screen_name=" + screenName;
   }
 
+  getTwitterRetweetLink(twitterId, scheme = false) {
+    if (scheme) {
+      return "twitter://status?id=" + twitterId;
+    } else {
+      return "https://twitter.com/intent/retweet?tweet_id=" + twitterId;
+    }
+  }
+
+  getTwitterQuoteLink(twitterId, twitterPosterName, post) {
+    const p = `${post} https://twitter.com/${twitterPosterName}/status/${twitterId}`;
+    const text = encodeURI(p)
+    return "https://twitter.com/intent/tweet?text=" + text;
+  }
   /**
-   *
+   * 
    * @returns {Promise<{socialType:SocialType, oauthToken:string}>}
    */
   requestTwitterOauthToken() {
-    const mediaType =
-      this.#twitterAuthMode == "oauth1"
-        ? SocialType.Twitter
-        : SocialType.Twitter_OAuth2;
+    const mediaType = this.#twitterAuthMode == "oauth1" ? SocialType.Twitter : SocialType.Twitter_OAuth2;
     return LesPlatformCenter.SocialMediaFunctions.requestOauthToken(mediaType);
   }
 
   /**
-   *
-   * @param {string} oauthToken
-   * @param {string} tokenVerifier
+   * 
+   * @param {string} oauthToken 
+   * @param {string} tokenVerifier 
    * @returns {Promise<{retCode:number, socialType:SocialType, socialId:string, socialName:string}>}
    */
   requestTwitterConnect(oauthToken, tokenVerifier) {
-    const mediaType =
-      this.#twitterAuthMode == "oauth1"
-        ? SocialType.Twitter
-        : SocialType.Twitter_OAuth2;
+    const mediaType = this.#twitterAuthMode == "oauth1" ? SocialType.Twitter : SocialType.Twitter_OAuth2;
 
-    return LesPlatformCenter.SocialMediaFunctions.connectSocialMedia(
-      mediaType,
-      oauthToken,
-      tokenVerifier
-    );
+    return LesPlatformCenter.SocialMediaFunctions
+      .connectSocialMedia(mediaType, oauthToken, tokenVerifier)
   }
+
+  requestDiscordOauthToken() {
+    return LesPlatformCenter.SocialMediaFunctions.requestOauthToken(SocialType.Discord);
+  }
+
+  requestDiscordConnect(oauthToken, tokenVerifier) {
+    return LesPlatformCenter.SocialMediaFunctions
+      .connectSocialMedia(SocialType.Discord, oauthToken, tokenVerifier)
+  }
+
 }
