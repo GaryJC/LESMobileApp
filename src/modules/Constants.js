@@ -16,7 +16,7 @@ const Address_Production = {
   WalletAddress: "http://wallet.metavirus.games",
 };
 
-const AddressOverride = Address_Local;
+const AddressOverride = null;
 
 const Constants = {
   deliveryState: {
@@ -78,8 +78,8 @@ const Constants = {
     AddressOverride != null
       ? AddressOverride
       : process.env.NODE_ENV == "production"
-        ? Address_Production
-        : Address_Public_Test,
+      ? Address_Production
+      : Address_Public_Test,
 
   LoginExceptionType: {
     AccountCenterError: "AccountCenterError",
@@ -124,7 +124,8 @@ const Constants = {
   },
 };
 
-
-console.log(`=======Using Address: ${JSON.stringify(Constants.Address)}========`);
+console.log(
+  `=======Using Address: ${JSON.stringify(Constants.Address)}========`
+);
 
 export default Constants;
