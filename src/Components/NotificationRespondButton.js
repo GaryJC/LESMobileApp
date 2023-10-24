@@ -1,19 +1,21 @@
 import Constants from "../modules/Constants";
-import { TouchableOpacity, View, Text } from "react-native";
+import { TouchableOpacity, View, Text, ActivityIndicator } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 
-const NotificationRespondButton = ({ handler, type }) => {
+const NotificationRespondButton = ({ handler, type, isLoading }) => {
   const bgColor =
     type === Constants.Notification.ResponseType.Accept ? "#58AE69" : "#505050";
 
   return (
-    <TouchableOpacity onPress={handler}>
+    <TouchableOpacity disabled={isLoading} onPress={handler}>
       <View
-        className="rounded-3xl px-[10px] py-[5px]"
+        className="rounded-3xl w-[100px] items-center justify-center h-[30px]"
         style={{ backgroundColor: bgColor }}
       >
         <View className="flex-row items-center">
-          {type === Constants.Notification.ResponseType.Accept ? (
+          {isLoading ? (
+            <ActivityIndicator size={"small"} color={"white"} />
+          ) : type === Constants.Notification.ResponseType.Accept ? (
             <Entypo name="check" size={18} color="white" />
           ) : type === Constants.Notification.ResponseType.Decline ? (
             <Entypo name="cross" size={18} color="white" />

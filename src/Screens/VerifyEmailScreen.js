@@ -25,10 +25,13 @@ export const VerifyEmailScreen = () => {
     const loginState = route.params?.loginState;
     const serverState = route.params?.imServerState;
     // check imServerState
-    // if(loginState === Constants.LoginState.Normal && serverState===LesConstants.ErrorCodes.NeedSetNameFirst){
-    //   navigation.navigate("CreateName")
-    // }else if(loginState === Constants.LoginState.Normal&&serverState===LesConstants.ErrorCodes.Success)
-    if (loginState === Constants.LoginState.Normal) {
+    if (
+      loginState === Constants.LoginState.Normal &&
+      serverState === LesConstants.IMUserState.Init
+    ) {
+      navigation.navigate("CreateName");
+      // }else if(loginState === Constants.LoginState.Normal&&serverState===LesConstants.ErrorCodes.Success)
+    } else if (loginState === Constants.LoginState.Normal) {
       navigation.navigate("MainNavigation");
     }
     setLoginState(loginState);

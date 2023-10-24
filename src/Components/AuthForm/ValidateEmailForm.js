@@ -52,7 +52,11 @@ const ValidateEmailForm = ({
       {error && <Text className="text-[#FF0000]">{error}</Text>}
       <View className="flex-row justify-end mt-[20px]">
         <HighlightButton text="Cancel" onPress={closeModalHandler} />
-        <HighlightButton type="primary" text="Next" onPress={validateEmailHandler} />
+        <HighlightButton
+          type="primary"
+          text="Next"
+          onPress={validateEmailHandler}
+        />
       </View>
       <LoadingIndicator isLoading={isLoading} />
     </View>
