@@ -36,6 +36,16 @@ const EmailSigninForm = ({ email, closeModalHandler }) => {
         await LoginService.Inst.firebaseQuickLogin();
       console.log("login result", loginState, id, imServerState);
       // setLoginState(loginState);
+      // if (
+      //   loginState === Constants.LoginState.VerifyEmail ||
+      //   loginState === Constants.LoginState.UpdateReferrer
+      // ) {
+      //   navigation.navigate("VerifyEmail");
+      // } else if (imServerState === LesConstants.IMUserState.Init) {
+      //   navigation.navigate("CreateName");
+      // } else {
+      //   navigation.navigate("MainNavigation");
+      // }
       navigation.navigate("VerifyEmail", { loginState, id, imServerState });
       closeModalHandler();
     } catch (e) {

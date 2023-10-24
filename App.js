@@ -63,7 +63,8 @@ const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
 const deviceHeight = Dimensions.get("screen").height;
-const bottomTabHeight = Platform.OS == "ios" ? deviceHeight * 0.1 : deviceHeight * 0.08;
+const bottomTabHeight =
+  Platform.OS == "ios" ? deviceHeight * 0.1 : deviceHeight * 0.08;
 
 const onAppInit = async () => {
   await ServiceCenter.Inst.loadAllServices();
@@ -212,10 +213,12 @@ const BottomTabNavigation = () => {
           tabBarIcon: ({ color, size }) => (
             <View className="flex justify-center items-center">
               <Ionicons name="people-outline" color={color} size={size} />
-              <Text className="text-white text-xs" style={{ color: color }}>Social</Text>
+              <Text className="text-white text-xs" style={{ color: color }}>
+                Social
+              </Text>
             </View>
           ),
-          headerTitle: () => (<UserHeader />),
+          headerTitle: () => <UserHeader />,
           headerShown: true,
           tabBarBadge: newNotiCount,
           headerRight: () => (
@@ -257,7 +260,9 @@ const BottomTabNavigation = () => {
           tabBarIcon: ({ color, size }) => (
             <View className="flex justify-center items-center">
               <Ionicons name="chatbubbles-outline" color={color} size={size} />
-              <Text className="text-white text-xs" style={{ color: color }}>Chats</Text>
+              <Text className="text-white text-xs" style={{ color: color }}>
+                Chats
+              </Text>
             </View>
           ),
           tabBarBadge: newMsgCountStr,
@@ -271,7 +276,9 @@ const BottomTabNavigation = () => {
           tabBarIcon: ({ color, size }) => (
             <View className="flex justify-center items-center">
               <Ionicons name="bookmarks" color={color} size={size} />
-              <Text className="text-white text-xs" style={{ color: color }}>Quests</Text>
+              <Text className="text-white text-xs" style={{ color: color }}>
+                Quests
+              </Text>
             </View>
           ),
           headerShown: true,
@@ -301,11 +308,13 @@ const BottomTabNavigation = () => {
           tabBarIcon: ({ color, size }) => (
             <View className="flex justify-center items-center">
               <Ionicons name="wallet" color={color} size={size} />
-              <Text className="text-white text-xs" style={{ color: color }}>Wallet</Text>
+              <Text className="text-white text-xs" style={{ color: color }}>
+                Wallet
+              </Text>
             </View>
           ),
           headerShown: true,
-          headerTitle: () => (<UserHeader />),
+          headerTitle: () => <UserHeader />,
         }}
       />
       {/* <BottomTab.Screen
@@ -476,6 +485,7 @@ export default function App() {
           <Stack.Navigator
             initialRouteName="initial"
             screenOptions={{
+              gestureEnabled: false,
               headerStyle: {
                 backgroundColor: "#080F14",
               },
@@ -576,7 +586,7 @@ export default function App() {
             <Stack.Screen
               name="GroupInvite"
               component={GroupInviteScreen}
-            // options={{ headerTitle: "Group Information" }}
+              // options={{ headerTitle: "Group Information" }}
             />
           </Stack.Navigator>
         </NavigationContainer>

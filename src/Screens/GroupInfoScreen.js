@@ -19,6 +19,7 @@ import { DataEvents, UIEvents } from "../modules/Events";
 import FeedBackModal, { DialogModal } from "../Components/FeedbackModal";
 import GroupAuthButton from "../Components/GroupAuthButton";
 import GroupAwaitResponse from "../Components/GroupAwaitResponse";
+import LoadingIndicator from "../Components/LoadingIndicator";
 
 const GroupInfoScreen = () => {
   const [groupMemberData, setGroupMemberData] = useState([]);
@@ -27,6 +28,7 @@ const GroupInfoScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
   const [feedback, setFeedbak] = useState();
+  const [isQuitting, setIsQuitting] = useState(false);
 
   const route = useRoute();
 
@@ -113,6 +115,7 @@ const GroupInfoScreen = () => {
   };
 
   const quitGroupHandler = async () => {
+    setIsQuitting(true);
     try {
       await ChatGroupService.Inst.quitChatGroup(groupId);
       navigation.goBack();
@@ -121,6 +124,7 @@ const GroupInfoScreen = () => {
       setFeedbackModalOpen(true);
       setFeedbak("You can not quit this group.");
     }
+    setIsLoading(false);
   };
 
   return (
@@ -169,10 +173,11 @@ const GroupInfoScreen = () => {
       <DialogModal
         visible={feedbackModalOpen}
         content={feedback}
-        onButtonPressed={btn => {
+        onButtonPressed={(btn) => {
           setFeedbackModalOpen(false);
         }}
       />
+      <LoadingIndicator isLoading={isQuitting} />
 
       {/* <FeedBackModal
         feedbackModalOpen={feedbackModalOpen}

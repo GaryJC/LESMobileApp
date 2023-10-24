@@ -6,22 +6,29 @@ import { Entypo } from "@expo/vector-icons";
 import Avatar from "./Avatar";
 import formatDate from "../utils/formatDate";
 import NotificationRespondButton from "./NotificationRespondButton";
+import { useState } from "react";
 
 export default function InvitationList({ item }) {
+  const [isLoading, setIsLoading] = useState(false);
+
   const onRespondHandler = (notificationId, response) => {
+    setIsLoading(true);
     NotificationService.Inst.respondInvitation(notificationId, response)
       .then((res) => {
         console.log("response: ", res);
       })
-      .catch((e) => console.error(e));
+      .catch((e) => console.error(e))
+      .finally((e) => setIsLoading(false));
   };
 
   const onCancelHandler = (notificationId) => {
+    setIsLoading(true);
     NotificationService.Inst.cancelInvitation(notificationId)
       .then((res) => {
         console.log("response: ", res);
       })
-      .catch((e) => console.error(e));
+      .catch((e) => console.error(e))
+      .finally((e) => setIsLoading(false));
   };
 
   const InvitationLayout = ({ type, avatar, user, name, children }) => (
@@ -85,6 +92,7 @@ export default function InvitationList({ item }) {
       <NotificationRespondButton
         type={Constants.Notification.ResponseType.Cancel}
         handler={() => onCancelHandler(notificationId)}
+        isLoading={isLoading}
       />
     </InvitationLayout>
   );
@@ -120,6 +128,7 @@ export default function InvitationList({ item }) {
               LesConstants.IMNotificationState.Accepted
             )
           }
+          isLoading={isLoading}
         />
       </View>
 
@@ -131,6 +140,7 @@ export default function InvitationList({ item }) {
             LesConstants.IMNotificationState.Rejected
           )
         }
+        isLoading={isLoading}
       />
     </InvitationLayout>
   );
