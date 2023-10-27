@@ -21,13 +21,21 @@ class JSEventObj {
   }
 
   emit(arg) {
-    this.handlers.forEach((h) => {
+    for (let index = 0; index < this.handlers.length; index++) {
+      const h = this.handlers[index];
       try {
         h(arg);
       } catch (e) {
         console.error(`call event[${this.name}] handler[${h}] error`, e);
       }
-    });
+    }
+    // this.handlers.forEach((h) => {
+    //   try {
+    //     h(arg);
+    //   } catch (e) {
+    //     console.error(`call event[${this.name}] handler[${h}] error`, e);
+    //   }
+    // });
   }
 }
 

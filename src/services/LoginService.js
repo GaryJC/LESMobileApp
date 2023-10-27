@@ -281,11 +281,12 @@ export default class LoginService {
             name: imResult.name,
             tag: imResult.tag,
             state: imResult.state,
+            avatar: imResult.avatar,
           };
 
           //保存当前用户数据
           DataSavingService.Inst.saveLoginDataToDataCenter(
-          id,
+            id,
             token,
             "",
             imUserInfo,

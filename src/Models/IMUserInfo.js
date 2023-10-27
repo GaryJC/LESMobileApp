@@ -34,14 +34,16 @@ export default class IMUserInfo {
      * @param {number} id 用户id
      * @param {string} name 用户昵称
      * @param {number} tag 识别tag
+     * @param {string} avatar
      * @param {IMUserState} state 
      * @param {IMUserOnlineState} onlineState 
      */
-    constructor(id, name, tag, state, onlineState) {
+    constructor(id, name, tag, avatar, state, onlineState) {
         this.id = id;
         this.name = name;
         this.tag = tag;
         this.state = state;
+        this.avatar = avatar;
         this.onlineState = onlineState;
     }
 
@@ -51,7 +53,7 @@ export default class IMUserInfo {
 
 
     toString() {
-        return `[${this.id}]${this.fullName}  state[${StateToStr[this.state]}] online[${OnlineToStr[this.onlineState]}]`
+        return `[${this.id}]${this.fullName}  state[${StateToStr[this.state]}] online[${OnlineToStr[this.onlineState]}] avatar[${this.avatar}]`
     }
 
     /**
@@ -86,6 +88,14 @@ export default class IMUserInfo {
     changeOnlineState(onlineState) {
         if (this.onlineState != onlineState) {
             this.onlineState = onlineState;
+            return true;
+        }
+        return false;
+    }
+
+    changeAvatar(avatar) {
+        if (this.avatar != avatar) {
+            this.avatar = avatar;
             return true;
         }
         return false;

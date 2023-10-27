@@ -59,9 +59,6 @@ export default function StatusBottomSheet({
         // const readableState = makeStateReadable(state);
         // console.log("ssa: ", readableState);
         setUserStatus(state);
-
-        DataSavingService.Inst.setImUserInfo({ state: state });
-
         bottomSheetModalRef.current?.close();
       })
       .catch((code) => {

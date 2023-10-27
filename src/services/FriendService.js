@@ -1,6 +1,6 @@
 import { DataEvents, UIEvents } from "../modules/Events";
 import JSEvent from "../utils/JSEvent";
-import { LesPlatformCenter, LesConstants } from "les-im-components";
+import { LesPlatformCenter, LesConstants, IMUserBaseData } from "les-im-components";
 import DataSavingService from "./DataSavingService";
 import DataCenter from "../modules/DataCenter";
 import IMUserInfoService from "./IMUserInfoService";
@@ -98,6 +98,7 @@ class FriendService {
           id: 0,
           name: "",
           tag: 0,
+          avatar: "",
           state: IMUserState.Online,
           onlineState: IMUserOnlineState.Offline,
         };
@@ -105,15 +106,15 @@ class FriendService {
           friend.id = noti.recipient.id;
           friend.name = noti.recipient.name;
           friend.tag = noti.recipient.tag;
+          friend.avatar = noti.recipient.avatar;
         } else {
           friend.id = noti.sender.id;
           friend.name = noti.sender.name;
           friend.tag = noti.sender.tag;
+          friend.avatar = noti.sender.avatar;
         }
         this.#addFriend(
-          friend.id,
-          friend.name,
-          friend.tag,
+          friend,
           friend.state,
           friend.onlineState,
           noti.time
@@ -133,18 +134,16 @@ class FriendService {
 
   /**
    *
-   * @param {number} id
-   * @param {string} name
-   * @param {number} tag
+   * @param {IMUserBaseData} userData
    * @param {IMUserState} state
    * @param {IMUserOnlineState} onlineState
    * @param {number} time
    */
-  #addFriend(id, name, tag, state, onlineState, time) {
-    IMUserInfoService.Inst.updateUser(id, name, tag, state, onlineState);
-    const idx = this.#friendList.findIndex((item) => item.id == id);
+  #addFriend(userData, state, onlineState, time) {
+    IMUserInfoService.Inst.updateUser(userData, state, onlineState);
+    const idx = this.#friendList.findIndex((item) => item.id == userData.id);
     if (idx > -1) return;
-    this.#friendList.push({ id: id, time: time });
+    this.#friendList.push({ id: userData.id, time: time });
   }
 
   /**
@@ -177,16 +176,17 @@ class FriendService {
       let friendList = [];
 
       friends.forEach((f) => {
-        const baseData = f.getFriendinfo();
-        const id = baseData.getId();
-        const name = baseData.getName();
-        const tag = baseData.getTag();
+        const baseData = new IMUserBaseData(f.getFriendinfo());
+        // const id = baseData.getId();
+        // const name = baseData.getName();
+        // const tag = baseData.getTag();
+        // const avatar = baseData.getAvatar();
         const state = f.getState();
         const onlineState = f.getOnlinestate();
         const time = f.getTime();
 
-        IMUserInfoService.Inst.updateUser(id, name, tag, state, onlineState);
-        friendList.push({ id: id, time: time });
+        IMUserInfoService.Inst.updateUser(baseData.id, baseData.name, baseData.tag, baseData.avatar, state, onlineState);
+        friendList.push({ id: baseData.id, time: time });
       });
 
       this.#friendList = friendList;
@@ -206,14 +206,18 @@ class FriendService {
   async getFriendList(filter) {
     let friends = [];
 
-    this.#friendList.forEach(async (f) => {
-      const user = await IMUserInfoService.Inst.getUser(f.id);
-      let u = null;
-      if (user.length != null && user.length > 0) {
-        u = user[0];
-      }
-      const friendData = new FriendData(f.id, f.time, user[0]);
-      console.log("oii: ", friendData.onlineState);
+    const friendList = this.#friendList;
+
+    const ids = friendList.map(f => f.id);
+    const users = await IMUserInfoService.Inst.getUser(ids);
+
+    const map = {};
+    users.forEach(u => {
+      map[u.id] = u;
+    });
+
+    friendList.forEach(f => {
+      const friendData = new FriendData(f.id, f.time, map[f.id]);
       if (filter == null) {
         friends.push(friendData);
       } else {
@@ -223,6 +227,24 @@ class FriendService {
         }
       }
     });
+
+    // this.#friendList.forEach(async (f) => {
+    //   const user = await IMUserInfoService.Inst.getUser(f.id);
+    //   let u = null;
+    //   if (user.length != null && user.length > 0) {
+    //     u = user[0];
+    //   }
+    //   const friendData = new FriendData(f.id, f.time, user[0]);
+    //   console.log("oii: ", friendData.onlineState);
+    //   if (filter == null) {
+    //     friends.push(friendData);
+    //   } else {
+    //     const r = filter(friendData);
+    //     if (r) {
+    //       friends.push(friendData);
+    //     }
+    //   }
+    // });
 
     return friends.sort((f1, f2) => {
       if (f1.isOnline != f2.isOnline) {
