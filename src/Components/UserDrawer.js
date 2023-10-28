@@ -5,6 +5,7 @@ import {
   ScrollView,
   TouchableHighlight,
   TouchableOpacity,
+  Pressable,
 } from "react-native";
 import { UserData } from "../Data/dummyData";
 import { useEffect, useState, useRef, useMemo, useCallback } from "react";
@@ -23,6 +24,7 @@ import RedDotIcon from "./RedDotIcon";
 import LoginService from "../services/LoginService";
 import Divider from "./Divider";
 import { FriendButton } from "./FriendButton";
+import AvatarBottomSheet from "./AvatarBottomSheet";
 
 const userOptions = [
   { id: 1, title: "Account", link: "" },
@@ -38,6 +40,9 @@ const UserOptionButton = (key, title, link) => (
 
 export default function UserDrawer(props) {
   // const [userData, setUserData] = useState();
+
+  const [showAvatars, setShowAvatars] = useState(false);
+
   const [userStatus, setUserStatus] = useState(
     DataCenter.userInfo.imUserInfo.state
   );
@@ -87,15 +92,13 @@ export default function UserDrawer(props) {
     // updateUnreadCountHandler();
 
     const retriveUserInfoHandler = () => {
-      console.log("im user info: ", DataCenter.userInfo.imUserInfo);
-      console.log("user email: ", DataCenter.userInfo.userProfile.email);
       setUserInfo((pre) => {
         return {
           ...pre,
           name: DataCenter.userInfo.imUserInfo.name,
           accountId: DataCenter.userInfo.accountId,
           tag: DataCenter.userInfo.imUserInfo.tag,
-          // avatar:DataCenter.userInfo.accountId
+          avatar: DataCenter.userInfo.imUserInfo.avatar,
         };
       });
       setUserStatus(DataCenter.userInfo.imUserInfo.state);
@@ -103,17 +106,11 @@ export default function UserDrawer(props) {
 
     retriveUserInfoHandler();
 
-    JSEvent.on(
-      DataEvents.Notification.NotificationState_Updated,
-      updateUnreadCountHandler
-    );
+    JSEvent.on(DataEvents.Notification.NotificationState_Updated, updateUnreadCountHandler);
     // JSEvent.on(UIEvents.User.UserState_IsLoggedin, retriveUserInfoHandler);
     JSEvent.on(UIEvents.Drawer.Drawer_Open, onDrawerOpen)
     JSEvent.on(DataEvents.User.UserState_IsLoggedin, retriveUserInfoHandler);
-    JSEvent.on(
-      DataEvents.User.UserInfo_Current_Updated,
-      retriveUserInfoHandler
-    );
+    JSEvent.on(DataEvents.User.UserInfo_Current_Updated, retriveUserInfoHandler);
 
     return () => {
       JSEvent.remove(DataEvents.Notification.NotificationState_Updated, updateUnreadCountHandler);
@@ -162,20 +159,27 @@ export default function UserDrawer(props) {
             className="w-[100%] h-[100%]"
             resizeMode="cover"
           /> */}
-          <Avatar
-            tag={userInfo.tag}
-            name={userInfo.name}
-            size={{ w: 80, h: 80, font: 40 }}
+          <Pressable
+            onPress={() => {
+              setShowAvatars(true);
+            }}
           >
-            <View className="absolute right-0 bottom-0">
-              <StateIndicator
-                state={userStatus}
-                onlineState={LesConstants.IMUserOnlineState.Online}
-                bgColor={"#080F14"}
-                size={22}
-              />
-            </View>
-          </Avatar>
+            <Avatar
+              tag={userInfo.tag}
+              name={userInfo.name}
+              avatar={userInfo.avatar}
+              size={{ w: 80, h: 80, font: 40 }}
+            >
+              <View className="absolute right-0 bottom-0">
+                <StateIndicator
+                  state={userStatus}
+                  onlineState={LesConstants.IMUserOnlineState.Online}
+                  bgColor={"#080F14"}
+                  size={22}
+                />
+              </View>
+            </Avatar>
+          </Pressable>
         </View>
 
         <View className="absolute left-[5%] top-[5vh] ">
@@ -240,6 +244,13 @@ export default function UserDrawer(props) {
       <StatusBottomSheet
         bottomSheetModalRef={bottomSheetModalRef}
         setUserStatus={setUserStatus}
+      />
+
+      <AvatarBottomSheet
+        visible={showAvatars}
+        onClosed={() => {
+          setShowAvatars(false);
+        }}
       />
     </View>
   );

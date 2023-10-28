@@ -78,6 +78,7 @@ const Bubble = ({ isOwn, senderUserInfo, message }) => {
         <Avatar
           tag={senderUserInfo?.tag}
           name={senderUserInfo?.name}
+          avatar={senderUserInfo?.avatar}
           size={{ w: 45, h: 45, font: 20 }}
         />
       </View>
@@ -134,6 +135,7 @@ const Bubble = ({ isOwn, senderUserInfo, message }) => {
         <Avatar
           tag={senderUserInfo?.tag}
           name={senderUserInfo?.name}
+          avatar={senderUserInfo?.avatar}
           size={{ w: 45, h: 45, font: 20 }}
         />
       </View>

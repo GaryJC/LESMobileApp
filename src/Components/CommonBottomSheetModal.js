@@ -1,5 +1,6 @@
 import { BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet"
 import { useEffect, useRef, useState } from "react"
+import { Text, View } from "react-native"
 
 const bottomBackdrop = (props) => (
     <BottomSheetBackdrop
@@ -20,20 +21,23 @@ const bottomBackDropUnpressable = (props) => (
 
 /**
  * 
- * @param {{visible:boolean, onOpen:()=void, onClosed:()=>void, onIndexChanged:(index)=>void, snapPoints:(string | number)[],index:number,closable:boolean}} p
+ * @param {{visible:boolean, onOpen:()=void, onClosing:()=>void,onClosed:()=>void, onIndexChanged:(index)=>void, title:string|null,snapPoints:(string | number)[],index:number,closable:boolean}} p
  * @returns 
  */
-const CommonBottomSheetModal = ({ visible = false, onOpen, onClosed, onIndexChanged, snapPoints, index = 0, closable = true, children }) => {
+const CommonBottomSheetModal = ({ visible = false, onOpen, onClosing, onClosed, onIndexChanged, title = "", snapPoints, index = 0, closable = true, children }) => {
     const [show, setShow] = useState(visible);
     const [_closable, setClosable] = useState(closable);
+    const [sheetIndex, setSheetIndex] = useState(-1);
     const sheetRef = useRef(null);
 
     const handleSheetChanged = index => {
+        setSheetIndex(index);
         if (onIndexChanged != null) {
             onIndexChanged(index);
         }
         if (index == -1) {
             if (onClosed != null) onClosed();
+            setShow(false);
         }
     }
 
@@ -54,16 +58,22 @@ const CommonBottomSheetModal = ({ visible = false, onOpen, onClosed, onIndexChan
         }
     }, [visible])
 
+    const text = title == null || title == "" ? null
+        : <View className="flex justify-center items-center w-full mb-2">
+            <Text className="text-white text-lg font-bold">{title}</Text>
+        </View>
+
     return <BottomSheetModal
         ref={sheetRef}
-        index={index}
+        index={show ? index : -1}
         snapPoints={snapPoints}
         enablePanDownToClose={_closable}
-        backdropComponent={_closable ? bottomBackdrop : bottomBackDropUnpressable}
+        backdropComponent={_closable && sheetIndex != -1 ? bottomBackdrop : bottomBackDropUnpressable}
         enableContentPanningGesture={false}
         backgroundStyle={{ backgroundColor: "#262F38" }}
         onChange={handleSheetChanged}
     >
+        {text}
         {children}
     </BottomSheetModal>
 
