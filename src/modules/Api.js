@@ -15,8 +15,13 @@ const API = {
   sendCodeRequest: () => API.account + "requestSendCode",
   verifyCodeByToken: () => API.account + "verifyCodeByToken",
   updateReferrer: () => API.account + "updateReferrer",
-  
-  twitterGetToken: () => API.twitter +"get_token_sec"
+
+  twitterGetToken: () => API.twitter + "get_token_sec",
+
+
+
+  headerIndex: () => Constants.Address.ResServer + "/headers/index",
+  headerUrl: (header) => Constants.Address.ResServer + "/headers/" + header,
 };
 
 export default API;

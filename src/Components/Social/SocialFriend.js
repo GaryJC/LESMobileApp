@@ -7,6 +7,7 @@ import {
   SectionList,
   Text,
   View,
+  ActivityIndicator,
 } from "react-native";
 
 import { FriendList } from "../FriendList";
@@ -41,7 +42,7 @@ const RecommendedFriend = (id, name, avatar) => (
 */
 
 export default function SocialFriend() {
-  const [friendsData, setFriendsData] = useState([]);
+  const [friendsData, setFriendsData] = useState(null);
 
   // 可传参数 { id, state, onlineState }
   const onFriendStateUIUpdated = async () => {
@@ -51,25 +52,25 @@ export default function SocialFriend() {
     const friendList = await FriendService.Inst.getFriendList();
     console.log("friend list: ", friendList);
     const online = friendList
-      .filter(
-        (item) =>
-          item.onlineState === LesConstants.IMUserOnlineState.Online &&
-          item.state !== LesConstants.IMUserState.Hiding
-      )
+      // .filter(
+      //   (item) =>
+      //     item.onlineState === LesConstants.IMUserOnlineState.Online &&
+      //     item.state !== LesConstants.IMUserState.Hiding
+      // )
       .sort((a, b) => a.name.localeCompare(b.name, { sensitivity: "base" }));
-    const offline = friendList
-      .filter(
-        (item) =>
-          item.onlineState !== LesConstants.IMUserOnlineState.Online ||
-          item.state === LesConstants.IMUserState.Hiding
-      )
-      .sort((a, b) => a.name.localeCompare(b.name, { sensitivity: "base" }));
+    // const offline = friendList
+    //   .filter(
+    //     (item) =>
+    //       item.onlineState !== LesConstants.IMUserOnlineState.Online ||
+    //       item.state === LesConstants.IMUserState.Hiding
+    //   )
+    //   .sort((a, b) => a.name.localeCompare(b.name, { sensitivity: "base" }));
     // setFriendsData([
     //   // { title: "Recommended Friends", data: [] },
     //   { title: "Online", data: online },
     //   { title: "Offline", data: offline },
     // ]);
-    setFriendsData([...online, ...offline]);
+    setFriendsData(online);
   };
 
   useEffect(() => {
@@ -120,7 +121,7 @@ export default function SocialFriend() {
           /> */}
       <FlatList
         data={friendsData}
-        keyExtractor={(item, index) => item.id + index}
+        keyExtractor={(item, index) => item.id}
         renderItem={({ item }) => (
           <FriendList
             friend={item}

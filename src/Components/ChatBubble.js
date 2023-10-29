@@ -20,10 +20,18 @@ const SpecialMessage = ({ message }) => {
   // const username = userInfo.find(
   //   (user) => user.id === message.recipientId
   // )?.name;
-  const [recipient, sender] = IMUserInfoService.Inst.getCachedUser([
-    message.recipientId,
-    message.senderId,
-  ]);
+
+  let recipient = null;
+  let sender = null;
+
+  if (message?.senderId === message?.recipientId) {
+    const users = IMUserInfoService.Inst.getCachedUser([message.senderId]);
+    recipient = sender = users[0];
+  } else {
+    const users = IMUserInfoService.Inst.getCachedUser([message.recipientId, message.senderId,]);
+    [recipient, sender] = users;
+  }
+
 
   switch (message?.contentType ?? 0) {
     case LesConstants.IMMessageContentType.Group_MemberAdded:
@@ -70,6 +78,7 @@ const Bubble = ({ isOwn, senderUserInfo, message }) => {
         <Avatar
           tag={senderUserInfo?.tag}
           name={senderUserInfo?.name}
+          avatar={senderUserInfo?.avatar}
           size={{ w: 45, h: 45, font: 20 }}
         />
       </View>
@@ -126,6 +135,7 @@ const Bubble = ({ isOwn, senderUserInfo, message }) => {
         <Avatar
           tag={senderUserInfo?.tag}
           name={senderUserInfo?.name}
+          avatar={senderUserInfo?.avatar}
           size={{ w: 45, h: 45, font: 20 }}
         />
       </View>

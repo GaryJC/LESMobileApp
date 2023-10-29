@@ -71,9 +71,9 @@ class IMListenerService {
     //   );
     // };
 
-    LesPlatformCenter.IMListeners.onFriendRemoved = (friendId) => {
-      console.log(`被好友 ${friendId} 从列表中移除`);
-    };
+    // LesPlatformCenter.IMListeners.onFriendRemoved = (friendId) => {
+    //   console.log(`被好友 ${friendId} 从列表中移除`);
+    // };
 
     LesPlatformCenter.IMListeners.onBlockUser = (blockedUser) => {
       console.log("已屏蔽用户:", userToString(blockedUser));
@@ -86,10 +86,10 @@ class IMListenerService {
     LesPlatformCenter.IMListeners.onUserInfoUpdated = (user, state) => {
       console.log(
         "状态更新：",
-        `[${user.getId()}]${user.getName()}#${user.getTag()} ${LesConstants.IMUserState[state]
+        `[${user.id}]${user.name}#${user.tag} ${LesConstants.IMUserState[state]
         }`
       );
-      DataSavingService.Inst.setImUserInfo({ id: user.getId(), name: user.getName(), tag: user.getTag(), state: state });
+      DataSavingService.Inst.setImUserInfo({ ...user, state: state });
     };
   }
 

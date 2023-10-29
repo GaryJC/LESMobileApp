@@ -39,6 +39,10 @@ class FriendData {
     return this.#imUserInfo == null ? 0 : this.#imUserInfo.tag;
   }
 
+  get avatar() {
+    return this.#imUserInfo?.avatar ?? "";
+  }
+
   get state() {
     return this.#imUserInfo == null ? IMUserState.Hiding : this.#imUserInfo.state;
   }

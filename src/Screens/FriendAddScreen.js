@@ -25,13 +25,14 @@ const FriendAddScreen = () => {
         tag
       );
       const { state, userdata } = result;
-      if (userdata) {
-        const name = userdata.getName();
-        const tag = userdata.getTag();
-        const id = userdata.getId();
+      console.log("====", state, userdata);
+      if (userdata.id != null) {
+        //const name = userdata.getName();
+        //const tag = userdata.getTag();
+        //const id = userdata.getId();
         // 排除搜索结果是自己的情况
-        if (id !== DataCenter.userInfo.accountId) {
-          setUserData({ name: name, tag: tag, id: id, state: state });
+        if (userdata.id !== DataCenter.userInfo.accountId) {
+          setUserData({ ...userdata, state: state });
         }
       }
       // console.log("find user's result: ", userData.getId());

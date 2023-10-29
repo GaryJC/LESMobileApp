@@ -31,7 +31,7 @@ const UserHeader = () => {
                 name: DataCenter.userInfo.imUserInfo.name,
                 accountId: DataCenter.userInfo.accountId,
                 tag: DataCenter.userInfo.imUserInfo.tag,
-                avatar: DataCenter.userInfo.userProfile.avatarUrl,
+                avatar: DataCenter.userInfo.imUserInfo.avatar,
                 state: DataCenter.userInfo.imUserInfo.state,
                 onlineState: DataCenter.userInfo.imUserInfo.onlineState,
             };
@@ -60,7 +60,8 @@ const UserHeader = () => {
         <Avatar
             tag={userInfo.tag}
             name={userInfo.name}
-            size={{ w: 35, h: 35, font: 14 }}
+            avatar={userInfo.avatar}
+            size={{ w: 40, h: 40, font: 18 }}
         >
             <View className="absolute right-[-3px] bottom-[-3px]">
                 <StateIndicator

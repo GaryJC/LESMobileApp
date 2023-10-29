@@ -96,7 +96,7 @@ export default function FriendBottomSheet({
         // 移除缓存中对应的聊天列表
         DataCenter.messageCache.removeChatListItem(chatId);
         JSEvent.emit(UIEvents.Message.Message_Chat_List_Removed, chatId);
-        setIsSheetOpen(false);
+        //setIsSheetOpen(false);
       })
       .catch((e) => {
         console.log("移除好友失败, code:", e);

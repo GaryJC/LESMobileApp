@@ -67,6 +67,7 @@ export default class UserProfile {
     displayName;
     /**
      * @type string
+     * @deprecated 使用IMUserInfo中的Avatar
      */
     avatarUrl;
     /**
