@@ -1,4 +1,10 @@
-import { View, Text, ImageBackground, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  ImageBackground,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import Constants from "../modules/Constants";
 import React, { useState, useEffect } from "react";
 import DataCenter from "../modules/DataCenter";
@@ -6,6 +12,8 @@ import formatDate from "../utils/formatDate";
 import Avatar from "./Avatar";
 import { LesConstants } from "les-im-components";
 import IMUserInfoService from "../services/IMUserInfoService";
+import FriendBottomSheet from "./FriendBottomSheet";
+import MyProfileBottomSheet from "./MyProfileBottomSheet";
 
 const showTimestamp = (preMessage, message) => {
   if (preMessage) {
@@ -50,87 +58,122 @@ const SpecialMessage = ({ message }) => {
 const TimeStamp = ({ date }) => (
   <View className="px-[10px] flex-row items-center">
     <View className="h-[1px] flex-1 bg-[#494949] mr-[5px]" />
-    <Text className=" text-[#CFCFCF]" style={{ fontSize: DataCenter.userInfo.userSetting.getChatFontSize() }}>{date}</Text>
+    <Text
+      className=" text-[#CFCFCF]"
+      style={{ fontSize: DataCenter.userInfo.userSetting.getChatFontSize() }}
+    >
+      {date}
+    </Text>
     <View className="h-[1px] flex-1 bg-[#494949] ml-[5px]" />
   </View>
 );
 
 const Bubble = ({ isOwn, senderUserInfo, message }) => {
   const fontSize = DataCenter.userInfo.userSetting.getChatFontSize();
-  return <View
-    className={
-      isOwn
-        ? "flex-row py-[10px] justify-end"
-        : "flex-row py-[10px] justify-start"
-    }
-  >
-    {/* {!isOwn && <Avatar avatar={userInfo.avatar} />} */}
-    {!isOwn && (
-      <View className=" w-[45px] h-[45px]">
-        <Avatar
-          tag={senderUserInfo?.tag}
-          name={senderUserInfo?.name}
-          size={{ w: 45, h: 45, font: 20 }}
-        />
-      </View>
-    )}
 
-    <View className={
-      isOwn
-        ? "flex items-end"
-        : "flex items-start"
-    }>
-      <View className={
+  const [ownProfileVisible, setOwnProfileVisible] = useState(false);
+  const [otherProfileVisible, setOtherProfileVisible] = useState(false);
+
+  const onOwnProfileOpen = () => {
+    setOwnProfileVisible(true);
+  };
+
+  const onOwnProfileClosed = () => {
+    setOwnProfileVisible(false);
+  };
+
+  const onOtherProfileOpen = () => {
+    setOtherProfileVisible(true);
+  };
+
+  const onOtherProfileClosed = () => {
+    setOtherProfileVisible(false);
+  };
+
+  return (
+    <View
+      className={
         isOwn
-          ? "flex-row items-end justify-end pr-[1px]"
-          : "flex-row items-end justify-start"
-      }>
-        <Text
+          ? "flex-row py-[10px] justify-end"
+          : "flex-row py-[10px] justify-start"
+      }
+    >
+      {/* {!isOwn && <Avatar avatar={userInfo.avatar} />} */}
+      {!isOwn && (
+        <TouchableOpacity onPress={onOtherProfileOpen}>
+          <View className=" w-[45px] h-[45px]">
+            <Avatar
+              tag={senderUserInfo?.tag}
+              name={senderUserInfo?.name}
+              size={{ w: 45, h: 45, font: 20 }}
+            />
+          </View>
+        </TouchableOpacity>
+      )}
+
+      <View className={isOwn ? "flex items-end" : "flex items-start"}>
+        <View
           className={
             isOwn
-              ? "text-white mr-[5px]"
-              : "text-white ml-[5px]"
+              ? "flex-row items-end justify-end pr-[1px]"
+              : "flex-row items-end justify-start"
           }
-          style={{ fontSize: fontSize }}
         >
-          {senderUserInfo?.name}
-        </Text>
-      </View>
-      <View
-        className={
-          isOwn
-            ? "flex-row justify-center pr-[30vw] mr-[5px] bg-[#5EB857] px-2 py-2 rounded"
-            : "flex-row justify-center pl-[30vw] ml-[5px] bg-[#445465] px-2 py-2 rounded"
-        }
-      >
-        <Text
+          <Text
+            className={isOwn ? "text-white mr-[5px]" : "text-white ml-[5px]"}
+            style={{ fontSize: fontSize }}
+          >
+            {senderUserInfo?.name}
+          </Text>
+        </View>
+        <View
           className={
-            isOwn ? "text-black max-w-[50vw]" : "text-white max-w-[50vw]"
+            isOwn
+              ? "flex-row justify-center pr-[30vw] mr-[5px] bg-[#5EB857] px-2 py-2 rounded"
+              : "flex-row justify-center pl-[30vw] ml-[5px] bg-[#445465] px-2 py-2 rounded"
           }
-          style={{ fontSize: fontSize }}
         >
-          {message?.content}
-        </Text>
-        {message?.status === Constants.deliveryState.delivering && (
-          <ActivityIndicator
-            className={isOwn ? "pr-[10px]" : "pl-[10px]"}
-            size={"small"}
-            color={"#8D8D8D"}
-          />
-        )}
+          <Text
+            className={
+              isOwn ? "text-black max-w-[50vw]" : "text-white max-w-[50vw]"
+            }
+            style={{ fontSize: fontSize }}
+          >
+            {message?.content}
+          </Text>
+          {message?.status === Constants.deliveryState.delivering && (
+            <ActivityIndicator
+              className={isOwn ? "pr-[10px]" : "pl-[10px]"}
+              size={"small"}
+              color={"#8D8D8D"}
+            />
+          )}
+        </View>
       </View>
+      {/* {isOwn && <Avatar avatar={userInfo.avatar} />} */}
+      {isOwn && (
+        <TouchableOpacity onPress={onOwnProfileOpen}>
+          <View className=" w-[45px] h-[45px]">
+            <Avatar
+              tag={senderUserInfo?.tag}
+              name={senderUserInfo?.name}
+              size={{ w: 45, h: 45, font: 20 }}
+            />
+          </View>
+        </TouchableOpacity>
+      )}
+      <FriendBottomSheet
+        visible={otherProfileVisible}
+        onClosed={onOtherProfileClosed}
+        selectedFriend={senderUserInfo}
+      />
+      <MyProfileBottomSheet
+        visible={ownProfileVisible}
+        onClosed={onOwnProfileClosed}
+        selectedFriend={senderUserInfo}
+      />
     </View>
-    {/* {isOwn && <Avatar avatar={userInfo.avatar} />} */}
-    {isOwn && (
-      <View className=" w-[45px] h-[45px]">
-        <Avatar
-          tag={senderUserInfo?.tag}
-          name={senderUserInfo?.name}
-          size={{ w: 45, h: 45, font: 20 }}
-        />
-      </View>
-    )}
-  </View>
+  );
 };
 
 export const ChatBubbleV2 = React.memo(

@@ -20,13 +20,20 @@ import { UIEvents } from "../modules/Events";
 import FriendService from "../services/FriendService";
 import Avatar from "./Avatar";
 import DatabaseService from "../services/DatabaseService";
+import UserBottomSheetHeader from "./UserBottomSheetHeader";
+import CommonBottomSheetModal from "./CommonBottomSheetModal";
 
 export default function FriendBottomSheet({
   bottomSheetModalRef,
   selectedFriend,
+  onClosed,
+  visible,
 }) {
   const [isFriend, setIsFriend] = useState(false);
   console.log("selected friend: ", selectedFriend);
+
+  console.log("bbb: ", visible);
+
   useEffect(() => {
     const checkIsFriend = async () => {
       let friendList = await FriendService.Inst.getFriendList();
@@ -40,7 +47,8 @@ export default function FriendBottomSheet({
     checkIsFriend();
   }, [selectedFriend]);
 
-  const snapPoints = useMemo(() => ["60%", "50%"]);
+  // const snapPoints = useMemo(() => ["60%", "50%"]);
+  const snapPoints = useMemo(() => ["60%", "80%"]);
   // const bottomSheetRef = useRef(null);
   const renderBackdrop = useCallback(
     (props) => (
@@ -63,7 +71,8 @@ export default function FriendBottomSheet({
   }, []);
 
   const goChatHandler = () => {
-    bottomSheetModalRef.current?.close();
+    // bottomSheetModalRef.current?.close();
+    onClosed();
     const chatId = MessageCaches.MakeChatID(
       selectedFriend?.id,
       DataCenter.userInfo.accountId
@@ -124,28 +133,28 @@ export default function FriendBottomSheet({
   );
 
   return (
-    <BottomSheetModal
-      ref={bottomSheetModalRef}
-      index={1}
+    // <BottomSheetModal
+    //   ref={bottomSheetModalRef}
+    //   index={1}
+    //   snapPoints={snapPoints}
+    //   onChange={handleSheetChanges}
+    //   enablePanDownToClose={true}
+    //   backdropComponent={renderBackdrop}
+    //   backgroundStyle={{ backgroundColor: "#262F38" }}
+    //   handleIndicatorStyle={{ backgroundColor: "white" }}
+    // >
+    <CommonBottomSheetModal
+      visible={visible}
       snapPoints={snapPoints}
-      onChange={handleSheetChanges}
-      enablePanDownToClose={true}
-      backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: "#262F38" }}
-      handleIndicatorStyle={{ backgroundColor: "white" }}
+      index={0}
+      onClosed={onClosed}
     >
       <View className="flex-1">
-        <View>
+        {/* <View>
           <ImageBackground
             source={require("../../assets/img/userBg.jpg")}
             className="h-[25vh] items-center relative"
           >
-            {/* <Image
-              source={{
-                uri: `https://i.pravatar.cc/?img=${selectedFriend?.id}`,
-              }}
-              className="w-[100px] h-[100px] rounded-full absolute bottom-[-50px] left-[25px]"
-            /> */}
             <View className="w-[100px] h-[100px] absolute bottom-[-75px] left-[5vw]">
               <Avatar tag={selectedFriend?.tag} name={selectedFriend?.name} />
             </View>
@@ -158,7 +167,8 @@ export default function FriendBottomSheet({
           <Text className="text-white font-bold pl-[5px]">
             #{selectedFriend?.tag}
           </Text>
-        </View>
+        </View> */}
+        <UserBottomSheetHeader user={selectedFriend} />
         {isFriend && (
           <>
             <View className="flex-row justify-between mt-[10px] mx-[5vw]">
@@ -196,6 +206,7 @@ export default function FriendBottomSheet({
           </>
         )}
       </View>
-    </BottomSheetModal>
+    </CommonBottomSheetModal>
+    // </BottomSheetModal>
   );
 }

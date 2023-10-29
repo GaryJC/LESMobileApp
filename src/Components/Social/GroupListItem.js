@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { useEffect } from "react";
 import DataCenter from "../../modules/DataCenter";
 import { LesConstants } from "les-im-components";
@@ -11,6 +11,7 @@ import { UIEvents } from "../../modules/Events";
 import formatDate from "../../utils/formatDate";
 import FriendListChatButton from "../SocialListChatButton";
 import { truncate } from "lodash";
+import { useNavigation } from "@react-navigation/native";
 
 const GroupListItem = ({ groupData }) => {
   console.log("gpp: ", groupData, groupData.latestMessage);
@@ -20,24 +21,32 @@ const GroupListItem = ({ groupData }) => {
   );
   console.log("groupInfo: ", groupInfo);
 
-  const countBadgeClass = "absolute bottom-[-2px] right-[-5px] rounded-full w-[20px] h-[20px] bg-[#FF3737] justify-center items-center";
+  const navigation = useNavigation();
+
+  const onGroupInfoOpen = () => {
+    navigation.navigate("GroupInfo", { targetId: groupData.targetId });
+  };
+
+  const countBadgeClass =
+    "absolute bottom-[-2px] right-[-5px] rounded-full w-[20px] h-[20px] bg-[#FF3737] justify-center items-center";
 
   return (
     <View className="mb-[10px] flex-row justify-between">
       <View className="flex-row">
-        <View className="w-[50px] h-[50px]">
-          <Avatar
-            name={groupInfo?.name}
-            isGroup={true}
-          />
-          {groupData.newMessageCount !== 0 && (
-            <View className={countBadgeClass}>
-              <Text className="text-white font-bold text-[12px]">
-                {groupData.newMessageCount > 99 ? "99+" : groupData.newMessageCount}
-              </Text>
-            </View>
-          )}
-        </View>
+        <TouchableOpacity onPress={onGroupInfoOpen}>
+          <View className="w-[50px] h-[50px]">
+            <Avatar name={groupInfo?.name} isGroup={true} />
+            {groupData.newMessageCount !== 0 && (
+              <View className={countBadgeClass}>
+                <Text className="text-white font-bold text-[12px]">
+                  {groupData.newMessageCount > 99
+                    ? "99+"
+                    : groupData.newMessageCount}
+                </Text>
+              </View>
+            )}
+          </View>
+        </TouchableOpacity>
         <View className="ml-[10px] justify-between">
           <View className="flex-row">
             <View className="flex-row items-end">

@@ -13,6 +13,17 @@ export const FriendList = ({ friend, button, hasTag }) => {
 
   const [selectedFriend, setSelectedFriend] = useState();
 
+  // friend bottom sheet visible state
+  const [visible, setVisible] = useState(false);
+
+  const onClosed = () => {
+    setVisible(false);
+  };
+
+  const onOpen = () => {
+    setVisible(true);
+  };
+
   // const bottomSheetModalRef = useRef(null);
 
   const handleSheetChanges = useCallback((index) => {
@@ -30,22 +41,20 @@ export const FriendList = ({ friend, button, hasTag }) => {
     <View>
       <View className="flex-row justify-between mb-[10px]">
         <View className="flex-row items-center">
-          <TouchableOpacity onPress={openSheet}>
+          <TouchableOpacity onPress={onOpen}>
             <View className="flex-row">
               <View className="relative">
                 <View className="w-[55px] h-[55px] mr-[10px]">
-                  <Avatar tag={friend.tag} name={friend.name} >
+                  <Avatar tag={friend.tag} name={friend.name}>
                     <View className="absolute right-0 bottom-0">
                       <StateIndicator
                         state={friend.state}
                         onlineState={friend.onlineState}
-                        bgColor={'#080F14'}
+                        bgColor={"#080F14"}
                       />
                     </View>
                   </Avatar>
                 </View>
-
-
               </View>
               <View className="flex-row items-center">
                 <Text className="text-white text-[20px] font-bold">
@@ -62,8 +71,11 @@ export const FriendList = ({ friend, button, hasTag }) => {
       </View>
       <FriendBottomSheet
         bottomSheetModalRef={bottomSheetModalRef}
-        selectedFriend={selectedFriend}
-      // openSheet={() => openSheet(item)}
+        // selectedFriend={selectedFriend}
+        selectedFriend={friend}
+        // openSheet={() => openSheet(item)}
+        visible={visible}
+        onClosed={onClosed}
       />
     </View>
   );
