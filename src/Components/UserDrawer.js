@@ -5,6 +5,7 @@ import {
   ScrollView,
   TouchableHighlight,
   TouchableOpacity,
+  Pressable,
 } from "react-native";
 import { UserData } from "../Data/dummyData";
 import { useEffect, useState, useRef, useMemo, useCallback } from "react";
@@ -28,6 +29,7 @@ import NotiSettings from "./UserDrawer/NotiSettings";
 import MyProfileButton from "./UserDrawer/MyProfileButton";
 import UserBottomSheetHeader from "./UserBottomSheetHeader";
 import SocialMedia from "./UserDrawer/SocialMediaButton";
+import AvatarBottomSheet from "./AvatarBottomSheet";
 
 const userOptions = [
   { id: 1, title: "Account", link: "" },
@@ -43,6 +45,9 @@ const UserOptionButton = (key, title, link) => (
 
 export default function UserDrawer(props) {
   // const [userData, setUserData] = useState();
+
+  const [showAvatars, setShowAvatars] = useState(false);
+
   const [userStatus, setUserStatus] = useState(
     DataCenter.userInfo.imUserInfo.state
   );
@@ -73,6 +78,10 @@ export default function UserDrawer(props) {
     setIsSheetOpen(false);
   }, []);
 
+  const onDrawerOpen = useCallback(() => {
+    props.navigation.openDrawer();
+  }, [props.navigation]);
+
   useEffect(() => {
     setUserStatus(DataCenter.userInfo.imUserInfo.state);
 
@@ -92,15 +101,13 @@ export default function UserDrawer(props) {
     };
 
     const retriveUserInfoHandler = () => {
-      console.log("im user info: ", DataCenter.userInfo.imUserInfo);
-      console.log("user email: ", DataCenter.userInfo.userProfile.email);
       setUserInfo((pre) => {
         return {
           ...pre,
           name: DataCenter.userInfo.imUserInfo.name,
           accountId: DataCenter.userInfo.accountId,
           tag: DataCenter.userInfo.imUserInfo.tag,
-          // avatar:DataCenter.userInfo.accountId
+          avatar: DataCenter.userInfo.imUserInfo.avatar,
         };
       });
       setUserStatus(DataCenter.userInfo.imUserInfo.state);
@@ -166,7 +173,7 @@ export default function UserDrawer(props) {
 
   return (
     <View className="flex-1 " style={{ backgroundColor: "#080F14" }}>
-      <UserBottomSheetHeader user={DataCenter.userInfo.imUserInfo}>
+      <UserBottomSheetHeader user={DataCenter.userInfo.imUserInfo} isOwn={true}>
         <View className="absolute left-[5%] top-[5vh] ">
           <RedDotIcon
             iconName="notifications"
@@ -250,6 +257,13 @@ export default function UserDrawer(props) {
       <StatusBottomSheet
         bottomSheetModalRef={bottomSheetModalRef}
         setUserStatus={setUserStatus}
+      />
+
+      <AvatarBottomSheet
+        visible={showAvatars}
+        onClosed={() => {
+          setShowAvatars(false);
+        }}
       />
     </View>
   );

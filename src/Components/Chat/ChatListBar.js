@@ -299,6 +299,7 @@ const ChatListBarItem = ({ chatListItemData, isSelected, onClick }) => {
             size={{ w: 50, h: 50, font: 20, groupMark: 20 }}
             tag={target?.data?.tag ?? 0}
             name={target?.data?.name ?? "?"}
+            avatar={target?.data?.avatar}
             isGroup={itemData[0]?.type === Constants.ChatListType.Group && true}
             isSelected={selected}
           >

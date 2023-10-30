@@ -45,7 +45,11 @@ export const FriendList = ({ friend, button, hasTag }) => {
             <View className="flex-row">
               <View className="relative">
                 <View className="w-[55px] h-[55px] mr-[10px]">
-                  <Avatar tag={friend.tag} name={friend.name}>
+                  <Avatar
+                    tag={friend.tag}
+                    name={friend.name}
+                    avatar={friend.avatar}
+                  >
                     <View className="absolute right-0 bottom-0">
                       <StateIndicator
                         state={friend.state}

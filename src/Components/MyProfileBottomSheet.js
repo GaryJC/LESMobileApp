@@ -9,11 +9,14 @@ const MyProfileBottomSheet = ({ visible, onClosed }) => {
     <CommonBottomSheetModal
       visible={visible}
       onClosed={onClosed}
-      snapPoints={["85%"]}
+      snapPoints={["65%"]}
       index={0}
     >
       <View className="flex-1">
-        <UserBottomSheetHeader user={DataCenter.userInfo.imUserInfo} />
+        <UserBottomSheetHeader
+          user={DataCenter.userInfo.imUserInfo}
+          isOwn={true}
+        />
         <Links />
       </View>
     </CommonBottomSheetModal>

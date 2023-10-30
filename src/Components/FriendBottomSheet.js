@@ -105,7 +105,7 @@ export default function FriendBottomSheet({
         // 移除缓存中对应的聊天列表
         DataCenter.messageCache.removeChatListItem(chatId);
         JSEvent.emit(UIEvents.Message.Message_Chat_List_Removed, chatId);
-        setIsSheetOpen(false);
+        //setIsSheetOpen(false);
       })
       .catch((e) => {
         console.log("移除好友失败, code:", e);
@@ -168,7 +168,7 @@ export default function FriendBottomSheet({
             #{selectedFriend?.tag}
           </Text>
         </View> */}
-        <UserBottomSheetHeader user={selectedFriend} />
+        <UserBottomSheetHeader user={selectedFriend} isOwn={false} />
         {isFriend && (
           <>
             <View className="flex-row justify-between mt-[10px] mx-[5vw]">

@@ -1,8 +1,9 @@
-import { LesPlatformCenter, LesConstants } from "les-im-components";
+import { LesPlatformCenter, LesConstants, IMUserBaseData } from "les-im-components";
 import IMUserInfo from "../Models/IMUserInfo";
 import JSEvent from "../utils/JSEvent";
 import { DataEvents } from "../modules/Events";
 import DataCenter from "../modules/DataCenter";
+import DataSavingService from "./DataSavingService";
 
 const { IMUserState, IMUserOnlineState } = LesConstants;
 
@@ -38,14 +39,13 @@ export default class IMUserInfoService {
 
   /**
    * 更新用户数据，不存在则新增
-   * @param {number} id id
-   * @param {string} name name
-   * @param {num} tag tag
+   * @param {IMUserBaseData} userBaseData
    * @param {IMUserState} state state
    * @param {IMUserOnlineState} onlineState
    * @returns {IMUserInfo}
    */
-  updateUser(id, name, tag, state, onlineState) {
+  updateUser(userBaseData, state, onlineState) {
+    const { id, name, tag, avatar } = userBaseData;
     let userInfo = this.userList[id];
     let changed = false;
     if (userInfo == null) {
@@ -54,6 +54,7 @@ export default class IMUserInfoService {
         id,
         name,
         tag,
+        avatar,
         state,
         onlineState
       );
@@ -61,7 +62,9 @@ export default class IMUserInfoService {
       changed =
         userInfo.updateName(name, tag) ||
         userInfo.changeState(state) ||
-        userInfo.changeOnlineState(onlineState);
+        userInfo.changeOnlineState(onlineState) ||
+        userInfo.changeAvatar(avatar);
+      ;
     }
 
     console.log(`update user info :${userInfo.toString()}`);
@@ -91,9 +94,7 @@ export default class IMUserInfoService {
       state
     ) => {
       this.updateUser(
-        user.getId(),
-        user.getName(),
-        user.getTag(),
+        user,
         state,
         onlineState
       );
@@ -108,6 +109,7 @@ export default class IMUserInfoService {
     return new Promise((resolve, reject) => {
       LesPlatformCenter.IMFunctions.setState(state).then(code => {
         DataCenter.userInfo.imUserInfo.changeState(state);
+        DataSavingService.Inst.setImUserInfo({ state: state });
         resolve(state);
       }).catch(err => reject(err));
     })
@@ -126,10 +128,11 @@ export default class IMUserInfoService {
         //需要从服务器获取
         LesPlatformCenter.IMFunctions.getUsersData(miss).then(us => {
           us.forEach(u => {
-            const { id, name, tag, state, onlineState } = u;
-            const user = this.updateUser(id, name, tag, state, onlineState);
+            const { userData, state, onlineState } = u;
+            const user = this.updateUser(userData, state, onlineState);
             users.push(user);
           })
+          resolve(users);
         }).catch(err => reject(err));
       } else {
         resolve(users);

@@ -1,4 +1,4 @@
-import { LesConstants } from "les-im-components";
+import { IMUserBaseData, LesConstants } from "les-im-components";
 import DataCenter from "../modules/DataCenter";
 
 const { IMNotificationType, IMNotificationState } = LesConstants;
@@ -24,16 +24,10 @@ class Notifications {
     noti.type = pbData.getType();
     const sender = pbData.getSender();
     const reci = pbData.getRecipient();
-    noti.sender = {
-      id: sender.getId(),
-      name: sender.getName(),
-      tag: sender.getTag(),
-    };
-    noti.recipient = {
-      id: reci.getId(),
-      name: reci.getName(),
-      tag: reci.getTag(),
-    };
+    
+    noti.sender = new IMUserBaseData(sender);
+    noti.recipient = new IMUserBaseData(reci);
+
     noti.state = pbData.getState();
     noti.time = pbData.getTime();
     const group = pbData.getGroup();
@@ -207,13 +201,13 @@ class Notification {
 
   /**
    * 通知发送来源
-   * @type {id:number, name:string, tag:number}
+   * @type {id:number, name:string, tag:number, avatar:string}
    */
   sender;
 
   /**
    * 通知接收人
-   * @type {id:number, name:string, tag:number}
+   * @type {id:number, name:string, tag:number, avatar:string}
    */
   recipient;
 

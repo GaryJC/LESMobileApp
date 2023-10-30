@@ -125,17 +125,17 @@ class DataSavingService {
     DataCenter.userInfo.accountId = id;
     DataCenter.userInfo.loginKey = key;
     DataCenter.userInfo.email = email;
-    this.setImUserInfo({ id, name: imUserInfo.name, tag: imUserInfo.tag, state: imUserInfo.state, onlineState: LesConstants.IMUserOnlineState.Online });
+    this.setImUserInfo({ id, name: imUserInfo.name, tag: imUserInfo.tag, state: imUserInfo.state, avatar: imUserInfo.avatar, onlineState: LesConstants.IMUserOnlineState.Online });
     DataCenter.userInfo.userProfile.update(userProfile);
   }
 
   /**
-   * @param {{id: number | null, name: string | null, tag: number | null, state: IMUserState | null,  onlineState: IMUserOnlineState | null  } } userInfo 
+   * @param {{id: number | null, name: string | null, tag: number | null, state: IMUserState | null, avatar:string|null， onlineState: IMUserOnlineState | null  } } userInfo 
    */
   setImUserInfo(userInfo) {
-    const { id, name, tag, state, onlineState } = userInfo;
+    const { id, name, tag, state, avatar, onlineState } = userInfo;
     if (DataCenter.userInfo.imUserInfo == null) {
-      DataCenter.userInfo.imUserInfo = new IMUserInfo(id, name, tag, state, onlineState);
+      DataCenter.userInfo.imUserInfo = new IMUserInfo(id, name, tag, avatar, state, onlineState);
     } else {
       const info = DataCenter.userInfo.imUserInfo;
       if (id != null) {
@@ -152,6 +152,9 @@ class DataSavingService {
       }
       if (onlineState != null) {
         info.onlineState = onlineState;
+      }
+      if (avatar != null) {
+        info.avatar = avatar;
       }
     }
 

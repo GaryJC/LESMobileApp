@@ -1,5 +1,5 @@
 import IMUserInfo from "./IMUserInfo";
-import { LesConstants, LesPlatformCenter } from "les-im-components";
+import { IMUserBaseData, LesConstants, LesPlatformCenter } from "les-im-components";
 
 const {
   IMGroupMemberRole,
@@ -85,9 +85,10 @@ class ChatGroup {
           .then((list) => {
             var members = list.map((v) => {
               const groupId = v.getGroupid();
-              const memberId = v.getMemberinfo().getId();
-              const memberName = v.getMemberinfo().getName();
-              const memberTag = v.getMemberinfo().getTag();
+              // const memberId = v.getMemberinfo().getId();
+              // const memberName = v.getMemberinfo().getName();
+              // const memberTag = v.getMemberinfo().getTag();
+              const memberData = new IMUserBaseData(v.getMemberinfo());
               const memberState = v.getMemberstate();
               const memberRole = v.getMemberrole();
               const joinTime = v.getJointime();
@@ -95,9 +96,7 @@ class ChatGroup {
               const member = new ChatGroupMember();
               member.set(
                 groupId,
-                memberId,
-                memberName,
-                memberTag,
+                memberData,
                 memberState,
                 memberRole,
                 joinTime
@@ -165,12 +164,21 @@ class ChatGroupMember {
    */
   userInfo;
 
-  set(groupId, userId, userName, userTag, memberState, memberRole, jointTime) {
+  /**
+   * 
+   * @param {number} groupId 
+   * @param {IMUserBaseData} userData 
+   * @param {IMGroupMemberState} memberState 
+   * @param {IMGroupMemberRole} memberRole 
+   * @param {number} jointTime 
+   */
+  set(groupId, userData, memberState, memberRole, jointTime) {
     this.groupId = groupId;
     this.userInfo = new IMUserInfo(
-      userId,
-      userName,
-      userTag,
+      userData.id,
+      userData.name,
+      userData.tag,
+      userData.avatar,
       IMUserState.Online,
       IMUserOnlineState.Offline
     );
