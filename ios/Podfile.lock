@@ -485,7 +485,7 @@ PODS:
   - RNGoogleSignin (10.0.1):
     - GoogleSignIn (~> 7.0)
     - React-Core
-  - RNPermissions (3.10.0):
+  - RNPermissions (3.10.1):
     - React-Core
   - RNReanimated (2.14.4):
     - DoubleConversion
@@ -794,7 +794,7 @@ SPEC CHECKSUMS:
   RNFBMessaging: dec20e8fa230fb776b94c33384676da33c605d2e
   RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
   RNGoogleSignin: ccaa4a81582cf713eea562c5dd9dc1961a715fd0
-  RNPermissions: b9843ffdb72fb099f8fe7f04e709cb511d5161c8
+  RNPermissions: e48d69dcc3faa1345ba909a5d13b6d3101a08ef4
   RNReanimated: cc5e3aa479cb9170bcccf8204291a6950a3be128
   RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
   TwitterCore: 8cbc9ad34d91c63a0035ea05bfbfc0d7ca72a28c

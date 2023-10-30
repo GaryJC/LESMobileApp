@@ -30,17 +30,17 @@ const AvatarBottomSheet = ({ visible, onClosed }) => {
     loadIndex();
   }, [])
 
-  onHeaderSelected = (header) => {
+  const onHeaderSelected = (header) => {
     console.log(header);
     setAvatar(header);
   }
 
-  onSheetOpen = () => {
+  const onSheetOpen = () => {
     const avt = DataCenter.userInfo.imUserInfo.avatar == "" ? "default" : DataCenter.userInfo.imUserInfo.avatar;
     setAvatar(avt);
   }
 
-  onSheetClose = () => {
+  const onSheetClose = () => {
     LesPlatformCenter.IMFunctions.setAvatar(avatar).then(a => {
       console.log("avatar set successful", a);
     }).catch(e => {

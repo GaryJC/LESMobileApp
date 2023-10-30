@@ -24,6 +24,11 @@ import RedDotIcon from "./RedDotIcon";
 import LoginService from "../services/LoginService";
 import Divider from "./Divider";
 import { FriendButton } from "./FriendButton";
+import Account from "./UserDrawer/Account";
+import NotiSettings from "./UserDrawer/NotiSettings";
+import MyProfileButton from "./UserDrawer/MyProfileButton";
+import UserBottomSheetHeader from "./UserBottomSheetHeader";
+import SocialMedia from "./UserDrawer/SocialMediaButton";
 import AvatarBottomSheet from "./AvatarBottomSheet";
 
 const userOptions = [
@@ -75,7 +80,7 @@ export default function UserDrawer(props) {
 
   const onDrawerOpen = useCallback(() => {
     props.navigation.openDrawer();
-  }, [props.navigation])
+  }, [props.navigation]);
 
   useEffect(() => {
     setUserStatus(DataCenter.userInfo.imUserInfo.state);
@@ -90,6 +95,10 @@ export default function UserDrawer(props) {
     };
 
     // updateUnreadCountHandler();
+
+    const onDrawerOpen = () => {
+      props.navigation.openDrawer();
+    };
 
     const retriveUserInfoHandler = () => {
       setUserInfo((pre) => {
@@ -106,17 +115,32 @@ export default function UserDrawer(props) {
 
     retriveUserInfoHandler();
 
-    JSEvent.on(DataEvents.Notification.NotificationState_Updated, updateUnreadCountHandler);
+    JSEvent.on(
+      DataEvents.Notification.NotificationState_Updated,
+      updateUnreadCountHandler
+    );
     // JSEvent.on(UIEvents.User.UserState_IsLoggedin, retriveUserInfoHandler);
-    JSEvent.on(UIEvents.Drawer.Drawer_Open, onDrawerOpen)
+    JSEvent.on(UIEvents.Drawer.Drawer_Open, onDrawerOpen);
     JSEvent.on(DataEvents.User.UserState_IsLoggedin, retriveUserInfoHandler);
-    JSEvent.on(DataEvents.User.UserInfo_Current_Updated, retriveUserInfoHandler);
+    JSEvent.on(
+      DataEvents.User.UserInfo_Current_Updated,
+      retriveUserInfoHandler
+    );
 
     return () => {
-      JSEvent.remove(DataEvents.Notification.NotificationState_Updated, updateUnreadCountHandler);
-      JSEvent.remove(DataEvents.User.UserState_IsLoggedin, retriveUserInfoHandler);
-      JSEvent.remove(DataEvents.User.UserInfo_Current_Updated, retriveUserInfoHandler);
-      JSEvent.remove(UIEvents.Drawer.Drawer_Open, onDrawerOpen)
+      JSEvent.remove(
+        DataEvents.Notification.NotificationState_Updated,
+        updateUnreadCountHandler
+      );
+      JSEvent.remove(
+        DataEvents.User.UserState_IsLoggedin,
+        retriveUserInfoHandler
+      );
+      JSEvent.remove(
+        DataEvents.User.UserInfo_Current_Updated,
+        retriveUserInfoHandler
+      );
+      JSEvent.remove(UIEvents.Drawer.Drawer_Open, onDrawerOpen);
     };
   }, []);
 
@@ -148,40 +172,8 @@ export default function UserDrawer(props) {
   };
 
   return (
-    <View className="flex-1 " style={{ backgroundColor: "#080F14" }} >
-      <ImageBackground
-        source={UserData.userBgImg}
-        className="w-[100%] h-[30vh] items-center relative"
-      >
-        <View className="rounded-full w-[100px] h-[100px] absolute bottom-[-50px]">
-          {/* <ImageBackground
-            source={{ uri: `https://i.pravatar.cc/?img=${userInfo.accountId}` }}
-            className="w-[100%] h-[100%]"
-            resizeMode="cover"
-          /> */}
-          <Pressable
-            onPress={() => {
-              setShowAvatars(true);
-            }}
-          >
-            <Avatar
-              tag={userInfo.tag}
-              name={userInfo.name}
-              avatar={userInfo.avatar}
-              size={{ w: 80, h: 80, font: 40 }}
-            >
-              <View className="absolute right-0 bottom-0">
-                <StateIndicator
-                  state={userStatus}
-                  onlineState={LesConstants.IMUserOnlineState.Online}
-                  bgColor={"#080F14"}
-                  size={22}
-                />
-              </View>
-            </Avatar>
-          </Pressable>
-        </View>
-
+    <View className="flex-1 " style={{ backgroundColor: "#080F14" }}>
+      <UserBottomSheetHeader user={DataCenter.userInfo.imUserInfo} isOwn={true}>
         <View className="absolute left-[5%] top-[5vh] ">
           <RedDotIcon
             iconName="notifications"
@@ -190,57 +182,78 @@ export default function UserDrawer(props) {
             onPress={navigateToNotification}
           />
         </View>
-
-        {/* <TouchableOpacity
-          onPress={navigateToNotification}
-          className="absolute left-[5%] top-[8vh]"
-        >
-          <Ionicons name="notifications" size={30} color="white" />
-          {unreadCount !== 0 && (
-            <View className="w-[20px] h-[20px] bg-[#FF3737] rounded-full relative bottom-[15px] left-[15px]">
-              <Text className="font-bold text-white text-center">
-                {unreadCount}
-              </Text>
+      </UserBottomSheetHeader>
+      <ScrollView>
+        {/* <ImageBackground
+        source={UserData.userBgImg}
+        className="w-[100%] h-[30vh] items-center relative"
+      >
+        <View className="rounded-full w-[100px] h-[100px] absolute bottom-[-50px]">
+          <Avatar
+            tag={userInfo.tag}
+            name={userInfo.name}
+            size={{ w: 80, h: 80, font: 40 }}
+          >
+            <View className="absolute right-0 bottom-0">
+              <StateIndicator
+                state={userStatus}
+                onlineState={LesConstants.IMUserOnlineState.Online}
+                bgColor={"#080F14"}
+                size={22}
+              />
             </View>
-          )}
-        </TouchableOpacity> */}
-      </ImageBackground>
-      <View className="mx-[5%] mt-[35px] items-center">
-        <Text className="text-white font-bold text-[30px]">
+          </Avatar>
+        </View>
+        <View className="absolute left-[5%] top-[5vh] ">
+          <RedDotIcon
+            iconName="notifications"
+            iconSize={30}
+            count={unreadCount}
+            onPress={navigateToNotification}
+          />
+        </View>
+      </ImageBackground> */}
+        <View className="mx-[5%] items-center">
+          {/* <Text className="text-white font-bold text-[30px]">
           {userInfo.name}
         </Text>
-        <Text className="text-white text-[15px]">#{userInfo.tag}</Text>
-        <View className="flex-row items-center justify-between mt-[3vh]">
-          <Text className="text-white text-[16px] mr-[10px]">Your friends see you as:</Text>
-          <SwitchStatusButton />
-        </View>
-        <View className="w-full my-3">
-          <Divider />
-        </View>
-
-        <FriendButton
-          title="You Have Pending Requests"
-          icon="emoji-people"
-          link="Notification"
-          unreadCount={unreadCount}
-        />
-
-        <View className="bg-clr-bglight rounded-lg w-[100%] mt-[3vh]">
-          <ScrollView className="divide-y-2 divide-[#5C5C5C] px-[10px]">
-            {userOptions.map((item, index) =>
-              UserOptionButton(item.id, item.title, item.link)
-            )}
-          </ScrollView>
-        </View>
-        <TouchableHighlight className="w-[100%]" onPress={onLogoutHandler}>
-          <View className="bg-clr-bglight rounded-lg w-[100%] mt-[3vh] items-center">
-            <Text className="py-[10px] text-[#FF0000] text-[15px]">
-              Log Out
+        <Text className="text-white text-[15px]">#{userInfo.tag}</Text> */}
+          <View className="flex-row items-center justify-between mt-[3vh]">
+            <Text className="text-white text-[16px] mr-[10px]">
+              Your friends see you as:
             </Text>
+            <SwitchStatusButton />
           </View>
-        </TouchableHighlight>
-      </View>
-      {/* The bottom sheet that is used to switch the user status */}
+          <View className="w-full my-3">
+            <Divider />
+          </View>
+
+          <FriendButton
+            title="You Have Pending Requests"
+            icon="emoji-people"
+            link="Notification"
+            unreadCount={unreadCount}
+          />
+
+          <View className="w-[100%] mt-[2vh]">
+            {/* {userOptions.map((item, index) =>
+              UserOptionButton(item.id, item.title, item.link)
+            )} */}
+            <Account />
+            <MyProfileButton />
+            <NotiSettings />
+            <SocialMedia />
+          </View>
+          <TouchableHighlight className="w-[100%]" onPress={onLogoutHandler}>
+            <View className="bg-clr-bglight rounded-lg w-[100%] mt-[3vh] items-center">
+              <Text className="py-[10px] text-[#FF0000] text-[15px]">
+                Log Out
+              </Text>
+            </View>
+          </TouchableHighlight>
+        </View>
+        {/* The bottom sheet that is used to switch the user status */}
+      </ScrollView>
       <StatusBottomSheet
         bottomSheetModalRef={bottomSheetModalRef}
         setUserStatus={setUserStatus}
