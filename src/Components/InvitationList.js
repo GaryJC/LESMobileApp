@@ -75,12 +75,14 @@ export default function InvitationList({ item }) {
           <Avatar
             tag={item.recipient.tag}
             name={item.recipient.name}
+            avatar={item.recipient.avatar}
             size={{ w: 40, h: 40, font: 15 }}
           />
         ) : (
           <Avatar
             tag={item.id}
             name={item.groupInfo.name}
+            avatar={item.avatar}
             size={{ w: 40, h: 40, font: 15, groupMark: 18, groupMarkFont: 10 }}
             isGroup={true}
           />
@@ -105,6 +107,7 @@ export default function InvitationList({ item }) {
           <Avatar
             tag={item.sender.tag}
             name={item.sender.name}
+            avatar={item.sender.avatar}
             size={{ w: 40, h: 40, font: 15 }}
           />
         ) : (
