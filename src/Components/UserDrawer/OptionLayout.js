@@ -1,7 +1,7 @@
 import { View, Text } from "react-native";
 import Divider from "../Divider";
 
-const OptionLayout = ({ title, icon, children }) => {
+const OptionLayout = ({ title, icon, children, childStyle }) => {
   return (
     <View className="">
       <View className="flex-row items-center">
@@ -10,7 +10,9 @@ const OptionLayout = ({ title, icon, children }) => {
           {title}
         </Text>
       </View>
-      <View className="ml-[30px]">{children}</View>
+      <View className="ml-[30px]" style={childStyle}>
+        {children}
+      </View>
       <Divider />
     </View>
   );

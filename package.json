@@ -34,6 +34,7 @@
     "nativewind": "^2.0.11",
     "react": "18.2.0",
     "react-native": "0.71.14",
+    "react-native-bouncy-checkbox": "^3.0.7",
     "react-native-gesture-handler": "~2.9.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-permissions": "^3.10.1",
