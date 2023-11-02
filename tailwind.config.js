@@ -19,6 +19,7 @@ module.exports = {
         "clr-emphasize": "#C8FF00",
         "clr-emphasize-light": "#F5FFCE",
         "clr-error-red": "#FF0000",
+        "clr-button-dark": "#131F2A",
       },
     },
   },

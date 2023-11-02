@@ -22,6 +22,9 @@ import Avatar from "./Avatar";
 import DatabaseService from "../services/DatabaseService";
 import UserBottomSheetHeader from "./UserBottomSheetHeader";
 import CommonBottomSheetModal from "./CommonBottomSheetModal";
+import { DialogModal, DialogButton } from "./FeedbackModal";
+import OptionLayout from "./UserDrawer/OptionLayout";
+import { Entypo } from "@expo/vector-icons";
 
 export default function FriendBottomSheet({
   bottomSheetModalRef,
@@ -30,9 +33,13 @@ export default function FriendBottomSheet({
   visible,
 }) {
   const [isFriend, setIsFriend] = useState(false);
-  console.log("selected friend: ", selectedFriend);
+  // console.log("selected friend: ", selectedFriend);
 
-  console.log("bbb: ", visible);
+  const [links, setLinks] = useState([]);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [confirmVisible, setConfirmVisible] = useState(false);
 
   useEffect(() => {
     const checkIsFriend = async () => {
@@ -92,6 +99,7 @@ export default function FriendBottomSheet({
    * 删除好友时调用
    */
   const removeFriendHandler = () => {
+    setIsLoading(true);
     // JSEvent.emit(UIEvents.User.UserState_UIRefresh);
     FriendService.Inst.removeFriend(selectedFriend?.id)
       .then((res) => {
@@ -109,7 +117,19 @@ export default function FriendBottomSheet({
       })
       .catch((e) => {
         console.log("移除好友失败, code:", e);
+      })
+      .finally(() => {
+        setIsLoading(false);
+        setConfirmVisible(false);
       });
+  };
+
+  const onButtonPressed = (btn) => {
+    if (btn.id == "cancel") {
+      setConfirmVisible(false);
+    } else {
+      removeFriendHandler();
+    }
   };
 
   // useEffect(() => {
@@ -123,7 +143,7 @@ export default function FriendBottomSheet({
   const BottomSheetButton = ({ handler, children, title }) => (
     <TouchableHighlight
       onPress={handler}
-      className="flex-1 h-[80px] rounded-lg overflow-hidden"
+      className="h-[80px] rounded-lg overflow-hidden"
     >
       <View className="bg-[#131F2A] items-center justify-center w-[100%] h-[100%]">
         {children}
@@ -131,6 +151,30 @@ export default function FriendBottomSheet({
       </View>
     </TouchableHighlight>
   );
+
+  const RemoveFriendButton = () => (
+    <TouchableHighlight
+      className="mt-[5vh] mx-[5%] rounded-lg overflow-hidden"
+      onPress={() => setConfirmVisible(true)}
+    >
+      <View className="bg-clr-button-dark h-[35px] justify-center">
+        <Text className="text-[#FF0000] font-bold text-center">
+          Remove Friend
+        </Text>
+      </View>
+    </TouchableHighlight>
+  );
+
+  const Links = () => {
+    const icon = <Entypo name="link" size={24} color="white" />;
+    return (
+      <OptionLayout icon={icon} title={"Links"} childStyle={{ marginLeft: 0 }}>
+        <View className="mt-[10px] bg-clr-button-dark p-[10px] rounded-lg">
+          <Text></Text>
+        </View>
+      </OptionLayout>
+    );
+  };
 
   return (
     // <BottomSheetModal
@@ -171,7 +215,8 @@ export default function FriendBottomSheet({
         <UserBottomSheetHeader user={selectedFriend} isOwn={false} />
         {isFriend && (
           <>
-            <View className="flex-row justify-between mt-[10px] mx-[5vw]">
+            <View className="mt-[10px] mx-[5vw]">
+              <Links />
               <BottomSheetButton handler={goChatHandler} title={"Chat"}>
                 {
                   <Ionicons
@@ -193,19 +238,19 @@ export default function FriendBottomSheet({
             </View>
           </TouchableHighlight> */}
             </View>
-            <TouchableHighlight
-              className="mt-[5vh] mx-[5%] rounded-lg overflow-hidden"
-              onPress={removeFriendHandler}
-            >
-              <View className="bg-[#131F2A] h-[35px] justify-center">
-                <Text className="text-[#FF0000] font-bold text-center">
-                  Remove Friend
-                </Text>
-              </View>
-            </TouchableHighlight>
+            <RemoveFriendButton />
           </>
         )}
       </View>
+      <DialogModal
+        visible={confirmVisible}
+        content={"Are you sure to delete your friend?"}
+        buttons={[
+          DialogButton.New("cancel", "Cancel", "normal", isLoading),
+          DialogButton.New("yes", "Yes ", "primary", isLoading),
+        ]}
+        onButtonPressed={onButtonPressed}
+      />
     </CommonBottomSheetModal>
     // </BottomSheetModal>
   );

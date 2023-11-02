@@ -3,13 +3,14 @@ import UserBottomSheetHeader from "./UserBottomSheetHeader";
 import Links from "./UserDrawer/Links";
 import DataCenter from "../modules/DataCenter";
 import { View } from "react-native";
+import ProfilePrivacy from "./UserDrawer/ProfilePrivacy";
 
 const MyProfileBottomSheet = ({ visible, onClosed }) => {
   return (
     <CommonBottomSheetModal
       visible={visible}
       onClosed={onClosed}
-      snapPoints={["65%"]}
+      snapPoints={["85%"]}
       index={0}
     >
       <View className="flex-1">
@@ -17,7 +18,10 @@ const MyProfileBottomSheet = ({ visible, onClosed }) => {
           user={DataCenter.userInfo.imUserInfo}
           isOwn={true}
         />
-        <Links />
+        <View className="mx-[5%] mt-[3vh]">
+          <Links />
+          <ProfilePrivacy />
+        </View>
       </View>
     </CommonBottomSheetModal>
   );

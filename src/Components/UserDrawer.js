@@ -244,9 +244,9 @@ export default function UserDrawer(props) {
             <NotiSettings />
             <SocialMedia />
           </View>
-          <TouchableHighlight className="w-[100%]" onPress={onLogoutHandler}>
-            <View className="bg-clr-bglight rounded-lg w-[100%] mt-[3vh] items-center">
-              <Text className="py-[10px] text-[#FF0000] text-[15px]">
+          <TouchableHighlight className="mt-[5vh]" onPress={onLogoutHandler}>
+            <View className="bg-clr-bglight py-[10px] px-[20px] rounded-lg items-center">
+              <Text className="text-[#4094E0] text-[15px] font-bold">
                 Log Out
               </Text>
             </View>

@@ -3,7 +3,9 @@ import { View, Image, TouchableOpacity } from "react-native";
 const SocialMedia = () => {
   const SocialMediaButton = ({ image }) => (
     <TouchableOpacity>
-      <Image source={image} className="w-[35px] h-[35px]" />
+      <View className="bg-clr-bglight p-[10px] rounded-xl">
+        <Image source={image} className="w-[30px] h-[30px]" />
+      </View>
     </TouchableOpacity>
   );
 
