@@ -9,14 +9,25 @@ export const ChatMessageInput = ({ onMessageSendHandler }) => {
       onMessageSendHandler(newMessage);
     }
   };
+
+  const [height, setHeight] = useState(30); // Initial height
+  const maxHeight = 200;
+
+  const handleContentSizeChange = (event) => {
+    setHeight(Math.min(maxHeight, event.nativeEvent.contentSize.height));
+  };
+
   return (
-    <View className="flex-row items-center py-[10px] h-[50px]">
+    <View className="flex-row items-end py-[10px]">
       <TextInput
         value={newMessage}
         onChangeText={(text) => setNewMessage(text)}
-        className="flex-1 bg-[#1B1B1B] rounded h-[100%] mr-[10px] p-[5px] text-[#CACACA]"
+        className="flex-1 bg-[#1B1B1B] rounded mr-[10px] p-[5px] text-[#CACACA]"
         // onSubmitEditing={sendMessage}
         placeholderTextColor="#CACACA"
+        multiline={true}
+        onContentSizeChange={handleContentSizeChange}
+        style={{ height: Math.max(30, height) }} // Minimum height of 30
       />
       <TouchableOpacity
         onPress={onPressHandler}
