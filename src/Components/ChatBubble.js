@@ -4,9 +4,11 @@ import {
   ImageBackground,
   ActivityIndicator,
   TouchableOpacity,
+  Pressable,
+  Modal,
 } from "react-native";
 import Constants from "../modules/Constants";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import DataCenter from "../modules/DataCenter";
 import formatDate from "../utils/formatDate";
 import Avatar from "./Avatar";
@@ -14,6 +16,11 @@ import { LesConstants } from "les-im-components";
 import IMUserInfoService from "../services/IMUserInfoService";
 import FriendBottomSheet from "./FriendBottomSheet";
 import MyProfileBottomSheet from "./MyProfileBottomSheet";
+import CommonBottomSheetModal from "./CommonBottomSheetModal";
+import { MaterialIcons } from "@expo/vector-icons";
+import Divider from "./Divider";
+import Clipboard from "@react-native-clipboard/clipboard";
+import { BubbleContext } from "../Screens/ChatScreenV2";
 
 const showTimestamp = (preMessage, message) => {
   if (preMessage) {
@@ -68,11 +75,75 @@ const TimeStamp = ({ date }) => (
   </View>
 );
 
+const BubbleBottomSheet = ({
+  visible,
+  onOpen,
+  onClosed,
+  senderName,
+  message,
+}) => {
+  const bubbleContent = `${senderName}: ${message}`;
+
+  const { quote, setQuote } = useContext(BubbleContext);
+
+  const BubbleOption = ({ title, icon }) => {
+    const optionHander = () => {
+      switch (title) {
+        case "Copy":
+          Clipboard.setString(bubbleContent);
+          break;
+        case "Quote":
+          setQuote(bubbleContent);
+          break;
+      }
+      onClosed();
+    };
+
+    return (
+      <>
+        <TouchableOpacity onPress={optionHander}>
+          <View className="flex-row items-center">
+            {icon}
+            <Text className="ml-[5px] font-bold text-[15px] text-white">
+              {title}
+            </Text>
+          </View>
+        </TouchableOpacity>
+        <Divider />
+      </>
+    );
+  };
+
+  return (
+    <CommonBottomSheetModal
+      visible={visible}
+      onOpen={onOpen}
+      onClosed={onClosed}
+      snapPoints={["30%"]}
+      index={0}
+      title={bubbleContent}
+    >
+      <View className="flex-1 mx-[5%]">
+        <BubbleOption
+          title={"Copy"}
+          icon={<MaterialIcons name="file-copy" size={24} color="white" />}
+        />
+        <BubbleOption
+          title={"Quote"}
+          icon={<MaterialIcons name="format-quote" size={24} color="white" />}
+        />
+      </View>
+    </CommonBottomSheetModal>
+  );
+};
+
 const Bubble = ({ isOwn, senderUserInfo, message }) => {
   const fontSize = DataCenter.userInfo.userSetting.getChatFontSize();
 
   const [ownProfileVisible, setOwnProfileVisible] = useState(false);
   const [otherProfileVisible, setOtherProfileVisible] = useState(false);
+
+  const [bubbleVisible, setBubbleVisible] = useState(false);
 
   const onOwnProfileOpen = () => {
     setOwnProfileVisible(true);
@@ -88,6 +159,24 @@ const Bubble = ({ isOwn, senderUserInfo, message }) => {
 
   const onOtherProfileClosed = () => {
     setOtherProfileVisible(false);
+  };
+
+  /*
+  const BubbleMenu = () => {
+    return (
+        <View className="absolute left-[-70px] bottom-0 bg-[#757171] w-[60px] py-[10px] items-center rounded-lg">
+          <Text className="text-white font-bold">Quote</Text>
+        </View>
+    );
+  };
+  */
+
+  const openBubbleSheet = () => {
+    setBubbleVisible(true);
+  };
+
+  const closeBubbleSheet = () => {
+    setBubbleVisible(false);
   };
 
   return (
@@ -127,30 +216,35 @@ const Bubble = ({ isOwn, senderUserInfo, message }) => {
             {senderUserInfo?.name}
           </Text>
         </View>
-        <View
-          className={
-            isOwn
-              ? "flex-row justify-center pr-[30vw] mr-[5px] bg-[#5EB857] px-2 py-2 rounded"
-              : "flex-row justify-center pl-[30vw] ml-[5px] bg-[#445465] px-2 py-2 rounded"
-          }
-        >
-          <Text
+        <Pressable onLongPress={openBubbleSheet}>
+          <View
             className={
-              isOwn ? "text-black max-w-[50vw]" : "text-white max-w-[50vw]"
+              isOwn
+                ? "flex-row justify-center pr-[30vw] mr-[5px] bg-[#5EB857] px-2 py-2 rounded"
+                : "flex-row justify-center pl-[30vw] ml-[5px] bg-[#445465] px-2 py-2 rounded"
             }
-            style={{ fontSize: fontSize }}
+            style={{ position: "relative" }}
           >
-            {message?.content}
-          </Text>
-          {message?.status === Constants.deliveryState.delivering && (
-            <ActivityIndicator
-              className={isOwn ? "pr-[10px]" : "pl-[10px]"}
-              size={"small"}
-              color={"#8D8D8D"}
-            />
-          )}
-        </View>
+            <Text
+              className={
+                isOwn ? "text-black max-w-[50vw]" : "text-white max-w-[50vw]"
+              }
+              style={{ fontSize: fontSize }}
+            >
+              {message?.content}
+            </Text>
+            {message?.status === Constants.deliveryState.delivering && (
+              <ActivityIndicator
+                className={isOwn ? "pr-[10px]" : "pl-[10px]"}
+                size={"small"}
+                color={"#8D8D8D"}
+              />
+            )}
+          </View>
+        </Pressable>
+        {/* {menuVisible && <BubbleMenu />} */}
       </View>
+
       {/* {isOwn && <Avatar avatar={userInfo.avatar} />} */}
       {isOwn && (
         <TouchableOpacity onPress={onOwnProfileOpen}>
@@ -173,6 +267,13 @@ const Bubble = ({ isOwn, senderUserInfo, message }) => {
         visible={ownProfileVisible}
         onClosed={onOwnProfileClosed}
         selectedFriend={senderUserInfo}
+      />
+      <BubbleBottomSheet
+        visible={bubbleVisible}
+        onOpen={openBubbleSheet}
+        onClosed={closeBubbleSheet}
+        senderName={senderUserInfo?.name}
+        message={message?.content}
       />
     </View>
   );
