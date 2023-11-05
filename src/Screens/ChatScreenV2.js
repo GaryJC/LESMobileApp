@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import ChatListBar from "../Components/Chat/ChatListBar";
 import { MessagePanel, MessageTitle } from "../Components/Chat/MessagePanel";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext, createContext } from "react";
 import { ChatData, ChatListItem } from "../Models/MessageCaches";
 import DataCenter from "../modules/DataCenter";
 import { ChatMessageInput } from "../Components/ChatMessageInput";
@@ -22,6 +22,8 @@ import {
   KeyboardAwareScrollView,
 } from "react-native-keyboard-aware-scroll-view";
 
+export const BubbleContext = createContext();
+
 const ChatScreenV2 = () => {
   const [currChatItem, setCurrChatItem] = useState({
     item: null,
@@ -33,19 +35,28 @@ const ChatScreenV2 = () => {
     setCurrChatItem({ item, focusMessageId });
   };
 
+  const [quote, setQuote] = useState("");
+
   // useEffect(() => {
 
   // }, []);
 
   const onMessageSendHandler = (newMessage) => {
     if (currChatData == null) return;
+
     if (currChatData.type === LesConstants.IMMessageType.Single) {
-      MessageService.Inst.sendMessage(currChatData.targetId, newMessage);
+      MessageService.Inst.sendMessage(
+        currChatData.targetId,
+        quote + "\n" + newMessage
+      );
     } else {
       MessageService.Inst.sendChatGroupMessage(
         currChatData.targetId,
-        newMessage
+        quote + "\n" + newMessage
       );
+    }
+    if (quote) {
+      setQuote("");
     }
   };
 
@@ -90,14 +101,17 @@ const ChatScreenV2 = () => {
           {/* 右侧聊天区域 */}
           <View className="flex-1 bg-[#262F38]  pl-2 pr-2">
             {/* 聊天框标题 */}
+
             <MessageTitle chatObj={currChatData} />
             {/* 聊天面板 */}
-            <MessagePanel
-              chatData={currChatData}
-              focusMessaageId={currChatItem?.focusMessageId ?? null}
-            />
-            {/* 文字输入框 */}
-            <ChatMessageInput onMessageSendHandler={onMessageSendHandler} />
+            <BubbleContext.Provider value={{ quote, setQuote }}>
+              <MessagePanel
+                chatData={currChatData}
+                focusMessaageId={currChatItem?.focusMessageId ?? null}
+              />
+              {/* 文字输入框 */}
+              <ChatMessageInput onMessageSendHandler={onMessageSendHandler} />
+            </BubbleContext.Provider>
           </View>
         </View>
       </View>
