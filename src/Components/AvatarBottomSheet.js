@@ -1,7 +1,7 @@
 import CommonBottomSheetModal from "./CommonBottomSheetModal";
 import { View, Text, FlatList, Image, ActivityIndicator, Pressable, Touchable, PlatformColor } from "react-native";
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import Constants from "../modules/Constants";
 import API from "../modules/Api";
@@ -31,7 +31,7 @@ const AvatarBottomSheet = ({ visible, onClosed }) => {
   }, [])
 
   const onHeaderSelected = (header) => {
-    console.log(header);
+    console.log(header, setAvatar);
     setAvatar(header);
   }
 
@@ -40,7 +40,27 @@ const AvatarBottomSheet = ({ visible, onClosed }) => {
     setAvatar(avt);
   }
 
-  const onSheetClose = () => {
+  // const onSheetClose = useCallback(() => {
+  //   console.log("set avatar to ", avatar);
+  //   LesPlatformCenter.IMFunctions.setAvatar(avatar).then(a => {
+  //     console.log("avatar set successful", a);
+  //   }).catch(e => {
+  //     console.log("avatar set failed", e);
+  //   })
+  //   if (onClosed != null) {
+  //     onClosed();
+  //   }
+  // }, [avatar])
+
+  const setAvatarToServer = (avatar) => {
+    if (DataCenter.userInfo.imUserInfo.avatar == avatar) {
+      console.log("avatar not changed");
+      if (onClosed != null) {
+        onClosed();
+      }
+      return;
+    }
+    console.log("set avatar to ", avatar);
     LesPlatformCenter.IMFunctions.setAvatar(avatar).then(a => {
       console.log("avatar set successful", a);
     }).catch(e => {
@@ -54,7 +74,7 @@ const AvatarBottomSheet = ({ visible, onClosed }) => {
   return (
     <CommonBottomSheetModal
       visible={visible}
-      onClosed={onSheetClose}
+      onClosed={() => setAvatarToServer(avatar)}
       onOpen={onSheetOpen}
       snapPoints={["80%"]}
       index={0}

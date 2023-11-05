@@ -11,10 +11,10 @@ import { StateIndicator } from "./StateIndicator";
 import DataCenter from "../modules/DataCenter";
 import { useState } from "react";
 import AvatarBottomSheet from "./AvatarBottomSheet";
+import { TouchableHighlight } from "react-native-gesture-handler";
 
 const UserBottomSheetHeader = ({ user, children, isOwn }) => {
   const [showAvatars, setShowAvatars] = useState(false);
-  console.log("is own: ", isOwn);
   return (
     <>
       <ImageBackground
@@ -22,7 +22,7 @@ const UserBottomSheetHeader = ({ user, children, isOwn }) => {
         className="h-[30vh] items-center justify-center relative"
       >
         {/* <Avatar tag={tag} name={name} size={{ w: 100, h: 100, font: 40 }} /> */}
-        <TouchableWithoutFeedback
+        <TouchableHighlight className="rounded-full"
           onPress={() => {
             setShowAvatars(true);
           }}
@@ -45,7 +45,7 @@ const UserBottomSheetHeader = ({ user, children, isOwn }) => {
               </View>
             </Avatar>
           </View>
-        </TouchableWithoutFeedback>
+        </TouchableHighlight>
         <View className="flex-row w-[100%] justify-center h-[30px] bg-black opacity-50 absolute bottom-0"></View>
         <View className="absolute bottom-[5px] flex-row">
           <Text className="text-white font-bold text-[18px] opacity-100">

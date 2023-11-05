@@ -4,7 +4,7 @@ import Constants from "./Constants";
 import { AppStateStatus } from "react-native";
 import ChatGroup from "../Models/ChatGroup";
 import IMUserInfo from "../Models/IMUserInfo";
-const { IMUserState, IMUserOnlineState, IMMessageType } = LesConstants;
+const { IMUserState, IMUserOnlineState, IMMessageType, SocialType } = LesConstants;
 const { ReloginState } = Constants;
 export const DataEvents = {
   /**
@@ -131,6 +131,19 @@ export const DataEvents = {
      */
     ChatGroup_RemovedFromGroup:
       "DATA_EVENT_ChatGroup_ChatGroup_RemovedFromGroup",
+  },
+
+  SocialMedia: {
+    /**
+     * 绑定了社交媒体
+     * @type {bindInfo:SocialMediaBindInfo}
+     */
+    SocialMedia_Bound: "DATA_EVENT_SocialMedia_Bound",
+    /**
+     * 解绑了社交媒体
+     * @type {socialType:SocialType}
+     */
+    SocialMedia_Unbound: "DATA_EVENT_SocialMedia_Unbound"
   },
 
   Saving: {

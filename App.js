@@ -57,6 +57,7 @@ import RedDotIcon from "./src/Components/RedDotIcon";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import UserDrawer from "./src/Components/UserDrawer";
 import UserHeader from "./src/Components/UserHeader";
+import MyProfileScreen from "./src/Screens/MyProfileScreen";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -586,7 +587,12 @@ export default function App() {
             <Stack.Screen
               name="GroupInvite"
               component={GroupInviteScreen}
-              // options={{ headerTitle: "Group Information" }}
+            // options={{ headerTitle: "Group Information" }}
+            />
+             <Stack.Screen
+              name="MyProfile"
+              component={MyProfileScreen}
+              options={{ headerTitle: "My Profile" }}
             />
           </Stack.Navigator>
         </NavigationContainer>

@@ -2,6 +2,7 @@ import ChatGroup from "../Models/ChatGroup";
 import MessageData from "../Models/MessageData";
 import { CommunityData, QuestData, QuestEntryData, QuestEntryParamData, QuestUserData, QuestUserEntryProgress, QuestUserProgress } from "../Models/Quest";
 import { SocialMediaBindInfo } from "../Models/UserProfile";
+import UserSetting from "../Models/UserSetting";
 import Constants from "../modules/Constants";
 
 const PBUtils = {
@@ -168,7 +169,25 @@ const PBUtils = {
         b.reconnectCd = pb.getReconnectcd();
         b.connect = pb.getConnect();
         return b;
+    },
+
+    pbSettingToData(pb) {
+        const b = new UserSetting();
+        const nSetting = {
+            friendRequest: pb.getFriendrequest(),
+            groupInvite: pb.getGroupinvite(),
+            chatMessages: pb.getChatmessages(),
+            showMessageDetail: pb.getShowmessagedetail(),
+        }
+        const pSetting = {
+            profileScope: pb.getProfilescope()
+        }
+
+        b.notificationSetting = nSetting;
+        b.privacySetting = pSetting;
+        return b;
     }
+
 }
 
 export default PBUtils;

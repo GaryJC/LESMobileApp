@@ -1,5 +1,5 @@
 import { PermissionsAndroid } from "react-native";
-import messaging  from "@react-native-firebase/messaging";
+import messaging from "@react-native-firebase/messaging";
 import DataCenter from "../modules/DataCenter";
 
 class FirebaseMessagingService {
@@ -9,6 +9,9 @@ class FirebaseMessagingService {
 
     fcmToken = "";
 
+    /**
+     * @returns {FirebaseMessagingService}
+     */
     static get Inst() {
         return FirebaseMessagingService.#inst ?? new FirebaseMessagingService();
     }
@@ -35,7 +38,7 @@ class FirebaseMessagingService {
 
         if (!enabled) {
             console.log("Permission Notification Request Failed: User Denied")
-        }else{
+        } else {
         }
 
         this.permissionsAllowed = enabled;
@@ -50,6 +53,15 @@ class FirebaseMessagingService {
         }
     }
 
+    async getFcmToken() {
+        try {
+            const fcmToken = await messaging().getToken();
+            return fcmToken;
+        } catch (e) {
+            console.log("Get Fcm Token error:", e);
+            return "";
+        }
+    }
 
 }
 

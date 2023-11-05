@@ -1,4 +1,6 @@
 import { LesConstants } from "les-im-components";
+import JSEvent from "../utils/JSEvent";
+import { DataEvents } from "../modules/Events";
 
 const { SocialType } = LesConstants;
 
@@ -61,6 +63,12 @@ export default class UserProfile {
      * @type string
      */
     email;
+
+    /**
+     * @type {string}
+     */
+    providerId;
+
     /**
      * @type string
      */
@@ -94,6 +102,7 @@ export default class UserProfile {
         this.displayName = p.displayName;
         this.avatarUrl = p.avatarUrl;
         this.socialMediaAccounts = p.socialMediaAccounts;
+        this.providerId = p.providerId;
 
         p.bindInfos.forEach(bind => {
             const bindInfo = new SocialMediaBindInfo();
@@ -115,6 +124,7 @@ export default class UserProfile {
      */
     setSocialMedialBindInfo(bindInfo) {
         this.socialMediaBindInfo[bindInfo.mediaType] = bindInfo;
+        JSEvent.emit(DataEvents.SocialMedia.SocialMedia_Bound, bindInfo);
     }
 
     /**

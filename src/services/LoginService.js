@@ -9,6 +9,9 @@ import { AppState, AppStateStatus } from "react-native";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import { NativeModules } from "react-native";
 import UserProfile from "../Models/UserProfile";
+import FirebaseMessagingService from "./FirebaseMessagingService";
+import PBUtils from "../utils/PBUtils";
+import UserSetting from "../Models/UserSetting";
 
 const LoginChannel = "Firebase";
 
@@ -197,7 +200,7 @@ export default class LoginService {
       this.#loginData.addLoginInfo(loginInfo);
 
       //保存当前用户数据
-      DataSavingService.Inst.saveLoginDataToDataCenter(
+      DataSavingService.Inst.buildDataCenter(
         loginInfo.id,
         loginInfo.token,
         loginInfo.email,
@@ -248,7 +251,7 @@ export default class LoginService {
       };
     }
     const token = await auth().currentUser.getIdToken();
-    const fcmToken = DataCenter.userInfo.fcmToken;
+    const fcmToken = await FirebaseMessagingService.Inst.getFcmToken();
     try {
       const device = LesConstants.IMDevices[DataCenter.deviceName];
       if (isReconnect) {
@@ -284,13 +287,16 @@ export default class LoginService {
             avatar: imResult.avatar,
           };
 
+          const userSetting = imResult.setting == null ? new UserSetting() : PBUtils.pbSettingToData(imResult.setting);
+
           //保存当前用户数据
-          DataSavingService.Inst.saveLoginDataToDataCenter(
+          DataSavingService.Inst.buildDataCenter(
             id,
             token,
             "",
             imUserInfo,
-            profile
+            profile,
+            userSetting
           );
 
           //发送登陆成功事件
@@ -360,8 +366,6 @@ export default class LoginService {
     const device = DataCenter.deviceName;
     try {
       const response = await Firebase.loginRequest(userToken, device, fcmToken);
-      console.log("sasas: ", userToken);
-      console.log("pp: ", fcmToken);
       const data = response.data;
       console.log("ddd: ", data);
       if (data.code == 0) {
@@ -488,7 +492,7 @@ export default class LoginService {
           this.#loginData.addLoginInfo(loginInfo);
 
           //保存当前用户数据
-          DataSavingService.Inst.saveLoginDataToDataCenter(
+          DataSavingService.Inst.buildDataCenter(
             accountId,
             msg,
             username,

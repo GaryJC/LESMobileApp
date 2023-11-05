@@ -9,6 +9,7 @@ import { ChatListItem } from "../Models/MessageCaches";
 import { Notification, Notifications } from "../Models/Notifications";
 import { LesConstants } from "les-im-components";
 import ChatGroup from "../Models/ChatGroup";
+import UserSetting from "../Models/UserSetting";
 
 const db_version = "1.1";
 
@@ -325,6 +326,24 @@ export default class DatabaseService {
     );
   }
 
+  /**
+   * 
+   * @param {SQLite.SQLTransaction} tx 
+   */
+  #createTblSetting(tx) {
+    return this.#transactionPromise(
+      tx,
+      `create table if not exists tbl_setting(
+                id integer primary key not null,
+                notifyFriendRequest integer not null,
+                notifyGroupInvitation integer not null,
+                notifyChatMessages integer not null,
+                showMessageContent integer not null,
+                privacyProfileScope integer not null
+            );`
+    );
+  }
+
   #updateDatabase(version) {
     // if (version == "1.0") {
     //     this.#currDb.transaction(tx => {
@@ -354,6 +373,101 @@ export default class DatabaseService {
           console.log("xxxxxxxxxxxxxxxx", err);
         }
       );
+    });
+  }
+
+  /**
+   * 保存用户设置
+   * @param {UserSetting} setting 
+   */
+  saveUserSetting(setting) {
+    return new Promise((resolve, reject) => {
+      if (this.#currDb == null) reject(ERROR_DB_ISNULL);
+
+      this.#currDb.transaction((tx) => {
+        tx.executeSql(`select id from tbl_setting where id = 1`,
+          [],
+          (_, r) => {
+            let sql = "insert into tbl_setting values (?,?,?,?,?,?)";
+            let values = [
+              1,
+              setting.notificationSetting.friendRequest ? 1 : 0,
+              setting.notificationSetting.groupInvite ? 1 : 0,
+              setting.notificationSetting.chatMessages ? 1 : 0,
+              setting.notificationSetting.showMessageDetail ? 1 : 0,
+              setting.privacySetting.profileScope
+            ]
+
+            if (r.rows != null && r.rows._array.length > 0) {
+              //已有数据，更新
+              sql =
+                "update tbl_setting set notifyFriendRequest = ?, notifyGroupInvitation = ?, notifyChatMessages = ?, showMessageContent = ?, privacyProfileScope = ? where id = ?";
+              values = [
+                setting.notificationSetting.friendRequest ? 1 : 0,
+                setting.notificationSetting.groupInvite ? 1 : 0,
+                setting.notificationSetting.chatMessages ? 1 : 0,
+                setting.notificationSetting.showMessageDetail ? 1 : 0,
+                setting.privacySetting.profileScope,
+                1
+              ];
+            }
+
+            tx.executeSql(
+              sql,
+              values,
+              (statement, result) => {
+                resolve(result);
+              },
+              (statement, error) => {
+                reject(error);
+              }
+            );
+          },
+          (statement, error) => {
+            reject(error);
+          }
+        );
+      });
+    });
+  }
+
+
+  /**
+   * @returns {UserSetting}
+   */
+  loadUserSetting() {
+    return new Promise((resolve) => {
+      if (this.#currDb == null) {
+        resolve(new UserSetting());
+        return;
+      }
+      this.#currDb.transaction((tx) => {
+        tx.executeSql(
+          "select * from tbl_setting where id = 1",
+          null,
+          (_, r) => {
+            if (r.rows.length > 0) {
+              const item = r.rows.item(0);
+              if (item == null) {
+                resolve(new UserSetting());
+              } else {
+                const setting = new UserSetting();
+                setting.notificationSetting.friendRequest = item.notifyFriendRequest == 1;
+                setting.notificationSetting.groupInvite = item.notifyGroupInvitation == 1;
+                setting.notificationSetting.chatMessages = item.notifyChatMessages == 1;
+                setting.notificationSetting.showMessageDetail = item.showMessageContent == 1;
+                setting.privacySetting.profileScope = item.privacyProfileScope;
+                resolve(setting);
+              }
+            } else {
+              resolve(new UserSetting());
+            }
+          },
+          (_, e) => {
+            resolve(new UserSetting());
+          }
+        );
+      });
     });
   }
 
