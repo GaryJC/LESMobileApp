@@ -1,4 +1,4 @@
-import { View, Text, Platform, Alert, TouchableOpacity } from "react-native";
+import { View, Text, Platform, Alert, TouchableOpacity, Image } from "react-native";
 import OptionLayout from "./OptionLayout";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import DataCenter from "../../modules/DataCenter";
@@ -23,6 +23,22 @@ const Account = () => {
     />
   );
 
+  const providerId = DataCenter.userInfo.userProfile.providerId;
+  let providerIcon = "";
+  switch (providerId) {
+    case "google.com":
+      providerIcon = require("../../../assets/img/google.png");
+      break;
+    case "twitter.com":
+      providerIcon = require("../../../assets/img/twitter_X.png");
+      break;
+    default:
+      providerIcon = require("../../../assets/img/icon-nexgami.png");
+      break;
+  }
+
+  providerIcon = <Image source={providerIcon} className="w-[24px] h-[24px] rounded-full mr-1" />
+
   const AccountInfo = ({ content, icon, children }) => (
     <View className="my-[5px] flex-row items-center">
       {icon}
@@ -41,7 +57,7 @@ const Account = () => {
 
   return (
     <OptionLayout title={"Account"} icon={icon}>
-      <AccountInfo content={DataCenter.userInfo.userProfile.email} />
+      <AccountInfo content={DataCenter.userInfo.userProfile.email} icon={providerIcon} />
       <AccountInfo
         content={`Referral Code: ${DataCenter.userInfo.userProfile.referralCode}`}
       >

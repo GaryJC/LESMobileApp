@@ -30,6 +30,7 @@ import MyProfileButton from "./UserDrawer/MyProfileButton";
 import UserBottomSheetHeader from "./UserBottomSheetHeader";
 import SocialMedia from "./UserDrawer/SocialMediaButton";
 import AvatarBottomSheet from "./AvatarBottomSheet";
+import { getDrawerStatusFromState } from '@react-navigation/drawer';
 
 const userOptions = [
   { id: 1, title: "Account", link: "" },
@@ -108,6 +109,7 @@ export default function UserDrawer(props) {
           accountId: DataCenter.userInfo.accountId,
           tag: DataCenter.userInfo.imUserInfo.tag,
           avatar: DataCenter.userInfo.imUserInfo.avatar,
+          state: DataCenter.userInfo.imUserInfo.state,
         };
       });
       setUserStatus(DataCenter.userInfo.imUserInfo.state);
@@ -127,7 +129,20 @@ export default function UserDrawer(props) {
       retriveUserInfoHandler
     );
 
+    const unsubscribe = props.navigation?.addListener('state', e => {
+      const isDrawerOpen = getDrawerStatusFromState(props.navigation.getState()) === 'open';
+      if (!isDrawerOpen) {
+        //drawer关闭时，如果设置有修改，将设置数据上传给服务器
+        console.log(DataCenter.userInfo.userSetting)
+        LesPlatformCenter.IMFunctions.setSetting({
+          ...DataCenter.userInfo.userSetting.notificationSetting,
+          ...DataCenter.userInfo.userSetting.privacySetting
+        });
+      }
+    })
+
     return () => {
+      unsubscribe();
       JSEvent.remove(
         DataEvents.Notification.NotificationState_Updated,
         updateUnreadCountHandler
@@ -173,7 +188,7 @@ export default function UserDrawer(props) {
 
   return (
     <View className="flex-1 " style={{ backgroundColor: "#080F14" }}>
-      <UserBottomSheetHeader user={DataCenter.userInfo.imUserInfo} isOwn={true}>
+      <UserBottomSheetHeader user={userInfo} isOwn={true}>
         <View className="absolute left-[5%] top-[5vh] ">
           <RedDotIcon
             iconName="notifications"
@@ -224,7 +239,7 @@ export default function UserDrawer(props) {
             </Text>
             <SwitchStatusButton />
           </View>
-          <View className="w-full my-3">
+          <View className="w-full">
             <Divider />
           </View>
 
@@ -251,6 +266,7 @@ export default function UserDrawer(props) {
               </Text>
             </View>
           </TouchableHighlight>
+          <View className="h-[30px]"></View>
         </View>
         {/* The bottom sheet that is used to switch the user status */}
       </ScrollView>

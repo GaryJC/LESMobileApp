@@ -7,23 +7,26 @@ import ProfilePrivacy from "./UserDrawer/ProfilePrivacy";
 
 const MyProfileBottomSheet = ({ visible, onClosed }) => {
   return (
-    <CommonBottomSheetModal
-      visible={visible}
-      onClosed={onClosed}
-      snapPoints={["85%"]}
-      index={0}
-    >
-      <View className="flex-1">
-        <UserBottomSheetHeader
-          user={DataCenter.userInfo.imUserInfo}
-          isOwn={true}
-        />
-        <View className="mx-[5%] mt-[3vh]">
-          <Links />
-          <ProfilePrivacy />
+    <View>
+      <CommonBottomSheetModal
+        visible={visible}
+        onClosed={onClosed}
+        closable={true}
+        snapPoints={["85%"]}
+        index={0}
+      >
+        <View className="flex-1">
+          <UserBottomSheetHeader
+            user={DataCenter.userInfo.imUserInfo}
+            isOwn={true}
+          />
+          <View className="mx-[5%] mt-[3vh]">
+            <Links />
+            <ProfilePrivacy />
+          </View>
         </View>
-      </View>
-    </CommonBottomSheetModal>
+      </CommonBottomSheetModal>
+    </View>
   );
 };
 

@@ -4,11 +4,15 @@ import Divider from "../Divider";
 import MyProfileBottomSheet from "../MyProfileBottomSheet";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
+import { useNavigation } from "@react-navigation/native";
+
 const MyProfileButton = () => {
   const [visible, setVisible] = useState(false);
+  const nav = useNavigation();
 
   const onOpen = () => {
-    setVisible(true);
+    //setVisible(true);
+    nav.navigate("MyProfile")
   };
 
   const onClosed = () => {

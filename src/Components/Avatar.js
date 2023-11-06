@@ -36,17 +36,11 @@ const AvatarOld = ({ tag, name, isGroup }) => {
   );
 };
 
-const defaultSize = {
-  w: 50,
-  h: 50,
-  font: 20,
-  groupMark: 20,
-  groupMarkFont: 13,
-};
+const defaultSize = { w: 50, h: 50, font: 20, groupMark: 20, groupMarkFont: 13 };
 
 /**
- *  avatar优先级大于name
- *
+ * avatar优先级大于name
+ * 
  * @param {{tag:number, name:string,isGroup:boolean,isSelected:boolean, avatar:string|null,size:{w:number,h:number,font:number,groupMark:number,groupMarkFont:number}}} params
  * @returns
  */
@@ -82,11 +76,13 @@ const Avatar = ({ tag, name, isGroup, isSelected, avatar, size, children }) => {
   const roundStyle = isGroup ? { borderRadius: roundedSize } : {};
 
   let viewClass = isGroup
-    ? `w-[${size.w}px] h-[${size.h}px] justify-center items-center absolute left-0 top-0`
+    ? `w-[${size.w}px] h-[${size.h
+    }px] justify-center items-center absolute left-0 top-0`
     : `w-[${size.w}px] h-[${size.h}px] justify-center items-center rounded-full absolute left-0 top-0`;
 
   let borderClass = isGroup
-    ? `w-[${size.w}px] h-[${size.h}px] justify-center items-center ${border} absolute left-0 top-0`
+    ? `w-[${size.w}px] h-[${size.h
+    }px] justify-center items-center ${border} absolute left-0 top-0`
     : `w-[${size.w}px] h-[${size.h}px] justify-center items-center rounded-full ${border} absolute left-0 top-0`;
 
   borderClass += isSelected ? " opacity-80" : " hidden";
@@ -97,49 +93,39 @@ const Avatar = ({ tag, name, isGroup, isSelected, avatar, size, children }) => {
       ? `text-[${AvatarColorPlatte.textColor.dark}] font-bold text-[${size.font}px]`
       : `text-[${AvatarColorPlatte.textColor.light}] font-bold text-[${size.font}px]`;
 
+
   const groupMarkSize = size.groupMark ?? defaultSize.groupMark;
   const groupFontSize = size.groupMarkFont ?? defaultSize.groupMarkFont;
-  const groupBadge = isGroup ? (
-    <View
-      className={
-        "bg-[#6E5EDB] absolute right-0 top-0 justify-center items-center"
-      }
-      style={{
-        width: groupMarkSize,
-        height: groupMarkSize,
-        borderTopRightRadius: roundedSize,
-        borderBottomLeftRadius: roundedSize,
-      }}
-    >
-      <Text className="text-white" style={{ fontSize: groupFontSize }}>
-        G
-      </Text>
-    </View>
-  ) : (
-    <></>
-  );
-
-  const avt =
-    avatar == "default" ? (
-      <View
-        className={viewClass}
-        style={{ backgroundColor: avatarColor, ...roundStyle }}
+  const groupBadge =
+    isGroup ? (
+      <View className={"bg-[#6E5EDB] absolute right-0 top-0 justify-center items-center"}
+        style={{ width: groupMarkSize, height: groupMarkSize, borderTopRightRadius: roundedSize, borderBottomLeftRadius: roundedSize }}
       >
-        <Text className={fontClass} style={{ fontSize: size.font }}>
-          {initLetter}
-        </Text>
+        <Text className="text-white" style={{ fontSize: groupFontSize }}>G</Text>
       </View>
     ) : (
-      <View
-        className={viewClass}
-        style={{ backgroundColor: avatarColor, ...roundStyle }}
-      >
-        <Image
-          source={{ uri: API.headerUrl(avatar) }}
-          className={`rounded-full w-[${size.w}px] h-[${size.h}px]`}
-        />
-      </View>
+      <></>
     );
+
+
+  const avt = avatar == "default"
+    ? <View
+      className={viewClass}
+      style={{ backgroundColor: avatarColor, ...roundStyle }}
+    >
+      <Text className={fontClass} style={{ fontSize: size.font }}>
+        {initLetter}
+      </Text>
+    </View>
+    : <View
+      className={viewClass}
+      style={{ backgroundColor: avatarColor, ...roundStyle }}
+    >
+      <Image
+        source={{ uri: API.headerUrl(avatar) }}
+        className={`rounded-full w-[${size.w}px] h-[${size.h}px]`}
+      />
+    </View>
 
   return (
     <View className={`w-[${size.w}px] h-[${size.h}px] `}>

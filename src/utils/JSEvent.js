@@ -41,12 +41,22 @@ class JSEventObj {
 
 let events = {};
 
+/**
+ * 
+ * @param {string} name Event Name
+ * @param {()=>void} handler 
+ * @returns {()=>void} unsubscribe
+ */
 const on = (name, handler) => {
   let event = events[name];
   if (event == null) {
     event = events[name] = new JSEventObj(name);
   }
   event.registerHandler(handler);
+
+  return () => {
+    remove(name, handler);
+  }
 };
 
 const remove = (name, handler) => {

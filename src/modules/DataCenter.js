@@ -64,6 +64,12 @@ const DataCenter = {
     questUserInfo: new QuestUserData(),
 
     userSetting: new UserSetting(),
+
+    notificationState: "",
+
+    isNotificationOn: () => {
+      return DataCenter.userInfo.notificationState == "granted"
+    }
   },
 
   /**

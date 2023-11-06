@@ -19,16 +19,31 @@ const GroupListItem = ({ groupData }) => {
   const [groupInfo, setGroupInfo] = useState(
     ChatGroupService.Inst.getCachedChatGroup(groupData.targetId)
   );
+
+  const [lastSender, setLastSender] = useState(null)
   console.log("groupInfo: ", groupInfo);
 
   const navigation = useNavigation();
+  useEffect(() => {
+    IMUserInfoService.Inst.getUser(groupData.latestMessageSenderId).then(user => {
+      if (user.length > 0) {
+        setLastSender(user[0]);
+      }
+    });
+  }, [])
 
   const onGroupInfoOpen = () => {
     navigation.navigate("GroupInfo", { targetId: groupData.targetId });
   };
 
+
   const countBadgeClass =
     "absolute bottom-[-2px] right-[-5px] rounded-full w-[20px] h-[20px] bg-[#FF3737] justify-center items-center";
+
+
+  const latestMsg = groupData.latestMessage.length > 0 ?
+    (lastSender == null ? "" : lastSender.name + ": ") + truncate(groupData.latestMessage, { length: 25 })
+    : ""
 
   return (
     <View className="mb-[10px] flex-row justify-between">
@@ -61,9 +76,7 @@ const GroupListItem = ({ groupData }) => {
             </View>
           </View>
           <Text className="text-clr-gray-light">
-            {truncate(groupData.latestMessage, {
-              length: 20,
-            })}
+            {latestMsg}
           </Text>
         </View>
       </View>

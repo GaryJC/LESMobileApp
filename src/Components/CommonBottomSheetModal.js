@@ -49,9 +49,9 @@ const CommonBottomSheetModal = ({ visible = false, onOpen, onClosing, onClosed, 
                 sheetRef.current.present();
                 if (onOpen != null) onOpen();
             }
-            if (!visible) {
-                sheetRef.current.dismiss();
-            }
+        }
+        if (!visible) {
+            sheetRef.current.dismiss();
         }
     }, [visible]);
 

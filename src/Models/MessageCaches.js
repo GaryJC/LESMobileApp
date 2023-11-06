@@ -182,6 +182,7 @@ class MessageCaches {
     if (chatData.addOrUpdate(msgData)) {
       //收到新消息，自己发出的消息不增加新消息数量
       chatSort.gotNewMessage(
+        msgData.senderId,
         msgData.content,
         msgData.timelineId,
         msgData.senderId != this.#currUserId
@@ -366,6 +367,12 @@ class ChatListItem {
   #updateTime;
 
   /**
+   * 最新消息的发送者id
+   * @type {number}
+   */
+  latestMessageSenderId;
+
+  /**
    * 最新的一条消息
    * @type {string}
    */
@@ -430,11 +437,12 @@ class ChatListItem {
 
   /**
    * 收到了新消息
+   * @param {number} senderId
    * @param {string} content
    * @param {number} timelineId 当前消息的timelineId
    * @param {boolean} incNewsCount 是否增加新消息数量，默认为true
    */
-  gotNewMessage(content, timelineId, incNewsCount = true) {
+  gotNewMessage(senderId, content, timelineId, incNewsCount = true) {
     this.refresh();
     if (incNewsCount) {
       if (timelineId > this.latestTimelineId) {
@@ -443,6 +451,7 @@ class ChatListItem {
       }
     }
     this.latestMessage = content;
+    this.latestMessageSenderId = senderId;
   }
 
   /**

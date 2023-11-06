@@ -19,6 +19,10 @@ import DatabaseService from "./DatabaseService";
 import { MessageCaches } from "../Models/MessageCaches";
 import IMUserInfo from "../Models/IMUserInfo";
 import UserProfile from "../Models/UserProfile";
+import UserSetting from "../Models/UserSetting";
+import { check, checkNotifications } from "react-native-permissions";
+
+
 const IMUserState = LesConstants.IMUserState;
 
 class DataSavingService {
@@ -38,6 +42,21 @@ class DataSavingService {
       //   this.friendListData = friendListData;
     }
     return DataSavingService.#inst;
+  }
+
+  async onUserLogin() {
+    const state = await checkNotifications();
+    console.log("state=======", state)
+    DataCenter.userInfo.notificationState = state.status;
+    //用户登录后读取数据库配置
+    // const setting = await DatabaseService.Inst.loadUserSetting();
+    // if (setting == null) setting = new UserSetting();
+    // DataCenter.userInfo.userSetting = setting;
+  }
+
+  async onAppStateChanged() {
+    const state = await checkNotifications();
+    DataCenter.userInfo.notificationState = state.status;
   }
 
   /**
@@ -119,14 +138,15 @@ class DataSavingService {
    * 将用户的登录信息保存到DataCenter中
    * @param {number} id
    * @param {string} key
-   * @param {{name:string, tag:number, email:string, state:IMUserState,userProfile:UserProfile}} imUserInfo
+   * @param {{name:string, tag:number, email:string, state:IMUserState,userProfile:UserProfile, setting:UserSetting}} imUserInfo
    */
-  saveLoginDataToDataCenter(id, key, email, imUserInfo, userProfile) {
+  buildDataCenter(id, key, email, imUserInfo, userProfile, setting) {
     DataCenter.userInfo.accountId = id;
     DataCenter.userInfo.loginKey = key;
     DataCenter.userInfo.email = email;
     this.setImUserInfo({ id, name: imUserInfo.name, tag: imUserInfo.tag, state: imUserInfo.state, avatar: imUserInfo.avatar, onlineState: LesConstants.IMUserOnlineState.Online });
     DataCenter.userInfo.userProfile.update(userProfile);
+    DataCenter.userInfo.userSetting = setting;
   }
 
   /**
