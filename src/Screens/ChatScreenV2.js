@@ -88,7 +88,7 @@ const ChatScreenV2 = () => {
   return (
     <SafeAreaView className="flex-1">
       <KeyboardAvoidingView
-        keyboardVerticalOffset={isKeyboardVisible ? 0 : 85}
+        // keyboardVerticalOffset={isKeyboardVisible ? 0 : 85}
         // className={Platform.OS === "ios" ? "flex-1" : "flex-1 mt-[5vh]"}
         style={{
           // transform: [{ translateY: isKeyboardVisible ? -60 : 0 }],
