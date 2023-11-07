@@ -59,7 +59,6 @@ class MessageService {
           //存入缓存并发布事件
           // const msgData = this.#onTimelineUpdated(message);
           const msgData = this.#onMessageSent(message);
-
           // console.log("send message: ", message);
           // JSEvent.emit(DataEvents.Saving.SavingState_Message, message);
 
@@ -107,7 +106,16 @@ class MessageService {
   #onMessageSent(timelineData) {
     //转化为  MessageData
     const msgData = this.#pbTimelineDataToMessageData(timelineData);
-    console.log("on message sent: ", timelineData, msgData);
+    this.#onMessageSent1(msgData);
+  }
+
+  /**
+   * 
+   * @param {MessageData} msgData 
+   * @returns {MessageData}
+   */
+  #onMessageSent1(msgData) {
+    console.log("on message sent: ", msgData);
     //存入messageCaches
     DataCenter.messageCache.pushMessage(msgData);
 
@@ -199,12 +207,12 @@ class MessageService {
    * @param {MessageData} msgData 
    */
   #fireMessageEvents(chatId, msgData) {
-      //发布新消息事件，供service使用
-      JSEvent.emit(DataEvents.Message.TimelineState_Updated, msgData);
-      //发布UI事件，通知ui指定对话有更新
-      JSEvent.emit(UIEvents.Message.Message_Chat_Updated, { chatId, msgData });
-      //更新对话列表，携带有更新的chatId
-      JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, { chatId });
+    //发布新消息事件，供service使用
+    JSEvent.emit(DataEvents.Message.TimelineState_Updated, msgData);
+    //发布UI事件，通知ui指定对话有更新
+    JSEvent.emit(UIEvents.Message.Message_Chat_Updated, { chatId, msgData });
+    //更新对话列表，携带有更新的chatId
+    JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, { chatId });
   }
 
   /**

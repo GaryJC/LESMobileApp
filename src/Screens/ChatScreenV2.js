@@ -23,6 +23,7 @@ import {
   KeyboardAwareFlatList,
   KeyboardAwareScrollView,
 } from "react-native-keyboard-aware-scroll-view";
+import Constants from "../modules/Constants";
 
 export const BubbleContext = createContext();
 
@@ -46,15 +47,13 @@ const ChatScreenV2 = () => {
   const onMessageSendHandler = (newMessage) => {
     if (currChatData == null) return;
 
+    const msg = quote ? newMessage + Constants.quoteDelimiter + quote : newMessage;
+
     if (currChatData.type === LesConstants.IMMessageType.Single) {
-      MessageService.Inst.sendMessage(
-        currChatData.targetId,
-        quote + "\n" + newMessage
-      );
+      MessageService.Inst.sendMessage(currChatData.targetId, msg);
     } else {
       MessageService.Inst.sendChatGroupMessage(
-        currChatData.targetId,
-        quote + "\n" + newMessage
+        currChatData.targetId, msg
       );
     }
     if (quote) {
@@ -89,13 +88,14 @@ const ChatScreenV2 = () => {
   return (
     <SafeAreaView className="flex-1">
       <KeyboardAvoidingView
+        // keyboardVerticalOffset={isKeyboardVisible ? 0 : 85}
         // className={Platform.OS === "ios" ? "flex-1" : "flex-1 mt-[5vh]"}
         style={{
           // transform: [{ translateY: isKeyboardVisible ? -60 : 0 }],
           marginTop: StatusBar.currentHeight,
           flex: 1,
         }}
-        behavior={Platform.OS === "ios" ? "padding" : null}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <View className="flex-1">
           <View className="flex-1 flex-row">

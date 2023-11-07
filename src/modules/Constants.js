@@ -1,7 +1,7 @@
 const Address_Local = {
-  IMServer: "ws://localhost:8888/im/ws",
-  AccountServer: "http://localhost:18881/",
-  WalletAddress: "http://localhost:3001",
+  IMServer: "ws://10.0.0.173:8888/im/ws",
+  AccountServer: "http://10.0.0.173:18881/",
+  WalletAddress: "http://10.0.0.173:3001",
   ResServer: "https://res.nexgami.com"
 };
 
@@ -19,9 +19,33 @@ const Address_Production = {
   ResServer: "https://res.nexgami.com"
 };
 
-const AddressOverride = null;
+const AddressOverride = Address_Local;
+
+
 
 const Constants = {
+  /**
+   * 使用 29 组分隔符 做为聊天信息和quote信息的分隔符
+   */
+  quoteDelimiter: String.fromCharCode(29),
+
+  /**
+ * 将聊天内容分离成message和quote两部分
+ * @param {string} content 
+ * @return {message:string, quote:string}
+ */
+  splitContent: (content) => {
+    if (content == null) {
+      return { message: "", quote: "" }
+    }
+    const arr = content.split(Constants.quoteDelimiter);
+    if (arr.length <= 1) {
+      return { message: content, quote: "" }
+    } else {
+      return { message: arr[0], quote: arr[1] }
+    }
+  },
+
   deliveryState: {
     delivered: 1,
     delivering: 2,

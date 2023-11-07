@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useContext, useEffect, useReducer, useRef, useState } from "react";
 import ChatGroup from "../../Models/ChatGroup";
 import { ChatData } from "../../Models/MessageCaches";
 import {
@@ -21,6 +21,12 @@ import { ChatBubble, ChatBubbleV2 } from "../ChatBubble";
 import { useNavigation } from "@react-navigation/native";
 import Constants from "../../modules/Constants";
 import { debounce } from "lodash";
+import Clipboard from "@react-native-clipboard/clipboard";
+import Divider from "../Divider";
+import CommonBottomSheetModal from "../CommonBottomSheetModal";
+import { BubbleContext } from "../../Screens/ChatScreenV2";
+import { MaterialIcons } from "@expo/vector-icons";
+import FriendBottomSheet from "../FriendBottomSheet";
 
 const { IMMessageType, IMGroupMemberState } = LesConstants;
 /**
@@ -94,7 +100,7 @@ const MessageTitle = ({ chatObj }) => {
       }
     };
 
-    onChatListRemoved = () => {};
+    onChatListRemoved = () => { };
 
     JSEvent.on(DataEvents.ChatGroup.ChatGroup_Updated, onChatGroupUpdated);
     JSEvent.on(DataEvents.User.UserState_Changed, onUserDataUpdated);
@@ -153,10 +159,10 @@ const messageReducer = (state, action) => {
       const updatedState = state.map((message) =>
         message.messageId === action.payload.messageId
           ? {
-              ...message,
-              status: action.payload.status,
-              timelineId: action.payload.timelineId,
-            }
+            ...message,
+            status: action.payload.status,
+            timelineId: action.payload.timelineId,
+          }
           : message
       );
       return updatedState.sort((a, b) => b.timelineId - a.timelineId);
@@ -185,8 +191,14 @@ const MessagePanel = ({ chatData, focusMessaageId }) => {
   const [messages, dispatchMessages] = useReducer(messageReducer, []);
   const [scrollToMsgId, setScrollToMsgId] = useState(null);
 
+  //{ sender: null, message: null }
+  const [popMessage, setPopMessage] = useState(null);
+
+  const [popUser, setPopUser] = useState(null);
+
   let moving = false;
 
+  const { quote, setQuote } = useContext(BubbleContext);
   const flatListRef = useRef();
   const messagesRef = useRef();
   const chatDataRef = useRef();
@@ -320,7 +332,17 @@ const MessagePanel = ({ chatData, focusMessaageId }) => {
         data={messages}
         renderItem={({ item, index }) => {
           const preMessage = messages[index + 1];
-          return <ChatBubbleV2 message={item} preMessage={preMessage} />;
+          return <ChatBubbleV2
+            message={item}
+            preMessage={preMessage}
+            onAvatarPressed={userInfo => {
+              console.log("pppppppop user", userInfo)
+              setPopUser(userInfo);
+            }}
+            onContentLongPressed={(sender, msg) => {
+              setPopMessage({ sender: sender, message: msg });
+            }}
+          />;
         }}
         ListEmptyComponent={<Text>No messages to display</Text>}
         keyExtractor={(item, index) => item.messageId}
@@ -332,7 +354,7 @@ const MessagePanel = ({ chatData, focusMessaageId }) => {
             loadMessage(_chatData);
           }
         }}
-        onScrollToIndexFailed={(e) => {}}
+        onScrollToIndexFailed={(e) => { }}
         ListFooterComponent={
           loading ? (
             <View style={{ paddingVertical: 20 }}>
@@ -341,8 +363,94 @@ const MessagePanel = ({ chatData, focusMessaageId }) => {
           ) : null
         }
       />
+      <BubbleBottomSheet
+        visible={popMessage != null}
+        onClosed={() => setPopMessage(null)}
+        sender={popMessage?.sender}
+        message={popMessage?.message?.content}
+        onAction={(action, msg) => {
+          if (action == "Quote") {
+            setQuote(msg);
+          }
+        }}
+      />
+      <FriendBottomSheet
+        enableContentPanningGesture={true}
+        visible={popUser != null}
+        onClosed={() => setPopUser(null)}
+        selectedFriend={popUser}
+      />
     </View>
   );
 };
+
+
+const BubbleBottomSheet = ({
+  visible,
+  onOpen,
+  onClosed,
+  sender,
+  message,
+  onAction,
+}) => {
+  const msg = Constants.splitContent(message);
+  const bubbleContent = `${sender?.name}: ${msg.message}`;
+
+  const BubbleOption = ({ title, icon }) => {
+    const optionHander = () => {
+      switch (title) {
+        case "Copy":
+          Clipboard.setString(bubbleContent);
+          break;
+        case "Quote":
+          //setQuote(bubbleContent);
+          break;
+      }
+      onAction?.call(this, title, bubbleContent)
+      onClosed?.call(this);
+    };
+
+    return (
+      <>
+        <TouchableOpacity onPress={optionHander}>
+          <View className="flex-row items-center">
+            {icon}
+            <Text className="ml-[5px] font-bold text-[15px] text-white">
+              {title}
+            </Text>
+          </View>
+        </TouchableOpacity>
+        <Divider />
+      </>
+    );
+  };
+
+  return (
+    <CommonBottomSheetModal
+      visible={visible}
+      onOpen={onOpen}
+      onClosed={onClosed}
+      snapPoints={["40%"]}
+      index={0}
+      title={"Quote"}
+    >
+      <View className="flex-1 mx-[5%]">
+        <View className="flex flex-row justify-start items-center bg-clr-gray-dark p-[5px] mt-[5px] rounded-[4px]">
+          <Text numberOfLines={5} className="text-white flex-1 mr-1">{bubbleContent}</Text>
+        </View>
+        <Divider />
+        <BubbleOption
+          title={"Copy"}
+          icon={<MaterialIcons name="file-copy" size={24} color="white" />}
+        />
+        <BubbleOption
+          title={"Quote"}
+          icon={<MaterialIcons name="format-quote" size={24} color="white" />}
+        />
+      </View>
+    </CommonBottomSheetModal>
+  );
+};
+
 
 export { MessageTitle, MessagePanel };

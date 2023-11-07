@@ -1,5 +1,5 @@
-import Constants from "../modules/Constants";
 import { LesConstants } from "les-im-components";
+import Constants from "../modules/Constants";
 const { deliveryState } = Constants;
 const { IMMessageType, IMMessageContentType } = LesConstants;
 export default class MessageData {
@@ -55,4 +55,6 @@ export default class MessageData {
    * @type {number}
    */
   timestamp;
+
 }
+

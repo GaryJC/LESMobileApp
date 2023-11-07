@@ -1,6 +1,7 @@
+import messaging, { firebase } from "@react-native-firebase/messaging";
 import { PermissionsAndroid } from "react-native";
-import messaging from "@react-native-firebase/messaging";
 import DataCenter from "../modules/DataCenter";
+import notifee from "@notifee/react-native";
 
 class FirebaseMessagingService {
     static #inst;
@@ -27,6 +28,24 @@ class FirebaseMessagingService {
     async init() {
         let enabled = false;
 
+        // messaging().onMessage(async message => {
+        //     console.log("got message=====", message);
+        //     await this.displayMessage(message);
+        // })
+        // messaging().setBackgroundMessageHandler(async message => {
+        //     console.log("got background message=====", message);
+        //     await this.displayMessage(message);
+        // })
+
+        // notifee.requestPermission();
+        // notifee.onForegroundEvent(async ({ type, detail }) => {
+        //     console.log("===FFFF==", type, detail);
+        // })
+
+        // notifee.onBackgroundEvent(async ({ type, detail }) => {
+        //     console.log("===BBBB==", type, detail);
+        // })
+
         if (Platform.OS == 'android') {
             const permiStatus = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
             enabled = permiStatus != 'denied';
@@ -51,6 +70,7 @@ class FirebaseMessagingService {
         } catch (e) {
             console.log("Get Fcm Token error:", e);
         }
+
     }
 
     async getFcmToken() {
