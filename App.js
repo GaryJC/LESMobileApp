@@ -182,7 +182,7 @@ const BottomTabNavigation = () => {
         headerTitleAlign: "left",
         headerShadowVisible: false,
         headerShown: false,
-        tabBarHideOnKeyboard: true,
+        tabBarHideOnKeyboard: Platform.OS == "ios" ? false : true,
       }}
       initialRouteName="Friends"
     >
@@ -556,9 +556,16 @@ export default function App() {
             <Stack.Screen
               name="CreateName"
               component={CreateNameScreen}
-              options={{ headerBackVisible: false, headerShown: false }}
+              options={{
+                headerBackVisible: false,
+                headerShown: false,
+              }}
             />
-            <Stack.Screen name="Notification" component={NotificationScreen} />
+            <Stack.Screen
+              name="Notification"
+              component={NotificationScreen}
+              options={{ headerTintColor: "white" }}
+            />
             <Stack.Screen
               name="FriendRequest"
               component={FriendRequestScreen}
@@ -567,29 +574,44 @@ export default function App() {
             <Stack.Screen
               name="FriendSearch"
               component={FriendSearchScreen}
-              options={{ headerTitle: "Friend Search" }}
+              options={{
+                headerTitle: "Friend Search",
+                headerTintColor: "white",
+              }}
             />
             <Stack.Screen
               name="GroupCreate"
               component={GroupCreateScreen}
-              options={{ headerTitle: "Create a Group" }}
+              options={{
+                headerTitle: "Create a Group",
+                headerTintColor: "white",
+              }}
             />
             <Stack.Screen
               name="FriendAdd"
               component={FriendAddScreen}
-              options={{ headerTitle: "Add a Friend" }}
+              options={{
+                headerTitle: "Add a Friend",
+                headerTintColor: "white",
+              }}
             />
             <Stack.Screen
               name="GroupInfo"
               component={GroupInfoScreen}
-              options={{ headerTitle: "Group Information" }}
+              options={{
+                headerTitle: "Group Information",
+                headerTintColor: "white",
+              }}
             />
             <Stack.Screen
               name="GroupInvite"
               component={GroupInviteScreen}
-            // options={{ headerTitle: "Group Information" }}
+              options={{
+                headerTitle: "Invite Friends",
+                headerTintColor: "white",
+              }}
             />
-             <Stack.Screen
+            <Stack.Screen
               name="MyProfile"
               component={MyProfileScreen}
               options={{ headerTitle: "My Profile" }}
