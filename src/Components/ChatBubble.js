@@ -75,91 +75,97 @@ const TimeStamp = ({ date }) => (
   </View>
 );
 
-const BubbleBottomSheet = ({
-  visible,
-  onOpen,
-  onClosed,
-  senderName,
-  message,
-}) => {
-  const bubbleContent = `${senderName}: ${message}`;
+//没用了，移动到了MessagePanel.js中
+// const BubbleBottomSheet = ({
+//   visible,
+//   onOpen,
+//   onClosed,
+//   senderName,
+//   message,
+// }) => {
+//   const msg = Constants.splitContent(message);
+//   const bubbleContent = `${senderName}: ${msg.message}`;
 
-  const { quote, setQuote } = useContext(BubbleContext);
+//   const { quote, setQuote } = useContext(BubbleContext);
 
-  const BubbleOption = ({ title, icon }) => {
-    const optionHander = () => {
-      switch (title) {
-        case "Copy":
-          Clipboard.setString(bubbleContent);
-          break;
-        case "Quote":
-          setQuote(bubbleContent);
-          break;
-      }
-      onClosed();
-    };
+//   const BubbleOption = ({ title, icon }) => {
+//     const optionHander = () => {
+//       switch (title) {
+//         case "Copy":
+//           Clipboard.setString(bubbleContent);
+//           break;
+//         case "Quote":
+//           setQuote(bubbleContent);
+//           break;
+//       }
+//       onClosed();
+//     };
 
-    return (
-      <>
-        <TouchableOpacity onPress={optionHander}>
-          <View className="flex-row items-center">
-            {icon}
-            <Text className="ml-[5px] font-bold text-[15px] text-white">
-              {title}
-            </Text>
-          </View>
-        </TouchableOpacity>
-        <Divider />
-      </>
-    );
-  };
+//     return (
+//       <>
+//         <TouchableOpacity onPress={optionHander}>
+//           <View className="flex-row items-center">
+//             {icon}
+//             <Text className="ml-[5px] font-bold text-[15px] text-white">
+//               {title}
+//             </Text>
+//           </View>
+//         </TouchableOpacity>
+//         <Divider />
+//       </>
+//     );
+//   };
 
-  return (
-    <CommonBottomSheetModal
-      visible={visible}
-      onOpen={onOpen}
-      onClosed={onClosed}
-      snapPoints={["30%"]}
-      index={0}
-      title={bubbleContent}
-    >
-      <View className="flex-1 mx-[5%]">
-        <BubbleOption
-          title={"Copy"}
-          icon={<MaterialIcons name="file-copy" size={24} color="white" />}
-        />
-        <BubbleOption
-          title={"Quote"}
-          icon={<MaterialIcons name="format-quote" size={24} color="white" />}
-        />
-      </View>
-    </CommonBottomSheetModal>
-  );
-};
+//   return (
+//     <CommonBottomSheetModal
+//       visible={visible}
+//       onOpen={onOpen}
+//       onClosed={onClosed}
+//       snapPoints={["40%"]}
+//       index={0}
+//       title={"Quote"}
+//     >
+//       <View className="flex-1 mx-[5%]">
+//         <View className="flex flex-row justify-start items-center bg-clr-gray-dark p-[5px] mt-[5px] rounded-[4px]">
+//           <Text numberOfLines={5} className="text-white flex-1 mr-1">{bubbleContent}</Text>
+//         </View>
+//         <Divider />
+//         <BubbleOption
+//           title={"Copy"}
+//           icon={<MaterialIcons name="file-copy" size={24} color="white" />}
+//         />
+//         <BubbleOption
+//           title={"Quote"}
+//           icon={<MaterialIcons name="format-quote" size={24} color="white" />}
+//         />
+//       </View>
+//     </CommonBottomSheetModal>
+//   );
+// };
 
-const Bubble = ({ isOwn, senderUserInfo, message }) => {
+const Bubble = ({ isOwn, senderUserInfo, message, onAvatarPressed, onContentLongPressed }) => {
   const fontSize = DataCenter.userInfo.userSetting.getChatFontSize();
 
-  const [ownProfileVisible, setOwnProfileVisible] = useState(false);
-  const [otherProfileVisible, setOtherProfileVisible] = useState(false);
+  // const [ownProfileVisible, setOwnProfileVisible] = useState(false);
+  // const [otherProfileVisible, setOtherProfileVisible] = useState(false);
 
-  const [bubbleVisible, setBubbleVisible] = useState(false);
+  // const [bubbleVisible, setBubbleVisible] = useState(false);
 
-  const onOwnProfileOpen = () => {
-    setOwnProfileVisible(true);
-  };
+  // const onOwnProfileOpen = () => {
+  //   setOwnProfileVisible(true);
+  // };
 
-  const onOwnProfileClosed = () => {
-    setOwnProfileVisible(false);
-  };
+  // const onOwnProfileClosed = () => {
+  //   setOwnProfileVisible(false);
+  // };
 
-  const onOtherProfileOpen = () => {
-    setOtherProfileVisible(true);
-  };
+  // const onOtherProfileOpen = () => {
+  //   setOtherProfileVisible(true);
+  // };
 
-  const onOtherProfileClosed = () => {
-    setOtherProfileVisible(false);
-  };
+  // const onOtherProfileClosed = () => {
+  //   setOtherProfileVisible(false);
+  // };
 
   /*
   const BubbleMenu = () => {
@@ -171,13 +177,15 @@ const Bubble = ({ isOwn, senderUserInfo, message }) => {
   };
   */
 
-  const openBubbleSheet = () => {
-    setBubbleVisible(true);
-  };
+  // const openBubbleSheet = () => {
+  //   setBubbleVisible(true);
+  // };
 
-  const closeBubbleSheet = () => {
-    setBubbleVisible(false);
-  };
+  // const closeBubbleSheet = () => {
+  //   setBubbleVisible(false);
+  // };
+
+  const msg = Constants.splitContent(message?.content);
 
   return (
     <View
@@ -189,7 +197,7 @@ const Bubble = ({ isOwn, senderUserInfo, message }) => {
     >
       {/* {!isOwn && <Avatar avatar={userInfo.avatar} />} */}
       {!isOwn && (
-        <TouchableOpacity onPress={onOtherProfileOpen}>
+        <TouchableOpacity onPress={onAvatarPressed}>
           <View className=" w-[45px] h-[45px]">
             <Avatar
               tag={senderUserInfo?.tag}
@@ -210,44 +218,80 @@ const Bubble = ({ isOwn, senderUserInfo, message }) => {
           }
         >
           <Text
-            className={isOwn ? "text-white mr-[5px]" : "text-white ml-[5px]"}
+            className={isOwn ? "text-white mr-[10px]" : "text-white ml-[10px]"}
             style={{ fontSize: fontSize }}
           >
             {senderUserInfo?.name}
           </Text>
         </View>
-        <Pressable onLongPress={openBubbleSheet}>
-          <View
-            className={
-              isOwn
-                ? "flex-row justify-center pr-[30vw] mr-[5px] bg-[#5EB857] px-2 py-2 rounded"
-                : "flex-row justify-center pl-[30vw] ml-[5px] bg-[#445465] px-2 py-2 rounded"
-            }
-            style={{ position: "relative" }}
-          >
-            <Text
+        <Pressable onLongPress={onContentLongPressed}>
+          <View className="flex flex-row">
+            {!isOwn && <View style={{
+              width: 0,
+              height: 0,
+              marginTop: 7,
+              borderTopWidth: 6,
+              borderTopColor: 'transparent',
+              borderRightWidth: 6,
+              borderRightColor: '#445465',
+              borderLeftWidth: 3,
+              borderLeftColor: 'transparent',
+              borderBottomWidth: 6,
+              borderBottomColor: 'transparent',
+            }} />}
+            <View
               className={
-                isOwn ? "text-black max-w-[50vw]" : "text-white max-w-[50vw]"
+                isOwn
+                  ? "flex-row justify-center pr-[30vw] bg-[#5EB857] px-2 py-2 rounded"
+                  : "flex-row justify-center pl-[30vw] bg-[#445465] px-2 py-2 rounded"
               }
-              style={{ fontSize: fontSize }}
+              style={{ position: "relative" }}
             >
-              {message?.content}
-            </Text>
-            {message?.status === Constants.deliveryState.delivering && (
-              <ActivityIndicator
-                className={isOwn ? "pr-[10px]" : "pl-[10px]"}
-                size={"small"}
-                color={"#8D8D8D"}
-              />
-            )}
+              <Text
+                className={
+                  isOwn ? "text-black max-w-[50vw]" : "text-white max-w-[52vw]"
+                }
+                style={{ fontSize: fontSize }}
+              >
+                {msg.message}
+              </Text>
+              {message?.status === Constants.deliveryState.delivering && (
+                <ActivityIndicator
+                  className={isOwn ? "pr-[10px]" : "pl-[10px]"}
+                  size={"small"}
+                  color={"#8D8D8D"}
+                />
+              )}
+            </View>
+            {isOwn && <View style={{
+              width: 0,
+              height: 0,
+              marginTop: 7,
+              borderTopWidth: 6,
+              borderTopColor: 'transparent',
+              borderRightWidth: 3,
+              borderRightColor: 'transparent',
+              borderLeftWidth: 6,
+              borderLeftColor: '#5EB857',
+              borderBottomWidth: 6,
+              borderBottomColor: 'transparent',
+            }} />}
           </View>
         </Pressable>
+        {msg.quote != null && msg.quote.length > 0 ?
+          <View className={ //#202A32
+            isOwn
+              ? "mr-[10px] mt-1 rounded bg-[#1D2730] max-w-[52vw] p-2"
+              : "ml-[10px] mt-1 rounded bg-[#1D2730] max-w-[52vw] p-2"
+          }>
+            <Text className="text-clr-gray-light">{msg.quote}</Text>
+          </View> : <></>}
         {/* {menuVisible && <BubbleMenu />} */}
       </View>
 
       {/* {isOwn && <Avatar avatar={userInfo.avatar} />} */}
       {isOwn && (
-        <TouchableOpacity onPress={onOwnProfileOpen}>
+        <TouchableOpacity onPress={onAvatarPressed}>
           <View className=" w-[45px] h-[45px]">
             <Avatar
               tag={senderUserInfo?.tag}
@@ -258,7 +302,7 @@ const Bubble = ({ isOwn, senderUserInfo, message }) => {
           </View>
         </TouchableOpacity>
       )}
-      <FriendBottomSheet
+      {/* <FriendBottomSheet
         visible={otherProfileVisible}
         onClosed={onOtherProfileClosed}
         selectedFriend={senderUserInfo}
@@ -267,20 +311,20 @@ const Bubble = ({ isOwn, senderUserInfo, message }) => {
         visible={ownProfileVisible}
         onClosed={onOwnProfileClosed}
         selectedFriend={senderUserInfo}
-      />
-      <BubbleBottomSheet
+      /> */}
+      {/* <BubbleBottomSheet
         visible={bubbleVisible}
         onOpen={openBubbleSheet}
         onClosed={closeBubbleSheet}
         senderName={senderUserInfo?.name}
         message={message?.content}
-      />
+      /> */}
     </View>
   );
 };
 
 export const ChatBubbleV2 = React.memo(
-  ({ message, preMessage }) => {
+  ({ message, preMessage, onAvatarPressed, onContentLongPressed }) => {
     const [senderUserInfo, setSender] = useState(
       message == null
         ? null
@@ -304,6 +348,12 @@ export const ChatBubbleV2 = React.memo(
             isOwn={message.senderId == DataCenter.userInfo.accountId}
             message={message}
             senderUserInfo={senderUserInfo}
+            onAvatarPressed={() => {
+              onAvatarPressed?.call(this, senderUserInfo);
+            }}
+            onContentLongPressed={() => {
+              onContentLongPressed?.call(this, senderUserInfo, message);
+            }}
           />
         )}
         {showTimestamp(preMessage, message) && (

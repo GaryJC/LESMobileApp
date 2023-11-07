@@ -256,7 +256,7 @@ class DataSavingService {
 
   #onReceiveMessage(msgData) {
     //System类型的消息不存储
-    if (msgData.messageType == LesConstants.IMMessageType.System) {
+    if (msgData.messageType == LesConstants.IMMessageType.System || msgData.messageId == 0) {
       return;
     }
 

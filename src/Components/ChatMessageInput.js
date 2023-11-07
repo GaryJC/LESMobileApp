@@ -15,21 +15,21 @@ export const ChatMessageInput = ({ onMessageSendHandler }) => {
     }
   };
 
-  const [height, setHeight] = useState(30); // Initial height
+  const [height, setHeight] = useState(34); // Initial height
   const maxHeight = 200;
 
   const handleContentSizeChange = (event) => {
-    setHeight(Math.min(maxHeight, event.nativeEvent.contentSize.height));
+    setHeight(Math.min(maxHeight, event.nativeEvent.contentSize.height + 5));
   };
 
   const Quote = () => {
     const clearQuote = () => {
-      setQuote();
+      setQuote("");
     };
 
     return (
-      <View className="flex-row justify-between items-center bg-clr-gray-dark p-[5px] mt-[5px]">
-        <Text className="text-white">{quote}</Text>
+      <View className="flex flex-row justify-between items-center bg-clr-gray-dark p-[5px] mt-[5px] rounded-[4px]">
+        <Text numberOfLines={3} className="text-white flex-1 mr-1">{quote}</Text>
         <Ionicons
           name="close-circle"
           size={18}
@@ -44,14 +44,21 @@ export const ChatMessageInput = ({ onMessageSendHandler }) => {
     <View className="flex-row items-end py-[10px]">
       <View className="flex-1 mr-[10px]">
         <TextInput
+          submitBehavior="submit"
+          onSubmitEditing={() => {
+            onPressHandler();
+          }}
           value={newMessage}
-          onChangeText={(text) => setNewMessage(text)}
-          className="bg-[#1B1B1B] rounded p-[5px] text-[#CACACA]"
-          // onSubmitEditing={sendMessage}
+          onChangeText={(text) => {
+            setNewMessage(text)
+          }}
+          className="bg-[#1B1B1B] rounded p-[5px] text-[#CACACA] text-base"
           placeholderTextColor="#CACACA"
           multiline={true}
           onContentSizeChange={handleContentSizeChange}
-          style={{ height: Math.max(30, height) }} // Minimum height of 30
+          style={{ height: Math.max(34, height) }} // Minimum height of 30
+          returnKeyType="send"
+          enablesReturnKeyAutomatically={true}
         />
         {quote && <Quote />}
       </View>

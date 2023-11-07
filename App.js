@@ -331,7 +331,15 @@ const BottomTabNavigation = () => {
   );
 };
 
-export default function App() {
+export default function App({ isHeadless }) {
+  console.log("==============", isHeadless)
+  if (isHeadless) {
+    return null;
+  }
+  return <App_ />
+}
+
+function App_() {
   const [isLoggedin, setIsLoggedin] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
 
@@ -589,7 +597,7 @@ export default function App() {
               component={GroupInviteScreen}
             // options={{ headerTitle: "Group Information" }}
             />
-             <Stack.Screen
+            <Stack.Screen
               name="MyProfile"
               component={MyProfileScreen}
               options={{ headerTitle: "My Profile" }}

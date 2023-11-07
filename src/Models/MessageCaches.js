@@ -577,7 +577,9 @@ class ChatData {
    */
   addOrUpdate(msgData) {
     const idx = this.#messageList.findIndex(
-      (item) => item.messageId == msgData.messageId
+      (item) => {
+        return item.messageId == msgData.messageId;
+      }
     );
     let isNew = false;
     if (idx == -1) {
