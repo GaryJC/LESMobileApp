@@ -5,6 +5,8 @@ import {
   Keyboard,
   ScrollView,
   SafeAreaView,
+  Platform,
+  StatusBar,
 } from "react-native";
 import ChatListBar from "../Components/Chat/ChatListBar";
 import { MessagePanel, MessageTitle } from "../Components/Chat/MessagePanel";
@@ -84,39 +86,42 @@ const ChatScreenV2 = () => {
   }, []);
 
   return (
-    <KeyboardAvoidingView
-      className="flex-1 mt-[5vh]"
-      keyboardVerticalOffset={isKeyboardVisible ? 0 : 85}
-      style={{
-        //flex: 1
-        //transform: [{ translateY: isKeyboardVisible ? -60 : 0 }],
-      }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <View className="flex-1">
-        <View className="flex-1 flex-row">
-          {/* 左侧边栏 */}
-          <View className="w-[80px] items-center flex-col">
-            <ChatListBar onItemSelected={onChatListItemSelected} />
-          </View>
-          {/* 右侧聊天区域 */}
-          <View className="flex-1 bg-[#262F38]  pl-2 pr-2">
-            {/* 聊天框标题 */}
+    <SafeAreaView className="flex-1">
+      <KeyboardAvoidingView
+        keyboardVerticalOffset={isKeyboardVisible ? 0 : 85}
+        // className={Platform.OS === "ios" ? "flex-1" : "flex-1 mt-[5vh]"}
+        style={{
+          // transform: [{ translateY: isKeyboardVisible ? -60 : 0 }],
+          marginTop: StatusBar.currentHeight,
+          flex: 1,
+        }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <View className="flex-1">
+          <View className="flex-1 flex-row">
+            {/* 左侧边栏 */}
+            <View className="w-[80px] items-center flex-col">
+              <ChatListBar onItemSelected={onChatListItemSelected} />
+            </View>
+            {/* 右侧聊天区域 */}
+            <View className="flex-1 bg-[#262F38]  pl-2 pr-2">
+              {/* 聊天框标题 */}
 
-            <MessageTitle chatObj={currChatData} />
-            {/* 聊天面板 */}
-            <BubbleContext.Provider value={{ quote, setQuote }}>
-              <MessagePanel
-                chatData={currChatData}
-                focusMessaageId={currChatItem?.focusMessageId ?? null}
-              />
-              {/* 文字输入框 */}
-              <ChatMessageInput onMessageSendHandler={onMessageSendHandler} />
-            </BubbleContext.Provider>
+              <MessageTitle chatObj={currChatData} />
+              {/* 聊天面板 */}
+              <BubbleContext.Provider value={{ quote, setQuote }}>
+                <MessagePanel
+                  chatData={currChatData}
+                  focusMessaageId={currChatItem?.focusMessageId ?? null}
+                />
+                {/* 文字输入框 */}
+                <ChatMessageInput onMessageSendHandler={onMessageSendHandler} />
+              </BubbleContext.Provider>
+            </View>
           </View>
         </View>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
