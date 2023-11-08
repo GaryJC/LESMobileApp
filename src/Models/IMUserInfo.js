@@ -1,5 +1,5 @@
 import { LesConstants } from "les-im-components";
-const { IMUserState, IMUserOnlineState } = LesConstants;
+const { IMUserState, IMUserOnlineState, SocialType } = LesConstants;
 
 const StateToStr = {
     0: "Init",
@@ -102,3 +102,17 @@ export default class IMUserInfo {
     }
 
 }
+
+class IMUserProfile {
+    /**
+     * @type {IMUserInfo}
+     */
+    userInfo;
+
+    /**
+     * @type { Map<SocialType,string > }
+     */
+    links;
+}
+
+export { IMUserProfile }

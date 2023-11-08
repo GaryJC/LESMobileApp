@@ -58,6 +58,7 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import UserDrawer from "./src/Components/UserDrawer";
 import UserHeader from "./src/Components/UserHeader";
 import MyProfileScreen from "./src/Screens/MyProfileScreen";
+import notifee from "@notifee/react-native";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -109,6 +110,7 @@ const BottomTabNavigation = () => {
       countStr = count > 99 ? "99+" : count;
     }
     setNewMsgCount(countStr);
+    updateIconBadge();
   };
 
   const onNewMessageCountChanged = () => {
@@ -122,6 +124,7 @@ const BottomTabNavigation = () => {
       unreadCount = count > 99 ? "99+" : count;
     }
     setNewNotiCount(unreadCount);
+    updateIconBadge();
   };
 
   const onNewNotiCountChanged = () => {
@@ -132,6 +135,12 @@ const BottomTabNavigation = () => {
     onNewNotiCountChanged();
     onNewMessageCountChanged();
   };
+
+  const updateIconBadge = () => {
+    const mc = DataCenter.messageCache.getNewMessageCount();
+    const nc = DataCenter.notifications.unreadCount();
+    notifee.setBadgeCount(mc + nc);
+  }
 
   useEffect(() => {
     JSEvent.on(DataEvents.User.UserState_IsLoggedin, updateBadgeCount);
