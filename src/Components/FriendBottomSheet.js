@@ -213,10 +213,10 @@ export default function FriendBottomSheet({
           </Text>
         </View> */}
         <UserBottomSheetHeader user={selectedFriend} isOwn={false} />
-        {isFriend && (
-          <>
-            <View className="mt-[10px] mx-[5vw]">
-              <Links />
+        <View className="mt-[10px] mx-[5vw]">
+          <Links />
+          {isFriend && (
+            <>
               <BottomSheetButton handler={goChatHandler} title={"Chat"}>
                 {
                   <Ionicons
@@ -237,10 +237,11 @@ export default function FriendBottomSheet({
               </Text>
             </View>
           </TouchableHighlight> */}
-            </View>
-            <RemoveFriendButton />
-          </>
-        )}
+
+              <RemoveFriendButton />
+            </>
+          )}
+        </View>
       </View>
       <DialogModal
         visible={confirmVisible}

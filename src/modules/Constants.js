@@ -2,26 +2,24 @@ const Address_Local = {
   IMServer: "ws://10.0.0.173:8888/im/ws",
   AccountServer: "http://10.0.0.173:18881/",
   WalletAddress: "http://10.0.0.173:3001",
-  ResServer: "https://res.nexgami.com"
+  ResServer: "https://res.nexgami.com",
 };
 
 const Address_Public_Test = {
   IMServer: "ws://15.222.78.167:19888/im/ws",
   AccountServer: "https://acc-test.metavirus.games/",
   WalletAddress: "https://release-test.dao88movsiygm.amplifyapp.com/login",
-  ResServer: "https://res.nexgami.com"
+  ResServer: "https://res.nexgami.com",
 };
 
 const Address_Production = {
   IMServer: "ws://3.98.76.182:19888/im/ws",
   AccountServer: "https://acc.metavirus.games/",
   WalletAddress: "http://wallet.metavirus.games",
-  ResServer: "https://res.nexgami.com"
+  ResServer: "https://res.nexgami.com",
 };
 
-const AddressOverride = Address_Local;
-
-
+const AddressOverride = Address_Public_Test;
 
 const Constants = {
   /**
@@ -30,19 +28,19 @@ const Constants = {
   quoteDelimiter: String.fromCharCode(29),
 
   /**
- * 将聊天内容分离成message和quote两部分
- * @param {string} content 
- * @return {message:string, quote:string}
- */
+   * 将聊天内容分离成message和quote两部分
+   * @param {string} content
+   * @return {message:string, quote:string}
+   */
   splitContent: (content) => {
     if (content == null) {
-      return { message: "", quote: "" }
+      return { message: "", quote: "" };
     }
     const arr = content.split(Constants.quoteDelimiter);
     if (arr.length <= 1) {
-      return { message: content, quote: "" }
+      return { message: content, quote: "" };
     } else {
-      return { message: arr[0], quote: arr[1] }
+      return { message: arr[0], quote: arr[1] };
     }
   },
 
@@ -105,8 +103,8 @@ const Constants = {
     AddressOverride != null
       ? AddressOverride
       : process.env.NODE_ENV == "production"
-        ? Address_Production
-        : Address_Public_Test,
+      ? Address_Production
+      : Address_Public_Test,
 
   LoginExceptionType: {
     AccountCenterError: "AccountCenterError",
