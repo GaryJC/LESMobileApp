@@ -25,6 +25,8 @@ import CommonBottomSheetModal from "./CommonBottomSheetModal";
 import { DialogModal, DialogButton } from "./FeedbackModal";
 import OptionLayout from "./UserDrawer/OptionLayout";
 import { Entypo } from "@expo/vector-icons";
+import { IMUserProfile } from "../Models/IMUserInfo";
+import IMUserInfoService from "../services/IMUserInfoService";
 
 export default function FriendBottomSheet({
   bottomSheetModalRef,
@@ -41,6 +43,11 @@ export default function FriendBottomSheet({
 
   const [confirmVisible, setConfirmVisible] = useState(false);
 
+  /**
+   * @type {[IMUserProfile, ()=>void]}
+   */
+  const [profile, setProfile] = useState(null);
+
   useEffect(() => {
     const checkIsFriend = async () => {
       let friendList = await FriendService.Inst.getFriendList();
@@ -52,6 +59,13 @@ export default function FriendBottomSheet({
       }
     };
     checkIsFriend();
+
+    if (selectedFriend != null) {
+      IMUserInfoService.Inst.getUserProfile(selectedFriend.id).then(p => {
+        console.log("====", p);
+        setProfile(p);
+      });
+    }
   }, [selectedFriend]);
 
   // const snapPoints = useMemo(() => ["60%", "50%"]);
@@ -192,6 +206,7 @@ export default function FriendBottomSheet({
       snapPoints={snapPoints}
       index={0}
       onClosed={onClosed}
+      enableContentPanningGesture={true}
     >
       <View className="flex-1">
         {/* <View>

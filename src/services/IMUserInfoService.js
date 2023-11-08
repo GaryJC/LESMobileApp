@@ -1,5 +1,5 @@
 import { LesPlatformCenter, LesConstants, IMUserBaseData } from "les-im-components";
-import IMUserInfo from "../Models/IMUserInfo";
+import IMUserInfo, { IMUserProfile } from "../Models/IMUserInfo";
 import JSEvent from "../utils/JSEvent";
 import { DataEvents } from "../modules/Events";
 import DataCenter from "../modules/DataCenter";
@@ -139,6 +139,25 @@ export default class IMUserInfoService {
       }
     })
   }
+
+  /**
+   * 获取目标用户的详细信息
+   * @param {number} userId 
+   */
+  getUserProfile(userId) {
+    return new Promise((resolve, reject) => {
+      LesPlatformCenter.IMFunctions.getUserProfile(userId).then(p => {
+        const baseInfo = p.userInfo;
+        const userInfo = new IMUserInfo(baseInfo.id, baseInfo.name, baseInfo.tag, baseInfo.avatar, p.state, p.onlineState);
+        const profile = new IMUserProfile();
+        profile.userInfo = userInfo;
+        profile.links = p.links;
+        resolve(profile);
+      }).catch(err => reject(err));
+    })
+  }
+
+
   /**
    * 获取缓存中的用户数据，如果缓存中不存在，则会向服务器申请，更新后触发DataEvents.User.UserState_Changed事件
    * @param {number|number[]} userId 
