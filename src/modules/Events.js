@@ -1,9 +1,9 @@
 import { LesConstants } from "les-im-components";
-import MessageData from "../Models/MessageData";
-import Constants from "./Constants";
 import { AppStateStatus } from "react-native";
 import ChatGroup from "../Models/ChatGroup";
-import IMUserInfo from "../Models/IMUserInfo";
+import FriendData from "../Models/Friends";
+import MessageData from "../Models/MessageData";
+import Constants from "./Constants";
 const { IMUserState, IMUserOnlineState, IMMessageType, SocialType } = LesConstants;
 const { ReloginState } = Constants;
 export const DataEvents = {
@@ -163,6 +163,10 @@ export const UIEvents = {
    */
   Friend: {
     FriendState_UIRefresh: "UI_EVENT_FriendState_UIRefresh",
+    /**
+     * @type {{friendInfo:FriendData}}
+     */
+    PopupFriendBottomSheet: "UI_EVENT_PopupFriendBottomSheet",
   },
 
   /**

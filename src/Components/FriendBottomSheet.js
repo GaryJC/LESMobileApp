@@ -206,6 +206,7 @@ export default function FriendBottomSheet({
       snapPoints={snapPoints}
       index={0}
       onClosed={onClosed}
+      enableContentPanningGesture={true}
     >
       <View className="flex-1">
         {/* <View>

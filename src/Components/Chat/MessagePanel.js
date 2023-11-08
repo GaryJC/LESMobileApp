@@ -375,7 +375,6 @@ const MessagePanel = ({ chatData, focusMessaageId }) => {
         }}
       />
       <FriendBottomSheet
-        enableContentPanningGesture={true}
         visible={popUser != null}
         onClosed={() => setPopUser(null)}
         selectedFriend={popUser}

@@ -1,26 +1,17 @@
+import { LesConstants } from "les-im-components";
+import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  ImageBackground,
   ActivityIndicator,
-  TouchableOpacity,
   Pressable,
-  Modal,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
 import Constants from "../modules/Constants";
-import React, { useState, useEffect, useContext } from "react";
 import DataCenter from "../modules/DataCenter";
+import IMUserInfoService from "../services/IMUserInfoService";
 import formatDate from "../utils/formatDate";
 import Avatar from "./Avatar";
-import { LesConstants } from "les-im-components";
-import IMUserInfoService from "../services/IMUserInfoService";
-import FriendBottomSheet from "./FriendBottomSheet";
-import MyProfileBottomSheet from "./MyProfileBottomSheet";
-import CommonBottomSheetModal from "./CommonBottomSheetModal";
-import { MaterialIcons } from "@expo/vector-icons";
-import Divider from "./Divider";
-import Clipboard from "@react-native-clipboard/clipboard";
-import { BubbleContext } from "../Screens/ChatScreenV2";
 
 const showTimestamp = (preMessage, message) => {
   if (preMessage) {
@@ -302,23 +293,6 @@ const Bubble = ({ isOwn, senderUserInfo, message, onAvatarPressed, onContentLong
           </View>
         </TouchableOpacity>
       )}
-      {/* <FriendBottomSheet
-        visible={otherProfileVisible}
-        onClosed={onOtherProfileClosed}
-        selectedFriend={senderUserInfo}
-      />
-      <MyProfileBottomSheet
-        visible={ownProfileVisible}
-        onClosed={onOwnProfileClosed}
-        selectedFriend={senderUserInfo}
-      /> */}
-      {/* <BubbleBottomSheet
-        visible={bubbleVisible}
-        onOpen={openBubbleSheet}
-        onClosed={closeBubbleSheet}
-        senderName={senderUserInfo?.name}
-        message={message?.content}
-      /> */}
     </View>
   );
 };

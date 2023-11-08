@@ -20,7 +20,7 @@ const bottomBackDropUnpressable = (props) => (
  * @param {{visible:boolean,enableContentPanningGesture:boolean, onOpen:()=void, onClosing:()=>void,onClosed:()=>void, onIndexChanged:(index)=>void, title:string|null,snapPoints:(string | number)[],index:number,closable:boolean}} p
  * @returns
  */
-const CommonBottomSheetModal = ({ visible = false, enableContentPanningGesture, onOpen, onClosing, onClosed, onIndexChanged, title = "", snapPoints, index = 0, closable = true, children }) => {
+const CommonBottomSheetModal = ({ visible = false, enableContentPanningGesture = false, onOpen, onClosing, onClosed, onIndexChanged, title = "", snapPoints, index = 0, closable = true, children }) => {
     const [show, setShow] = useState(visible);
     const [_closable, setClosable] = useState(closable);
     const sheetRef = useRef(null);
