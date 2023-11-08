@@ -5,7 +5,7 @@ import FriendBottomSheet from "./FriendBottomSheet";
 import FriendListChatButton from "./SocialListChatButton";
 import Avatar from "./Avatar";
 
-export const FriendList = ({ friend, button, hasTag }) => {
+export const FriendList = ({ friend, button, hasTag, onAvatarPressed }) => {
   // const avatar = `https://i.pravatar.cc/?img=${friend.id}`;
 
   // const navigation = useNavigation();
@@ -22,7 +22,10 @@ export const FriendList = ({ friend, button, hasTag }) => {
 
   const onOpen = () => {
     setVisible(true);
+    onAvatarPressed(friend);
   };
+
+  console.log("pop friend: ", friend);
 
   // const bottomSheetModalRef = useRef(null);
 
@@ -73,14 +76,14 @@ export const FriendList = ({ friend, button, hasTag }) => {
         </View>
         {button}
       </View>
-      <FriendBottomSheet
+      {/* <FriendBottomSheet
         bottomSheetModalRef={bottomSheetModalRef}
         // selectedFriend={selectedFriend}
         selectedFriend={friend}
         // openSheet={() => openSheet(item)}
         visible={visible}
         onClosed={onClosed}
-      />
+      /> */}
     </View>
   );
 };

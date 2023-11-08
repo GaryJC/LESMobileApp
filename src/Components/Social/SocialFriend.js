@@ -16,6 +16,7 @@ import FriendService from "../../services/FriendService";
 import JSEvent from "../../utils/JSEvent";
 import { LesConstants } from "les-im-components";
 import SocialListChatButton from "../../Components/SocialListChatButton";
+import FriendBottomSheet from "../FriendBottomSheet";
 
 /*
 const RecommendedFriend = (id, name, avatar) => (
@@ -43,6 +44,8 @@ const RecommendedFriend = (id, name, avatar) => (
 
 export default function SocialFriend() {
   const [friendsData, setFriendsData] = useState(null);
+
+  const [popUser, setPopUser] = useState();
 
   // 可传参数 { id, state, onlineState }
   const onFriendStateUIUpdated = async () => {
@@ -126,8 +129,15 @@ export default function SocialFriend() {
           <FriendList
             friend={item}
             button={<SocialListChatButton item={item} />}
+            onAvatarPressed={(userInfo) => setPopUser(userInfo)}
           />
         )}
+      />
+      <FriendBottomSheet
+        // selectedFriend={selectedFriend}
+        visible={popUser != null}
+        onClosed={() => setPopUser(null)}
+        selectedFriend={popUser}
       />
     </View>
   );
