@@ -1,9 +1,9 @@
-import { View, Text, ImageBackground, TouchableOpacity } from "react-native";
-import { StateIndicator } from "./StateIndicator";
-import { useState, useRef, useCallback } from "react";
-import FriendBottomSheet from "./FriendBottomSheet";
-import FriendListChatButton from "./SocialListChatButton";
+import { useCallback, useRef, useState } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
 import Avatar from "./Avatar";
+import { StateIndicator } from "./StateIndicator";
+import JSEvent from "../utils/JSEvent";
+import { UIEvents } from "../modules/Events";
 
 export const FriendList = ({ friend, button, hasTag, onAvatarPressed }) => {
   // const avatar = `https://i.pravatar.cc/?img=${friend.id}`;
@@ -14,20 +14,17 @@ export const FriendList = ({ friend, button, hasTag, onAvatarPressed }) => {
   const [selectedFriend, setSelectedFriend] = useState();
 
   // friend bottom sheet visible state
-  const [visible, setVisible] = useState(false);
+  //const [visible, setVisible] = useState(false);
 
-  const onClosed = () => {
-    setVisible(false);
-  };
+  // const onClosed = () => {
+  //   setVisible(false);
+  // };
 
   const onOpen = () => {
-    setVisible(true);
-    onAvatarPressed(friend);
+    // setVisible(true);
+    onAvatarPressed?.call(this, friend);
+    JSEvent.emit(UIEvents.Friend.PopupFriendBottomSheet, { friendInfo: friend });
   };
-
-  console.log("pop friend: ", friend);
-
-  // const bottomSheetModalRef = useRef(null);
 
   const handleSheetChanges = useCallback((index) => {
     console.log("handleSheetChanges", index);
@@ -76,14 +73,6 @@ export const FriendList = ({ friend, button, hasTag, onAvatarPressed }) => {
         </View>
         {button}
       </View>
-      {/* <FriendBottomSheet
-        bottomSheetModalRef={bottomSheetModalRef}
-        // selectedFriend={selectedFriend}
-        selectedFriend={friend}
-        // openSheet={() => openSheet(item)}
-        visible={visible}
-        onClosed={onClosed}
-      /> */}
     </View>
   );
 };

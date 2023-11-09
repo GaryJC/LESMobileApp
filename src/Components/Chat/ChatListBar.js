@@ -36,6 +36,8 @@ export default ChatListBar = ({ onItemSelected }) => {
   const bottomSheetRef = useRef(null);
   const flatListRef = useRef();
 
+  const [showPopover, setShowPopover] = useState(false);
+
   /**
    * 接收点击chatList切换聊天对象的事件
    */
@@ -195,14 +197,16 @@ export default ChatListBar = ({ onItemSelected }) => {
         </TouchableHighlight>
 
         <Popover
+          isVisible={showPopover}
           popoverStyle={{
             backgroundColor: "#505050",
           }}
           backgroundStyle={{
             backgroundColor: 0,
           }}
+          onRequestClose={() => setShowPopover(false)}
           from={
-            <TouchableHighlight>
+            <TouchableHighlight onPress={() => setShowPopover(true)}>
               <View className="overflow-hidden w-[40px] h-[40px] bg-[#262F38] rounded-full mb-[5px] items-center justify-center">
                 <Ionicons
                   name="add-outline"
@@ -213,7 +217,7 @@ export default ChatListBar = ({ onItemSelected }) => {
             </TouchableHighlight>
           }
         >
-          <AddPopupMenu nav={nav} />
+          <AddPopupMenu nav={nav} setShowPopover={setShowPopover} />
         </Popover>
       </View>
       <ChatSearchBottomSheet bottomSheetRef={bottomSheetRef} />
@@ -221,12 +225,14 @@ export default ChatListBar = ({ onItemSelected }) => {
   );
 };
 
-const AddPopupMenu = ({ nav }) => {
+const AddPopupMenu = ({ nav, setShowPopover }) => {
   const popMenuHandler = (option) => {
     if (option === "CreateGroup") {
       nav.navigate("GroupCreate");
+      setShowPopover(false);
     } else {
       nav.navigate("FriendAdd");
+      setShowPopover(false);
     }
   };
 

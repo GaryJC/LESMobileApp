@@ -45,8 +45,6 @@ const RecommendedFriend = (id, name, avatar) => (
 export default function SocialFriend() {
   const [friendsData, setFriendsData] = useState(null);
 
-  const [popUser, setPopUser] = useState();
-
   // 可传参数 { id, state, onlineState }
   const onFriendStateUIUpdated = async () => {
     // const offline = FriendService.Inst.getFriendList((f) => f.onlineState.online);
@@ -129,15 +127,8 @@ export default function SocialFriend() {
           <FriendList
             friend={item}
             button={<SocialListChatButton item={item} />}
-            onAvatarPressed={(userInfo) => setPopUser(userInfo)}
           />
         )}
-      />
-      <FriendBottomSheet
-        // selectedFriend={selectedFriend}
-        visible={popUser != null}
-        onClosed={() => setPopUser(null)}
-        selectedFriend={popUser}
       />
     </View>
   );

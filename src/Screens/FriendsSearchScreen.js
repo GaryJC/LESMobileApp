@@ -1,9 +1,6 @@
-import { TextInput, View, FlatList } from "react-native";
-import { useEffect, useState, useCallback, useRef } from "react";
-import { debounce } from "lodash";
-import FriendService from "../services/FriendService";
+import { useState } from "react";
+import { FlatList, View } from "react-native";
 import { FriendList } from "../Components/FriendList";
-import FriendBottomSheet from "../Components/FriendBottomSheet";
 import FriendSearchInput from "../Components/FriendSearchInput";
 
 const FriendSearchScreen = () => {

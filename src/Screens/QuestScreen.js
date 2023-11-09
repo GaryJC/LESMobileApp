@@ -39,7 +39,7 @@ const QuestBtnId = {
 
 const verifyCooldown = 60;
 
-const QuestScreen = ({}) => {
+const QuestScreen = ({ }) => {
   /**
    * @type {[quest:QuestData]} p
    */
@@ -214,8 +214,10 @@ const QuestScreen = ({}) => {
 
   const qp = questProgress ? questProgress[0] : null;
 
+  const style = Platform.OS == "ios" ? "flex-1 px-[5vw] pb-3 mt-2" : "flex-1 px-[5vw] pb-3";
+
   return (
-    <View className="flex-1 px-[5vw] pb-3">
+    <View className={style}>
       <CommunityTitle communityData={communityData}>
         <QuestTitle quest={quest} />
       </CommunityTitle>

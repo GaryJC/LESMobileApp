@@ -1,6 +1,10 @@
 import { DataEvents, UIEvents } from "../modules/Events";
 import JSEvent from "../utils/JSEvent";
-import { LesPlatformCenter, LesConstants, IMUserBaseData } from "les-im-components";
+import {
+  LesPlatformCenter,
+  LesConstants,
+  IMUserBaseData,
+} from "les-im-components";
 import DataSavingService from "./DataSavingService";
 import DataCenter from "../modules/DataCenter";
 import IMUserInfoService from "./IMUserInfoService";
@@ -113,12 +117,7 @@ class FriendService {
           friend.tag = noti.sender.tag;
           friend.avatar = noti.sender.avatar;
         }
-        this.#addFriend(
-          friend,
-          friend.state,
-          friend.onlineState,
-          noti.time
-        );
+        this.#addFriend(friend, friend.state, friend.onlineState, noti.time);
         JSEvent.emit(UIEvents.User.UserState_UIRefresh, friend);
       }
     }
@@ -185,7 +184,14 @@ class FriendService {
         const onlineState = f.getOnlinestate();
         const time = f.getTime();
 
-        IMUserInfoService.Inst.updateUser(baseData.id, baseData.name, baseData.tag, baseData.avatar, state, onlineState);
+        IMUserInfoService.Inst.updateUser(
+          baseData.id,
+          baseData.name,
+          baseData.tag,
+          baseData.avatar,
+          state,
+          onlineState
+        );
         friendList.push({ id: baseData.id, time: time });
       });
 
@@ -208,15 +214,15 @@ class FriendService {
 
     const friendList = this.#friendList;
 
-    const ids = friendList.map(f => f.id);
+    const ids = friendList.map((f) => f.id);
     const users = await IMUserInfoService.Inst.getUser(ids);
 
     const map = {};
-    users.forEach(u => {
+    users.forEach((u) => {
       map[u.id] = u;
     });
 
-    friendList.forEach(f => {
+    friendList.forEach((f) => {
       const friendData = new FriendData(f.id, f.time, map[f.id]);
       if (filter == null) {
         friends.push(friendData);
@@ -278,6 +284,11 @@ class FriendService {
     if (state == Constants.ReloginState.ReloginSuccessful) {
       await this.#pullFriendsDataFromServer();
     }
+  }
+
+  checkIsFriend(checkedId) {
+    const isFriend = this.#friendList.find((item) => item.id === checkedId);
+    return isFriend;
   }
 }
 
