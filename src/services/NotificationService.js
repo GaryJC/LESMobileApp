@@ -54,6 +54,46 @@ class NotificationService {
         });
     });
   }
+  /**
+   * 将指定id的系统通知消息设置为已开启
+   * @param {number} notificationId
+   */
+  setSystemNotificationOpened(notificationId) {
+    return new Promise((resolve, reject) => {
+      LesPlatformCenter.IMFunctions.respondNotification(
+        notificationId,
+        IMNotificationState.Opened,
+      ).then((id) => {
+        resolve(id);
+        const noti = DataCenter.notifications.setNotificationOpened(notificationId);
+        JSEvent.emit(DataEvents.Notification.NotificationState_Updated, noti);
+      })
+        .catch((e) => {
+          reject(e);
+        });
+    });
+  }
+
+  /**
+   * 将指定id的系统通知消息设置为已读
+   * 已读的消息会被删除，相当于Delete操作
+   * @param {number} notificationId
+   */
+  deleteSystemNotification(notificationId) {
+    return new Promise((resolve, reject) => {
+      LesPlatformCenter.IMFunctions.respondNotification(
+        notificationId,
+        IMNotificationState.Read,
+      ).then((id) => {
+        resolve(id);
+        const noti = DataCenter.notifications.deleteNotification(notificationId);
+        JSEvent.emit(DataEvents.Notification.NotificationState_Updated, noti);
+      })
+        .catch((e) => {
+          reject(e);
+        });
+    });
+  }
 
   /**
    * 响应指定id的通知消息

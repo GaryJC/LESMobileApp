@@ -124,7 +124,7 @@ const HighlightButton = ({
       className="mx-[5px] rounded"
     >
       <View className={bgClassName} style={{ backgroundColor: _clr.bg }}>
-        <View className="flex flex-row">
+        <View className="flex flex-row items-center">
           {isLoading ? (
             <ActivityIndicator size="small" color="white" className="mr-2" />
           ) : (
@@ -133,7 +133,7 @@ const HighlightButton = ({
           {icon == null ? (
             <></>
           ) : (
-            <View className="mr-2">
+            <View className="mr-2 flex justify-center items-center">
               {icon}
             </View>
           )}

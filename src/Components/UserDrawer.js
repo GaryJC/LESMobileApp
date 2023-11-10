@@ -38,6 +38,8 @@ const userOptions = [
   { id: 3, title: "Settings", link: "" },
 ];
 
+const { IMNotificationType } = LesConstants;
+
 const UserOptionButton = (key, title, link) => (
   <View key={key} className="py-[15px]">
     <Text className="text-white text-[15px]">{title}</Text>
@@ -63,6 +65,7 @@ export default function UserDrawer(props) {
   });
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [unrespondCount, setUnrespondCount] = useState(0);
 
   const navigation = useNavigation();
 
@@ -88,11 +91,19 @@ export default function UserDrawer(props) {
 
     const updateUnreadCountHandler = () => {
       const count = DataCenter.notifications.unreadCount();
+      //邀请的数量
+      const invCount = DataCenter.notifications.unreadCount(IMNotificationType.FriendInvitation)
+        + DataCenter.notifications.unreadCount(IMNotificationType.GroupInvitation);
       let unreadCount = 0;
+      let unrespondCount = 0;
       if (count > 0) {
         unreadCount = count > 99 ? "99+" : count;
       }
+      if (invCount > 0) {
+        unrespondCount = invCount > 99 ? "99+" : invCount;
+      }
       setUnreadCount(unreadCount);
+      setUnrespondCount(unrespondCount);
     };
 
     // updateUnreadCountHandler();
@@ -247,7 +258,7 @@ export default function UserDrawer(props) {
             title="You Have Pending Requests"
             icon="emoji-people"
             link="Notification"
-            unreadCount={unreadCount}
+            unreadCount={unrespondCount}
           />
 
           <View className="w-[100%] mt-[2vh]">

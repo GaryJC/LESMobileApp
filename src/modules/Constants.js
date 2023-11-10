@@ -103,8 +103,8 @@ const Constants = {
     AddressOverride != null
       ? AddressOverride
       : process.env.NODE_ENV == "production"
-      ? Address_Production
-      : Address_Public_Test,
+        ? Address_Production
+        : Address_Public_Test,
 
   LoginExceptionType: {
     AccountCenterError: "AccountCenterError",
@@ -147,6 +147,43 @@ const Constants = {
     Friends: "Friends",
     Groups: "Groups",
   },
+
+  Icons: {
+    nexgamiIcon: require("../../assets/img/icon-nexgami.png"),
+    telegramIcon: require("../../assets/img/telegram_icon.png"),
+    twitterIcon: require("../../assets/img/twitter_X.png"),
+    discordIcon: require("../../assets/img/discord_icon.png"),
+
+    /**
+     * 根据类型获取系统图标, -1是NexGami,-2是QuestSystem
+     * 1 = Discord, 2=Telegram, 3=Twitter (这部分值和LesConstants.SocialType匹配)
+     * @param {-1|-2|1|2|3|"nexgami"|"quest"|"telegram"|"twitter"|"discord"} type 图标ID或者名称
+     */
+    getSystemIcon: (type) => {
+      const icons = Constants.Icons;
+      switch (type) {
+        case -1:
+        case "nexgami":
+          return icons.nexgamiIcon;
+        case -2:
+        case "quest":
+          return icons.nexgamiIcon;
+        case 1:
+        case "discord":
+          return icons.discordIcon;
+        case 2:
+        case "telegram":
+          return icons.telegramIcon;
+        case 3:
+        case "twitter":
+          return icons.twitterIcon;
+        default:
+          return icons.nexgamiIcon;
+      }
+    }
+
+  }
+
 };
 
 console.log(

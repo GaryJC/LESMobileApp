@@ -3,6 +3,10 @@ import messaging from "@react-native-firebase/messaging"
 import App from './App';
 import notifee from "@notifee/react-native";
 
+if (!__DEV__) {
+    //非开发环境关闭console.log
+    console.log = () => { };
+}
 
 messaging().onMessage(async message => {
 

@@ -1,28 +1,26 @@
-import { useEffect, useReducer, useState, useCallback } from "react";
-import {
-  View,
-  Text,
-  TouchableHighlight,
-  TouchableOpacity,
-  FlatList,
-} from "react-native";
-import { Notifications } from "../Models/Notifications";
-import JSEvent from "../utils/JSEvent";
-import { DataEvents } from "../modules/Events";
-import DataCenter from "../modules/DataCenter";
 import { LesConstants } from "les-im-components";
-import Constants from "../modules/Constants";
-import NotificationList from "../Components/NotificationList";
-import InvitationList from "../Components/InvitationList";
-import GroupSelfSentInviteList from "../Components/GroupSelfSentInviteList";
-import TabButton from "../Components/TabButton";
+import { useCallback, useEffect, useReducer, useState } from "react";
+import {
+  FlatList,
+  View
+} from "react-native";
 import Divider from "../Components/Divider";
+import GroupSelfSentInviteList from "../Components/GroupSelfSentInviteList";
+import InvitationList from "../Components/InvitationList";
+import NotificationList from "../Components/NotificationList";
+import TabButton from "../Components/TabButton";
+import { Notification } from "../Models/Notifications";
+import Constants from "../modules/Constants";
+import DataCenter from "../modules/DataCenter";
+import { DataEvents } from "../modules/Events";
+import JSEvent from "../utils/JSEvent";
 
 const NotificationType = Constants.Notification.NotificationType;
 const NotificationMode = Constants.Notification.NotificationMode;
 
+const { IMNotificationState } = LesConstants;
+
 const notificationReducer = (state, action) => {
-  console.log(console.log("noti state: ", state, action));
   switch (action.type) {
     case "GET_NOTIFICATIONS":
       return action.payload;
@@ -35,10 +33,25 @@ const notificationReducer = (state, action) => {
       //     LesConstants.IMNotificationState.Canceled)
       // ) {
 
-      const isExisted = state.find((item) => item.id === notification.id);
-      return isExisted
-        ? state.filter((item) => item.id !== notification.id)
-        : [...state, notification];
+      const index = state.findIndex((item) => item.id === notification.id);
+      if (index == -1) {
+        return [...state, notification];
+      }
+
+      if (notification.state >= IMNotificationState.Read) {
+        //Read之后的状态都可以删除
+        state.splice(index, 1);
+        return [...state];
+      } else {
+        //Read之前的做更新
+        state[index] = notification;
+        return [...state];
+      }
+
+    // const isExisted = state.find((item) => item.id === notification.id);
+    // return isExisted
+    //   ? state.filter((item) => item.id !== notification.id)
+    //   : [...state, notification];
     // }
   }
 };
@@ -129,6 +142,29 @@ export default function NotificationScreen() {
     [selectedTab]
   );
 
+  const updateUnreadCountHandler = () => {
+    const notiCount = DataCenter.notifications.unreadCount(
+      LesConstants.IMNotificationType.Notification
+    );
+    const friendInvitCount = DataCenter.notifications.unreadCount(
+      LesConstants.IMNotificationType.FriendInvitation
+    );
+    const groupInviteCount = DataCenter.notifications.unreadCount(
+      LesConstants.IMNotificationType.GroupInvitation
+    );
+
+    // setUnreadCount({
+    //   NotificationT : notiCount,
+    //   invitCount: friendInvitCount + groupInviteCount,
+    // });
+    setUnreadCount((pre) => ({
+      ...pre,
+      [NotificationType.Notifications]: notiCount,
+      [NotificationType.Invitations]: friendInvitCount + groupInviteCount,
+      [NotificationType.SelfSent]: 0,
+    }));
+  };
+
   useEffect(() => {
     // 挂载时获取所有推送信息
     // 默认选项是推送（不包括邀请）
@@ -142,49 +178,21 @@ export default function NotificationScreen() {
           item.type !== LesConstants.IMNotificationType.Notification
       ),
     });
-    console.log("all noticiations: ", notifications);
-
-    const updateUnreadCountHandler = () => {
-      const notiCount = DataCenter.notifications.unreadCount(
-        LesConstants.IMNotificationType.Notification
-      );
-      const friendInvitCount = DataCenter.notifications.unreadCount(
-        LesConstants.IMNotificationType.FriendInvitation
-      );
-      const groupInviteCount = DataCenter.notifications.unreadCount(
-        LesConstants.IMNotificationType.GroupInvitation
-      );
-
-      // setUnreadCount({
-      //   NotificationT : notiCount,
-      //   invitCount: friendInvitCount + groupInviteCount,
-      // });
-      setUnreadCount((pre) => ({
-        ...pre,
-        [NotificationType.Notifications]: notiCount,
-        [NotificationType.Invitations]: friendInvitCount + groupInviteCount,
-        [NotificationType.SelfSent]: 0,
-      }));
-    };
 
     updateUnreadCountHandler();
 
-    JSEvent.on(
+    const unsubscribe = JSEvent.on(
       DataEvents.Notification.NotificationState_Updated,
       updateUnreadCountHandler
     );
 
     return () => {
-      JSEvent.remove(
-        DataEvents.Notification.NotificationState_Updated,
-        updateUnreadCountHandler
-      );
+      unsubscribe();
     };
   }, []);
 
   useEffect(() => {
     const onNotiUpdatedHandler = (notification) => {
-      console.log("updated noti: ", notification);
       // const curType =
       //   notification.type == LesConstants.IMNotificationType.Notification
       //     ? NotificationType.Notifications
@@ -288,11 +296,11 @@ export default function NotificationScreen() {
             selectedTab === NotificationType.Notifications
               ? ({ item }) => <NotificationList item={item} />
               : ({ item }) =>
-                  item.mode === NotificationMode.SelfSentGroup ? (
-                    <GroupSelfSentInviteList item={item} />
-                  ) : (
-                    <InvitationList item={item} />
-                  )
+                item.mode === NotificationMode.SelfSentGroup ? (
+                  <GroupSelfSentInviteList item={item} />
+                ) : (
+                  <InvitationList item={item} />
+                )
           }
           // renderItem={({ item }) => console.log(item)}
           keyExtractor={(item, index) => index.toString()}
