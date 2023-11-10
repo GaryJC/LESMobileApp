@@ -19,7 +19,7 @@ const FriendAddButton = ({ userData, setIsLoading }) => {
     } catch (e) {
       switch (e) {
         case LesConstants.ErrorCodes.UsersAreFriend:
-          setFeedbak("The user is already your friend.");
+          setFeedbak(`${userData.name} is already your friend.`);
           break;
         case LesConstants.ErrorCodes.InvitationAlreadySent:
           setFeedbak("You have already sent the request.");

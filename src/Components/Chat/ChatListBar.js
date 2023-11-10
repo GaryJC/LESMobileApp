@@ -1,4 +1,4 @@
-import { FlatList, Text, View } from "react-native";
+import { FlatList, Modal, Text, TouchableOpacity, View } from "react-native";
 import DataCenter from "../../modules/DataCenter";
 import { ChatList } from "../ChatList";
 import { ChatListItem } from "../../Models/MessageCaches";
@@ -15,6 +15,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import ChatSearchBottomSheet from "../ChatSearchBottomSheet";
 import { StateIndicator } from "../StateIndicator";
+import Popover from "react-native-popover-view";
+import { MaterialIcons } from "@expo/vector-icons";
+import Divider from "../Divider";
 
 const { IMMessageType } = LesConstants;
 /**
@@ -22,7 +25,6 @@ const { IMMessageType } = LesConstants;
  * @param {{onItemSelected:(item:ChatListItem, focusMsgId:string|null)=>void}} params
  */
 export default ChatListBar = ({ onItemSelected }) => {
-
   const [chatList, setChatList] = useState(
     DataCenter.messageCache.getChatList() ?? []
   );
@@ -33,6 +35,9 @@ export default ChatListBar = ({ onItemSelected }) => {
   const nav = useNavigation();
   const bottomSheetRef = useRef(null);
   const flatListRef = useRef();
+
+  const [showPopover, setShowPopover] = useState(false);
+
   /**
    * 接收点击chatList切换聊天对象的事件
    */
@@ -190,13 +195,65 @@ export default ChatListBar = ({ onItemSelected }) => {
             <Ionicons name="search-outline" color="#5FB54F" size={24} />
           </View>
         </TouchableHighlight>
-        <TouchableHighlight onPress={handleCreateGroupOpen}>
-          <View className="overflow-hidden w-[40px] h-[40px] bg-[#262F38] rounded-full mb-[5px] items-center justify-center">
-            <Ionicons name="add-outline" color="#5FB54F" size={24}></Ionicons>
-          </View>
-        </TouchableHighlight>
+
+        <Popover
+          isVisible={showPopover}
+          popoverStyle={{
+            backgroundColor: "#505050",
+          }}
+          backgroundStyle={{
+            backgroundColor: 0,
+          }}
+          onRequestClose={() => setShowPopover(false)}
+          from={
+            <TouchableHighlight onPress={() => setShowPopover(true)}>
+              <View className="overflow-hidden w-[40px] h-[40px] bg-[#262F38] rounded-full mb-[5px] items-center justify-center">
+                <Ionicons
+                  name="add-outline"
+                  color="#5FB54F"
+                  size={24}
+                ></Ionicons>
+              </View>
+            </TouchableHighlight>
+          }
+        >
+          <AddPopupMenu nav={nav} setShowPopover={setShowPopover} />
+        </Popover>
       </View>
       <ChatSearchBottomSheet bottomSheetRef={bottomSheetRef} />
+    </View>
+  );
+};
+
+const AddPopupMenu = ({ nav, setShowPopover }) => {
+  const popMenuHandler = (option) => {
+    if (option === "CreateGroup") {
+      nav.navigate("GroupCreate");
+      setShowPopover(false);
+    } else {
+      nav.navigate("FriendAdd");
+      setShowPopover(false);
+    }
+  };
+
+  return (
+    <View className="p-[10px]">
+      <TouchableOpacity onPress={() => popMenuHandler("AddFriend")}>
+        <View className="flex-row items-center my-[5px]">
+          <MaterialIcons name="person-add-alt-1" size={20} color="white" />
+          <Text className="ml-[5px] text-[16px] text-white font-bold">
+            Add Friends
+          </Text>
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => popMenuHandler("CreateGroup")}>
+        <View className="flex-row items-center my-[5px]">
+          <MaterialIcons name="group-add" size={20} color="white" />
+          <Text className="ml-[5px] text-[16px] text-white font-bold">
+            Create a group
+          </Text>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -259,7 +316,10 @@ const ChatListBarItem = ({ chatListItemData, isSelected, onClick }) => {
     return () => {
       JSEvent.remove(UIEvents.Message.Message_Chat_List_Updated, onItemUpdated);
       JSEvent.remove(DataEvents.User.UserState_Changed, onUserDataUpdated);
-      JSEvent.remove(DataEvents.ChatGroup.ChatGroup_Updated, onChatGroupUpdated);
+      JSEvent.remove(
+        DataEvents.ChatGroup.ChatGroup_Updated,
+        onChatGroupUpdated
+      );
     };
   }, []);
 
@@ -269,12 +329,17 @@ const ChatListBarItem = ({ chatListItemData, isSelected, onClick }) => {
       : "absolute bottom-0 right-0 rounded-full w-[20px] h-[20px] bg-[#FF3737] justify-center items-center";
   const countBadge =
     itemData[0].newMessageCount == 0 || isSelected ? (
-      itemData[0].type == IMMessageType.Group ? <></> : <View className="absolute right-0 bottom-0">
-        <StateIndicator
-          state={target?.data?.state}
-          onlineState={target?.data?.onlineState}
-          bgColor={'#080F14'}
-        /></View>
+      itemData[0].type == IMMessageType.Group ? (
+        <></>
+      ) : (
+        <View className="absolute right-0 bottom-0">
+          <StateIndicator
+            state={target?.data?.state}
+            onlineState={target?.data?.onlineState}
+            bgColor={"#080F14"}
+          />
+        </View>
+      )
     ) : (
       <View className={countBadgeClass}>
         <Text className="text-white font-bold text-[10px]">
@@ -285,7 +350,7 @@ const ChatListBarItem = ({ chatListItemData, isSelected, onClick }) => {
       </View>
     );
 
-  const bgClass = isSelected ? "bg-[#262F38]" : ""
+  const bgClass = isSelected ? "bg-[#262F38]" : "";
 
   return (
     <View className={bgClass}>
