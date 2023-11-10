@@ -191,6 +191,7 @@ export default function FriendBottomSheet({
     const { SocialType } = LesConstants;
     let socialIcon;
     let url;
+
     const LinkItem = ({ type, name }) => {
       switch (parseInt(type)) {
         case (SocialType.Twitter, SocialType.Twitter_OAuth2):
@@ -208,11 +209,15 @@ export default function FriendBottomSheet({
       }
 
       const openLinkHandler = () => {
-        Linking.openURL(`https://twitter.com/${name}`);
+        Linking.openURL(url);
       };
 
       return (
-        <TouchableHighlight onPress={openLinkHandler}>
+        <TouchableHighlight
+          onPress={openLinkHandler}
+          disabled={type === SocialType.Discord || type === SocialType.Telegram}
+          className="my-[5px] overflow-hidden rounded-xl"
+        >
           <View className="px-[15px] py-[10px] bg-clr-bglight flex-row items-center justify-between">
             <Text className="text-white text-base font-bold">{name}</Text>
             <Image className="w-[30px] h-[30px]" source={socialIcon} />
