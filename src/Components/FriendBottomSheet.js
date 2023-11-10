@@ -8,6 +8,7 @@ import {
   ImageBackground,
   Image,
   TouchableHighlight,
+  Linking,
 } from "react-native";
 import { useRef, useCallback, useMemo, useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
@@ -27,6 +28,7 @@ import OptionLayout from "./UserDrawer/OptionLayout";
 import { Entypo } from "@expo/vector-icons";
 import { IMUserProfile } from "../Models/IMUserInfo";
 import IMUserInfoService from "../services/IMUserInfoService";
+import { LesConstants } from "les-im-components";
 
 export default function FriendBottomSheet({
   bottomSheetModalRef,
@@ -36,8 +38,6 @@ export default function FriendBottomSheet({
 }) {
   const [isFriend, setIsFriend] = useState(false);
   // console.log("selected friend: ", selectedFriend);
-
-  const [links, setLinks] = useState([]);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -64,9 +64,9 @@ export default function FriendBottomSheet({
 
     if (selectedFriend != null) {
       IMUserInfoService.Inst.getUserProfile(selectedFriend.id)
-        .then((p) => {
-          console.log("====", p);
-          setProfile(p);
+        .then((res) => {
+          console.log("====", res);
+          setProfile(res);
         })
         .catch((e) => {
           console.log("error: ", e);
@@ -187,10 +187,46 @@ export default function FriendBottomSheet({
 
   const Links = () => {
     const icon = <Entypo name="link" size={24} color="white" />;
+    const socialLinks = profile?.links && Object.entries(profile?.links);
+    const { SocialType } = LesConstants;
+    let socialIcon;
+    let url;
+    const LinkItem = ({ type, name }) => {
+      switch (parseInt(type)) {
+        case (SocialType.Twitter, SocialType.Twitter_OAuth2):
+          socialIcon = require("../../assets/img/twitter_X.png");
+          url = `https://twitter.com/${name}`;
+          break;
+        case SocialType.Telegram:
+          socialIcon = require("../../assets/img/telegram_icon.png");
+          url = `https://t.me/${name}`;
+          break;
+        case SocialType.Discord:
+          socialIcon = require("../../assets/img/discord_icon.png");
+          url = "https://discord.gg/8JP8YXVwR5";
+          break;
+      }
+
+      const openLinkHandler = () => {
+        Linking.openURL(`https://twitter.com/${name}`);
+      };
+
+      return (
+        <TouchableHighlight onPress={openLinkHandler}>
+          <View className="px-[15px] py-[10px] bg-clr-bglight flex-row items-center justify-between">
+            <Text className="text-white text-base font-bold">{name}</Text>
+            <Image className="w-[30px] h-[30px]" source={socialIcon} />
+          </View>
+        </TouchableHighlight>
+      );
+    };
+
     return (
       <OptionLayout icon={icon} title={"Links"} childStyle={{ marginLeft: 0 }}>
-        <View className="mt-[10px] bg-clr-button-dark p-[10px] rounded-lg">
-          <Text></Text>
+        <View className="mt-[5px]">
+          {socialLinks?.map((item, index) => (
+            <LinkItem key={index} type={item[0]} name={item[1]} />
+          ))}
         </View>
       </OptionLayout>
     );
