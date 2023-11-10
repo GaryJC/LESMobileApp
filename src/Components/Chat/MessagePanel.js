@@ -27,6 +27,7 @@ import CommonBottomSheetModal from "../CommonBottomSheetModal";
 import { BubbleContext } from "../../Screens/ChatScreenV2";
 import { MaterialIcons } from "@expo/vector-icons";
 import FriendBottomSheet from "../FriendBottomSheet";
+import FriendService from "../../services/FriendService";
 
 const { IMMessageType, IMGroupMemberState } = LesConstants;
 /**
@@ -81,6 +82,11 @@ const MessageTitle = ({ chatObj }) => {
   const goToChatInfoHandler = () => {
     if (target.type === IMMessageType.Group) {
       nav.navigate("GroupInfo", { targetId: target.id });
+    } else {
+      const friendInfo = IMUserInfoService.Inst.getCachedUser(target.id).pop();
+      JSEvent.emit(UIEvents.Friend.PopupFriendBottomSheet, {
+        friendInfo: friendInfo,
+      });
     }
   };
 
@@ -100,7 +106,7 @@ const MessageTitle = ({ chatObj }) => {
       }
     };
 
-    onChatListRemoved = () => { };
+    onChatListRemoved = () => {};
 
     JSEvent.on(DataEvents.ChatGroup.ChatGroup_Updated, onChatGroupUpdated);
     JSEvent.on(DataEvents.User.UserState_Changed, onUserDataUpdated);
@@ -159,10 +165,10 @@ const messageReducer = (state, action) => {
       const updatedState = state.map((message) =>
         message.messageId === action.payload.messageId
           ? {
-            ...message,
-            status: action.payload.status,
-            timelineId: action.payload.timelineId,
-          }
+              ...message,
+              status: action.payload.status,
+              timelineId: action.payload.timelineId,
+            }
           : message
       );
       return updatedState.sort((a, b) => b.timelineId - a.timelineId);
@@ -332,17 +338,19 @@ const MessagePanel = ({ chatData, focusMessaageId }) => {
         data={messages}
         renderItem={({ item, index }) => {
           const preMessage = messages[index + 1];
-          return <ChatBubbleV2
-            message={item}
-            preMessage={preMessage}
-            onAvatarPressed={userInfo => {
-              console.log("pppppppop user", userInfo)
-              setPopUser(userInfo);
-            }}
-            onContentLongPressed={(sender, msg) => {
-              setPopMessage({ sender: sender, message: msg });
-            }}
-          />;
+          return (
+            <ChatBubbleV2
+              message={item}
+              preMessage={preMessage}
+              onAvatarPressed={(userInfo) => {
+                console.log("pppppppop user", userInfo);
+                setPopUser(userInfo);
+              }}
+              onContentLongPressed={(sender, msg) => {
+                setPopMessage({ sender: sender, message: msg });
+              }}
+            />
+          );
         }}
         ListEmptyComponent={<Text>No messages to display</Text>}
         keyExtractor={(item, index) => item.messageId}
@@ -354,7 +362,7 @@ const MessagePanel = ({ chatData, focusMessaageId }) => {
             loadMessage(_chatData);
           }
         }}
-        onScrollToIndexFailed={(e) => { }}
+        onScrollToIndexFailed={(e) => {}}
         ListFooterComponent={
           loading ? (
             <View style={{ paddingVertical: 20 }}>
@@ -383,7 +391,6 @@ const MessagePanel = ({ chatData, focusMessaageId }) => {
   );
 };
 
-
 const BubbleBottomSheet = ({
   visible,
   onOpen,
@@ -405,7 +412,7 @@ const BubbleBottomSheet = ({
           //setQuote(bubbleContent);
           break;
       }
-      onAction?.call(this, title, bubbleContent)
+      onAction?.call(this, title, bubbleContent);
       onClosed?.call(this);
     };
 
@@ -435,7 +442,9 @@ const BubbleBottomSheet = ({
     >
       <View className="flex-1 mx-[5%]">
         <View className="flex flex-row justify-start items-center bg-clr-gray-dark p-[5px] mt-[5px] rounded-[4px]">
-          <Text numberOfLines={5} className="text-white flex-1 mr-1">{bubbleContent}</Text>
+          <Text numberOfLines={5} className="text-white flex-1 mr-1">
+            {bubbleContent}
+          </Text>
         </View>
         <Divider />
         <BubbleOption
@@ -450,6 +459,5 @@ const BubbleBottomSheet = ({
     </CommonBottomSheetModal>
   );
 };
-
 
 export { MessageTitle, MessagePanel };

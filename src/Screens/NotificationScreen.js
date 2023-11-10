@@ -70,6 +70,47 @@ export default function NotificationScreen() {
     invitCount: 0,
   });
 
+  const getSelfSent = () => {
+    const allNotifications = DataCenter.notifications.getAllNotifications();
+    const { selfSentGroupInvits, selfSentFriendInvits } =
+      allNotifications.reduce(
+        (acc, item) => {
+          if (
+            item.type === LesConstants.IMNotificationType.GroupInvitation &&
+            item.mode === NotificationMode.Sender
+          ) {
+            const groupId = item.groupInfo.id;
+            if (!acc.selfSentGroupInvits[groupId]) {
+              acc.selfSentGroupInvits[groupId] = {
+                id: groupId,
+                data: [item],
+                type: LesConstants.IMNotificationType.GroupInvitation,
+                mode: NotificationMode.SelfSentGroup,
+              };
+            } else {
+              acc.selfSentGroupInvits[groupId].data.push(item);
+            }
+          } else if (
+            item.type === LesConstants.IMNotificationType.FriendInvitation &&
+            item.mode === NotificationMode.Sender
+          ) {
+            acc.selfSentFriendInvits.push(item);
+          }
+          return acc;
+        },
+        { selfSentGroupInvits: {}, selfSentFriendInvits: [] }
+      );
+    const selfSentNotifications = [
+      ...selfSentFriendInvits,
+      ...Object.values(selfSentGroupInvits),
+    ];
+    console.log("self sent notifs ", selfSentNotifications);
+    dispatchNotifications({
+      type: "GET_NOTIFICATIONS",
+      payload: selfSentNotifications,
+    });
+  };
+
   const switchTabHandler = useCallback(
     (tab) => {
       if (tab !== selectedTab) {
@@ -94,47 +135,7 @@ export default function NotificationScreen() {
             payload: invitations,
           });
         } else {
-          const allNotifications =
-            DataCenter.notifications.getAllNotifications();
-          const { selfSentGroupInvits, selfSentFriendInvits } =
-            allNotifications.reduce(
-              (acc, item) => {
-                if (
-                  item.type ===
-                  LesConstants.IMNotificationType.GroupInvitation &&
-                  item.mode === NotificationMode.Sender
-                ) {
-                  const groupId = item.groupInfo.id;
-                  if (!acc.selfSentGroupInvits[groupId]) {
-                    acc.selfSentGroupInvits[groupId] = {
-                      id: groupId,
-                      data: [item],
-                      type: LesConstants.IMNotificationType.GroupInvitation,
-                      mode: NotificationMode.SelfSentGroup,
-                    };
-                  } else {
-                    acc.selfSentGroupInvits[groupId].data.push(item);
-                  }
-                } else if (
-                  item.type ===
-                  LesConstants.IMNotificationType.FriendInvitation &&
-                  item.mode === NotificationMode.Sender
-                ) {
-                  acc.selfSentFriendInvits.push(item);
-                }
-                return acc;
-              },
-              { selfSentGroupInvits: {}, selfSentFriendInvits: [] }
-            );
-
-          const selfSentNotifications = [
-            ...selfSentFriendInvits,
-            ...Object.values(selfSentGroupInvits),
-          ];
-          dispatchNotifications({
-            type: "GET_NOTIFICATIONS",
-            payload: selfSentNotifications,
-          });
+          getSelfSent();
         }
       }
     },
@@ -208,10 +209,14 @@ export default function NotificationScreen() {
       }
 
       if (curType === selectedTab) {
-        dispatchNotifications({
-          type: "UPDATE_NOTIFICATIONS",
-          payload: notification,
-        });
+        if (selectedTab === NotificationType.SelfSent) {
+          getSelfSent();
+        } else {
+          dispatchNotifications({
+            type: "UPDATE_NOTIFICATIONS",
+            payload: notification,
+          });
+        }
       }
     };
 
