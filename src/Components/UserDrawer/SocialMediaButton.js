@@ -1,9 +1,10 @@
 import { View, Image, TouchableOpacity, Linking } from "react-native";
+import Constants from "../../modules/Constants";
 
 const socialIcons = [
-  require("../../../assets/img/telegram_icon.png"),
-  require("../../../assets/img/twitter_X.png"),
-  require("../../../assets/img/discord_icon.png")
+  Constants.Icons.getSystemIcon("telegram"),
+  Constants.Icons.getSystemIcon("twitter"),
+  Constants.Icons.getSystemIcon("discord"),
 ]
 
 const socialLinks = [

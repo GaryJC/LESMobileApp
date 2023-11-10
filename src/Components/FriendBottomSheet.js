@@ -62,7 +62,6 @@ export default function FriendBottomSheet({
 
     if (selectedFriend != null) {
       IMUserInfoService.Inst.getUserProfile(selectedFriend.id).then(p => {
-        console.log("====", p);
         setProfile(p);
       });
     }

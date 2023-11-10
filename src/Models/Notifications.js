@@ -24,10 +24,19 @@ class Notifications {
     noti.type = pbData.getType();
     const sender = pbData.getSender();
     const reci = pbData.getRecipient();
-    
+
     noti.sender = new IMUserBaseData(sender);
     noti.recipient = new IMUserBaseData(reci);
 
+    noti.content = pbData.getContent();
+
+    try {
+      const obj = JSON.parse(noti.content);
+      noti.content = obj;
+    } catch (e) {
+      console.log(e);
+      noti.content = { title: noti.content, content: "" };
+    }
     noti.state = pbData.getState();
     noti.time = pbData.getTime();
     const group = pbData.getGroup();
@@ -39,7 +48,6 @@ class Notifications {
         name: pbData.getGroup().getName(),
       };
     }
-    noti.content = pbData.content;
     return noti;
   }
 
@@ -67,13 +75,21 @@ class Notifications {
       //当前用户是消息接收者
       noti.mode = "recipient";
     }
-    if (noti.state <= IMNotificationState.Read) {
-      //状态在Read之前的通知消息，放入列表中
+    if (noti.state < IMNotificationState.Read) {
+      //状态在Read之前的通知消息，放入列表中，不包含Read，现在Read用于标记删除状态了
       this.#addNotificationToList(noti);
     } else {
       //响应过的消息，从列表中移除
       this.#removeNotificationFromList(noti);
     }
+
+    this.notificationList.sort((m1, m2) => {
+      if (m1.time == m2.time) {
+        return m2.id - m1.id;
+      } else {
+        return m2.time - m1.time;
+      }
+    });
   }
 
   /**
@@ -132,19 +148,30 @@ class Notifications {
   /**
    * 将指定id的消息设置为已读状态
    *
-   * 只有未读状态的消息才会变成已读状态
+   * 只有未读状态的消息才会变成已开启
    *
    * @param {number} notificationId
    * @returns {Notification}
    */
-  setNotificationRead(notificationId) {
+  setNotificationOpened(notificationId) {
     const { index, notification } = this.#findNotification(notificationId);
     if (index == -1) return null;
 
     if (notification.state == IMNotificationState.Unread) {
-      notification.state = IMNotificationState.Read;
+      notification.state = IMNotificationState.Opened;
     }
     return notification;
+  }
+
+  /**
+   * 删除指定的消息
+   * @param {number} notificationId 
+   * @returns 
+   */
+  deleteNotification(notificationId) {
+    const { index, notification } = this.#findNotification(notificationId);
+    if (index == -1) return null;
+    return this.#removeNotificationFromList(notification);
   }
 
   /**
@@ -244,7 +271,7 @@ class Notification {
 
   /**
    * 通知内容，一般系统消息会带有通知内容
-   * @type {string}
+   * @type {{title:string, content:string}}
    */
   content;
 }

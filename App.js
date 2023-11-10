@@ -59,6 +59,7 @@ import UserDrawer from "./src/Components/UserDrawer";
 import UserHeader from "./src/Components/UserHeader";
 import MyProfileScreen from "./src/Screens/MyProfileScreen";
 import notifee from "@notifee/react-native";
+import NotificationDetailScreen from "./src/Screens/NotificationDetailScreen";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -341,7 +342,6 @@ const BottomTabNavigation = () => {
 };
 
 export default function App({ isHeadless }) {
-  console.log("==============", isHeadless)
   if (isHeadless) {
     return null;
   }
@@ -632,6 +632,11 @@ function App_() {
               name="MyProfile"
               component={MyProfileScreen}
               options={{ headerTitle: "My Profile" }}
+            />
+            <Stack.Screen
+              name="NotificationDetail"
+              component={NotificationDetailScreen}
+              options={{ headerTitle: "Notification" }}
             />
           </Stack.Navigator>
         </NavigationContainer>
