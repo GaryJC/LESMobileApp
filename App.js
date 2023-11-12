@@ -633,12 +633,18 @@ function App_() {
               <Stack.Screen
                 name="MyProfile"
                 component={MyProfileScreen}
-                options={{ headerTitle: "My Profile" }}
+                options={{
+                  headerTitle: "My Profile",
+                  headerTintColor: "white",
+                }}
               />
               <Stack.Screen
                 name="NotificationDetail"
                 component={NotificationDetailScreen}
-                options={{ headerTitle: "Notification" }}
+                options={{
+                  headerTitle: "Notification",
+                  headerTintColor: "white",
+                }}
               />
             </Stack.Navigator>
           </NavigationContainer>

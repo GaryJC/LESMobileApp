@@ -45,6 +45,7 @@ export default class IMUserInfoService {
    * @returns {IMUserInfo}
    */
   updateUser(userBaseData, state, onlineState) {
+    if (userBaseData == null) return;
     const { id, name, tag, avatar } = userBaseData;
     let userInfo = this.userList[id];
     let changed = false;
@@ -59,15 +60,14 @@ export default class IMUserInfoService {
         onlineState
       );
     } else {
-      changed =
-        userInfo.updateName(name, tag) ||
-        userInfo.changeState(state) ||
-        userInfo.changeOnlineState(onlineState) ||
-        userInfo.changeAvatar(avatar);
+      changed = userInfo.updateName(name, tag);
+      changed |= userInfo.changeState(state);
+      changed |= userInfo.changeOnlineState(onlineState);
+      changed |= userInfo.changeAvatar(avatar);
       ;
     }
 
-    console.log(`update user info :${userInfo.toString()}`);
+    console.log(`update user info (${changed}) :${userInfo.toString()}`);
 
     if (changed) {
       JSEvent.emit(DataEvents.User.UserState_Changed, {
@@ -148,7 +148,7 @@ export default class IMUserInfoService {
     return new Promise((resolve, reject) => {
       LesPlatformCenter.IMFunctions.getUserProfile(userId).then(p => {
         const baseInfo = p.userInfo;
-        const userInfo = new IMUserInfo(baseInfo.id, baseInfo.name, baseInfo.tag, baseInfo.avatar, p.state, p.onlineState);
+        const userInfo = this.updateUser(baseInfo, p.state, p.onlineState);
         const profile = new IMUserProfile();
         profile.userInfo = userInfo;
         profile.links = p.links;
