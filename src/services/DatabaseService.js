@@ -46,7 +46,7 @@ export default class DatabaseService {
   }
 
   async #openDatabase(userId) {
-    this.#currDb = SQLite.openDatabase(`les-db-${userId}`);
+    this.#currDb = SQLite.openDatabase(`nexgami-db-${userId}`);
     try {
       const version = await this.#getVersion();
       //先尝试建数据库，把没有的数据表创建出来
@@ -61,11 +61,11 @@ export default class DatabaseService {
       JSEvent.emit(DataEvents.User.UserState_DataReady);
     } catch (error) {
       if (error == ERROR_DB_ISNULL) {
-        console.error(`database[les-db-${userId}] load error`);
+        console.error(`database[nexgami-db-${userId}] load error`);
         JSEvent.emit(DataEvents.User.UserState_DataReady);
       } else {
         //数据库不存在，创建
-        console.log(`creating database : les-db-${userId}`);
+        console.log(`creating database : nexgami-db-${userId}`);
         this.#createDatabase().then(() => {
           JSEvent.emit(DataEvents.User.UserState_DataReady);
         });
@@ -80,10 +80,10 @@ export default class DatabaseService {
     //         JSEvent.emit(DataEvents.User.UserState_DataReady);
     //     }).catch(error => {
     //         if (error == ERROR_DB_ISNULL) {
-    //             console.error(`database[les-db-${userId}] load error`)
+    //             console.error(`database[nexgami-db-${userId}] load error`)
     //         } else {
     //             //数据库不存在，创建
-    //             console.log(`creating database : les-db-${userId}`)
+    //             console.log(`creating database : nexgami-db-${userId}`)
     //             this.#createDatabase();
     //         }
     //         JSEvent.emit(DataEvents.User.UserState_DataReady);
@@ -901,15 +901,56 @@ export default class DatabaseService {
     })
   }
 
-  loadMessage() {
+  /**
+   * 
+   * @param {number} targetUserId
+   * @param {number} startTimelineId timeline起始id
+   * @param {number} count 
+   * @returns {Promise<MessageData[]>}
+   */
+  loadSingleMessage(targetUserId, startTimelineId, count) {
     return new Promise((resolve, reject) => {
       if (this.#currDb == null) reject(ERROR_DB_ISNULL);
+      const userId = DataCenter.userInfo.accountId;
       this.#currDb.transaction((tx) => {
         tx.executeSql(
-          "select * from tbl_message",
-          null,
+          "select * from tbl_message where messageType = 0 and ((senderId = ? and recipientId = ?) or (senderId = ? and recipientId = ?)) and timelineId < ? order by timelineId desc limit ?",
+          [userId, targetUserId, targetUserId, userId, startTimelineId, count],
           (statement, r) => {
-            resolve(r);
+            const messages = [];
+            for (let i = 0; i < r.rows.length; i++) {
+              messages.push(r.rows.item(i));
+            }
+            resolve(messages);
+          },
+          (s, error) => {
+            reject(error);
+          }
+        );
+      });
+    });
+  }
+  /**
+   * 
+   * @param {number} groupId
+   * @param {number} startTimelineId timeline起始id
+   * @param {number} count 
+   * @returns {Promise<MessageData[]>}
+   */
+  loadGroupMessage(groupId, startTimelineId, count){
+    return new Promise((resolve, reject) => {
+      if (this.#currDb == null) reject(ERROR_DB_ISNULL);
+      const userId = DataCenter.userInfo.accountId;
+      this.#currDb.transaction((tx) => {
+        tx.executeSql(
+          "select * from tbl_message where messageType = 1 and groupId = ? and timelineId < ? order by timelineId desc limit ?",
+          [groupId, startTimelineId, count],
+          (statement, r) => {
+            const messages = [];
+            for (let i = 0; i < r.rows.length; i++) {
+              messages.push(r.rows.item(i));
+            }
+            resolve(messages);
           },
           (s, error) => {
             reject(error);

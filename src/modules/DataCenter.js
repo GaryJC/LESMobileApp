@@ -9,6 +9,8 @@ import IMUserInfo from "../Models/IMUserInfo";
 import UserProfile from "../Models/UserProfile";
 import { QuestUserData } from "../Models/Quest";
 import UserSetting from "../Models/UserSetting";
+import { LesPlatformCenter, LesConstants } from "les-im-components";
+const { ErrorCodes, WebsocketState } = LesConstants;
 
 const services = [];
 // services.push(new FriendService());
@@ -22,7 +24,13 @@ const services = [];
  * DataSavingService用于DataCenter数据的写入，其他服务和ui不要直接将数据写入DataCenter，可调用DataSavingService提供的方法进行数据保存
  */
 const DataCenter = {
-  isLoggedin: false,
+  isAccountLogin: () => {
+    return DataCenter.userInfo != null && DataCenter.userInfo.loginKey.length > 0;
+  },
+  
+  isIMLogin: () => {
+    return LesPlatformCenter.Inst.ConnectState == WebsocketState.Connected;
+  },
 
   deviceName:
     Platform.OS === "ios"

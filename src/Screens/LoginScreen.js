@@ -13,10 +13,10 @@ import {
   ImageBackground,
 } from "react-native";
 import InputLayout from "../Components/InputLayout";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AuthButton from "../Components/AuthButton";
 import { loginRequest, saveData, loginCheck } from "../utils/auth";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import DataCenter from "../modules/DataCenter";
 import { LesPlatformCenter, LesConstants } from "les-im-components";
 import IMFunctions from "../utils/IMFunctions";
@@ -33,6 +33,7 @@ import { NativeModules } from "react-native";
 import SocialSigninForm from "../Components/AuthForm/SocialSigninForm";
 import { DialogButton, DialogModal } from "../Components/FeedbackModal";
 import { diff } from "react-native-reanimated";
+import Toast from 'react-native-toast-message';
 const { RNTwitterSignIn } = NativeModules;
 
 GoogleSignin.configure({
@@ -53,6 +54,19 @@ export default function LoginScreen() {
   const [pendingLogin, setPendingLogin] = useState(null);
 
   const navigation = useNavigation();
+  const route = useRoute();
+
+  useEffect(() => {
+    if (route.params?.loginFailed == true) {
+      Toast.show({
+        type: "error",
+        text1: "Login Failed",
+        text2: "Please try again later."
+      })
+      navigation.reset({ index: 0, routes: [{ name: "Login" }] });
+      navigation.navigate("Login");
+    }
+  }, [route.params?.loginFailed])
 
   function updateEmailHandler(val) {
     setEmail(val);

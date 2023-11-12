@@ -572,6 +572,79 @@ class ChatData {
   }
 
   /**
+   * 从本地缓存中获取聊天记录，如果数量不够，则从数据库中查找
+   * @param {number} startIndex 起始索引
+   * @param {number} count 数量
+   * @returns {Promise<MessageData[]>}
+   */
+  async getMessagesAsync(startIndex, count) {
+    let ret = this.getMessages(startIndex, count);
+    if (ret.length < count) {
+      const loadCount = count - ret.length;
+      //尝试从数据库中读取
+      const lastTimelineId = this.#messageList.length > 0 ? this.#messageList[this.#messageList.length - 1].timelineId : 0x7fffffffffffffff;
+
+      if (this.#type == IMMessageType.Single) {
+        try {
+          const messages = await DatabaseService.Inst.loadSingleMessage(this.#targetId, lastTimelineId, loadCount);
+          if (messages.length > 0 && messages.length < loadCount) {
+            messages[messages.length - 1].isHead = true;
+          }
+          this.addOrUpdateSilent(messages);
+          ret = this.getMessages(startIndex, count);
+        } catch (e) {
+          console.error(`Load Single Message Target[${this.#targetId}] Error: `);
+          console.error(e);
+          throw e;
+        }
+        // DatabaseService.Inst.loadSingleMessage(this.#targetId, lastTimelineId, count)
+        //   .then(messages => {
+        //     console.log(messages);
+        //     //this.addOrUpdateSilent(messages,);
+        //   }).catch(e => {
+        //     console.error(`Load Single Message Target[${this.#targetId}] Error: `);
+        //     console.error(e);
+        //     throw e;
+        //   })
+      } else {
+        try {
+          const messages = await DatabaseService.Inst.loadGroupMessage(this.#targetId, lastTimelineId, loadCount);
+          if (messages.length > 0 && messages.length < loadCount) {
+            messages[messages.length - 1].isHead = true;
+          }
+          this.addOrUpdateSilent(messages);
+          ret = this.getMessages(startIndex, count);
+        } catch (e) {
+          console.error(`Load Group Message Target[${this.#targetId}] Error: `);
+          console.error(e);
+          throw e;
+        }
+      }
+    }
+    return ret;
+  }
+
+  /**
+   * 将消息加入列表，或者更新列表中的消息，静默模式，不会发出事件
+   * @param {MessageData[]} msgs
+   */
+  addOrUpdateSilent(msgs) {
+    msgs.forEach(msgData => {
+      const idx = this.#messageList.findIndex(
+        (item) => {
+          return item.messageId == msgData.messageId;
+        }
+      );
+      if (idx == -1) {
+        this.#messageList.push(msgData);
+      } else {
+        this.#messageList[idx] = msgData;
+      }
+    });
+    this.#sortList();
+  }
+
+  /**
    * 将消息加入列表，或者更新列表中的消息
    * @param {MessageData} msgData
    */
