@@ -21,6 +21,9 @@ const UserHeader = () => {
 
   const updateUnreadCountHandler = () => {
     const count = DataCenter.notifications?.unreadCount();
+    if (count > 99) {
+      count = "99+"
+    }
     setUnreadCount(count);
   };
 
@@ -40,7 +43,7 @@ const UserHeader = () => {
 
   useEffect(() => {
     setUserHandler();
-
+    updateUnreadCountHandler();
     JSEvent.on(
       DataEvents.Notification.NotificationState_Updated,
       updateUnreadCountHandler

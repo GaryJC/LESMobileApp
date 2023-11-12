@@ -16,9 +16,11 @@ import Avatar from "./Avatar";
 const showTimestamp = (preMessage, message) => {
   if (preMessage) {
     const timeDifference = message.timestamp - preMessage.timestamp;
-    return timeDifference >= 5 * 60 * 1000; //difference is in milliseconds
+    const ret = timeDifference >= 5 * 60 * 1000; //difference is in milliseconds
+    return ret;
   }
-  return true; //Show timestamp for the first message
+  //console.log("preMsg[%s] message[%s] timeDiff[%d]", preMessage?.content, message?.content, 0);
+  return false;
 };
 
 const SpecialMessage = ({ message }) => {
@@ -34,7 +36,11 @@ const SpecialMessage = ({ message }) => {
   switch (message?.contentType ?? 0) {
     case LesConstants.IMMessageContentType.Group_MemberAdded:
       if (message?.senderId === message?.recipientId) {
-        content = `${sender?.name} has created the group`;
+        if (message?.senderId === DataCenter.userInfo.accountId) {
+          content = `you have created the group`;
+        } else {
+          content = `${recipient?.name} has created the group`;
+        }
       } else {
         content = `${recipient?.name} has been invited to the group`;
       }
@@ -315,6 +321,9 @@ export const ChatBubbleV2 = React.memo(
 
     return (
       <>
+        {showTimestamp(preMessage, message) && (
+          <TimeStamp date={formatDate(new Date(message?.timestamp))} />
+        )}
         {message.contentType !== LesConstants.IMMessageContentType.Text ? (
           <SpecialMessage message={message} />
         ) : (
@@ -330,9 +339,7 @@ export const ChatBubbleV2 = React.memo(
             }}
           />
         )}
-        {showTimestamp(preMessage, message) && (
-          <TimeStamp date={formatDate(new Date(message?.timestamp))} />
-        )}
+
       </>
     );
   },

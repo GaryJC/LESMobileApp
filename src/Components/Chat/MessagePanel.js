@@ -28,6 +28,9 @@ import { BubbleContext } from "../../Screens/ChatScreenV2";
 import { MaterialIcons } from "@expo/vector-icons";
 import FriendBottomSheet from "../FriendBottomSheet";
 import FriendService from "../../services/FriendService";
+import DatabaseService from "../../services/DatabaseService";
+import DataCenter from "../../modules/DataCenter";
+import MessageData from "../../Models/MessageData";
 
 const { IMMessageType, IMGroupMemberState } = LesConstants;
 /**
@@ -106,7 +109,7 @@ const MessageTitle = ({ chatObj }) => {
       }
     };
 
-    onChatListRemoved = () => {};
+    onChatListRemoved = () => { };
 
     JSEvent.on(DataEvents.ChatGroup.ChatGroup_Updated, onChatGroupUpdated);
     JSEvent.on(DataEvents.User.UserState_Changed, onUserDataUpdated);
@@ -158,6 +161,7 @@ const messageReducer = (state, action) => {
       // order
       return [action.payload, ...state];
     case "LOAD_MESSAGE":
+
       return [...state, ...action.payload];
     case "LOAD_MESSAGE_BEFORE":
       return [...action.payload, ...state];
@@ -165,10 +169,10 @@ const messageReducer = (state, action) => {
       const updatedState = state.map((message) =>
         message.messageId === action.payload.messageId
           ? {
-              ...message,
-              status: action.payload.status,
-              timelineId: action.payload.timelineId,
-            }
+            ...message,
+            status: action.payload.status,
+            timelineId: action.payload.timelineId,
+          }
           : message
       );
       return updatedState.sort((a, b) => b.timelineId - a.timelineId);
@@ -217,8 +221,8 @@ const MessagePanel = ({ chatData, focusMessaageId }) => {
    * @param {boolean} init
    * @returns
    */
-  const loadMessage = (chatData, init = false) => {
-    if (chatData == null) return;
+  const loadMessage = async (chatData, init = false) => {
+    if (chatData == null || loading) return;
     setLoading(true);
 
     //计算起始消息id
@@ -232,14 +236,36 @@ const MessagePanel = ({ chatData, focusMessaageId }) => {
     }
 
     const start = init ? from : messageLoaded.from + messageLoaded.loaded;
-    const msgs = chatData.getMessages(start, messageLoadStep);
+
+    const msgs = await chatData.getMessagesAsync(start, messageLoadStep);
+
+    // chatData.getMessagesAsync(start, 1000).then(msgs => {
+    //   const loaded = {
+    //     from: init ? from : messageLoaded.from,
+    //     loaded: init ? msgs.length : messageLoaded.loaded + msgs.length,
+    //   };
+    //   setMessageLoaded(loaded);
+    //   dispatchMessages({
+    //     type: init ? "RESET_AND_ADD_MESSAGES" : "LOAD_MESSAGE",
+    //     payload: msgs,
+    //   });
+    //   setLoading(false);
+    //   if (init) {
+    //     flatListRef.current.scrollToOffset({ animated: false, offset: 0 });
+    //   }
+    // }).catch(e => {
+
+    // })
+
+    //old logic
+    // const msgs = chatData.getMessages(start, messageLoadStep);
 
     const loaded = {
       from: init ? from : messageLoaded.from,
       loaded: init ? msgs.length : messageLoaded.loaded + msgs.length,
     };
-    setMessageLoaded(loaded);
 
+    setMessageLoaded(loaded);
     dispatchMessages({
       type: init ? "RESET_AND_ADD_MESSAGES" : "LOAD_MESSAGE",
       payload: msgs,
@@ -279,7 +305,7 @@ const MessagePanel = ({ chatData, focusMessaageId }) => {
     }
   };
 
-  const onScrollDragEnd = (e) => {
+  const onScrollDragEnd = async (e) => {
     const y = e.nativeEvent.contentOffset.y;
     if (y <= 0 && messageLoaded.from > 0 && loading == false) {
       setLoading(true);
@@ -287,7 +313,9 @@ const MessagePanel = ({ chatData, focusMessaageId }) => {
       const start = Math.max(0, messageLoaded.from - messageLoadStep);
       const count = messageLoaded.from - start;
 
-      const msgs = _chatData.getMessages(start, count);
+      //const msgs = _chatData.getMessages(start, count);
+
+      const msgs = await chatData.getMessagesAsync(start, count);
 
       const loaded = { from: start, loaded: messageLoaded.loaded + count };
       setMessageLoaded(loaded);
@@ -330,6 +358,9 @@ const MessagePanel = ({ chatData, focusMessaageId }) => {
 
   return (
     <View className="flex-1">
+      {/* {loading ? <View style={{ paddingVertical: 20 }}>
+      <ActivityIndicator size="small" />
+      </View> : <></>} */}
       <FlatList
         className="pr-2"
         initialNumToRender={10}
@@ -338,7 +369,10 @@ const MessagePanel = ({ chatData, focusMessaageId }) => {
         data={messages}
         renderItem={({ item, index }) => {
           const preMessage = messages[index + 1];
-          return (
+          return (<View>
+            {/* {loading && messages.length == index + 1 ? <View style={{ paddingVertical: 20 }}>
+              <ActivityIndicator size="small" />
+            </View> : <></>} */}
             <ChatBubbleV2
               message={item}
               preMessage={preMessage}
@@ -350,25 +384,27 @@ const MessagePanel = ({ chatData, focusMessaageId }) => {
                 setPopMessage({ sender: sender, message: msg });
               }}
             />
+          </View>
           );
         }}
-        ListEmptyComponent={<Text>No messages to display</Text>}
+        ListEmptyComponent={<Text className="text-white">No messages to display</Text>}
         keyExtractor={(item, index) => item.messageId}
         onScrollEndDrag={onScrollDragEnd}
         onScroll={onScrollDragEnd}
-        onEndReachedThreshold={0.05}
+        onEndReachedThreshold={0}
         onEndReached={() => {
           if (!loading) {
             loadMessage(_chatData);
           }
         }}
-        onScrollToIndexFailed={(e) => {}}
+        onScrollToIndexFailed={(e) => { }}
         ListFooterComponent={
-          loading ? (
-            <View style={{ paddingVertical: 20 }}>
-              <ActivityIndicator size="small" />
-            </View>
-          ) : null
+          // loading ? (
+          //   <View style={{ paddingVertical: 20 }}>
+          //     <ActivityIndicator size="small" />
+          //   </View>
+          // ) : <View style={{ paddingVertical: 20 }}></View>
+          null
         }
       />
       <BubbleBottomSheet

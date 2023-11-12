@@ -56,5 +56,10 @@ export default class MessageData {
    */
   timestamp;
 
+  /**
+   * 是否是对话中的首个消息
+   */
+  isHead = false;
+
 }
 

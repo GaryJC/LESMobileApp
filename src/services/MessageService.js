@@ -322,12 +322,12 @@ class MessageService {
       console.error("load user chat list error", e);
     }
     try {
-      const messages = await DatabaseService.Inst.loadAllMessages();
-      messages.forEach((message) => {
-        DataCenter.messageCache.pushMessage(message);
-      });
-      // const data = DataCenter.messageCache.getMesssageList("chat2-8", 0, 10);
-      // console.log("database messages: ", messages);
+      //登录时不读取聊天数据了，点击对话头像时，实时从数据库载入
+
+      // const messages = await DatabaseService.Inst.loadAllMessages();
+      // messages.forEach((message) => {
+      //   DataCenter.messageCache.pushMessage(message);
+      // });
     } catch (e) {
       console.error("load message error", e);
     }

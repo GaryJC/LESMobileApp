@@ -90,10 +90,10 @@ export default function UserDrawer(props) {
     setUserStatus(DataCenter.userInfo.imUserInfo.state);
 
     const updateUnreadCountHandler = () => {
-      const count = DataCenter.notifications.unreadCount();
+      const count = DataCenter.notifications?.unreadCount() ?? 0;
       //邀请的数量
-      const invCount = DataCenter.notifications.unreadCount(IMNotificationType.FriendInvitation)
-        + DataCenter.notifications.unreadCount(IMNotificationType.GroupInvitation);
+      const invCount = (DataCenter.notifications?.unreadCount(IMNotificationType.FriendInvitation) ?? 0)
+        + (DataCenter.notifications?.unreadCount(IMNotificationType.GroupInvitation) ?? 0);
       let unreadCount = 0;
       let unrespondCount = 0;
       if (count > 0) {
@@ -106,7 +106,7 @@ export default function UserDrawer(props) {
       setUnrespondCount(unrespondCount);
     };
 
-    // updateUnreadCountHandler();
+    updateUnreadCountHandler();
 
     const onDrawerOpen = () => {
       props.navigation.openDrawer();
