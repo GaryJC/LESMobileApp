@@ -11,7 +11,7 @@ import { LesConstants } from "les-im-components";
 import ChatGroup from "../Models/ChatGroup";
 import UserSetting from "../Models/UserSetting";
 
-const db_version = "1.1";
+const db_version = "1.5";
 
 const ERROR_DB_ISNULL = "ERROR_DB_ISNULL";
 
@@ -56,7 +56,7 @@ export default class DatabaseService {
         console.error("create database failed:", e);
       }
       if (version != db_version) {
-        this.#updateDatabase(version);
+        await this.#updateDatabase(version);
       }
       JSEvent.emit(DataEvents.User.UserState_DataReady);
     } catch (error) {
@@ -95,6 +95,7 @@ export default class DatabaseService {
    * @param {SQLite.SQLTransaction} tx
    * @param {string} sql
    * @param {SQLite.SQLResultSet | null} values
+   * @returns {Promise}
    */
   #transactionPromise(tx, sql, values) {
     return new Promise((reslove, reject) => {
@@ -296,9 +297,21 @@ export default class DatabaseService {
                     newMessageCount integer not null,
                     updateTime integer not null,
                     latestMessage nvarchar not null,
-                    latestTimelineId integer not null
+                    latestTimelineId integer not null,
+                    latestMessageSendId integer not null
                 );`
     );
+  }
+
+  #updateTblChatlist(tx) {
+    try {
+      return this.#transactionPromise(
+        tx,
+        "alter table tbl_chatlist add column latestMessageSendId integer not null default 0"
+      )
+    } catch (e) {
+      console.log("updateTblChatlist ", e)
+    }
   }
 
   /**
@@ -344,7 +357,7 @@ export default class DatabaseService {
     );
   }
 
-  #updateDatabase(version) {
+  async #updateDatabase(version) {
     // if (version == "1.0") {
     //     this.#currDb.transaction(tx => {
     //         tx.executeSql(
@@ -358,10 +371,7 @@ export default class DatabaseService {
     //         );`);
     //     })
     // }
-    // this.#currDb.transaction(tx => {
-    //     tx.executeSql(
-    //         `update tbl_version set version = ? where id = 1`, [db_version], (_, r) => { console.log(r) }, (_, e) => { console.log(e) })
-    // })
+
     this.#currDb.transaction((tx) => {
       tx.executeSql(
         "alter table tbl_chatlist add column latestTimelineId integer not null default 0",
@@ -374,6 +384,18 @@ export default class DatabaseService {
         }
       );
     });
+
+    try {
+      this.#currDb.transaction(async (tx) => {
+        await this.#updateTblChatlist(tx);
+      });
+    } catch (e) {
+      console.log("xxxxxxxxxxxxxxxx", e);
+    }
+    this.#currDb.transaction(tx => {
+      tx.executeSql(
+        `update tbl_config set version = ? where id = 1`, [db_version], (_, r) => { console.log(r) }, (_, e) => { console.log(e) })
+    })
   }
 
   /**
@@ -773,7 +795,7 @@ export default class DatabaseService {
       "select chatId from tbl_chatlist where chatId = ?",
       [chat.chatId],
       (_, r) => {
-        let sql = "insert into tbl_chatlist values(?,?,?,?,?,?,?)";
+        let sql = "insert into tbl_chatlist values(?,?,?,?,?,?,?,?)";
         let value = [
           chat.chatId,
           chat.targetId,
@@ -782,10 +804,11 @@ export default class DatabaseService {
           chat.updateTime,
           chat.latestMessage,
           chat.latestTimelineId,
+          chat.latestMessageSenderId,
         ];
         if (r.rows.length > 0) {
           sql =
-            "update tbl_chatlist set targetId = ?, type = ?, newMessageCount = ?, updateTime = ?, latestMessage = ?, latestTimelineId = ? where chatId = ?";
+            "update tbl_chatlist set targetId = ?, type = ?, newMessageCount = ?, updateTime = ?, latestMessage = ?, latestTimelineId = ?, latestMessageSendId=? where chatId = ?";
           value = [
             chat.targetId,
             chat.type,
@@ -793,13 +816,16 @@ export default class DatabaseService {
             chat.updateTime,
             chat.latestMessage,
             chat.latestTimelineId,
-            chat.chatId,
+            chat.latestMessageSenderId,
+            chat.chatId
           ];
         }
         tx.executeSql(sql, value, (_, r) => {
-          console.log("chatlist saved", r),
-            (_, e) => console.log("chatlist saved error:", e);
-        });
+          console.log("-------chatlist saved", r)
+        }, (_, e) => {
+          console.log("-------chatlist saved error:", e)
+        }
+        );
       },
       (_, e) => {
         console.log(`save chatlist[${chat.chatId}] error: ${e}`);
@@ -829,7 +855,8 @@ export default class DatabaseService {
                 item.newMessageCount,
                 item.updateTime,
                 item.latestMessage,
-                item.latestTimelineId
+                item.latestTimelineId,
+                item.latestMessageSendId
               );
               ret.push(chatListItem);
             }
@@ -937,7 +964,7 @@ export default class DatabaseService {
    * @param {number} count 
    * @returns {Promise<MessageData[]>}
    */
-  loadGroupMessage(groupId, startTimelineId, count){
+  loadGroupMessage(groupId, startTimelineId, count) {
     return new Promise((resolve, reject) => {
       if (this.#currDb == null) reject(ERROR_DB_ISNULL);
       const userId = DataCenter.userInfo.accountId;

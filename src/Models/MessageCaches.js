@@ -425,7 +425,8 @@ class ChatListItem {
     newMessageCount,
     updateTime,
     latestMessage,
-    latestTimelineId
+    latestTimelineId,
+    latestMessageSendId
   ) {
     this.targetId = targetId;
     this.type = type;
@@ -433,6 +434,7 @@ class ChatListItem {
     this.#updateTime = updateTime;
     this.latestMessage = latestMessage;
     this.latestTimelineId = latestTimelineId;
+    this.latestMessageSenderId = latestMessageSendId;
   }
 
   /**

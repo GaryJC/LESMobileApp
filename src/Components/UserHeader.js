@@ -61,6 +61,7 @@ const UserHeader = () => {
   }, []);
 
   const stateStr = makeStateReadable(userInfo.state);
+  console.log("uuuuuuuuuunreadcount:", unreadCount)
 
   return (
     <Pressable
@@ -83,7 +84,7 @@ const UserHeader = () => {
             size={16}
           />
         </View>
-        {unreadCount !== 0 && (
+        {unreadCount != null && unreadCount != 0 && (
           <View className="w-[20px] h-[20px] bg-[#FF3737] rounded-full absolute top-[-5px] right-[-5px]  flex justify-center items-center">
             <Text className="font-bold text-white text-xs">{unreadCount}</Text>
           </View>

@@ -20,6 +20,7 @@ import FeedBackModal, { DialogModal } from "../Components/FeedbackModal";
 import GroupAuthButton from "../Components/GroupAuthButton";
 import GroupAwaitResponse from "../Components/GroupAwaitResponse";
 import LoadingIndicator from "../Components/LoadingIndicator";
+import Toast from 'react-native-toast-message';
 
 const GroupInfoScreen = () => {
   const [groupMemberData, setGroupMemberData] = useState([]);
@@ -121,10 +122,12 @@ const GroupInfoScreen = () => {
       navigation.goBack();
     } catch (e) {
       console.log("quit group error: ", e);
-      setFeedbackModalOpen(true);
-      setFeedbak("You can not quit this group.");
+      // setFeedbackModalOpen(true);
+      // setFeedbak("You can not quit this group.");
+      Toast.show({ type: "error", text1: "Error", text2: "You can not quit this group." })
+    } finally {
+      setIsQuitting(false);
     }
-    setIsLoading(false);
   };
 
   return (
@@ -170,13 +173,13 @@ const GroupInfoScreen = () => {
         </TouchableHighlight>
       </View>
 
-      <DialogModal
+      {/* <DialogModal
         visible={feedbackModalOpen}
         content={feedback}
         onButtonPressed={(btn) => {
           setFeedbackModalOpen(false);
         }}
-      />
+      /> */}
       <LoadingIndicator isLoading={isQuitting} />
 
       {/* <FeedBackModal
