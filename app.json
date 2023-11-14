@@ -3,7 +3,7 @@
     "jsEngine": "hermes",
     "name": "NexGami",
     "slug": "NexGami",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -17,6 +17,7 @@
     ],
     "ios": {
       "supportsTablet": true,
+      "bitcode": false,
       "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
@@ -38,6 +39,11 @@
       "eas": {
         "projectId": "5f44be01-64a4-4fe0-b442-d9f92dd68282"
       }
+    },
+    "runtimeVersion": "1.1.0",
+    "updates": {
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/5f44be01-64a4-4fe0-b442-d9f92dd68282"
     }
   },
   "name": "NexGami"

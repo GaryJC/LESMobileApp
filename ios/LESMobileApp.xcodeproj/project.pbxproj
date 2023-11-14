@@ -12,9 +12,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		4E229B202A95562D00F55DDC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4E229B1F2A95562D00F55DDC /* GoogleService-Info.plist */; };
-		4E4B7D592AA343600021F142 /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = 008F07F21AC5B25A0029DE68 /* main.jsbundle */; };
 		4E864D5D2AA9093A00F704AE /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E864D5C2AA9093A00F704AE /* Twitter.framework */; };
-		A99406D72AE06F6F00B08D94 /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = A99406D62AE06F6F00B08D94 /* main.jsbundle */; };
 		A99406DD2AE0727800B08D94 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = A99406DC2AE0727800B08D94 /* assets */; };
 		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
@@ -36,7 +34,6 @@
 		6C2E3173556A471DD304B334 /* Pods-LESMobileApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LESMobileApp.debug.xcconfig"; path = "Target Support Files/Pods-LESMobileApp/Pods-LESMobileApp.debug.xcconfig"; sourceTree = "<group>"; };
 		7A4D352CD337FB3A3BF06240 /* Pods-LESMobileApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LESMobileApp.release.xcconfig"; path = "Target Support Files/Pods-LESMobileApp/Pods-LESMobileApp.release.xcconfig"; sourceTree = "<group>"; };
 		81936C40CDC64D039CA95BE9 /* noop-file.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "LESMobileApp/noop-file.swift"; sourceTree = "<group>"; };
-		A99406D62AE06F6F00B08D94 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		A99406DC2AE0727800B08D94 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = assets/assets; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = LESMobileApp/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
@@ -94,7 +91,6 @@
 			isa = PBXGroup;
 			children = (
 				A99406DC2AE0727800B08D94 /* assets */,
-				A99406D62AE06F6F00B08D94 /* main.jsbundle */,
 				4E229B1F2A95562D00F55DDC /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* LESMobileApp */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -214,11 +210,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4E4B7D592AA343600021F142 /* main.jsbundle in Resources */,
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				A99406DD2AE0727800B08D94 /* assets in Resources */,
 				4E229B202A95562D00F55DDC /* GoogleService-Info.plist in Resources */,
-				A99406D72AE06F6F00B08D94 /* main.jsbundle in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
 			);
@@ -271,6 +265,7 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-LESMobileApp/Pods-LESMobileApp-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXUpdates/EXUpdates.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleSignIn/GoogleSignIn.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
 				"${PODS_ROOT}/TwitterKit5/iOS/TwitterKit.framework/TwitterKitResources.bundle",
@@ -278,6 +273,7 @@
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXUpdates.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TwitterKitResources.bundle",
@@ -382,7 +378,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -392,7 +388,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.lightesport.im.mobile;
 				PRODUCT_NAME = LESMobileApp;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = nexgami;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "*[expo] com.lightesport.im.mobile AdHoc 1699854046994";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -419,7 +415,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.1.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -430,7 +426,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.lightesport.im.mobile;
 				PRODUCT_NAME = LESMobileApp;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = nexgami;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "*[expo] com.lightesport.im.mobile AdHoc 1699854046994";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";

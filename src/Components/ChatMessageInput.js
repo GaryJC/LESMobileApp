@@ -42,7 +42,7 @@ export const ChatMessageInput = ({ onMessageSendHandler }) => {
 
   return (
     <View className="flex-row items-end py-[10px]">
-      <View className="flex-1 mr-[10px]">
+      <View className="flex-1">
         <TextInput
           submitBehavior="submit"
           onSubmitEditing={() => {
@@ -62,12 +62,12 @@ export const ChatMessageInput = ({ onMessageSendHandler }) => {
         />
         {quote && <Quote />}
       </View>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         onPress={onPressHandler}
         className="bg-[#6E5EDB] p-[5px] rounded"
       >
         <Text className="text-white font-bold">Send</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };
