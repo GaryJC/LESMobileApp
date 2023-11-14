@@ -95,8 +95,9 @@ export default class LoginService {
       //应用被重新激活了
       //检测连接是否正常
 
-      if (LesPlatformCenter.Inst.ConnectState != WebsocketState.Connected) {
-        console.log("websocket disconnected, need to re-reconnect");
+      if (LesPlatformCenter.Inst.ConnectState != WebsocketState.Connected
+        && DataCenter.isAccountLogin()) {
+        console.log("websocket disconnected, need to re-reconnect", DataCenter.userInfo);
         // 重新连接
         // 发送重新连接事件通知UI加载loading bar
         // JSEvent.emit(UIEvents.AppState_UIUpdated, true);

@@ -82,7 +82,7 @@ const NotiSettings = () => {
       <SwitchList title={"Group Invitations"} value={settings.groupInvite} />
       <SwitchList title={"Chat Messages"} value={settings.chatMessages} />
       <Divider />
-      <SwitchList title={"Show Message Content"} value={settings.showMessageDetail} />
+      <SwitchList title={"Show Priview Text"} value={settings.showMessageDetail} />
     </OptionLayout>
   );
 };

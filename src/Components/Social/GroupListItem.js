@@ -42,12 +42,12 @@ const GroupListItem = ({ groupData }) => {
 
 
   const latestMsg = groupData.latestMessage.length > 0 ?
-    (lastSender == null ? "" : lastSender.name + ": ") + truncate(groupData.latestMessage, { length: 25 })
+    (lastSender == null ? "" : lastSender.name + ": ") + groupData.latestMessage
     : ""
 
   return (
     <View className="mb-[10px] flex-row justify-between">
-      <View className="flex-row">
+      <View className="flex-row flex flex-1">
         <TouchableOpacity onPress={onGroupInfoOpen}>
           <View className="w-[50px] h-[50px]">
             <Avatar name={groupInfo?.name} isGroup={true} />
@@ -62,7 +62,7 @@ const GroupListItem = ({ groupData }) => {
             )}
           </View>
         </TouchableOpacity>
-        <View className="ml-[10px] justify-between">
+        <View className="mx-[10px] flex flex-1">
           <View className="flex-row">
             <View className="flex-row items-end">
               <Text className="text-white font-bold">{groupInfo?.name}</Text>
@@ -75,7 +75,7 @@ const GroupListItem = ({ groupData }) => {
               </Text>
             </View>
           </View>
-          <Text className="text-clr-gray-light">
+          <Text className="text-clr-gray-light mt-2" ellipsizeMode="tail" numberOfLines={1}>
             {latestMsg}
           </Text>
         </View>

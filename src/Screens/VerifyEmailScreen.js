@@ -25,15 +25,36 @@ export const VerifyEmailScreen = () => {
     const loginState = route.params?.loginState;
     const serverState = route.params?.imServerState;
     // check imServerState
-    if (
-      loginState === Constants.LoginState.Normal &&
-      serverState === LesConstants.IMUserState.Init
-    ) {
-      navigation.navigate("CreateName");
-      // }else if(loginState === Constants.LoginState.Normal&&serverState===LesConstants.ErrorCodes.Success)
-    } else if (loginState === Constants.LoginState.Normal) {
-      navigation.navigate("MainNavigation");
+    if (loginState == Constants.LoginState.Logout) {
+      //登陆失败了
+      navigation.reset({ index: 0, routes: [{ name: "Login" }] });
+      navigation.navigate("Login", { loginFailed: true, loginState, imServerState: serverState });
+    } else {
+      if (loginState == Constants.LoginState.Normal) {
+        //Account服务器正常登陆
+        if (serverState == LesConstants.IMUserState.Init) {
+          //需要设置名字
+          navigation.navigate("CreateName");
+        } else if (serverState > LesConstants.IMUserState.Hiding) {
+          //IM服务器登录错误
+          navigation.reset({ index: 0, routes: [{ name: "Login" }] });
+          navigation.navigate("Login", { loginFailed: true, loginState, imServerState: serverState });
+        } else {
+          //正常登陆，转到主界面
+          navigation.navigate("MainNavigation");
+        }
+      }
     }
+
+    // if (
+    //   loginState === Constants.LoginState.Normal &&
+    //   serverState === LesConstants.IMUserState.Init
+    // ) {
+    //   navigation.navigate("CreateName");
+    //   // }else if(loginState === Constants.LoginState.Normal&&serverState===LesConstants.ErrorCodes.Success)
+    // } else if (loginState === Constants.LoginState.Normal) {
+    //   navigation.navigate("MainNavigation");
+    // }
     setLoginState(loginState);
   }, [route.params?.loginState]);
 

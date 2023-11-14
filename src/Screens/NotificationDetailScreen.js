@@ -58,7 +58,9 @@ export default NotificationDetailScreen = ({ route, navigation }) => {
             </View>
         </View>
         <Divider />
-        <Text className="text-white text-base font-bold py-2">{notification.content.title}</Text>
+        <View className="flex w-full bg-black mb-2 rounded-xl">
+            <Text className="text-white text-lg font-bold py-2 text-center">{notification.content.title}</Text>
+        </View>
         <NotificationContent content={notification.content.content} />
     </View>
 }

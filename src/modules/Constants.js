@@ -19,7 +19,7 @@ const Address_Production = {
   ResServer: "https://res.nexgami.com",
 };
 
-const AddressOverride = Address_Public_Test;
+const AddressOverride = null;
 
 const Constants = {
   /**

@@ -274,7 +274,7 @@ export default function FriendBottomSheet({
             #{selectedFriend?.tag}
           </Text>
         </View> */}
-        <UserBottomSheetHeader user={selectedFriend} isOwn={false} />
+        <UserBottomSheetHeader user={profile?.userInfo} isOwn={false} />
         <View className="mt-[10px] mx-[5vw]">
           <Links />
           {isFriend && (

@@ -45,6 +45,10 @@ export default function InitialScreen() {
           if (imServerState === LesConstants.IMUserState.Init) {
             navigation.reset({ index: 0, routes: [{ name: "CreateName" }] });
             navigation.navigate("CreateName");
+          } else if (imServerState > LesConstants.IMUserState.Hiding) {
+            //错误信息
+            navigation.reset({ index: 0, routes: [{ name: "Login" }] });
+            navigation.navigate("Login", { loginFailed: true, loginState, imServerState });
           } else {
             navigation.reset({
               index: 0,

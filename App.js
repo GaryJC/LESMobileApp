@@ -60,6 +60,7 @@ import UserHeader from "./src/Components/UserHeader";
 import MyProfileScreen from "./src/Screens/MyProfileScreen";
 import notifee from "@notifee/react-native";
 import NotificationDetailScreen from "./src/Screens/NotificationDetailScreen";
+import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -466,11 +467,12 @@ function App_() {
   */
 
   return (
-    <GestureHandlerRootView className="flex-1">
-      <BottomSheetModalProvider>
-        <StatusBar style="light" />
+    <>
+      <GestureHandlerRootView className="flex-1">
+        <BottomSheetModalProvider>
+          <StatusBar style="light" />
 
-        {/* {isInitializing ? (
+          {/* {isInitializing ? (
         <InitialScreen />
       ) : (
       <NavigationContainer>
@@ -499,154 +501,185 @@ function App_() {
       </NavigationContainer>
       )}
       */}
-        <NavigationContainer ref={navigationRef}>
-          <Stack.Navigator
-            initialRouteName="initial"
-            screenOptions={{
-              gestureEnabled: false,
-              headerStyle: {
-                backgroundColor: "#080F14",
-              },
-              headerTitleStyle: {
-                color: "white",
-              },
-              contentStyle: { backgroundColor: "#080F14" },
-            }}
-          >
-            <Stack.Screen
-              name="initial"
-              component={InitialScreen}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="MainNavigation" // This is the combined BottomTab + Drawer navigation
-              component={DrawerNavigation}
-              options={{ headerShown: false }}
-            />
-            {/* <Stack.Screen
+          <NavigationContainer ref={navigationRef}>
+            <Stack.Navigator
+              initialRouteName="initial"
+              screenOptions={{
+                gestureEnabled: false,
+                headerStyle: {
+                  backgroundColor: "#080F14",
+                },
+                headerTitleStyle: {
+                  color: "white",
+                },
+                contentStyle: { backgroundColor: "#080F14" },
+              }}
+            >
+              <Stack.Screen
+                name="initial"
+                component={InitialScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="MainNavigation" // This is the combined BottomTab + Drawer navigation
+                component={DrawerNavigation}
+                options={{ headerShown: false }}
+              />
+              {/* <Stack.Screen
               name="BottomTab"
               component={BottomTabNavigation}
               options={{ headerShown: false }}
             /> */}
-            <Stack.Screen
-              name="GameDetails"
-              component={GameDetailsScreen}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen name="Signup" component={SignupScreen} />
-            <Stack.Screen
-              name="Login"
-              component={LoginScreen}
-              options={{
-                headerBackVisible: false,
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="VerifyEmail"
-              component={VerifyEmailScreen}
-              options={{
-                headerTitle: "Verify Email",
-                headerTitleAlign: "center",
-                headerLeft: () => {
-                  const navigation = useNavigation();
-                  return (
-                    // <Button
-                    //   title="Sign in"
-                    //   onPress={() => {
-                    //     navigation.navigate("Login");
-                    //     firebase.auth().signOut();
-                    //   }}
-                    // />
-                    <HighlightButton
-                      type="opacity"
-                      text="Go to Sign in"
-                      onPress={() => {
-                        navigation.navigate("Login");
-                        firebase.auth().signOut();
-                      }}
-                    />
-                  );
-                },
-              }}
-            />
-            <Stack.Screen
-              name="CreateName"
-              component={CreateNameScreen}
-              options={{
-                headerBackVisible: false,
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="Notification"
-              component={NotificationScreen}
-              options={{ headerTintColor: "white" }}
-            />
-            <Stack.Screen
-              name="FriendRequest"
-              component={FriendRequestScreen}
-              options={{ headerTitle: "Friend Request" }}
-            />
-            <Stack.Screen
-              name="FriendSearch"
-              component={FriendSearchScreen}
-              options={{
-                headerTitle: "Friend Search",
-                headerTintColor: "white",
-              }}
-            />
-            <Stack.Screen
-              name="GroupCreate"
-              component={GroupCreateScreen}
-              options={{
-                headerTitle: "Create a Group",
-                headerTintColor: "white",
-              }}
-            />
-            <Stack.Screen
-              name="FriendAdd"
-              component={FriendAddScreen}
-              options={{
-                headerTitle: "Add a Friend",
-                headerTintColor: "white",
-              }}
-            />
-            <Stack.Screen
-              name="GroupInfo"
-              component={GroupInfoScreen}
-              options={{
-                headerTitle: "Group Information",
-                headerTintColor: "white",
-              }}
-            />
-            <Stack.Screen
-              name="GroupInvite"
-              component={GroupInviteScreen}
-              options={{
-                headerTitle: "Invite Friends",
-                headerTintColor: "white",
-              }}
-            />
-            <Stack.Screen
-              name="MyProfile"
-              component={MyProfileScreen}
-              options={{ headerTitle: "My Profile" }}
-            />
-            <Stack.Screen
-              name="NotificationDetail"
-              component={NotificationDetailScreen}
-              options={{ headerTitle: "Notification" }}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
-        {isLoading && (
-          <View className="h-[5vh] items-center justify-center bg-[#1F4168] flex-row">
-            <Text className="text-white pr-[10px]">Reconnecting</Text>
-            <ActivityIndicator size={"small"} color={"#CACACA"} />
-          </View>
-        )}
-      </BottomSheetModalProvider>
-    </GestureHandlerRootView>
+              <Stack.Screen
+                name="GameDetails"
+                component={GameDetailsScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen name="Signup" component={SignupScreen} />
+              <Stack.Screen
+                name="Login"
+                component={LoginScreen}
+                options={{
+                  headerBackVisible: false,
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="VerifyEmail"
+                component={VerifyEmailScreen}
+                options={{
+                  headerTitle: "Verify Email",
+                  headerTitleAlign: "center",
+                  headerLeft: () => {
+                    const navigation = useNavigation();
+                    return (
+                      // <Button
+                      //   title="Sign in"
+                      //   onPress={() => {
+                      //     navigation.navigate("Login");
+                      //     firebase.auth().signOut();
+                      //   }}
+                      // />
+                      <HighlightButton
+                        type="opacity"
+                        text="Go to Sign in"
+                        onPress={() => {
+                          navigation.navigate("Login");
+                          firebase.auth().signOut();
+                        }}
+                      />
+                    );
+                  },
+                }}
+              />
+              <Stack.Screen
+                name="CreateName"
+                component={CreateNameScreen}
+                options={{
+                  headerBackVisible: false,
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="Notification"
+                component={NotificationScreen}
+                options={{ headerTintColor: "white" }}
+              />
+              <Stack.Screen
+                name="FriendRequest"
+                component={FriendRequestScreen}
+                options={{ headerTitle: "Friend Request" }}
+              />
+              <Stack.Screen
+                name="FriendSearch"
+                component={FriendSearchScreen}
+                options={{
+                  headerTitle: "Friend Search",
+                  headerTintColor: "white",
+                }}
+              />
+              <Stack.Screen
+                name="GroupCreate"
+                component={GroupCreateScreen}
+                options={{
+                  headerTitle: "Create a Group",
+                  headerTintColor: "white",
+                }}
+              />
+              <Stack.Screen
+                name="FriendAdd"
+                component={FriendAddScreen}
+                options={{
+                  headerTitle: "Add a Friend",
+                  headerTintColor: "white",
+                }}
+              />
+              <Stack.Screen
+                name="GroupInfo"
+                component={GroupInfoScreen}
+                options={{
+                  headerTitle: "Group Information",
+                  headerTintColor: "white",
+                }}
+              />
+              <Stack.Screen
+                name="GroupInvite"
+                component={GroupInviteScreen}
+                options={{
+                  headerTitle: "Invite Friends",
+                  headerTintColor: "white",
+                }}
+              />
+              <Stack.Screen
+                name="MyProfile"
+                component={MyProfileScreen}
+                options={{
+                  headerTitle: "My Profile",
+                  headerTintColor: "white",
+                }}
+              />
+              <Stack.Screen
+                name="NotificationDetail"
+                component={NotificationDetailScreen}
+                options={{
+                  headerTitle: "Notification",
+                  headerTintColor: "white",
+                }}
+              />
+            </Stack.Navigator>
+          </NavigationContainer>
+          {isLoading && (
+            <View className="h-[5vh] items-center justify-center bg-[#1F4168] flex-row">
+              <Text className="text-white pr-[10px]">Reconnecting</Text>
+              <ActivityIndicator size={"small"} color={"#CACACA"} />
+            </View>
+          )}
+        </BottomSheetModalProvider>
+      </GestureHandlerRootView>
+      <Toast config={toastConfig} />
+    </>
   );
+}
+
+const toastConfig = {
+  success: (props) => (
+    <BaseToast
+      {...props}
+      style={{ borderLeftColor: '#58AE69' }}
+      text1Style={{
+        fontSize: 16
+      }}
+    />
+  ),
+  error: (props) => (
+    <ErrorToast
+      {...props}
+      text1Style={{
+        fontSize: 16
+      }}
+      text2Style={{
+        fontSize: 14
+      }}
+    />
+  )
 }
