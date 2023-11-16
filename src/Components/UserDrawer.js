@@ -6,6 +6,7 @@ import {
   TouchableHighlight,
   TouchableOpacity,
   Pressable,
+  Platform,
 } from "react-native";
 import { UserData } from "../Data/dummyData";
 import { useEffect, useState, useRef, useMemo, useCallback } from "react";
@@ -31,6 +32,8 @@ import UserBottomSheetHeader from "./UserBottomSheetHeader";
 import SocialMedia from "./UserDrawer/SocialMediaButton";
 import AvatarBottomSheet from "./AvatarBottomSheet";
 import { getDrawerStatusFromState } from '@react-navigation/drawer';
+import Constants from "expo-constants";
+import * as Application from 'expo-application';
 
 const userOptions = [
   { id: 1, title: "Account", link: "" },
@@ -197,6 +200,9 @@ export default function UserDrawer(props) {
     await Promise.all(delAccountId, delLoginKey, delEmail);
   };
 
+  console.log(Application.nativeBuildVersion);
+  const buildNo = Application.nativeBuildVersion;
+
   return (
     <View className="flex-1 " style={{ backgroundColor: "#080F14" }}>
       <UserBottomSheetHeader user={userInfo} isOwn={true}>
@@ -278,6 +284,9 @@ export default function UserDrawer(props) {
             </View>
           </TouchableHighlight>
           <View className="h-[30px]"></View>
+
+          <Text className="text-white text-base mb-8">v{Constants.expoConfig.runtimeVersion}({buildNo})</Text>
+
         </View>
         {/* The bottom sheet that is used to switch the user status */}
       </ScrollView>

@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useImperativeHandle, useRef, useState } 
 import WebView from "react-native-webview"
 import CommonBottomSheetModal from "../CommonBottomSheetModal"
 import HighlightButton from "../HighlightButton"
-import { Image, Text, View, ActivityIndicator } from "react-native"
+import { Image, Text, View, ActivityIndicator, Linking } from "react-native"
 import { LesConstants, LesPlatformCenter } from "les-im-components"
 import PBUtils from "../../utils/PBUtils"
 import DataCenter from "../../modules/DataCenter"
