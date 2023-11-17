@@ -41,6 +41,7 @@ export const VerifyEmailScreen = () => {
           navigation.navigate("Login", { loginFailed: true, loginState, imServerState: serverState });
         } else {
           //正常登陆，转到主界面
+          //navigation.reset({ index: 0, routes: [{ name: "MainNavigation" }] });
           navigation.navigate("MainNavigation");
         }
       }

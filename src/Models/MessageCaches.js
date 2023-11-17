@@ -396,6 +396,8 @@ class ChatListItem {
       .filter((id) => id != DataCenter.userInfo.accountId)
       .pop();
     this.#newMessageCount = 0;
+    this.latestMessageSenderId = -1;
+    this.latestMessage = "";
     this.refresh();
   }
 

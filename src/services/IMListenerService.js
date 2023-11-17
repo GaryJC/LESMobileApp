@@ -8,6 +8,7 @@ import { LesPlatformCenter, LesConstants } from "les-im-components";
 import JSEvent from "../utils/JSEvent";
 import { DataEvents } from "../modules/Events";
 import DataSavingService from "./DataSavingService";
+import LoginService from "./LoginService";
 
 class IMListenerService {
   static #inst;

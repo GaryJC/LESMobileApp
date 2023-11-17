@@ -67,6 +67,8 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We don't use any Location Service</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

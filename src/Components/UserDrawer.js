@@ -13,7 +13,7 @@ import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import StatusBottomSheet from "./StatusBottomSheet";
 import { StateIndicator, makeStateReadable } from "./StateIndicator";
 import DataCenter from "../modules/DataCenter";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, CommonActions } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 import { Ionicons } from "@expo/vector-icons";
 import JSEvent from "../utils/JSEvent";
@@ -34,6 +34,7 @@ import AvatarBottomSheet from "./AvatarBottomSheet";
 import { getDrawerStatusFromState } from '@react-navigation/drawer';
 import Constants from "expo-constants";
 import * as Application from 'expo-application';
+import notifee from "@notifee/react-native";
 
 const userOptions = [
   { id: 1, title: "Account", link: "" },
@@ -186,7 +187,14 @@ export default function UserDrawer(props) {
 
   const onLogoutHandler = async () => {
     await LoginService.Inst.firebaseLogout();
-    navigation.navigate("Login");
+    notifee.setBadgeCount(0);
+    navigation.reset({
+      index: 0,
+      routes: [
+        { name: "Login" }
+      ]
+    });
+    //navigation.navigate("Login");
   };
 
   const navigateToNotification = () => {

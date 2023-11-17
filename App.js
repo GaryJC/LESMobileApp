@@ -61,6 +61,7 @@ import MyProfileScreen from "./src/Screens/MyProfileScreen";
 import notifee from "@notifee/react-native";
 import NotificationDetailScreen from "./src/Screens/NotificationDetailScreen";
 import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
+import ButtonAddPopover from "./src/Components/Chat/ButtonPopover";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -223,7 +224,7 @@ const BottomTabNavigation = () => {
         component={FriendsScreen}
         options={({ navigation }) => ({
           tabBarIcon: ({ color, size }) => (
-            <View className="flex justify-center items-center">
+            <View className="flex justify-center items-center  min-w-[45px]">
               <Ionicons name="people-outline" color={color} size={size} />
               <Text className="text-white text-xs" style={{ color: color }}>
                 Social
@@ -241,15 +242,17 @@ const BottomTabNavigation = () => {
               >
                 <MaterialIcons name="search" size={30} color="white" />
               </TouchableOpacity>
-              <TouchableOpacity
+
+              <ButtonAddPopover>
+                <MaterialIcons name="add-circle-outline" size={28} color="white" />
+              </ButtonAddPopover>
+
+              {/* <TouchableOpacity
                 onPress={() => navigation.navigate("FriendAdd")}
               >
-                <MaterialIcons
-                  name="person-add-alt-1"
-                  size={28}
-                  color="white"
-                />
-              </TouchableOpacity>
+                <MaterialIcons name="add-circle-outline" size={28} color="white" />
+
+              </TouchableOpacity> */}
               {/* <View className="pl-2">
                 <RedDotIcon
                   iconName="notifications"
@@ -270,7 +273,7 @@ const BottomTabNavigation = () => {
         component={ChatScreenV2}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <View className="flex justify-center items-center">
+            <View className="flex justify-center items-center min-w-[45px]">
               <Ionicons name="chatbubbles-outline" color={color} size={size} />
               <Text className="text-white text-xs" style={{ color: color }}>
                 Chats
@@ -286,7 +289,7 @@ const BottomTabNavigation = () => {
         component={QuestScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <View className="flex justify-center items-center">
+            <View className="flex justify-center items-center min-w-[45px]">
               <Ionicons name="bookmarks" color={color} size={size} />
               <Text className="text-white text-xs" style={{ color: color }}>
                 Quests
@@ -318,7 +321,7 @@ const BottomTabNavigation = () => {
         component={WalletScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <View className="flex justify-center items-center">
+            <View className="flex justify-center items-center min-w-[45px]">
               <Ionicons name="wallet" color={color} size={size} />
               <Text className="text-white text-xs" style={{ color: color }}>
                 Wallet

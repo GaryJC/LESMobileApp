@@ -46,6 +46,7 @@ export default class DatabaseService {
   }
 
   async #openDatabase(userId) {
+    console.log(`========opening database for user ${userId} =======`)
     this.#currDb = SQLite.openDatabase(`nexgami-db-${userId}`);
     try {
       const version = await this.#getVersion();
