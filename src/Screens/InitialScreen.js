@@ -54,7 +54,7 @@ export default function InitialScreen() {
               index: 0,
               routes: [{ name: "MainNavigation" }],
             });
-            navigation.navigate("MainNavigation");
+            //navigation.navigate("MainNavigation");
           }
           break;
         case LoginState.VerifyEmail:

@@ -22,6 +22,7 @@ const AvatarBottomSheet = ({ visible, onClosed }) => {
     const headers = resp.data.split("\n");
 
     const urls = headers.filter(h => h != "");
+    console.log(`======= got ${urls.length} headers`)
     setData(["default", ...urls]);
     setLoading(false);
   }

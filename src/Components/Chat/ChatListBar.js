@@ -12,12 +12,13 @@ import { LesConstants } from "les-im-components";
 import IMUserInfoService from "../../services/IMUserInfoService";
 import ChatGroupService from "../../services/ChatGroupService";
 import { Ionicons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import ChatSearchBottomSheet from "../ChatSearchBottomSheet";
 import { StateIndicator } from "../StateIndicator";
 import Popover from "react-native-popover-view";
-import { MaterialIcons } from "@expo/vector-icons";
 import Divider from "../Divider";
+import ButtonAddPopover from "./ButtonPopover";
 
 const { IMMessageType } = LesConstants;
 /**
@@ -195,8 +196,16 @@ export default ChatListBar = ({ onItemSelected }) => {
             <Ionicons name="search-outline" color="#5FB54F" size={24} />
           </View>
         </TouchableHighlight>
-
-        <Popover
+        <ButtonAddPopover>
+          <View className="overflow-hidden w-[40px] h-[40px] bg-[#262F38] rounded-full mb-[5px] items-center justify-center">
+            <Ionicons
+              name="add-outline"
+              color="#5FB54F"
+              size={24}
+            ></Ionicons>
+          </View>
+        </ButtonAddPopover>
+        {/* <Popover
           isVisible={showPopover}
           popoverStyle={{
             backgroundColor: "#505050",
@@ -218,7 +227,7 @@ export default ChatListBar = ({ onItemSelected }) => {
           }
         >
           <AddPopupMenu nav={nav} setShowPopover={setShowPopover} />
-        </Popover>
+        </Popover> */}
       </View>
       <ChatSearchBottomSheet bottomSheetRef={bottomSheetRef} />
     </View>
