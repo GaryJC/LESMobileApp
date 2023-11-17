@@ -244,7 +244,11 @@ const BottomTabNavigation = () => {
               </TouchableOpacity>
 
               <ButtonAddPopover>
-                <MaterialIcons name="add-circle-outline" size={28} color="white" />
+                <MaterialIcons
+                  name="add-circle-outline"
+                  size={28}
+                  color="white"
+                />
               </ButtonAddPopover>
 
               {/* <TouchableOpacity
@@ -508,7 +512,8 @@ function App_() {
             <Stack.Navigator
               initialRouteName="initial"
               screenOptions={{
-                gestureEnabled: false,
+                // gestureEnabled: false,
+                gestureEnabled: true,
                 fullScreenGestureEnabled: true,
                 headerStyle: {
                   backgroundColor: "#080F14",
@@ -516,18 +521,19 @@ function App_() {
                 headerTitleStyle: {
                   color: "white",
                 },
+                // headerTintColor: "white",
                 contentStyle: { backgroundColor: "#080F14" },
               }}
             >
               <Stack.Screen
                 name="initial"
                 component={InitialScreen}
-                options={{ headerShown: false }}
+                options={{ headerShown: false, gestureEnabled: false }}
               />
               <Stack.Screen
                 name="MainNavigation" // This is the combined BottomTab + Drawer navigation
                 component={DrawerNavigation}
-                options={{ headerShown: false }}
+                options={{ headerShown: false, gestureEnabled: false }}
               />
               {/* <Stack.Screen
               name="BottomTab"
@@ -537,7 +543,7 @@ function App_() {
               <Stack.Screen
                 name="GameDetails"
                 component={GameDetailsScreen}
-                options={{ headerShown: false }}
+                options={{ headerShown: false, gestureEnabled: false }}
               />
               <Stack.Screen name="Signup" component={SignupScreen} />
               <Stack.Screen
@@ -546,12 +552,14 @@ function App_() {
                 options={{
                   headerBackVisible: false,
                   headerShown: false,
+                  gestureEnabled: false,
                 }}
               />
               <Stack.Screen
                 name="VerifyEmail"
                 component={VerifyEmailScreen}
                 options={{
+                  gestureEnabled: false,
                   headerTitle: "Verify Email",
                   headerTitleAlign: "center",
                   headerLeft: () => {
@@ -582,7 +590,7 @@ function App_() {
                 options={{
                   headerBackVisible: false,
                   headerShown: false,
-                  // gestureEnabled: true,
+                  gestureEnabled: false,
                 }}
               />
               <Stack.Screen
@@ -600,8 +608,6 @@ function App_() {
                 component={FriendSearchScreen}
                 options={{
                   headerTitle: "Friend Search",
-                  headerTintColor: "white",
-                  gestureEnabled: true,
                 }}
               />
               <Stack.Screen
@@ -609,8 +615,6 @@ function App_() {
                 component={GroupCreateScreen}
                 options={{
                   headerTitle: "Create a Group",
-                  headerTintColor: "white",
-                  gestureEnabled: true,
                 }}
               />
               <Stack.Screen
@@ -618,8 +622,6 @@ function App_() {
                 component={FriendAddScreen}
                 options={{
                   headerTitle: "Add a Friend",
-                  headerTintColor: "white",
-                  gestureEnabled: true,
                 }}
               />
               <Stack.Screen
@@ -627,8 +629,6 @@ function App_() {
                 component={GroupInfoScreen}
                 options={{
                   headerTitle: "Group Information",
-                  headerTintColor: "white",
-                  gestureEnabled: true,
                 }}
               />
               <Stack.Screen
@@ -636,8 +636,6 @@ function App_() {
                 component={GroupInviteScreen}
                 options={{
                   headerTitle: "Invite Friends",
-                  headerTintColor: "white",
-                  gestureEnabled: true,
                 }}
               />
               <Stack.Screen
@@ -645,8 +643,6 @@ function App_() {
                 component={MyProfileScreen}
                 options={{
                   headerTitle: "My Profile",
-                  headerTintColor: "white",
-                  gestureEnabled: true,
                 }}
               />
               <Stack.Screen
@@ -654,8 +650,6 @@ function App_() {
                 component={NotificationDetailScreen}
                 options={{
                   headerTitle: "Notification",
-                  headerTintColor: "white",
-                  gestureEnabled: true,
                 }}
               />
             </Stack.Navigator>
