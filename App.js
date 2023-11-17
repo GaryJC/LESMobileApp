@@ -3,7 +3,7 @@ import "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer } from "@react-navigation/native";
+import { DarkTheme, NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "expo-status-bar";
 import { LesConstants } from "les-im-components";
@@ -60,7 +60,7 @@ import UserHeader from "./src/Components/UserHeader";
 import MyProfileScreen from "./src/Screens/MyProfileScreen";
 import notifee from "@notifee/react-native";
 import NotificationDetailScreen from "./src/Screens/NotificationDetailScreen";
-import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
+import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -142,7 +142,7 @@ const BottomTabNavigation = () => {
     const mc = DataCenter.messageCache.getNewMessageCount();
     const nc = DataCenter.notifications.unreadCount();
     notifee.setBadgeCount(mc + nc);
-  }
+  };
 
   useEffect(() => {
     JSEvent.on(DataEvents.User.UserState_IsLoggedin, updateBadgeCount);
@@ -346,7 +346,7 @@ export default function App({ isHeadless }) {
   if (isHeadless) {
     return null;
   }
-  return <App_ />
+  return <App_ />;
 }
 
 function App_() {
@@ -468,7 +468,7 @@ function App_() {
 
   return (
     <>
-      <GestureHandlerRootView className="flex-1">
+      <GestureHandlerRootView className="flex-1 bg-[#080F14]">
         <BottomSheetModalProvider>
           <StatusBar style="light" />
 
@@ -501,11 +501,12 @@ function App_() {
       </NavigationContainer>
       )}
       */}
-          <NavigationContainer ref={navigationRef}>
+          <NavigationContainer ref={navigationRef} theme={DarkTheme}>
             <Stack.Navigator
               initialRouteName="initial"
               screenOptions={{
                 gestureEnabled: false,
+                fullScreenGestureEnabled: true,
                 headerStyle: {
                   backgroundColor: "#080F14",
                 },
@@ -578,6 +579,7 @@ function App_() {
                 options={{
                   headerBackVisible: false,
                   headerShown: false,
+                  gestureEnabled: true,
                 }}
               />
               <Stack.Screen
@@ -596,6 +598,7 @@ function App_() {
                 options={{
                   headerTitle: "Friend Search",
                   headerTintColor: "white",
+                  gestureEnabled: true,
                 }}
               />
               <Stack.Screen
@@ -604,6 +607,7 @@ function App_() {
                 options={{
                   headerTitle: "Create a Group",
                   headerTintColor: "white",
+                  gestureEnabled: true,
                 }}
               />
               <Stack.Screen
@@ -612,6 +616,7 @@ function App_() {
                 options={{
                   headerTitle: "Add a Friend",
                   headerTintColor: "white",
+                  gestureEnabled: true,
                 }}
               />
               <Stack.Screen
@@ -620,6 +625,7 @@ function App_() {
                 options={{
                   headerTitle: "Group Information",
                   headerTintColor: "white",
+                  gestureEnabled: true,
                 }}
               />
               <Stack.Screen
@@ -628,6 +634,7 @@ function App_() {
                 options={{
                   headerTitle: "Invite Friends",
                   headerTintColor: "white",
+                  gestureEnabled: true,
                 }}
               />
               <Stack.Screen
@@ -636,6 +643,7 @@ function App_() {
                 options={{
                   headerTitle: "My Profile",
                   headerTintColor: "white",
+                  gestureEnabled: true,
                 }}
               />
               <Stack.Screen
@@ -644,6 +652,7 @@ function App_() {
                 options={{
                   headerTitle: "Notification",
                   headerTintColor: "white",
+                  gestureEnabled: true,
                 }}
               />
             </Stack.Navigator>
@@ -665,9 +674,9 @@ const toastConfig = {
   success: (props) => (
     <BaseToast
       {...props}
-      style={{ borderLeftColor: '#58AE69' }}
+      style={{ borderLeftColor: "#58AE69" }}
       text1Style={{
-        fontSize: 16
+        fontSize: 16,
       }}
     />
   ),
@@ -675,11 +684,11 @@ const toastConfig = {
     <ErrorToast
       {...props}
       text1Style={{
-        fontSize: 16
+        fontSize: 16,
       }}
       text2Style={{
-        fontSize: 14
+        fontSize: 14,
       }}
     />
-  )
-}
+  ),
+};
