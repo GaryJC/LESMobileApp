@@ -579,7 +579,7 @@ function App_() {
                 options={{
                   headerBackVisible: false,
                   headerShown: false,
-                  gestureEnabled: true,
+                  // gestureEnabled: true,
                 }}
               />
               <Stack.Screen
