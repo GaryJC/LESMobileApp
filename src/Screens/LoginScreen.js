@@ -64,7 +64,7 @@ export default function LoginScreen() {
         text2: "Please try again later."
       })
       navigation.reset({ index: 0, routes: [{ name: "Login" }] });
-      navigation.navigate("Login");
+      // navigation.navigate("Login");
     }
   }, [route.params?.loginFailed])
 

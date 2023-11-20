@@ -37,18 +37,18 @@ export default function InitialScreen() {
         case LoginState.Logout:
           //快速登录失败，跳到LoginScreen
           navigation.reset({ index: 0, routes: [{ name: "Login" }] });
-          navigation.navigate("Login");
+          // navigation.navigate("Login");
           break;
         case LoginState.Normal:
           //登陆成功了，跳转到主界面
           //连接IM Server
           if (imServerState === LesConstants.IMUserState.Init) {
             navigation.reset({ index: 0, routes: [{ name: "CreateName" }] });
-            navigation.navigate("CreateName");
+            // navigation.navigate("CreateName");
           } else if (imServerState > LesConstants.IMUserState.Hiding) {
             //错误信息
-            navigation.reset({ index: 0, routes: [{ name: "Login" }] });
-            navigation.navigate("Login", { loginFailed: true, loginState, imServerState });
+            navigation.reset({ index: 0, routes: [{ name: "Login",params:{ loginFailed: true, loginState, imServerState } }] });
+            // navigation.navigate("Login", { loginFailed: true, loginState, imServerState });
           } else {
             navigation.reset({
               index: 0,
@@ -59,13 +59,13 @@ export default function InitialScreen() {
           break;
         case LoginState.VerifyEmail:
           //跳转到验证邮箱界面
-          navigation.reset({ index: 0, routes: [{ name: "VerifyEmail" }] });
-          navigation.navigate("VerifyEmail", { id, loginState });
+          navigation.reset({ index: 0, routes: [{ name: "VerifyEmail",params:{ id, loginState } }] });
+          // navigation.navigate("VerifyEmail", { id, loginState });
           break;
         case LoginState.UpdateReferrer:
           //跳转到更新推荐人界面
-          navigation.reset({ index: 0, routes: [{ name: "VerifyEmail" }] });
-          navigation.navigate("VerifyEmail", { id, loginState });
+          navigation.reset({ index: 0, routes: [{ name: "VerifyEmail",params: { id, loginState } }] });
+          // navigation.navigate("VerifyEmail", { id, loginState });
           break;
       }
 

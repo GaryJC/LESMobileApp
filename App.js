@@ -545,7 +545,7 @@ function App_() {
                 component={GameDetailsScreen}
                 options={{ headerShown: false, gestureEnabled: false }}
               />
-              <Stack.Screen name="Signup" component={SignupScreen} />
+              {/* <Stack.Screen name="Signup" component={SignupScreen} /> */}
               <Stack.Screen
                 name="Login"
                 component={LoginScreen}
@@ -596,7 +596,6 @@ function App_() {
               <Stack.Screen
                 name="Notification"
                 component={NotificationScreen}
-                options={{ headerTintColor: "white" }}
               />
               <Stack.Screen
                 name="FriendRequest"
