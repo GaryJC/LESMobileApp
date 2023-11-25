@@ -44,6 +44,14 @@
 				<string>com.googleusercontent.apps.310675491806-smq10a7cqe6evemb6r8r88anvqo7ai43</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>app-1-310675491806-ios-7ced5c9c33d5f85fdfab4f</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
@@ -60,15 +68,17 @@
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>localhost</key>
+			<key>New Exception Domain</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
 				<true/>
 			</dict>
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We don't use any Location Service</string>
+	<string>We don&apos;t use any Location Service</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

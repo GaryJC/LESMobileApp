@@ -75,6 +75,37 @@ const TwitterAuthSheet = ({ show, token, onClosed, onRecvAuthData }) => {
     </CommonBottomSheetModal>
 }
 
+const TwitterAuth1Sheet = ({ show, token, onClosed, onRecvAuthData }) => {
+    const [visible, setVisible] = useState(show);
+
+    useEffect(() => {
+        setVisible(show);
+    }, [show])
+
+    return <CommonBottomSheetModal
+        visible={visible}
+        onClosed={onClosed}
+        snapPoints={["90%"]}
+        index={0}
+    >
+        <WebView
+            source={{ uri: SocialMediaService.Inst.getTwitterAuth1Link(token) }}
+            style={{ flex: 1 }}
+            javaScriptEnabled={true}
+            onMessage={data => {
+                const msg = JSON.parse(data.nativeEvent.data);
+                console.log("receive message:", msg);
+                if (msg.command == "twitter_auth") {
+                    setVisible(false);
+                    if (onRecvAuthData != null) {
+                        onRecvAuthData(msg.oauth_token, msg.oauth_verifier);
+                    }
+                }
+            }}
+        />
+    </CommonBottomSheetModal>
+}
+
 const TwitterPreConnectSheet = ({ show, onClosed, onTokenGot }) => {
     const [visible, setVisible] = useState(show);
     const [loading, setLoading] = useState(false);
@@ -397,4 +428,4 @@ const TwitterConnector = React.forwardRef((props, ref) => {
     </>
 })
 
-export { TwitterConnector, TwitterFollowSheet, TwitterFollowVerifySheet }
+export { TwitterConnector, TwitterFollowSheet, TwitterFollowVerifySheet, TwitterAuth1Sheet }

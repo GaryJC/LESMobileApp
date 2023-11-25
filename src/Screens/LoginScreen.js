@@ -34,6 +34,7 @@ import SocialSigninForm from "../Components/AuthForm/SocialSigninForm";
 import { DialogButton, DialogModal } from "../Components/FeedbackModal";
 import { diff } from "react-native-reanimated";
 import Toast from 'react-native-toast-message';
+import { TwitterAuth1Sheet } from "../Components/SocialAuth/TwitterSheets";
 const { RNTwitterSignIn } = NativeModules;
 
 GoogleSignin.configure({
@@ -52,6 +53,11 @@ export default function LoginScreen() {
    */
   const [differentLoginForm, setDifferentLoginForm] = useState("");
   const [pendingLogin, setPendingLogin] = useState(null);
+
+  ///////
+  const [showTwitterAuth, setShowTwitterAuth] = useState(false);
+  const [twitterOAuthToken, setTwitterOAuthToken] = useState("");
+  /////
 
   const navigation = useNavigation();
   const route = useRoute();
@@ -189,11 +195,37 @@ export default function LoginScreen() {
 
   function onTwitterButtonPress() {
     setIsLoading(true);
-    Firebase.twitterSignin()
+    Firebase.Twitter.getToken().then(resp => {
+      console.log(resp.data.data);
+      setIsLoading(false);
+      setTwitterOAuthToken(resp.data.data);
+      setShowTwitterAuth(true);
+    }).catch(e => {
+      console.log(e);
+      setIsLoading(false);
+    })
+
+    // Firebase.twitterSignin()
+    //   .then(({ id, loginState, imServerState }) => {
+    //     // setIsLoading(false);
+    //     navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+    //   }).catch(e => {
+    //     console.log(e);
+    //     if (e.code == "auth/account-exists-with-different-credential") {
+    //       processDifferentCredential(e.email, e.credential, e.provider);
+    //     }
+    //   })
+    //   .finally(() => setIsLoading(false));
+  }
+
+  function firebaseTwitterSignin(token, tokenSecret) {
+    setIsLoading(true);
+    Firebase.twitterSignin1(token, tokenSecret)
       .then(({ id, loginState, imServerState }) => {
         // setIsLoading(false);
         navigation.navigate("VerifyEmail", { id, loginState, imServerState });
       }).catch(e => {
+        console.log(e);
         if (e.code == "auth/account-exists-with-different-credential") {
           processDifferentCredential(e.email, e.credential, e.provider);
         }
@@ -321,6 +353,11 @@ export default function LoginScreen() {
         onButtonPressed={btn => onButtonPressed(btn)}
       />
       <LoadingIndicator isLoading={isLoading} />
+
+      <TwitterAuth1Sheet token={twitterOAuthToken} show={showTwitterAuth} onClosed={() => setShowTwitterAuth(false)}
+        onRecvAuthData={(token, tokenSecret) => {
+          firebaseTwitterSignin(token, tokenSecret);
+        }} />
     </View>
   );
 }

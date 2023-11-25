@@ -8,7 +8,7 @@ const Address_Local = {
 const Address_Public_Test = {
   IMServer: "ws://15.222.78.167:19888/im/ws",
   AccountServer: "https://acc-test.metavirus.games/",
-  WalletAddress: "https://release-test.dao88movsiygm.amplifyapp.com/login",
+  WalletAddress: "https://release-test.dao88movsiygm.amplifyapp.com",
   ResServer: "https://res.nexgami.com",
 };
 
@@ -20,6 +20,7 @@ const Address_Production = {
 };
 
 const AddressOverride = null;
+console.log("============", process.env);
 
 const Constants = {
   /**
@@ -102,9 +103,9 @@ const Constants = {
   Address:
     AddressOverride != null
       ? AddressOverride
-      : process.env.NODE_ENV == "production"
-        ? Address_Production
-        : Address_Public_Test,
+      : (process.env.NODE_ENV == "production"
+        ? Address_Public_Test//Address_Production
+        : Address_Public_Test),
 
   LoginExceptionType: {
     AccountCenterError: "AccountCenterError",
@@ -149,17 +150,19 @@ const Constants = {
   },
 
   Icons: {
+    googleIcon: require("../../assets/img/google.png"),
     nexgamiIcon: require("../../assets/img/icon-nexgami.png"),
     telegramIcon: require("../../assets/img/telegram_icon.png"),
     twitterIcon: require("../../assets/img/twitter_X.png"),
     discordIcon: require("../../assets/img/discord_icon.png"),
+    metavirusIcon: require("../../assets/img/metavirus-icon.png"),
 
     /**
      * 根据类型获取系统图标, -1是NexGami,-2是QuestSystem
      * 1 = Discord, 2=Telegram, 3=Twitter (这部分值和LesConstants.SocialType匹配)
-     * @param {-1|-2|1|2|3|"nexgami"|"quest"|"telegram"|"twitter"|"discord"} type 图标ID或者名称
+     * @param {-1|-2|1|2|3|"nexgami"|"quest"|"telegram"|"twitter"|"discord"|"google"|"metavirus"} type 图标ID或者名称
      */
-    getSystemIcon: (type) => {
+    getSystemIcon: (type, defaultValue = Constants.Icons.nexgamiIcon) => {
       const icons = Constants.Icons;
       switch (type) {
         case -1:
@@ -177,9 +180,30 @@ const Constants = {
         case 3:
         case "twitter":
           return icons.twitterIcon;
+        case "google":
+          return icons.googleIcon;
+        case "metavirus":
+          return icons.metavirusIcon;
         default:
-          return icons.nexgamiIcon;
+          return defaultValue;
       }
+    },
+
+    getProviderIcon: (providerId) => {
+      let providerIcon = "";
+      switch (providerId) {
+        case "google.com":
+          providerIcon = "google";
+          break;
+        case "twitter.com":
+          providerIcon = "twitter"
+          break;
+        default:
+          providerIcon = "nexgami"
+          break;
+      }
+
+      return Constants.Icons.getSystemIcon(providerIcon);
     }
 
   }

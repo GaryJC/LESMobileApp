@@ -65,6 +65,7 @@ end
 target 'LESMobileApp' do
   use_frameworks! :linkage => :static
   $RNFirebaseAsStaticFramework = true
+  $RNFirebaseAnalyticsWithoutAdIdSupport = true
 
   use_expo_modules!
   config = use_native_modules!

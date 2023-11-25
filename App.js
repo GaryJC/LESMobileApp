@@ -62,6 +62,7 @@ import notifee from "@notifee/react-native";
 import NotificationDetailScreen from "./src/Screens/NotificationDetailScreen";
 import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
 import ButtonAddPopover from "./src/Components/Chat/ButtonPopover";
+import DeepUrlProcessor from "./src/Components/DeepUrl/DeepUrlProcessor";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -368,15 +369,23 @@ function App_() {
     if (initializing) setInitializing(false);
   }
 
+
   useEffect(() => {
+    JSEvent.on(UIEvents.AppState_UIUpdated, setLoading);
+    JSEvent.on(DataEvents.User.UserState_Relogin, reloginFailedHandler);
+
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+
     return () => {
       //保存页面会刷新app，此处重置event，否则会出现重复监听问题
+      JSEvent.remove(UIEvents.AppState_UIUpdated, setLoading);
+      JSEvent.remove(DataEvents.User.UserState_Relogin, reloginFailedHandler);
       JSEvent.reset();
       ServiceCenter.Inst.onAppDestroyed();
       // unsubscribe on unmount
       subscriber();
     };
+
   }, []);
 
   function setLoading(state) {
@@ -398,28 +407,18 @@ function App_() {
     }
   }
 
-  useEffect(() => {
-    JSEvent.on(UIEvents.AppState_UIUpdated, setLoading);
-    JSEvent.on(DataEvents.User.UserState_Relogin, reloginFailedHandler);
-
-    return () => {
-      JSEvent.remove(UIEvents.AppState_UIUpdated, setLoading);
-      JSEvent.remove(DataEvents.User.UserState_Relogin, reloginFailedHandler);
-    };
-  }, []);
-
   /*
   useEffect(() => {
     async function asyncInit() {
       //等待所有服务装载完毕
       setIsInitializing(true);
       await onAppInit();
-
+  
       const loginService = LoginService.Inst;
       const quickLogin = loginService.canQuickLogin();
       // const quickLogin = false
       // console.log("quickLogin: ", quickLogin);
-
+  
       //缓存中有登录信息，可以快速登录
       if (quickLogin) {
         const result = await loginService.quickLogin();
@@ -433,10 +432,10 @@ function App_() {
       } else {
         //TODO 没有登录信息，跳转到LoginScreen
       }
-
+  
       setIsInitializing(false);
     }
-
+  
     asyncInit();
     return () => {
       onAppDestroyed();
@@ -459,7 +458,7 @@ function App_() {
       />
     </>
   );
-
+  
   const AuthScreens = () => (
     <>
       <Stack.Screen name="Signup" component={SignupScreen} />
@@ -505,6 +504,7 @@ function App_() {
       )}
       */}
           <NavigationContainer ref={navigationRef} theme={DarkTheme}>
+            <DeepUrlProcessor />
             <Stack.Navigator
               initialRouteName="initial"
               screenOptions={{

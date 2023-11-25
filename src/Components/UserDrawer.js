@@ -187,6 +187,7 @@ export default function UserDrawer(props) {
 
   const onLogoutHandler = async () => {
     await LoginService.Inst.firebaseLogout();
+    DataCenter.userInfo.loginKey = "";
     notifee.setBadgeCount(0);
     navigation.reset({
       index: 0,
