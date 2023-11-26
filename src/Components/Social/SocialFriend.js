@@ -151,7 +151,7 @@ const gotoChat = (navigation, targetId, type = IMMessageType.Single) => {
   );
   const chatListItem = DataCenter.messageCache.getChatListItem(chatId);
   // DataCenter.messageCache.setCurChatListItem(chatListItem);
-  navigation.navigate("Chats");
+  navigation.navigate("Chats", { initChatId: chatId });
   // JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, chatId);
   DataCenter.messageCache.touchChatData(chatId);
   JSEvent.emit(UIEvents.User.User_Click_Chat_Updated, {

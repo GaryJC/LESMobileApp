@@ -20,7 +20,8 @@
       "channel": "preview",
       "env": {
         "APP_ENV": "preview",
-        "EXPO_NO_CAPABILITY_SYNC": "1"
+        "EXPO_NO_CAPABILITY_SYNC": "1",
+        "EXPO_PUBLIC_APP_ENV": "preview"
       },
       "ios": {
         "image": "latest"
@@ -31,7 +32,8 @@
       "channel": "production",
       "env": {
         "APP_ENV": "production",
-        "EXPO_NO_CAPABILITY_SYNC": "1"
+        "EXPO_NO_CAPABILITY_SYNC": "1",
+        "EXPO_PUBLIC_APP_ENV": "production"
       },
       "ios": {
         "image": "latest"

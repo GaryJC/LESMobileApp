@@ -284,7 +284,22 @@ const BottomTabNavigation = () => {
           tabBarBadge: newMsgCountStr,
         }}
       />
-
+      <BottomTab.Screen
+        name="Games"
+        component={GamesScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <View className="flex justify-center items-center min-w-[45px]">
+              <Ionicons name="game-controller-outline" color={color} size={size} />
+              <Text className="text-white text-xs" style={{ color: color }}>
+                Games
+              </Text>
+            </View>
+          ),
+          headerShown: true,
+          headerTitle: () => <UserHeader />,
+        }}
+      />
       <BottomTab.Screen
         name="Quests"
         component={QuestScreen}
@@ -303,20 +318,6 @@ const BottomTabNavigation = () => {
           //tabBarBadge: newMsgCountStr,
         }}
       />
-      {/* <BottomTab.Screen
-        name="Games"
-        component={GamesScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons
-              name="game-controller-outline"
-              color={color}
-              size={size}
-            />
-          ),
-          headerShown: true,
-        }}
-      /> */}
       <BottomTab.Screen
         name="Wallet"
         component={WalletScreen}

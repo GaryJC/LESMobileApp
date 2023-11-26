@@ -9,6 +9,8 @@ import { AppInfoMap } from "../modules/AppInfo";
 import { LesConstants } from "les-im-components";
 import DataCenter from "../modules/DataCenter";
 import { MessageCaches } from "../Models/MessageCaches";
+import { TouchableHighlight } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 const { IMUserState } = LesConstants;
 
@@ -74,6 +76,7 @@ export const FriendList = ({ friend, button, hasTag, onAvatarPressed }) => {
 };
 
 const GameStateIcon = ({ user }) => {
+  var nav = useNavigation();
   if (user == null) return null;
 
   const gameState = AppInfoMap.getGameState(user.gameState, user.state);
@@ -83,7 +86,9 @@ const GameStateIcon = ({ user }) => {
   if (gameState.playingGame) {
     const icon = Constants.Icons.getSystemIcon(gameState.icon, null);
     if (icon != null) {
-      gameDom = <Image source={icon} className="w-[45px] h-[45px] rounded-full " />
+      gameDom = <TouchableHighlight className="w-[45px] h-[45px] rounded-full " onPress={() => {
+        nav.navigate("GameDetails", { gameId: gameState.gameId });
+      }}><Image source={icon} className="w-[45px] h-[45px] rounded-full " /></TouchableHighlight>
     }
   }
 

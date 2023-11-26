@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Animated,
   Image,
+  TouchableHighlight,
 } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
@@ -96,14 +97,14 @@ const MessageTitle = ({ chatObj }) => {
   };
 
   useEffect(() => {
-    onChatGroupUpdated = (cg) => {
+    const onChatGroupUpdated = (cg) => {
       if (_chatObj == null) return;
       if (cg.id == _chatObj.targetId) {
         setGroupTarget(cg);
       }
     };
 
-    onUserDataUpdated = ({ id }) => {
+    const onUserDataUpdated = ({ id }) => {
       if (_chatObj == null) return;
       if (id == _chatObj.targetId) {
         const user = IMUserInfoService.Inst.getCachedUser(id).pop();
@@ -111,10 +112,17 @@ const MessageTitle = ({ chatObj }) => {
       }
     };
 
-    onChatListRemoved = () => { };
+    const onChatListRemoved = () => { };
+
+    const onFriendStateUIUpdated = ({ id }) => {
+      if (target?.id == id) {
+        setTarget({ ...target });
+      }
+    }
 
     JSEvent.on(DataEvents.ChatGroup.ChatGroup_Updated, onChatGroupUpdated);
     JSEvent.on(DataEvents.User.UserState_Changed, onUserDataUpdated);
+    var unsubRefresh = JSEvent.on(UIEvents.User.UserState_UIRefresh, onFriendStateUIUpdated);
 
     return () => {
       JSEvent.remove(DataEvents.User.UserState_Changed, onUserDataUpdated);
@@ -122,6 +130,7 @@ const MessageTitle = ({ chatObj }) => {
         DataEvents.ChatGroup.ChatGroup_Updated,
         onChatGroupUpdated
       );
+      unsubRefresh();
     };
   }, []);
 
@@ -154,9 +163,13 @@ const MessageTitle = ({ chatObj }) => {
         </View>
         <View className="flex flex-row items-center">
           {
-            gameState.playingGame ? <View className="p-[2px] rounded-full" style={{ backgroundColor: gameState.iconBorder }}>
-              <Image source={icon} className="w-[30px] h-[30px] rounded-full" />
-            </View> : null
+            gameState.playingGame ? <TouchableHighlight className=" rounded-full" onPress={() => {
+              nav.navigate("GameDetails", { gameId: gameState.gameId });
+            }}>
+              <View className="p-[2px] rounded-full" style={{ backgroundColor: gameState.iconBorder }}>
+                <Image source={icon} className="w-[30px] h-[30px] rounded-full" />
+              </View>
+            </TouchableHighlight> : null
           }
           <TouchableOpacity onPress={goToChatInfoHandler} className="pl-2">
             <Ionicons name="ellipsis-horizontal" color="white" size={24} />

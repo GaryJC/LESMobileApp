@@ -1,3 +1,5 @@
+import ExpoConstants from "expo-constants";
+
 const Address_Local = {
   IMServer: "ws://10.0.0.173:8888/im/ws",
   AccountServer: "http://10.0.0.173:18881/",
@@ -20,7 +22,7 @@ const Address_Production = {
 };
 
 const AddressOverride = null;
-console.log("============", process.env);
+console.log("============", process.env, ExpoConstants.expoConfig.appMode);
 
 const Constants = {
   /**
@@ -104,7 +106,7 @@ const Constants = {
     AddressOverride != null
       ? AddressOverride
       : (process.env.NODE_ENV == "production"
-        ? Address_Public_Test//Address_Production
+        ? (ExpoConstants.expoConfig.appMode == "preview" ? Address_Public_Test : Address_Production)
         : Address_Public_Test),
 
   LoginExceptionType: {

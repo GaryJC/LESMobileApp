@@ -63,9 +63,7 @@ const UserHeader = () => {
   }, []);
 
   const stateStr = makeStateReadable(userInfo.state);
-  console.log("uuuuuuuuuunreadcount:", unreadCount)
-
-  console.log("===============---", process.env.EXPO_PUBLIC_APP_MODE)
+  console.log("uuuuuuuuuunreadcount:", unreadCount, Constants.expoConfig.appMode)
 
   return (
     <Pressable
@@ -110,10 +108,10 @@ const UserHeader = () => {
             color="white"
             size={16}
           ></Ionicons>
-          <View className="pl-2 flex-row">
+          {Constants.expoConfig.appMode == "preview" ? (<View className="pl-2 flex-row">
             <Ionicons name="bug-outline" size={18} color="white" />
             <Text className="text-white text-sm">(Preview Version)</Text>
-          </View>
+          </View>) : <></>}
         </View>
       </View>
     </Pressable>

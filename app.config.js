@@ -8,6 +8,7 @@ export default {
   "orientation": "portrait",
   "icon": "./assets/icon.png",
   "userInterfaceStyle": "light",
+  "appMode": process.env.APP_ENV,
   "splash": {
     "image": "./assets/splash.png",
     "resizeMode": "contain",

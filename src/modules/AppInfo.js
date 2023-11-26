@@ -16,6 +16,8 @@ export const AppInfoMap = {
 				android: ""
 			},
 			iconBorder: "#22C55E",
+			available: true,
+			desc: "Our first web3 game based on NexGami platform",
 			stateMap: {
 				1: "Login",
 				2: "Creating Actor",
@@ -25,6 +27,14 @@ export const AppInfoMap = {
 	},
 
 	hasApp: (appName) => AppInfoMap.apps[appName] != null,
+
+	getApps: () => {
+		const appArr = [];
+		for (const key in AppInfoMap.apps) {
+			appArr.push(AppInfoMap.apps[key]);
+		}
+		return appArr;
+	},
 
 	getApp: (id) => {
 		for (const key in AppInfoMap.apps) {

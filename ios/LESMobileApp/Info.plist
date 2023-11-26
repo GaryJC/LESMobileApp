@@ -59,6 +59,7 @@
 	<array>
 		<string>twitter</string>
 		<string>twitterauth</string>
+		<string>NexGami.MetaVirus</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
@@ -78,7 +79,7 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We don&apos;t use any Location Service</string>
+	<string>We don't use any Location Service</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

@@ -1,90 +1,58 @@
-import { View, Text, Button, ImageBackground, Image } from "react-native";
+import { View, Text, Button, ImageBackground, Image, TouchableHighlight, Pressable, Linking } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { GameDetailsData, GamesData } from "../Data/dummyData";
 import { Ionicons } from "@expo/vector-icons";
+import { AppInfoMap } from "../modules/AppInfo";
+import Constants from "../modules/Constants";
 
-const PrimaryButton = ({ title, icon }) => (
-  <View className="bg-[#131F2A] rounded items-center justify-center h-[12vh] flex-[0.45]">
-    <Ionicons
-      name={icon}
-      size={35}
-      color={"white"}
-      className="mb-[10px]"
-    ></Ionicons>
-    <Text className="text-white font-bold ">{title}</Text>
-  </View>
+const PrimaryButton = ({ title, icon, onPress }) => (
+  <TouchableHighlight onPress={onPress} className="bg-[#131F2A] rounded items-center justify-center h-[12vh] flex-[0.45]">
+    <View className="bg-[#131F2A] rounded items-center justify-center h-[12vh] flex-[0.45]">
+      <Ionicons
+        name={icon}
+        size={35}
+        color={"white"}
+        className="mb-[10px]"
+      ></Ionicons>
+      <Text className="text-white font-bold ">{title}</Text>
+    </View>
+  </TouchableHighlight>
 );
 
-const CommunityButton = ({ title, icon }) => (
-  <View
-    // key={key}
-    className="bg-[#131F2A] rounded items-center justify-center h-[10vh] flex-[0.3]"
-  >
-    <Image
-      source={icon}
-      className="w-[25px] h-[25px]"
+const CommunityButton = ({ title, icon, onPress }) => (
+  <TouchableHighlight onPress={onPress} className="bg-[#131F2A] rounded items-center justify-center h-[10vh] flex-[0.3]">
+    <View
+      className="bg-[#131F2A] rounded items-center justify-center h-[10vh] flex-[0.3]"
+    >
+      <Image
+        source={icon}
+        className="w-[25px] h-[25px]"
       // resizeMode="scale"
-    />
-    <Text className="text-white">{title}</Text>
-  </View>
+      />
+      <Text className="text-white">{title}</Text>
+    </View>
+  </TouchableHighlight>
 );
 
 export default function GameDetailsScreen() {
   const route = useRoute();
   const navigation = useNavigation();
+  const [gameId, setGameId] = useState(route.params.gameId);
+  const [game, setGame] = useState(null);
 
-  // useEffect(() => {
-  //   navigation.setOptions({
-  //     title: () => {
-  //       return <Text className="text-white">Back</Text>;
-  //     },
-  //   });
-  // }, [navigation]);
+  useEffect(() => {
+    const g = AppInfoMap.getApp(gameId);
+    setGame(g)
+  }, [gameId]);
 
   //   console.log(route.params.gameId);
-  const [gameId, setGameId] = useState(route.params.gameId);
 
   const [communityButtonContent, setCommunityButtonContent] = useState([
     { title: "Twitter", icon: require("../../assets/img/twitter_icon.png") },
     { title: "Discord", icon: require("../../assets/img/discord_icon.png") },
     { title: "Telegram", icon: require("../../assets/img/telegram_icon.png") },
   ]);
-  const [gameName, setGameName] = useState();
-  const [aboutContent, setAboutContent] = useState();
-
-  useEffect(() => {
-    // 调用API获得指定游戏的详细信息
-    // const gameName = "MetaVirus";
-    // const aboutContent =
-    //   "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.";
-    // const websiteLink = "";
-    // const patchLink = "";
-    // const twitterLink = "";
-    // const discordLink = "";
-    // const telegramLink = "";
-    // console.log(GameDetailsData);
-    const gameName = GameDetailsData.gameName;
-    const aboutContent = GameDetailsData.about;
-    const websiteLink = GameDetailsData.websiteLink;
-    const patchLink = GameDetailsData.patchNotes;
-    const twitterLink = GameDetailsData.twitterLink;
-    const discordLink = GameDetailsData.discordLink;
-    const telegramLink = GameDetailsData.telegramLink;
-
-    setGameName(gameName);
-    setAboutContent(aboutContent);
-    // setPrimaryButtonContent((pre) => [
-    //   { ...pre[0], link: websiteLink },
-    //   { ...pre[1], link: [patchLink] },
-    // ]);
-
-    // setCommunityButtonContent((pre) => [
-    //   { ...pre[0], link: twitterLink },
-    //   { ...pre[1], link: discordLink },
-    //   { ...pre[2], link: telegramLink },
-    // ]);
-  }, []);
 
   return (
     <View className="flex-1">
@@ -94,42 +62,49 @@ export default function GameDetailsScreen() {
           resizeMode="cover"
           className="h-[45vh] relative"
         >
-          <View className="absolute left-[5vw] top-[5vh]">
+          <Pressable className="absolute left-[5vw] w-full h-[50px] top-[50px] justify-center"
+            onPress={() => navigation.goBack()}>
             <Ionicons
               name="chevron-back-outline"
               color={"white"}
               size={32}
-              onPress={() => navigation.goBack()}
+
             ></Ionicons>
+          </Pressable>
+
+          <View className="flex w-full justify-center items-center absolute top-[170px]">
+            <View className="flex p-1 rounded-full mb-[50px] " style={{ backgroundColor: game?.iconBorder }}>
+              <Image
+                source={Constants.Icons.getSystemIcon(game?.icon)}
+                className="w-[80px] h-[80px] rounded-full"
+              />
+            </View>
           </View>
+
           {/* <View className="">
             <Button title="Back" onPress={() => navigation.goBack()} />
           </View> */}
           <Text className="text-white text-[35px] font-bold absolute bottom-[-2.5vh] left-[5vw]">
-            {gameName}
+            {game?.name}
           </Text>
-          <View className="bg-[#49B05E] p-[10px] absolute bottom-[-2.5vh] right-[5vw] h-[5vh] flex justify-center rounded-lg">
-            {/* download or play */}
-            <Text className="text-white font-bold">Download</Text>
+          <View className="absolute bottom-[-2.5vh] right-[5vw] h-[5vh] flex justify-center">
+            <GameButton game={game} />
           </View>
         </ImageBackground>
       </View>
       <View className="mx-[5vw] mt-[5vh]">
         <View className="flex-row justify-between ">
-          <PrimaryButton title={"Website"} icon={"browsers-outline"} />
+          <PrimaryButton title={"Website"} icon={"browsers-outline"} onPress={() => Linking.openURL(game?.web)} />
           <PrimaryButton title={"Patch Notes"} icon={"bandage-outline"} />
         </View>
         <View className="mt-[3vh]">
           <Text className="text-white font-bold text-[20px]">About</Text>
-          <Text className="text-white">{aboutContent}</Text>
+          <Text className="text-white">{game?.desc}</Text>
         </View>
-        <Text className="text-white font-bold text-[20px] mt-[3vh] ">
+        {/* <Text className="text-white font-bold text-[20px] mt-[3vh] ">
           Community
         </Text>
         <View className="flex-row justify-between flex-wrap mt-[1vh]">
-          {/* {communityButtonContent.map((item, index) =>
-            CommunityButton(item.title, item.icon, index)
-          )} */}
           <CommunityButton
             title="Twitter"
             icon={require("../../assets/img/twitter_icon.png")}
@@ -142,7 +117,7 @@ export default function GameDetailsScreen() {
             title="Telegram"
             icon={require("../../assets/img/telegram_icon.png")}
           />
-        </View>
+        </View> */}
       </View>
       {/* <Text className="text-white">GameId: {route.params.gameId}</Text> */}
     </View>
