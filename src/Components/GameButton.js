@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Linking, Text } from "react-native";
+import { Linking, Platform, Text } from "react-native";
 import HighlightButton from "./HighlightButton";
 
 ///game数据是AppInfoMap中的app
@@ -26,6 +26,10 @@ export default GameButton = ({ game }) => {
 		}).catch(e => {
 			if (!installed) {
 				//没有安装，打开安装连接
+				console.log("meiyouanzhuang")
+				if (game?.appUrl[Platform.OS] != null && game?.appUrl[Platform.OS].length > 0) {
+					Linking.openURL(game?.appUrl[Platform.OS])
+				}
 			}
 		})
 	}

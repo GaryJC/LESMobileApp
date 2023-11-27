@@ -34,7 +34,7 @@ const GameCard = ({ appInfo, gameId, gameImg, gameName }) => {
     <Pressable onPress={() => onPress(gameId)}>
       <View className="rounded-2xl h-[250] w-[100%] my-[20] relative overflow-hidden">
         <ImageBackground
-          source={{ uri: "../../assets/img/gameCardBg.jpg" }}
+          source={require("../../assets/img/gameCardBg.jpg")}
           resizeMode="cover"
           className="w-[100%] h-[100%] rounded-2xl"
         >

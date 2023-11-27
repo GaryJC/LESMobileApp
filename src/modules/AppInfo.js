@@ -10,7 +10,7 @@ export const AppInfoMap = {
 			web: "https://www.metavirus.games",
 			icon: "metavirus",
 			bundleId: "com.nexgami.game.metavirus",
-			scheme: "NexGami.MetaVirus://",
+			scheme: "nexgami.metavirus://",
 			appUrl: {
 				ios: "",
 				android: ""

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { AppState, Image, Linking, Text, View } from "react-native";
+import { AppState, Image, Linking, Platform, Text, View } from "react-native";
 import JSEvent from "../../utils/JSEvent";
 import { DataEvents } from "../../modules/Events";
 import DataCenter from "../../modules/DataCenter";
@@ -14,7 +14,7 @@ import { approveServiceLogin } from "../../utils/auth";
 import Toast from "react-native-toast-message";
 import { AppInfoMap } from "../../modules/AppInfo";
 
-const URLPrefix = "https://www.nexgami.com/app/";
+const URLPrefix = Platform.OS == "ios" ? "https://www.nexgami.com/app/" : "com.nexgami.im.mobile://";
 
 const LoginRequest = "loginRequest";
 
@@ -37,7 +37,7 @@ const DeepUrlProcessor = () => {
 			if (url.startsWith(URLPrefix)) {
 				const p = url.substring(URLPrefix.length);
 				const pp = p.split("?");
-				if (pp.length > 1) {
+				if (pp.length > 0) {
 					const requestType = pp[0];
 					/**
 					 * @type {string}
@@ -111,6 +111,7 @@ const DeepUrlProcessor = () => {
 		}
 	}, [])
 
+	const appScheme = AppInfoMap.getAppByName(deepUrl?.name)?.scheme ?? "";
 
 	return <View>
 		<AuthorizeBottomSheet
@@ -120,7 +121,7 @@ const DeepUrlProcessor = () => {
 				setDeepUrl(null);
 			}}
 			appName={deepUrl?.name ?? "MetaVirus"}
-			backScheme={deepUrl?.scheme ?? ""}
+			backScheme={appScheme}
 		/>
 	</View>
 }
@@ -203,7 +204,9 @@ const AuthorizeBottomSheet = ({ show, onClosed, appName, backScheme }) => {
 				<View className="flex justify-start items-center">
 					<Text className="text-gray-300 text-lg">An Application</Text>
 					<View className="flex flex-row justify-center items-center m-2">
-						<Image source={appIcon} className="w-[40px] h-[40px] rounded-full mr-2" />
+						<View className=" mr-2 p-[2px] rounded-full" style={{ backgroundColor: appInfo?.iconBorder }}>
+							<Image source={appIcon} className="w-[40px] h-[40px] rounded-full" />
+						</View>
 					</View>
 					<Text className="text-white text-xl font-bold">{appInfo?.name}</Text>
 					{appInfo?.web != null && appInfo?.web.length > 0 ?
