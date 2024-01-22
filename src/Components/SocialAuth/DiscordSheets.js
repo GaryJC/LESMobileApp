@@ -23,6 +23,7 @@ const DiscordPreConnectSheet = ({ show, onClosed, onTokenGot }) => {
         setLoading(true);
         SocialMediaService.Inst.requestDiscordOauthToken()
             .then(token => {
+                console.log(token);
                 setLoading(false);
                 if (onTokenGot != null) {
                     onTokenGot(token.oauthToken);

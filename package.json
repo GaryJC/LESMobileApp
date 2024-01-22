@@ -13,10 +13,13 @@
     "eas:preview:all": "EXPO_NO_CAPABILITY_SYNC=1 APP_ENV=preview eas build --profile preview --platform all --clear-cache",
     "eas:prod:ios": "EXPO_NO_CAPABILITY_SYNC=1 eas build --profile production --platform ios --clear-cache",
     "eas:prod:android": "EXPO_NO_CAPABILITY_SYNC=1 eas build --profile production --platform android --clear-cache",
-    "eas:prod:all": "EXPO_NO_CAPABILITY_SYNC=1 eas build --profile production --platform all --clear-cache"
+    "eas:prod:all": "EXPO_NO_CAPABILITY_SYNC=1 eas build --profile production --platform all --clear-cache",
+    "eas:update:preview":"EXPO_NO_CAPABILITY_SYNC=1 APP_ENV=preview eas update --branch preview",
+    "eas:update:prod":"eas update --branch production"
   },
   "dependencies": {
     "@gorhom/bottom-sheet": "^4.4.6",
+    "@invertase/react-native-apple-authentication": "^2.3.0",
     "@notifee/react-native": "^7.8.0",
     "@react-native-clipboard/clipboard": "^1.12.1",
     "@react-native-firebase/analytics": "^18.3.0",

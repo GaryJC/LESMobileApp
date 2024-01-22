@@ -12,8 +12,8 @@ export const AppInfoMap = {
 			bundleId: "com.nexgami.game.metavirus",
 			scheme: "nexgami.metavirus://",
 			appUrl: {
-				ios: "",
-				android: ""
+				ios: "https://www.nexgami.com/metavirus/ios",
+				android: "https://www.nexgami.com/metavirus/android"
 			},
 			iconBorder: "#22C55E",
 			available: true,

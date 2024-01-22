@@ -15,7 +15,7 @@ const Address_Public_Test = {
 };
 
 const Address_Production = {
-  IMServer: "ws://nexgami-app-ws-loadbalance-1326897289.ca-central-1.elb.amazonaws.com:19888/im/ws",
+  IMServer: "ws://lb-nq58eno0-0xb78t4k5fsu3qzy.clb.na-siliconvalley.tencentclb.com:19888/im/ws",
   AccountServer: "https://acc.metavirus.games/",
   WalletAddress: "http://wallet.metavirus.games",
   ResServer: "https://res.nexgami.com",
@@ -158,6 +158,7 @@ const Constants = {
     twitterIcon: require("../../assets/img/twitter_X.png"),
     discordIcon: require("../../assets/img/discord_icon.png"),
     metavirusIcon: require("../../assets/img/metavirus-icon.png"),
+    appleIcon: require("../../assets/img/apple_icon.png"),
 
     /**
      * 根据类型获取系统图标, -1是NexGami,-2是QuestSystem
@@ -182,6 +183,8 @@ const Constants = {
         case 3:
         case "twitter":
           return icons.twitterIcon;
+        case "apple":
+          return icons.appleIcon;
         case "google":
           return icons.googleIcon;
         case "metavirus":
@@ -198,10 +201,13 @@ const Constants = {
           providerIcon = "google";
           break;
         case "twitter.com":
-          providerIcon = "twitter"
+          providerIcon = "twitter";
+          break;
+        case "apple.com":
+          providerIcon = "apple";
           break;
         default:
-          providerIcon = "nexgami"
+          providerIcon = "nexgami";
           break;
       }
 

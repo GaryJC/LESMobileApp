@@ -6,6 +6,7 @@ import auth, { firebase } from "@react-native-firebase/auth";
 import LoginService from "../services/LoginService";
 import { NativeModules } from "react-native";
 import DataCenter from "../modules/DataCenter";
+import appleAuth from "@invertase/react-native-apple-authentication";
 const { RNTwitterSignIn } = NativeModules;
 
 const CHANNEL_FIREBASE = "Firebase";
@@ -17,8 +18,8 @@ export const sendVerifyCodeRequest = async (email, password, referCode) => {
   return await axios.post(API.registerRequest(), {
     username: email,
     password: password,
-    channel: "OFFICIAL-WEB",
-    serviceId: "",
+    channel: CHANNEL_FIREBASE,
+    serviceId: serviceId,
     referralCode: referCode,
   });
 };
@@ -148,6 +149,25 @@ export const Firebase = {
       firebaseToken: firebaseToken,
       referralCode: referralCode,
     });
+  },
+
+  appleSignin: async () => {
+    const appleAuthRequestResponse = await appleAuth.performRequest({
+      requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
+    })
+
+    if (!appleAuthRequestResponse.identityToken) {
+      throw new Error('Apple Sign-In failed - no identify token returned');
+    }
+
+    const { identityToken, nonce } = appleAuthRequestResponse;
+    const appleCredential = auth.AppleAuthProvider.credential(identityToken, nonce);
+
+    await auth().signInWithCredential(appleCredential);
+
+    const { loginState, id, imServerState } = await LoginService.Inst.firebaseQuickLogin();
+
+    return { id, loginState, imServerState };
   },
 
   googleSignin: async (navigation) => {

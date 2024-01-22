@@ -170,36 +170,37 @@ const BottomTabNavigation = () => {
   }, []);
 
   return (
-    <BottomTab.Navigator
-      // screenListeners={{
-      //   focus: e => {
-      //     console.log("----", e);
-      //   }
-      // }}
-      sceneContainerStyle={{ backgroundColor: "#080F14" }}
-      screenOptions={{
-        tabBarStyle: {
-          backgroundColor: "#131F2A",
-          height: bottomTabHeight,
-        },
-        tabBarShowLabel: false,
-        headerStyle: {
-          backgroundColor: "#080F14",
-        },
-        headerTitleStyle: {
-          marginLeft: 5,
-          color: "#ffffff",
-          fontSize: 30,
-          fontWeight: "bold",
-        },
-        headerTitleAlign: "left",
-        headerShadowVisible: false,
-        headerShown: false,
-        tabBarHideOnKeyboard: Platform.OS == "ios" ? false : true,
-      }}
-      initialRouteName="Friends"
-    >
-      {/* <BottomTab.Screen
+    <>
+      <BottomTab.Navigator
+        // screenListeners={{
+        //   focus: e => {
+        //     console.log("----", e);
+        //   }
+        // }}
+        sceneContainerStyle={{ backgroundColor: "#080F14" }}
+        screenOptions={{
+          tabBarStyle: {
+            backgroundColor: "#131F2A",
+            height: bottomTabHeight,
+          },
+          tabBarShowLabel: false,
+          headerStyle: {
+            backgroundColor: "#080F14",
+          },
+          headerTitleStyle: {
+            marginLeft: 5,
+            color: "#ffffff",
+            fontSize: 30,
+            fontWeight: "bold",
+          },
+          headerTitleAlign: "left",
+          headerShadowVisible: false,
+          headerShown: false,
+          tabBarHideOnKeyboard: Platform.OS == "ios" ? false : true,
+        }}
+        initialRouteName="Friends"
+      >
+        {/* <BottomTab.Screen
         name="Home"
         component={HomeScreen}
         options={{
@@ -210,7 +211,7 @@ const BottomTabNavigation = () => {
           headerShown: true,
         }}
       /> */}
-      {/* <BottomTab.Screen
+        {/* <BottomTab.Screen
         name="ChatsOld"
         component={ChatScreen}
         options={{
@@ -219,42 +220,42 @@ const BottomTabNavigation = () => {
           ),
         }}
       /> */}
-      {/* <BottomTab.Screen name="Drawer" component={DrawerNavigation} /> */}
-      <BottomTab.Screen
-        name="Friends"
-        component={FriendsScreen}
-        options={({ navigation }) => ({
-          tabBarIcon: ({ color, size }) => (
-            <View className="flex justify-center items-center  min-w-[45px]">
-              <Ionicons name="people-outline" color={color} size={size} />
-              <Text className="text-white text-xs" style={{ color: color }}>
-                Social
-              </Text>
-            </View>
-          ),
-          headerTitle: () => <UserHeader />,
-          headerShown: true,
-          tabBarBadge: newNotiCount,
-          headerRight: () => (
-            <View className="flex-row items-center mr-[5vw]">
-              <TouchableOpacity
-                onPress={() => navigation.navigate("FriendSearch")}
-                className="mr-[2vw]"
-              >
-                <MaterialIcons name="search" size={30} color="white" />
-              </TouchableOpacity>
+        {/* <BottomTab.Screen name="Drawer" component={DrawerNavigation} /> */}
+        <BottomTab.Screen
+          name="Friends"
+          component={FriendsScreen}
+          options={({ navigation }) => ({
+            tabBarIcon: ({ color, size }) => (
+              <View className="flex justify-center items-center  min-w-[45px]">
+                <Ionicons name="people-outline" color={color} size={size} />
+                <Text className="text-white text-xs" style={{ color: color }}>
+                  Social
+                </Text>
+              </View>
+            ),
+            headerTitle: () => <UserHeader />,
+            headerShown: true,
+            tabBarBadge: newNotiCount,
+            headerRight: () => (
+              <View className="flex-row items-center mr-[5vw]">
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("FriendSearch")}
+                  className="mr-[2vw]"
+                >
+                  <MaterialIcons name="search" size={30} color="white" />
+                </TouchableOpacity>
 
-              <ButtonAddPopover>
-                <MaterialIcons name="add-circle-outline" size={28} color="white" />
-              </ButtonAddPopover>
+                <ButtonAddPopover>
+                  <MaterialIcons name="add-circle-outline" size={28} color="white" />
+                </ButtonAddPopover>
 
-              {/* <TouchableOpacity
+                {/* <TouchableOpacity
                 onPress={() => navigation.navigate("FriendAdd")}
               >
                 <MaterialIcons name="add-circle-outline" size={28} color="white" />
 
               </TouchableOpacity> */}
-              {/* <View className="pl-2">
+                {/* <View className="pl-2">
                 <RedDotIcon
                   iconName="notifications"
                   iconSize={25}
@@ -264,77 +265,77 @@ const BottomTabNavigation = () => {
                   }}
                 />
               </View> */}
-            </View>
-          ),
-        })}
-      />
+              </View>
+            ),
+          })}
+        />
 
-      <BottomTab.Screen
-        name="Chats"
-        component={ChatScreenV2}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <View className="flex justify-center items-center min-w-[45px]">
-              <Ionicons name="chatbubbles-outline" color={color} size={size} />
-              <Text className="text-white text-xs" style={{ color: color }}>
-                Chats
-              </Text>
-            </View>
-          ),
-          tabBarBadge: newMsgCountStr,
-        }}
-      />
-      <BottomTab.Screen
-        name="Games"
-        component={GamesScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <View className="flex justify-center items-center min-w-[45px]">
-              <Ionicons name="game-controller-outline" color={color} size={size} />
-              <Text className="text-white text-xs" style={{ color: color }}>
-                Games
-              </Text>
-            </View>
-          ),
-          headerShown: true,
-          headerTitle: () => <UserHeader />,
-        }}
-      />
-      <BottomTab.Screen
-        name="Quests"
-        component={QuestScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <View className="flex justify-center items-center min-w-[45px]">
-              <Ionicons name="bookmarks" color={color} size={size} />
-              <Text className="text-white text-xs" style={{ color: color }}>
-                Quests
-              </Text>
-            </View>
-          ),
-          headerShown: true,
-          headerTitle: () => <UserHeader />,
-          headerRight: () => <QuestUserPointPanel />,
-          //tabBarBadge: newMsgCountStr,
-        }}
-      />
-      <BottomTab.Screen
-        name="Wallet"
-        component={WalletScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <View className="flex justify-center items-center min-w-[45px]">
-              <Ionicons name="wallet" color={color} size={size} />
-              <Text className="text-white text-xs" style={{ color: color }}>
-                Wallet
-              </Text>
-            </View>
-          ),
-          headerShown: true,
-          headerTitle: () => <UserHeader />,
-        }}
-      />
-      {/* <BottomTab.Screen
+        <BottomTab.Screen
+          name="Chats"
+          component={ChatScreenV2}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <View className="flex justify-center items-center min-w-[45px]">
+                <Ionicons name="chatbubbles-outline" color={color} size={size} />
+                <Text className="text-white text-xs" style={{ color: color }}>
+                  Chats
+                </Text>
+              </View>
+            ),
+            tabBarBadge: newMsgCountStr,
+          }}
+        />
+        <BottomTab.Screen
+          name="Games"
+          component={GamesScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <View className="flex justify-center items-center min-w-[45px]">
+                <Ionicons name="game-controller-outline" color={color} size={size} />
+                <Text className="text-white text-xs" style={{ color: color }}>
+                  Games
+                </Text>
+              </View>
+            ),
+            headerShown: true,
+            headerTitle: () => <UserHeader />,
+          }}
+        />
+        <BottomTab.Screen
+          name="Quests"
+          component={QuestScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <View className="flex justify-center items-center min-w-[45px]">
+                <Ionicons name="bookmarks" color={color} size={size} />
+                <Text className="text-white text-xs" style={{ color: color }}>
+                  Quests
+                </Text>
+              </View>
+            ),
+            headerShown: true,
+            headerTitle: () => <UserHeader />,
+            headerRight: () => <QuestUserPointPanel />,
+            //tabBarBadge: newMsgCountStr,
+          }}
+        />
+        <BottomTab.Screen
+          name="Wallet"
+          component={WalletScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <View className="flex justify-center items-center min-w-[45px]">
+                <Ionicons name="wallet" color={color} size={size} />
+                <Text className="text-white text-xs" style={{ color: color }}>
+                  Wallet
+                </Text>
+              </View>
+            ),
+            headerShown: true,
+            headerTitle: () => <UserHeader />,
+          }}
+        />
+        {/* <BottomTab.Screen
         name="User"
         component={UserScreen}
         options={{
@@ -343,7 +344,8 @@ const BottomTabNavigation = () => {
           ),
         }}
       /> */}
-    </BottomTab.Navigator>
+      </BottomTab.Navigator>
+    </>
   );
 };
 
@@ -351,7 +353,10 @@ export default function App({ isHeadless }) {
   if (isHeadless) {
     return null;
   }
-  return <App_ />;
+  return <>
+    <App_ />
+    <Toast config={toastConfig} />
+  </>
 }
 
 function App_() {
@@ -669,7 +674,6 @@ function App_() {
           )}
         </BottomSheetModalProvider>
       </GestureHandlerRootView>
-      <Toast config={toastConfig} />
     </>
   );
 }

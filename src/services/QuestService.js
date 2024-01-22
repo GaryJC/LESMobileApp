@@ -126,7 +126,9 @@ class QuestService {
         return new Promise((resolve, reject) => {
             LesPlatformCenter.QuestFunctions.verifyQuestEntry(questId, entryId).then(r => {
                 resolve(r);
-            }).catch(e => { reject(e) })
+            }).catch(e => {
+                reject(e)
+            })
         })
     }
 

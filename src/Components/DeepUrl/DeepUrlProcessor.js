@@ -14,7 +14,7 @@ import { approveServiceLogin } from "../../utils/auth";
 import Toast from "react-native-toast-message";
 import { AppInfoMap } from "../../modules/AppInfo";
 
-const URLPrefix = Platform.OS == "ios" ? "https://www.nexgami.com/app/" : "com.nexgami.im.mobile://";
+const URLPrefix = Platform.OS == "ios" ? "https://www.nexgami.com/app/" : "https://www.nexgami.com/android/";
 
 const LoginRequest = "loginRequest";
 
@@ -157,9 +157,9 @@ const AuthorizeBottomSheet = ({ show, onClosed, appName, backScheme }) => {
 						text2: "Please try again later."
 					})
 				} else {
-					const userInfo = DataCenter.userInfo.accountId + "&" + resp.data.retObject;
+					const userInfo = DataCenter.userInfo.accountId + "+" + resp.data.retObject;
 
-					console.log("------back scheme-----", backScheme);
+					console.log("------back scheme-----", backScheme + userInfo);
 
 					Linking.openURL(backScheme + userInfo);
 				}
@@ -218,7 +218,7 @@ const AuthorizeBottomSheet = ({ show, onClosed, appName, backScheme }) => {
 						: <></>}
 					<Text className="text-gray-300 text-base">wants to access your NexGami Account</Text>
 					<View className="flex flex-col items-center m-4">
-						<Text className="text-gray-300 text-base">Singed in as </Text>
+						<Text className="text-gray-300 text-base">Signed in as </Text>
 						<View className="flex flex-row items-center">
 							<Avatar
 								tag={user?.tag}
@@ -230,8 +230,10 @@ const AuthorizeBottomSheet = ({ show, onClosed, appName, backScheme }) => {
 							<View className="flex ml-2">
 								<Text className="text-white text-base font-bold">{DataCenter.userInfo?.imUserInfo?.name}</Text>
 								<View className="flex flex-row items-center">
-									<Image source={providerIcon} className="w-[15px] h-[15px] mr-1" />
-									<Text className="text-white text-base">{DataCenter.userInfo.userProfile.email}</Text>
+									<View className="rounded-full bg-white p-[1px]">
+										<Image source={providerIcon} className="w-[15px] h-[15px]" />
+									</View>
+									<Text className="text-white text-base ml-1 max-w-[80%]" numberOfLines={1}>{DataCenter.userInfo.userProfile.email}</Text>
 								</View>
 							</View>
 						</View>

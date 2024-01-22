@@ -108,11 +108,23 @@ export const FriendListItemWithGameState = ({ friend, subTitle, hasTag, onAvatar
     if (p == null || p.chatId == chatId) setChatId([chatId]);
   }
 
+  const onCountChanged = (p) => {
+    const chatId = MessageCaches.MakeChatID(
+      friend?.id,
+      DataCenter.userInfo.accountId
+    );
+    if (p.chatId == chatId) {
+      setChatId([chatId]);
+    }
+  }
+
   useEffect(() => {
     onChatUpdated();
     var unsub = JSEvent.on(UIEvents.Message.Message_Chat_Updated, onChatUpdated);
+    var unsubCount = JSEvent.on(UIEvents.Message.Message_New_Count_Changed, onCountChanged)
     return () => {
       unsub();
+      unsubCount();
     }
   }, [])
 
@@ -151,7 +163,7 @@ export const FriendListItemWithGameState = ({ friend, subTitle, hasTag, onAvatar
                     />
                   </View>
                   {unreadCount != null && unreadCount != 0 && (
-                    <View className="w-[20px] h-[20px] bg-[#FF3737] rounded-full absolute top-[-5px] right-[-5px]  flex justify-center items-center">
+                    <View className="w-[20px] h-[20px] bg-[#FF3737] rounded-full absolute top-[0px] right-[-5px]  flex justify-center items-center">
                       <Text className="font-bold text-white text-xs">{unreadCount}</Text>
                     </View>
                   )}

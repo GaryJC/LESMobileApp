@@ -1,4 +1,4 @@
-import { View, Image, ActivityIndicator } from "react-native";
+import { View, Image, ActivityIndicator, Linking } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import LoginService from "../services/LoginService";
@@ -45,6 +45,9 @@ export default function InitialScreen() {
           if (imServerState === LesConstants.IMUserState.Init) {
             navigation.reset({ index: 0, routes: [{ name: "CreateName" }] });
             navigation.navigate("CreateName");
+          } else if (imServerState == 0x1005) {//server not open
+            navigation.reset({ index: 0, routes: [{ name: "Login" }] });
+            navigation.navigate("Login", { loginFailed: true, loginState, imServerState });
           } else if (imServerState > LesConstants.IMUserState.Hiding) {
             //错误信息
             navigation.reset({ index: 0, routes: [{ name: "Login" }] });
