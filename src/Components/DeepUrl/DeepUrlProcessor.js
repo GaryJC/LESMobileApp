@@ -30,13 +30,14 @@ const DeepUrlProcessor = () => {
 		if (data == null) {
 			setDeepUrl(null);
 		}
-		console.log("=====================deep url:", data);
+		console.log("=====================deep url:", data, data?.url, data?.url != null);
 		//loginRequest?name=MetaVirus&scheme=NexGami.MetaVirus://
 		if (data?.url != null) {
 			const { url } = data;
 			if (url.startsWith(URLPrefix)) {
 				const p = url.substring(URLPrefix.length);
 				const pp = p.split("?");
+				console.log("ppp:",pp);
 				if (pp.length > 0) {
 					const requestType = pp[0];
 					/**

@@ -159,6 +159,7 @@ const Constants = {
     discordIcon: require("../../assets/img/discord_icon.png"),
     metavirusIcon: require("../../assets/img/metavirus-icon.png"),
     appleIcon: require("../../assets/img/apple_icon.png"),
+    metamythIcon: require("../../assets/img/metamyth-icon.png"),
 
     /**
      * 根据类型获取系统图标, -1是NexGami,-2是QuestSystem
@@ -189,6 +190,8 @@ const Constants = {
           return icons.googleIcon;
         case "metavirus":
           return icons.metavirusIcon;
+        case "metamyth":
+          return icons.metamythIcon;
         default:
           return defaultValue;
       }

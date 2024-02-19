@@ -24,6 +24,26 @@ export const AppInfoMap = {
 				10001: "Genesis Village"
 			},
 		},
+		"MetaMyth": {
+			gameId: 10002,
+			name: "MetaMyth",
+			web: "",
+			icon: "metamyth",
+			bundleId: "com.joygame.loong.meta",
+			scheme: "nexgami.metamyth://",
+			appUrl: {
+				//ios: "https://www.nexgami.com/metavirus/ios",
+				//android: "https://www.nexgami.com/metavirus/android"
+			},
+			iconBorder: "#22C55E",
+			available: true,
+			desc: "Our first web3 game based on NexGami platform",
+			stateMap: {
+				1: "Login",
+				2: "Creating Actor",
+				10001: "Home"
+			},
+		},
 	},
 
 	hasApp: (appName) => AppInfoMap.apps[appName] != null,
