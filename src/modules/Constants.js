@@ -8,7 +8,7 @@ const Address_Local = {
 };
 
 const Address_Public_Test = {
-  IMServer: "ws://15.222.78.167:19888/im/ws",
+  IMServer: "ws://lb-nq58eno0-0xb78t4k5fsu3qzy.clb.na-siliconvalley.tencentclb.com:19989/im/ws",
   AccountServer: "https://acc-test.metavirus.games/",
   WalletAddress: "https://release-test.dao88movsiygm.amplifyapp.com",
   ResServer: "https://res.nexgami.com",
