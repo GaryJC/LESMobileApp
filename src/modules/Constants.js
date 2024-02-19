@@ -8,7 +8,7 @@ const Address_Local = {
 };
 
 const Address_Public_Test = {
-  IMServer: "ws://15.222.78.167:19888/im/ws",
+  IMServer: "ws://lb-nq58eno0-0xb78t4k5fsu3qzy.clb.na-siliconvalley.tencentclb.com:19989/im/ws",
   AccountServer: "https://acc-test.metavirus.games/",
   WalletAddress: "https://release-test.dao88movsiygm.amplifyapp.com",
   ResServer: "https://res.nexgami.com",
@@ -159,6 +159,7 @@ const Constants = {
     discordIcon: require("../../assets/img/discord_icon.png"),
     metavirusIcon: require("../../assets/img/metavirus-icon.png"),
     appleIcon: require("../../assets/img/apple_icon.png"),
+    metamythIcon: require("../../assets/img/metamyth-icon.png"),
 
     /**
      * 根据类型获取系统图标, -1是NexGami,-2是QuestSystem
@@ -189,6 +190,8 @@ const Constants = {
           return icons.googleIcon;
         case "metavirus":
           return icons.metavirusIcon;
+        case "metamyth":
+          return icons.metamythIcon;
         default:
           return defaultValue;
       }
