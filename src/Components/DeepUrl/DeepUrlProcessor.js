@@ -37,7 +37,6 @@ const DeepUrlProcessor = () => {
 			if (url.startsWith(URLPrefix)) {
 				const p = url.substring(URLPrefix.length);
 				const pp = p.split("?");
-				console.log("ppp:",pp);
 				if (pp.length > 0) {
 					const requestType = pp[0];
 					/**
@@ -146,6 +145,7 @@ const AuthorizeBottomSheet = ({ show, onClosed, appName, backScheme }) => {
 
 	const authorize = (approvedServiceId) => {
 		console.log(`Authorized ${appName} with ID[${DataCenter.userInfo.accountId}] Key[${DataCenter.userInfo.loginKey}]`)
+		//setVisible(false);
 		setLoading(true);
 
 		approveServiceLogin(DataCenter.userInfo.accountId, DataCenter.userInfo.loginKey, DataCenter.deviceName, approvedServiceId)
@@ -158,11 +158,11 @@ const AuthorizeBottomSheet = ({ show, onClosed, appName, backScheme }) => {
 						text2: "Please try again later."
 					})
 				} else {
-					const userInfo = DataCenter.userInfo.accountId + "+" + resp.data.retObject;
-
-					console.log("------back scheme-----", backScheme + userInfo);
-
-					Linking.openURL(backScheme + userInfo);
+					setTimeout(() => {
+						const userInfo = DataCenter.userInfo.accountId + "+" + resp.data.retObject;
+						console.log("------back scheme-----", backScheme + userInfo);
+						Linking.openURL(backScheme + userInfo);
+					}, 500);
 				}
 			}).catch(e => {
 				console.log(e);
