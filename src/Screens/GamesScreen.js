@@ -9,15 +9,20 @@ import {
   Button,
   TouchableHighlight,
   StyleSheet,
+  Linking,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { AppInfoMap } from "../modules/AppInfo";
 import { GamesData } from "../Data/dummyData";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import HighlightButton from "../Components/HighlightButton";
+import Constants from "../modules/Constants";
+import GameButton from "../Components/GameButton";
 // import GameCard from "../Components/GameCard";
 
-const GameCard = ({ gameId, gameImg, gameName }) => {
+const GameCard = ({ appInfo, gameId, gameImg, gameName }) => {
   const navigation = useNavigation();
 
   const onPress = (gameId) => {
@@ -32,18 +37,25 @@ const GameCard = ({ gameId, gameImg, gameName }) => {
           source={require("../../assets/img/gameCardBg.jpg")}
           resizeMode="cover"
           className="w-[100%] h-[100%] rounded-2xl"
-        ></ImageBackground>
+        >
+          <View className="flex w-full h-full justify-center items-center">
+            <View className="flex p-1 rounded-full mb-[50px] " style={{ backgroundColor: appInfo.iconBorder }}>
+              <Image
+                source={Constants.Icons.getSystemIcon(appInfo.icon)}
+                className="w-[80px] h-[80px] rounded-full"
+              />
+            </View>
+          </View>
+        </ImageBackground>
         <View className="absolute rounded-b-2xl bottom-0 h-[70] bg-[#131F2A] w-[100%] flex flex-row items-center justify-between">
-          <Text className="text-white text-[20px] font-bold ml-[20]">
-            {gameName}
+          <Text className="text-white text-2xl font-bold ml-[20]">
+            {appInfo.name}
           </Text>
           {/*download or play*/}
           {/* <Button title="Download" className="ml-[20]" /> */}
-          <TouchableHighlight>
-            <View className="bg-[#6E56DB] p-[10] mr-[20]">
-              <Text>Download</Text>
-            </View>
-          </TouchableHighlight>
+          <GameButton
+            game={appInfo}
+          />
         </View>
       </View>
     </Pressable>
@@ -70,7 +82,7 @@ export default function GamesScreen() {
           ></Ionicons>
         </TextInput>
       </View> */}
-      <View
+      {/* <View
         className="flex-row items-center bg-[#414141
       ] h-12 rounded-full w-full my-5 px-5"
       >
@@ -82,12 +94,13 @@ export default function GamesScreen() {
           value={searchText}
           onChangeText={(text) => setSearchText(text)}
         />
-      </View>
+      </View> */}
       <View className="flex-1">
         <FlatList
-          data={GamesData}
+          data={AppInfoMap.getApps()}
           renderItem={({ item }) => (
             <GameCard
+              appInfo={item}
               gameId={item.gameId}
               gameImg={item.gameImg}
               gameName={item.gameName}

@@ -23,6 +23,7 @@ export default class IMUserInfo {
     tag;
     state;
     onlineState;
+    gameState;
     bgImage;
     avatar;
 
@@ -37,14 +38,16 @@ export default class IMUserInfo {
      * @param {string} avatar
      * @param {IMUserState} state 
      * @param {IMUserOnlineState} onlineState 
+     * @param {number} gameState
      */
-    constructor(id, name, tag, avatar, state, onlineState) {
+    constructor(id, name, tag, avatar, state, onlineState, gameState) {
         this.id = id;
         this.name = name;
         this.tag = tag;
         this.state = state;
         this.avatar = avatar;
         this.onlineState = onlineState;
+        this.gameState = gameState;
     }
 
     get fullName() {
@@ -53,7 +56,7 @@ export default class IMUserInfo {
 
 
     toString() {
-        return `[${this.id}]${this.fullName}  state[${StateToStr[this.state]}] online[${OnlineToStr[this.onlineState]}] avatar[${this.avatar}]`
+        return `[${this.id}]${this.fullName}  state[${StateToStr[this.state]}] online[${OnlineToStr[this.onlineState]}] avatar[${this.avatar}] gameState[${(this.gameState >> 16) & 0xFFFF} --> ${this.gameState & 0xFFFF}]`
     }
 
     /**
@@ -70,6 +73,14 @@ export default class IMUserInfo {
         return false;
     }
 
+
+    changeGameState(gameState) {
+        if (gameState != this.gameState) {
+            this.gameState = gameState;
+            return true;
+        }
+        return false;
+    }
     /**
      * 改变状态
      * @param {IMUserState} state 

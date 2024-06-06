@@ -5,6 +5,8 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import auth, { firebase } from "@react-native-firebase/auth";
 import LoginService from "../services/LoginService";
 import { NativeModules } from "react-native";
+import DataCenter from "../modules/DataCenter";
+import appleAuth from "@invertase/react-native-apple-authentication";
 const { RNTwitterSignIn } = NativeModules;
 
 const CHANNEL_FIREBASE = "Firebase";
@@ -16,8 +18,8 @@ export const sendVerifyCodeRequest = async (email, password, referCode) => {
   return await axios.post(API.registerRequest(), {
     username: email,
     password: password,
-    channel: "OFFICIAL-WEB",
-    serviceId: "",
+    channel: CHANNEL_FIREBASE,
+    serviceId: serviceId,
     referralCode: referCode,
   });
 };
@@ -59,6 +61,20 @@ export const loginCheck = async (accountId, loginKey, serviceId) => {
   });
 };
 
+export const approveServiceLogin = async (accountId, firebaseToken, deviceName, approvedServiceId) => {
+  return await axios.get(API.approveServiceLogin(), {
+    params: {
+      approvedServiceId
+    },
+    headers: {
+      accountId: accountId,
+      loginKey: firebaseToken,
+      serviceId: "les-im-" + deviceName,
+      channel: CHANNEL_FIREBASE,
+    }
+  })
+}
+
 export async function saveData(key, value) {
   try {
     await SecureStore.setItemAsync(key, String(value));
@@ -80,9 +96,9 @@ export async function retrieveData(key) {
 
 export const Firebase = {
   Twitter: {
-    //   getToken: async () => {
-    //     return await axios.post(API.twitterGetToken());
-    //   }
+    getToken: async () => {
+      return await axios.post(API.twitterGetToken());
+    }
   },
 
   /**
@@ -135,6 +151,25 @@ export const Firebase = {
     });
   },
 
+  appleSignin: async () => {
+    const appleAuthRequestResponse = await appleAuth.performRequest({
+      requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
+    })
+
+    if (!appleAuthRequestResponse.identityToken) {
+      throw new Error('Apple Sign-In failed - no identify token returned');
+    }
+
+    const { identityToken, nonce } = appleAuthRequestResponse;
+    const appleCredential = auth.AppleAuthProvider.credential(identityToken, nonce);
+
+    await auth().signInWithCredential(appleCredential);
+
+    const { loginState, id, imServerState } = await LoginService.Inst.firebaseQuickLogin();
+
+    return { id, loginState, imServerState };
+  },
+
   googleSignin: async (navigation) => {
     try {
       // Check if your device supports Google Play
@@ -171,6 +206,28 @@ export const Firebase = {
     );
 
     console.log("auth token: ", authToken, authTokenSecret)
+    try {
+      const credential = await auth().signInWithCredential(twitterCredential);
+
+      const { loginState, id, imServerState } =
+        await LoginService.Inst.firebaseQuickLogin();
+
+      //修改为返回登录数据，交给ui执行跳转页面
+      return { id, loginState, imServerState };
+      //navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+    } catch (e) {
+      const p = await Firebase.fetchSignInProvider(loginResult.email);
+      throw { code: e.code, email: loginResult.email, credential: twitterCredential, provider: p };
+    }
+  },
+
+  twitterSignin1: async (token, tokenSecret) => {
+    const twitterCredential = auth.TwitterAuthProvider.credential(
+      token,
+      tokenSecret
+    );
+
+    console.log("auth token: ", token, tokenSecret)
     try {
       const credential = await auth().signInWithCredential(twitterCredential);
 

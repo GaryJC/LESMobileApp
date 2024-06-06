@@ -1,39 +1,28 @@
-import {
-  View,
-  TextInput,
-  TouchableHighlight,
-  Text,
-  ActivityIndicator,
-  TouchableWithoutFeedback,
-  Platform,
-  Modal,
-  Pressable,
-  Button,
-  Image,
-  ImageBackground,
-} from "react-native";
-import InputLayout from "../Components/InputLayout";
-import { useCallback, useEffect, useState } from "react";
-import AuthButton from "../Components/AuthButton";
-import { loginRequest, saveData, loginCheck } from "../utils/auth";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import DataCenter from "../modules/DataCenter";
-import { LesPlatformCenter, LesConstants } from "les-im-components";
-import IMFunctions from "../utils/IMFunctions";
-import LoginService from "../services/LoginService";
-import Constants from "../modules/Constants";
-import SigninButton from "../Components/SigninButton";
+import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import auth, { firebase } from "@react-native-firebase/auth";
-import { ValidateEmailModal } from "../Components/ValidateEmailModal";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { LesConstants } from "les-im-components";
+import { useCallback, useEffect, useState } from "react";
+import {
+  Image,
+  Linking,
+  Platform,
+  View
+} from "react-native";
 import LoadingIndicator from "../Components/LoadingIndicator";
-import { Firebase } from "../utils/auth";
+import SigninButton from "../Components/SigninButton";
+import { ValidateEmailModal } from "../Components/ValidateEmailModal";
+import Constants from "../modules/Constants";
+import DataCenter from "../modules/DataCenter";
+import LoginService from "../services/LoginService";
+import IMFunctions from "../utils/IMFunctions";
+import { Firebase, loginRequest, saveData } from "../utils/auth";
 
+import appleAuth, { AppleButton } from "@invertase/react-native-apple-authentication";
 import { NativeModules } from "react-native";
-import SocialSigninForm from "../Components/AuthForm/SocialSigninForm";
-import { DialogButton, DialogModal } from "../Components/FeedbackModal";
-import { diff } from "react-native-reanimated";
 import Toast from 'react-native-toast-message';
+import { DialogButton, DialogModal } from "../Components/FeedbackModal";
+import { TwitterAuth1Sheet } from "../Components/SocialAuth/TwitterSheets";
 const { RNTwitterSignIn } = NativeModules;
 
 GoogleSignin.configure({
@@ -53,16 +42,26 @@ export default function LoginScreen() {
   const [differentLoginForm, setDifferentLoginForm] = useState("");
   const [pendingLogin, setPendingLogin] = useState(null);
 
+  ///////
+  const [showTwitterAuth, setShowTwitterAuth] = useState(false);
+  const [twitterOAuthToken, setTwitterOAuthToken] = useState("");
+  /////
+
   const navigation = useNavigation();
   const route = useRoute();
 
   useEffect(() => {
     if (route.params?.loginFailed == true) {
-      Toast.show({
-        type: "error",
-        text1: "Login Failed",
-        text2: "Please try again later."
-      })
+      if (route.params?.imServerState == 0x1005) {
+        //server not open
+        Linking.openURL("https://www.nexgami.com/end_anno");
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Login Failed",
+          text2: "Please try again later."
+        })
+      }
       navigation.reset({ index: 0, routes: [{ name: "Login" }] });
       // navigation.navigate("Login");
     }
@@ -189,7 +188,47 @@ export default function LoginScreen() {
 
   function onTwitterButtonPress() {
     setIsLoading(true);
-    Firebase.twitterSignin()
+    Firebase.Twitter.getToken().then(resp => {
+      console.log(resp.data.data);
+      setIsLoading(false);
+      setTwitterOAuthToken(resp.data.data);
+      setShowTwitterAuth(true);
+    }).catch(e => {
+      console.log(e);
+      setIsLoading(false);
+    })
+
+    // Firebase.twitterSignin()
+    //   .then(({ id, loginState, imServerState }) => {
+    //     // setIsLoading(false);
+    //     navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+    //   }).catch(e => {
+    //     console.log(e);
+    //     if (e.code == "auth/account-exists-with-different-credential") {
+    //       processDifferentCredential(e.email, e.credential, e.provider);
+    //     }
+    //   })
+    //   .finally(() => setIsLoading(false));
+  }
+
+  function firebaseTwitterSignin(token, tokenSecret) {
+    setIsLoading(true);
+    Firebase.twitterSignin1(token, tokenSecret)
+      .then(({ id, loginState, imServerState }) => {
+        // setIsLoading(false);
+        navigation.navigate("VerifyEmail", { id, loginState, imServerState });
+      }).catch(e => {
+        console.log(e);
+        if (e.code == "auth/account-exists-with-different-credential") {
+          processDifferentCredential(e.email, e.credential, e.provider);
+        }
+      })
+      .finally(() => setIsLoading(false));
+  }
+
+  async function onGoogleButtonPress() {
+    setIsLoading(true);
+    Firebase.googleSignin()
       .then(({ id, loginState, imServerState }) => {
         // setIsLoading(false);
         navigation.navigate("VerifyEmail", { id, loginState, imServerState });
@@ -201,9 +240,9 @@ export default function LoginScreen() {
       .finally(() => setIsLoading(false));
   }
 
-  async function onGoogleButtonPress() {
+  async function onAppleButtonPress() {
     setIsLoading(true);
-    Firebase.googleSignin()
+    Firebase.appleSignin()
       .then(({ id, loginState, imServerState }) => {
         // setIsLoading(false);
         navigation.navigate("VerifyEmail", { id, loginState, imServerState });
@@ -305,6 +344,25 @@ export default function LoginScreen() {
           socialType={Constants.SigninButtonType.Twitter}
           handler={onTwitterButtonPress}
         />
+        {
+          Platform.OS == "ios" ?
+            <View className="w-[65vw] h-[40px]">
+              <AppleButton
+                buttonStyle={AppleButton.Style.WHITE}
+                buttonType={AppleButton.Type.SIGN_IN}
+                cornerRadius={4}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                }}
+                onPress={() => {
+                  onAppleButtonPress();
+                }}
+              />
+            </View> : null
+        }
+
+
       </View>
       <ValidateEmailModal
         emailSigninModalVisible={emailSigninModalVisible}
@@ -321,6 +379,11 @@ export default function LoginScreen() {
         onButtonPressed={btn => onButtonPressed(btn)}
       />
       <LoadingIndicator isLoading={isLoading} />
+
+      <TwitterAuth1Sheet token={twitterOAuthToken} show={showTwitterAuth} onClosed={() => setShowTwitterAuth(false)}
+        onRecvAuthData={(token, tokenSecret) => {
+          firebaseTwitterSignin(token, tokenSecret);
+        }} />
     </View>
   );
 }

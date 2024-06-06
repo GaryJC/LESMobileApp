@@ -8,6 +8,8 @@ import {
   RefreshControl,
   ActivityIndicator,
   Animated,
+  Image,
+  TouchableHighlight,
 } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
@@ -31,6 +33,7 @@ import FriendService from "../../services/FriendService";
 import DatabaseService from "../../services/DatabaseService";
 import DataCenter from "../../modules/DataCenter";
 import MessageData from "../../Models/MessageData";
+import { AppInfoMap } from "../../modules/AppInfo";
 
 const { IMMessageType, IMGroupMemberState } = LesConstants;
 /**
@@ -94,14 +97,14 @@ const MessageTitle = ({ chatObj }) => {
   };
 
   useEffect(() => {
-    onChatGroupUpdated = (cg) => {
+    const onChatGroupUpdated = (cg) => {
       if (_chatObj == null) return;
       if (cg.id == _chatObj.targetId) {
         setGroupTarget(cg);
       }
     };
 
-    onUserDataUpdated = ({ id }) => {
+    const onUserDataUpdated = ({ id }) => {
       if (_chatObj == null) return;
       if (id == _chatObj.targetId) {
         const user = IMUserInfoService.Inst.getCachedUser(id).pop();
@@ -109,10 +112,17 @@ const MessageTitle = ({ chatObj }) => {
       }
     };
 
-    onChatListRemoved = () => { };
+    const onChatListRemoved = () => { };
+
+    const onFriendStateUIUpdated = ({ id }) => {
+      if (target?.id == id) {
+        setTarget({ ...target });
+      }
+    }
 
     JSEvent.on(DataEvents.ChatGroup.ChatGroup_Updated, onChatGroupUpdated);
     JSEvent.on(DataEvents.User.UserState_Changed, onUserDataUpdated);
+    var unsubRefresh = JSEvent.on(UIEvents.User.UserState_UIRefresh, onFriendStateUIUpdated);
 
     return () => {
       JSEvent.remove(DataEvents.User.UserState_Changed, onUserDataUpdated);
@@ -120,6 +130,7 @@ const MessageTitle = ({ chatObj }) => {
         DataEvents.ChatGroup.ChatGroup_Updated,
         onChatGroupUpdated
       );
+      unsubRefresh();
     };
   }, []);
 
@@ -141,16 +152,36 @@ const MessageTitle = ({ chatObj }) => {
     curChatName += ` (${target.members.length})`;
   }
 
+  const gameState = target.type == IMMessageType.Single ? AppInfoMap.getGameState(target.data?.gameState ?? 0, target.data?.state ?? 0) : { playingGame: false };
+  const icon = Constants.Icons.getSystemIcon(gameState.icon, null);
+
   return (
-    <View className="flex-row justify-between p-[10px]">
-      {/* {curUserInfo
-            ?.filter((item) => item.id !== DataCenter.userInfo.accountId)
-            .map((item, index) => ( */}
-      <Text className="text-white font-bold text-[20px]">{curChatName}</Text>
-      {/* ))} */}
-      <TouchableOpacity onPress={goToChatInfoHandler}>
-        <Ionicons name="ellipsis-horizontal" color="white" size={24} />
-      </TouchableOpacity>
+    <View className="flex flex-col">
+      <View className="flex-row justify-between px-[10px] pt-[10px] pb-[1px]">
+        <View className="flex flex-row justify-start items-center h-[34px]">
+          <Text className="text-white font-bold text-[20px] ">{curChatName}</Text>
+        </View>
+        <View className="flex flex-row items-center">
+          {
+            gameState.playingGame ? <TouchableHighlight className=" rounded-full" onPress={() => {
+              nav.navigate("GameDetails", { gameId: gameState.gameId });
+            }}>
+              <View className="p-[2px] rounded-full" style={{ backgroundColor: gameState.iconBorder }}>
+                <Image source={icon} className="w-[30px] h-[30px] rounded-full" />
+              </View>
+            </TouchableHighlight> : null
+          }
+          <TouchableOpacity onPress={goToChatInfoHandler} className="pl-2">
+            <Ionicons name="ellipsis-horizontal" color="white" size={24} />
+          </TouchableOpacity>
+        </View>
+      </View>
+      {
+        gameState.playingGame ?
+          <View className="px-[10px] flex-row items-center justify-end">
+            <Text className="text-green-500 text-sm">Playing {gameState.name}</Text>
+          </View> : null
+      }
     </View>
   );
 };

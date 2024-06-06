@@ -3,7 +3,7 @@
     "jsEngine": "hermes",
     "name": "NexGami",
     "slug": "NexGami",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -16,9 +16,17 @@
       "**/*"
     ],
     "ios": {
+      "associatedDomains": [
+        "applinks:nexgami.com"
+      ],
       "supportsTablet": true,
       "bitcode": false,
-      "googleServicesFile": "./GoogleService-Info.plist"
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "entitlements": {
+        "com.apple.developer.associated-domains": [
+          "applinks:nexgami.com"
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -26,7 +34,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.nexgami.im.mobile",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -40,11 +48,10 @@
         "projectId": "5f44be01-64a4-4fe0-b442-d9f92dd68282"
       }
     },
-    "runtimeVersion": "1.1.0",
+    "runtimeVersion": "1.1.1",
     "updates": {
       "fallbackToCacheTimeout": 0,
       "url": "https://u.expo.dev/5f44be01-64a4-4fe0-b442-d9f92dd68282"
     }
-  },
-  "name": "NexGami"
+  }
 }

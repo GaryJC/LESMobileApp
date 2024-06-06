@@ -51,6 +51,10 @@ class FriendData {
     return this.#imUserInfo == null ? IMUserOnlineState.Offline : this.#imUserInfo.onlineState;
   }
 
+  get gameState() {
+    return this.#imUserInfo == null ? 0 : this.#imUserInfo.gameState;
+  }
+
   get avatar() {
     return this.#imUserInfo == null ? "" : this.#imUserInfo.avatar;
   }

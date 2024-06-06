@@ -46,7 +46,10 @@
 //   return twitterHandled || reactHandled;
 // }
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options {
-  return [[Twitter sharedInstance] application:application openURL:url options:options];
+  BOOL twitterHandled = [[Twitter sharedInstance] application:application openURL:url options:options];
+  if(twitterHandled) return twitterHandled;
+  BOOL reactHandled = [RCTLinkingManager application:application openURL:url options:options];
+  return reactHandled;
 }
 
 // Universal Links

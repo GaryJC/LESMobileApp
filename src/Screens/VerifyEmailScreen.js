@@ -27,7 +27,19 @@ export const VerifyEmailScreen = () => {
     // check imServerState
     if (loginState == Constants.LoginState.Logout) {
       //登陆失败了
-      navigation.reset({ index: 0, routes: [{ name: "Login",params:{ loginFailed: true, loginState, imServerState: serverState }}] });
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: "Login",
+            params: {
+              loginFailed: true,
+              loginState,
+              imServerState: serverState,
+            },
+          },
+        ],
+      });
       // navigation.navigate("Login", { loginFailed: true, loginState, imServerState: serverState });
     } else {
       if (loginState == Constants.LoginState.Normal) {
@@ -37,11 +49,23 @@ export const VerifyEmailScreen = () => {
           navigation.navigate("CreateName");
         } else if (serverState > LesConstants.IMUserState.Hiding) {
           //IM服务器登录错误
-          navigation.reset({ index: 0, routes: [{ name: "Login",params:{ loginFailed: true, loginState, imServerState: serverState } }] });
+          navigation.reset({
+            index: 0,
+            routes: [
+              {
+                name: "Login",
+                params: {
+                  loginFailed: true,
+                  loginState,
+                  imServerState: serverState,
+                },
+              },
+            ],
+          });
           // navigation.navigate("Login", { loginFailed: true, loginState, imServerState: serverState });
         } else {
           //正常登陆，转到主界面
-          // navigation.reset({ index: 0, routes: [{ name: "MainNavigation" }] });
+          //navigation.reset({ index: 0, routes: [{ name: "MainNavigation" }] });
           navigation.navigate("MainNavigation");
         }
       }

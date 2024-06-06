@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>310675491806-smq10a7cqe6evemb6r8r88anvqo7ai43.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.310675491806-smq10a7cqe6evemb6r8r88anvqo7ai43</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDo9kSZdAaav0zPZjqlJVzZYTihLY5Vr88</string>
+	<key>GCM_SENDER_ID</key>
+	<string>310675491806</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.lightesport.im.mobile</string>
+	<key>PROJECT_ID</key>
+	<string>nexgami-d9e01</string>
+	<key>STORAGE_BUCKET</key>
+	<string>nexgami-d9e01.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:310675491806:ios:7ced5c9c33d5f85fdfab4f</string>
+</dict>
+</plist>
