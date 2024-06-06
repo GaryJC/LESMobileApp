@@ -51,10 +51,14 @@ export default class SocialMediaService {
 
   getTwitterAuthLink(token) {
     if (this.#twitterAuthMode == "oauth1") {
-      return "https://api.twitter.com/oauth/authorize?oauth_token=" + token;
+      return this.getTwiterAuth1Link(token);
     } else if (this.#twitterAuthMode == "oauth2") {
       return token;
     }
+  }
+
+  getTwitterAuth1Link(token) {
+    return "https://api.twitter.com/oauth/authorize?oauth_token=" + token;
   }
 
   getTwitterFollowLink(screenName, scheme = false) {

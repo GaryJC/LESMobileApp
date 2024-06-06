@@ -15,10 +15,9 @@ const API = {
   sendCodeRequest: () => API.account + "requestSendCode",
   verifyCodeByToken: () => API.account + "verifyCodeByToken",
   updateReferrer: () => API.account + "updateReferrer",
+  approveServiceLogin: () => API.account + "approveServiceLogin",
 
-  twitterGetToken: () => API.twitter + "get_token_sec",
-
-
+  twitterGetToken: () => API.twitter + "get_token",
 
   headerIndex: () => Constants.Address.ResServer + "/headers/index",
   headerUrl: (header) => Constants.Address.ResServer + "/headers/" + header,

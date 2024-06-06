@@ -19,6 +19,7 @@ import NotificationService from "./NotificationService";
 import ChatGroupService from "./ChatGroupService";
 import FirebaseMessagingService from "./FirebaseMessagingService";
 import QuestService from "./QuestService";
+import DataAnalysisService from "./DataAnalysisService";
 
 const { ReloginState } = Constants;
 
@@ -104,6 +105,7 @@ export default class ServiceCenter {
       ChatGroupService,
       FirebaseMessagingService,
       QuestService,
+      DataAnalysisService,
     ];
 
     let services = [];
@@ -123,6 +125,7 @@ export default class ServiceCenter {
       const service = services[i];
       if (service.init) {
         try {
+          console.log(`-------------init service[${service.className}]----------`)
           await service.init();
         } catch (e) {
           console.error(`Service[${service.className}] init `, e);

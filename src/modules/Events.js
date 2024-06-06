@@ -45,7 +45,7 @@ export const DataEvents = {
 
     /**
      * 用户状态变化事件
-     * @type {{id:number, state:IMUserState, onlineState:IMUserOnlineState, avatar:string}}
+     * @type {{id:number, state:IMUserState, onlineState:IMUserOnlineState, avatar:string, gameState:number}}
      * 用户的详细数据，可通过IMUserInfoService.getUser(id)获取
      */
     UserState_Changed: "DATA_EVENT_UserState_Changed",

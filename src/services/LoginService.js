@@ -66,6 +66,8 @@ export default class LoginService {
       "S9VhKJOzqAInFRLIKVD9XkBFDofoio02pE8J1FWES5RquGsU3J"
     ).then(() => {
       console.log("==========Twitter SDK initialized==========");
+    }).catch(e => {
+      console.error("======Twitter init failed=========", e)
     });
     await this.#loadLoginData();
     LesPlatformCenter.IMListeners.onWebsocketStateChanged = (state) => {

@@ -1,3 +1,5 @@
+import ExpoConstants from "expo-constants";
+
 const Address_Local = {
   IMServer: "ws://10.0.0.173:8888/im/ws",
   AccountServer: "http://10.0.0.173:18881/",
@@ -6,20 +8,21 @@ const Address_Local = {
 };
 
 const Address_Public_Test = {
-  IMServer: "ws://15.222.78.167:19888/im/ws",
+  IMServer: "ws://lb-nq58eno0-0xb78t4k5fsu3qzy.clb.na-siliconvalley.tencentclb.com:19989/im/ws",
   AccountServer: "https://acc-test.metavirus.games/",
-  WalletAddress: "https://release-test.dao88movsiygm.amplifyapp.com/login",
+  WalletAddress: "https://release-test.dao88movsiygm.amplifyapp.com",
   ResServer: "https://res.nexgami.com",
 };
 
 const Address_Production = {
-  IMServer: "ws://nexgami-app-ws-loadbalance-1326897289.ca-central-1.elb.amazonaws.com:19888/im/ws",
+  IMServer: "ws://lb-nq58eno0-0xb78t4k5fsu3qzy.clb.na-siliconvalley.tencentclb.com:19888/im/ws",
   AccountServer: "https://acc.metavirus.games/",
   WalletAddress: "http://wallet.metavirus.games",
   ResServer: "https://res.nexgami.com",
 };
 
 const AddressOverride = null;
+console.log("============", process.env, ExpoConstants.expoConfig.appMode);
 
 const Constants = {
   /**
@@ -102,9 +105,9 @@ const Constants = {
   Address:
     AddressOverride != null
       ? AddressOverride
-      : process.env.NODE_ENV == "production"
-        ? Address_Production
-        : Address_Public_Test,
+      : (process.env.NODE_ENV == "production"
+        ? (ExpoConstants.expoConfig.appMode == "preview" ? Address_Public_Test : Address_Production)
+        : Address_Public_Test),
 
   LoginExceptionType: {
     AccountCenterError: "AccountCenterError",
@@ -149,17 +152,21 @@ const Constants = {
   },
 
   Icons: {
+    googleIcon: require("../../assets/img/google.png"),
     nexgamiIcon: require("../../assets/img/icon-nexgami.png"),
     telegramIcon: require("../../assets/img/telegram_icon.png"),
     twitterIcon: require("../../assets/img/twitter_X.png"),
     discordIcon: require("../../assets/img/discord_icon.png"),
+    metavirusIcon: require("../../assets/img/metavirus-icon.png"),
+    appleIcon: require("../../assets/img/apple_icon.png"),
+    metamythIcon: require("../../assets/img/metamyth-icon.png"),
 
     /**
      * 根据类型获取系统图标, -1是NexGami,-2是QuestSystem
      * 1 = Discord, 2=Telegram, 3=Twitter (这部分值和LesConstants.SocialType匹配)
-     * @param {-1|-2|1|2|3|"nexgami"|"quest"|"telegram"|"twitter"|"discord"} type 图标ID或者名称
+     * @param {-1|-2|1|2|3|"nexgami"|"quest"|"telegram"|"twitter"|"discord"|"google"|"metavirus"} type 图标ID或者名称
      */
-    getSystemIcon: (type) => {
+    getSystemIcon: (type, defaultValue = Constants.Icons.nexgamiIcon) => {
       const icons = Constants.Icons;
       switch (type) {
         case -1:
@@ -177,9 +184,37 @@ const Constants = {
         case 3:
         case "twitter":
           return icons.twitterIcon;
+        case "apple":
+          return icons.appleIcon;
+        case "google":
+          return icons.googleIcon;
+        case "metavirus":
+          return icons.metavirusIcon;
+        case "metamyth":
+          return icons.metamythIcon;
         default:
-          return icons.nexgamiIcon;
+          return defaultValue;
       }
+    },
+
+    getProviderIcon: (providerId) => {
+      let providerIcon = "";
+      switch (providerId) {
+        case "google.com":
+          providerIcon = "google";
+          break;
+        case "twitter.com":
+          providerIcon = "twitter";
+          break;
+        case "apple.com":
+          providerIcon = "apple";
+          break;
+        default:
+          providerIcon = "nexgami";
+          break;
+      }
+
+      return Constants.Icons.getSystemIcon(providerIcon);
     }
 
   }

@@ -7,6 +7,8 @@ import { StateIndicator, makeStateReadable } from "./StateIndicator";
 import { LesConstants } from "les-im-components";
 import JSEvent from "../utils/JSEvent";
 import { Ionicons } from "@expo/vector-icons";
+import { MaterialIcons } from '@expo/vector-icons';
+import Constants from "expo-constants";
 
 const UserHeader = () => {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -61,7 +63,7 @@ const UserHeader = () => {
   }, []);
 
   const stateStr = makeStateReadable(userInfo.state);
-  console.log("uuuuuuuuuunreadcount:", unreadCount)
+  console.log("uuuuuuuuuunreadcount:", unreadCount, Constants.expoConfig.appMode)
 
   return (
     <Pressable
@@ -106,6 +108,10 @@ const UserHeader = () => {
             color="white"
             size={16}
           ></Ionicons>
+          {Constants.expoConfig.appMode == "preview" ? (<View className="pl-2 flex-row">
+            <Ionicons name="bug-outline" size={18} color="white" />
+            <Text className="text-white text-sm">(Preview Version)</Text>
+          </View>) : <></>}
         </View>
       </View>
     </Pressable>

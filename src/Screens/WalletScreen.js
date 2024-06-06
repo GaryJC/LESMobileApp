@@ -23,6 +23,8 @@ const WalletScreen = ({ }) => {
 
     const uri = Constants.Address.WalletAddress + "/appLogin/" + DataCenter.userInfo.loginKey;
 
+    console.log("login wallet:", uri);
+
     const style = Platform.OS == "ios" ? "flex w-full h-full mt-2" : "flex w-full h-full";
     return <View className={style}>
         <WebView

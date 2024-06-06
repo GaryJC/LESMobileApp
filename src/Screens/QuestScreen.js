@@ -24,6 +24,9 @@ import SocialMediaService from "../services/SocialMediaService";
 import { LesConstants } from "les-im-components";
 import { DiscordConnector } from "../Components/SocialAuth/DiscordSheets";
 import { referralCodeCopyHandler } from "../Components/UserDrawer/Account";
+import { AppInfoMap } from "../modules/AppInfo";
+import GameButton from "../Components/GameButton";
+import Constants from "../modules/Constants";
 
 const QuestBtnId = {
   TwitterFollow: "twitter_follow",
@@ -35,6 +38,8 @@ const QuestBtnId = {
   CopyReferralCode: "copy_referral_code",
   DiscordJoin: "discord_join",
   DiscordJoinVerify: "discord_join_verify",
+
+  MetaVirusLaunch: "metavirus_launch"
 };
 
 const verifyCooldown = 60;
@@ -83,6 +88,7 @@ const QuestScreen = ({ }) => {
     };
     nav.addListener("focus", focusListener);
     nav.addListener("blur", focusListener);
+
   }, []);
 
   useEffect(() => {
@@ -569,6 +575,38 @@ const EntryButtons = ({ entry, entryProgress, onEntryBtnPressed }) => {
           </View>
         );
         break;
+
+      case EntryTemplateType.MetaVirusPlayArena:
+        const appInfo = AppInfoMap.getAppByName("MetaVirus");
+        dom = (
+          <View className="flex flex-row items-center">
+            <View className="p-1 rounded-full" style={{ backgroundColor: appInfo.iconBorder }}>
+              <Image
+                source={Constants.Icons.getSystemIcon(appInfo.icon)}
+                className="w-[30px] h-[30px] rounded-full"
+              />
+            </View>
+            <GameButton
+              game={appInfo}
+            />
+            {/* <HighlightButton
+              icon={
+                <Image
+                  source={require("../../assets/img/metavirus-icon.png")}
+                  className="w-[18px] h-[18px] rounded-full"
+                />
+              }
+              type="light"
+              text="Launch"
+              onPress={() => {
+                if (onEntryBtnPressed) {
+                  onEntryBtnPressed(QuestBtnId.MetaVirusLaunch, entry);
+                }
+              }}
+            ></HighlightButton> */}
+          </View>
+        );
+        break;
     }
 
   return dom;
@@ -597,6 +635,10 @@ const RewardPanel = ({ quest, questProgress }) => {
         setLoading(false);
       });
   };
+
+  useEffect(() => {
+    setRewardClaimed(questProgress?.rewardClaimed ?? false);
+  }, [questProgress])
 
   return (
     <View className="bg-clr-bglight flex p-2 rounded-md">

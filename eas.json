@@ -18,6 +18,11 @@
       "autoIncrement": true,
       "distribution": "internal",
       "channel": "preview",
+      "env": {
+        "APP_ENV": "preview",
+        "EXPO_NO_CAPABILITY_SYNC": "1",
+        "EXPO_PUBLIC_APP_ENV": "preview"
+      },
       "ios": {
         "image": "latest"
       }
@@ -25,6 +30,11 @@
     "production": {
       "autoIncrement": true,
       "channel": "production",
+      "env": {
+        "APP_ENV": "production",
+        "EXPO_NO_CAPABILITY_SYNC": "1",
+        "EXPO_PUBLIC_APP_ENV": "production"
+      },
       "ios": {
         "image": "latest"
       }
@@ -32,7 +42,7 @@
   },
   "submit": {
     "production": {
-      "ios":{
+      "ios": {
         "appleId": "ttkuraki@gmail.com",
         "appleTeamId": "SQTAG5B5B8",
         "companyName": "Raccoon Entertainment LTD."

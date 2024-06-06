@@ -17,6 +17,8 @@ const EntryTemplateType = {
 
     DiscordJoin: 31,
 
+    MetaVirusPlayArena: 41,
+
 }
 
 class CommunityData {
@@ -428,6 +430,7 @@ const hasProgress = (entry) => {
         | entry.templateId == EntryTemplateType.NexGamiAddFriends
         | entry.templateId == EntryTemplateType.NexGamiReferNewUsers
         | entry.templateId == EntryTemplateType.NexGamiSendMessage
+        | entry.templateId == EntryTemplateType.MetaVirusPlayArena
         ;
 }
 

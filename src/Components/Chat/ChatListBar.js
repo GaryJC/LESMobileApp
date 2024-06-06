@@ -13,7 +13,7 @@ import IMUserInfoService from "../../services/IMUserInfoService";
 import ChatGroupService from "../../services/ChatGroupService";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import ChatSearchBottomSheet from "../ChatSearchBottomSheet";
 import { StateIndicator } from "../StateIndicator";
 import Popover from "react-native-popover-view";
@@ -26,6 +26,7 @@ const { IMMessageType } = LesConstants;
  * @param {{onItemSelected:(item:ChatListItem, focusMsgId:string|null)=>void}} params
  */
 export default ChatListBar = ({ onItemSelected }) => {
+  const route = useRoute();
   const [chatList, setChatList] = useState(
     DataCenter.messageCache.getChatList() ?? []
   );
@@ -125,7 +126,7 @@ export default ChatListBar = ({ onItemSelected }) => {
     nav.addListener("focus", focusListener);
     nav.addListener("blur", focusListener);
 
-    const selChatId = chatList.length == 0 ? "" : chatList[0].chatId;
+    const selChatId = chatList.length == 0 ? "" : (route.params?.initChatId ?? chatList[0].chatId);
     setCurrSelId(selChatId);
     if (onItemSelected) {
       const currSel = DataCenter.messageCache.getChatListItem(selChatId);

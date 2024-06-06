@@ -1,23 +1,20 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import {
-  Button,
-  ImageBackground,
   FlatList,
-  SectionList,
-  Text,
-  View,
-  ActivityIndicator,
+  View
 } from "react-native";
 
-import { FriendList } from "../FriendList";
+import { useNavigation } from "@react-navigation/native";
+import { LesConstants } from "les-im-components";
+import SocialListChatButton from "../../Components/SocialListChatButton";
+import { MessageCaches } from "../../Models/MessageCaches";
+import DataCenter from "../../modules/DataCenter";
 import { DataEvents, UIEvents } from "../../modules/Events";
 import FriendService from "../../services/FriendService";
 import JSEvent from "../../utils/JSEvent";
-import { LesConstants } from "les-im-components";
-import SocialListChatButton from "../../Components/SocialListChatButton";
-import FriendBottomSheet from "../FriendBottomSheet";
+import { FriendListItemWithGameState } from "../FriendList";
 
+const { IMMessageType } = LesConstants;
 /*
 const RecommendedFriend = (id, name, avatar) => (
   <View className="flex-row justify-between mb-[10px]">
@@ -74,6 +71,7 @@ export default function SocialFriend() {
     setFriendsData(online);
   };
 
+  const nav = useNavigation();
   useEffect(() => {
     const initFriendScreen = () => {
       onFriendStateUIUpdated();
@@ -124,12 +122,41 @@ export default function SocialFriend() {
         data={friendsData}
         keyExtractor={(item, index) => item.id}
         renderItem={({ item }) => (
-          <FriendList
+          <FriendListItemWithGameState
             friend={item}
-            button={<SocialListChatButton item={item} />}
+            button={<SocialListChatButton item={item}
+            />}
+            onNamePressed={item => {
+              gotoChat(nav, item.id);
+            }}
           />
         )}
       />
     </View>
   );
+}
+
+
+/**
+ * 
+ * @param {Navigation} navigation 
+ * @param {number} targetId 
+ * @param {IMMessageType} type 
+ */
+const gotoChat = (navigation, targetId, type = IMMessageType.Single) => {
+  const chatId = MessageCaches.MakeChatID(
+    DataCenter.userInfo.accountId,
+    targetId,
+    type
+  );
+  const chatListItem = DataCenter.messageCache.getChatListItem(chatId);
+  // DataCenter.messageCache.setCurChatListItem(chatListItem);
+  navigation.navigate("Chats", { initChatId: chatId });
+  // JSEvent.emit(UIEvents.Message.Message_Chat_List_Updated, chatId);
+  DataCenter.messageCache.touchChatData(chatId);
+  JSEvent.emit(UIEvents.User.User_Click_Chat_Updated, {
+    // chatId: chatId,
+    // targetId: friend?.id,
+    chatListItem,
+  });
 }

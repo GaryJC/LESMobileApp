@@ -42,9 +42,10 @@ export default class IMUserInfoService {
    * @param {IMUserBaseData} userBaseData
    * @param {IMUserState} state state
    * @param {IMUserOnlineState} onlineState
+   * @param {number} gameState
    * @returns {IMUserInfo}
    */
-  updateUser(userBaseData, state, onlineState) {
+  updateUser(userBaseData, state, onlineState, gameState = 0) {
     if (userBaseData == null) return;
     const { id, name, tag, avatar } = userBaseData;
     let userInfo = this.userList[id];
@@ -57,13 +58,15 @@ export default class IMUserInfoService {
         tag,
         avatar,
         state,
-        onlineState
+        onlineState,
+        gameState
       );
     } else {
       changed = userInfo.updateName(name, tag);
       changed |= userInfo.changeState(state);
       changed |= userInfo.changeOnlineState(onlineState);
       changed |= userInfo.changeAvatar(avatar);
+      changed |= userInfo.changeGameState(gameState);
       ;
     }
 
@@ -74,6 +77,7 @@ export default class IMUserInfoService {
         id,
         state,
         onlineState,
+        gameState
       });
       this.#updateUserToDb(userInfo);
     }
@@ -91,12 +95,14 @@ export default class IMUserInfoService {
     LesPlatformCenter.IMListeners.onIMUserStateChanged = (
       user,
       onlineState,
-      state
+      state,
+      gameState
     ) => {
       this.updateUser(
         user,
         state,
-        onlineState
+        onlineState,
+        gameState
       );
     };
   }
@@ -128,8 +134,8 @@ export default class IMUserInfoService {
         //需要从服务器获取
         LesPlatformCenter.IMFunctions.getUsersData(miss).then(us => {
           us.forEach(u => {
-            const { userData, state, onlineState } = u;
-            const user = this.updateUser(userData, state, onlineState);
+            const { userData, state, onlineState, gameState } = u;
+            const user = this.updateUser(userData, state, onlineState, gameState);
             users.push(user);
           })
           resolve(users);
@@ -148,7 +154,7 @@ export default class IMUserInfoService {
     return new Promise((resolve, reject) => {
       LesPlatformCenter.IMFunctions.getUserProfile(userId).then(p => {
         const baseInfo = p.userInfo;
-        const userInfo = this.updateUser(baseInfo, p.state, p.onlineState);
+        const userInfo = this.updateUser(baseInfo, p.state, p.onlineState, p.gameState);
         const profile = new IMUserProfile();
         profile.userInfo = userInfo;
         profile.links = p.links;
