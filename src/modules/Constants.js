@@ -8,20 +8,22 @@ const Address_Local = {
 };
 
 const Address_Public_Test = {
-  IMServer: "ws://lb-nq58eno0-0xb78t4k5fsu3qzy.clb.na-siliconvalley.tencentclb.com:19989/im/ws",
+  IMServer:
+    "ws://lb-nq58eno0-0xb78t4k5fsu3qzy.clb.na-siliconvalley.tencentclb.com:19989/im/ws",
   AccountServer: "https://acc-test.metavirus.games/",
   WalletAddress: "https://release-test.dao88movsiygm.amplifyapp.com",
   ResServer: "https://res.nexgami.com",
 };
 
 const Address_Production = {
-  IMServer: "ws://lb-nq58eno0-0xb78t4k5fsu3qzy.clb.na-siliconvalley.tencentclb.com:19888/im/ws",
+  IMServer:
+    "ws://lb-nq58eno0-0xb78t4k5fsu3qzy.clb.na-siliconvalley.tencentclb.com:19888/im/ws",
   AccountServer: "https://acc.metavirus.games/",
   WalletAddress: "http://wallet.metavirus.games",
   ResServer: "https://res.nexgami.com",
 };
 
-const AddressOverride = null;
+const AddressOverride = Address_Production;
 console.log("============", process.env, ExpoConstants.expoConfig.appMode);
 
 const Constants = {
@@ -105,9 +107,11 @@ const Constants = {
   Address:
     AddressOverride != null
       ? AddressOverride
-      : (process.env.NODE_ENV == "production"
-        ? (ExpoConstants.expoConfig.appMode == "preview" ? Address_Public_Test : Address_Production)
-        : Address_Public_Test),
+      : process.env.NODE_ENV == "production"
+      ? ExpoConstants.expoConfig.appMode == "preview"
+        ? Address_Public_Test
+        : Address_Production
+      : Address_Public_Test,
 
   LoginExceptionType: {
     AccountCenterError: "AccountCenterError",
@@ -215,10 +219,30 @@ const Constants = {
       }
 
       return Constants.Icons.getSystemIcon(providerIcon);
-    }
+    },
+  },
 
-  }
+  SocialId: {
+    Website: 0,
+    Discord: 1,
+    Telegram: 2,
+    Twitter: 3,
+  },
 
+  PlatformId: {
+    IOS: 1,
+    Android: 2,
+    PCWIN: 3,
+    Web: 4,
+    Mac: 5,
+  },
+
+  ChainID: {
+    Eth: 1,
+    Polygon: 2,
+    Avalanche: 3,
+    BNB: 4,
+  },
 };
 
 console.log(
