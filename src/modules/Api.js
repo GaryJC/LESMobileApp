@@ -2,9 +2,11 @@
 
 import Constants from "./Constants";
 
+const { Address } = Constants;
+
 const API = {
-  account: Constants.Address.AccountServer + "account/",
-  twitter: Constants.Address.AccountServer + "oauth/twitter/",
+  account: Address.AccountServer + "account/",
+  twitter: Address.AccountServer + "oauth/twitter/",
 
   registerRequest: () => API.account + "registerRequest",
   verifyCode: () => API.account + "verifyCode",
@@ -19,8 +21,38 @@ const API = {
 
   twitterGetToken: () => API.twitter + "get_token",
 
-  headerIndex: () => Constants.Address.ResServer + "/headers/index",
-  headerUrl: (header) => Constants.Address.ResServer + "/headers/" + header,
+  headerIndex: () => Address.ResServer + "/headers/index",
+  headerUrl: (header) => Address.ResServer + "/headers/" + header,
+
+  fetchImage: (name) => `${Address.ResServer}/platform/${name}`,
+
+  Game: {
+    getGameList: () => `${Address.PlatformServer}/game/list`,
+
+    getSpecificGame: (id) => `${Address.PlatformServer}/game/${id}`,
+
+    getPromotion: () => `${Address.PlatformServer}/game/promotion`,
+
+    getFilterOption: () => `${Address.PlatformServer}/game/filter`,
+  },
+
+  Launchpad: {
+    fetchImage: (name) => `${Address.ResServer}/platform/launchpads/${name}`,
+
+    getLaunchpadList: (queryAndStatus) =>
+      `${Address.PlatformServer}/launchpad/list?${queryAndStatus}`,
+
+    getSpecificLaunchpad: (id) => `${Address.PlatformServer}/launchpad/${id}`,
+  },
+
+  News: {
+    getNewsList: (genre) =>
+      `${Address.PlatformServer}/news/list?genre=${genre}`,
+
+    getSpecificNews: (id) => `${Address.PlatformServer}/news/${id}`,
+
+    getGameNews: (id) => `${Address.PlatformServer}/news/game?id=${id}`,
+  },
 };
 
 export default API;

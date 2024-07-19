@@ -14,10 +14,11 @@
     "eas:prod:ios": "EXPO_NO_CAPABILITY_SYNC=1 eas build --profile production --platform ios --clear-cache",
     "eas:prod:android": "EXPO_NO_CAPABILITY_SYNC=1 eas build --profile production --platform android --clear-cache",
     "eas:prod:all": "EXPO_NO_CAPABILITY_SYNC=1 eas build --profile production --platform all --clear-cache",
-    "eas:update:preview":"EXPO_NO_CAPABILITY_SYNC=1 APP_ENV=preview eas update --branch preview",
-    "eas:update:prod":"eas update --branch production"
+    "eas:update:preview": "EXPO_NO_CAPABILITY_SYNC=1 APP_ENV=preview eas update --branch preview",
+    "eas:update:prod": "eas update --branch production"
   },
   "dependencies": {
+    "@expo/vector-icons": "^13.0.0",
     "@gorhom/bottom-sheet": "^4.4.6",
     "@invertase/react-native-apple-authentication": "^2.3.0",
     "@notifee/react-native": "^7.8.0",
@@ -44,6 +45,7 @@
     "js-base64": "^3.7.5",
     "les-im-components": "^1.1.56",
     "lodash": "^4.17.21",
+    "moment": "^2.30.1",
     "nativewind": "^2.0.11",
     "react": "18.2.0",
     "react-native": "0.71.14",
@@ -62,6 +64,7 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@babel/plugin-proposal-private-methods": "^7.18.6",
+    "react-native-svg-transformer": "^1.5.0",
     "tailwindcss": "^3.3.2"
   },
   "private": true

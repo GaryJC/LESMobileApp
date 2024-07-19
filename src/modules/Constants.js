@@ -5,6 +5,7 @@ const Address_Local = {
   AccountServer: "http://10.0.0.173:18881/",
   WalletAddress: "http://10.0.0.173:3001",
   ResServer: "https://res.nexgami.com",
+  PlatformServer: "https://platform-test.nexgami.com/api/v1",
 };
 
 const Address_Public_Test = {
@@ -13,6 +14,7 @@ const Address_Public_Test = {
   AccountServer: "https://acc-test.metavirus.games/",
   WalletAddress: "https://release-test.dao88movsiygm.amplifyapp.com",
   ResServer: "https://res.nexgami.com",
+  PlatformServer: "https://platform-test.nexgami.com/api/v1",
 };
 
 const Address_Production = {
@@ -21,6 +23,7 @@ const Address_Production = {
   AccountServer: "https://acc.metavirus.games/",
   WalletAddress: "http://wallet.metavirus.games",
   ResServer: "https://res.nexgami.com",
+  PlatformServer: "https://platform-test.nexgami.com/api/v1",
 };
 
 const AddressOverride = Address_Production;
@@ -242,6 +245,31 @@ const Constants = {
     Polygon: 2,
     Avalanche: 3,
     BNB: 4,
+  },
+
+  News: {
+    Genre: {
+      News: 1,
+      Guide: 2,
+    },
+  },
+
+  Launchpad: {
+    Genre: {
+      Token: 1,
+      NFT: 2,
+    },
+    IDOStatus: {
+      Upcoming: 1,
+      Ended: 2,
+      Opening: 3,
+    },
+    SwappableCoins: {
+      USDC: 1,
+      USDT: 2,
+      NEXG: 3,
+      NEXU: 4,
+    },
   },
 };
 

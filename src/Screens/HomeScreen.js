@@ -5,11 +5,14 @@ import {
   ImageBackground,
   Pressable,
   Image,
+  SafeAreaView,
 } from "react-native";
 // import { StatusBar } from "expo-status-bar";
 import { ActivitiesData } from "../Data/dummyData";
 import { NewsData } from "../Data/dummyData";
 import { useEffect, useState } from "react";
+import NewsCarousel from "../Components/Home/NewsCarousel";
+import LaunchpadList from "../Components/Home/LaunchpadList";
 
 // add onPress event handler
 const Activity = ({ activityImg, activityIntro, activityTitle }) => (
@@ -50,14 +53,11 @@ export default function HomeScreen() {
   }, []);
 
   return (
-    <View className="mx-[5vw] mt-[3vh] flex-1">
-      {/* <Text>Home</Text> */}
-      {/* <StatusBar style="auto" /> */}
-      {/* <Text className="text-white text-[30px] font-bold">Light Esports</Text> */}
-      <Text className="text-white font-bold text-[20px] mb-[2vh]">
-        Activities
-      </Text>
-      <View>
+    <SafeAreaView>
+      <View className="w-full">
+        <NewsCarousel />
+        <LaunchpadList />
+        {/* <View>
         <FlatList
           // data={ActivitiesData}
           data={activitiesData}
@@ -88,7 +88,8 @@ export default function HomeScreen() {
           )}
           keyExtractor={(item) => item.newsId.toString()}
         />
+      </View> */}
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

@@ -40,6 +40,12 @@ export const ActivitiesData = [
     "FriendData Promotion",
     "Invite FriendData to"
   ),
+  new Activities(
+    3,
+    require("../../assets/img/gameCardBg.jpg"),
+    "FriendData Promotion",
+    "Invite FriendData to"
+  ),
 ];
 
 export const NewsData = [

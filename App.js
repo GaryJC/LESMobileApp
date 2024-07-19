@@ -314,6 +314,22 @@ const BottomTabNavigation = () => {
           }}
         />
         <BottomTab.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <View className="flex justify-center items-center min-w-[45px]">
+                <Ionicons name="home-outline" color={color} size={size} />
+                <Text className="text-white text-xs" style={{ color: color }}>
+                  Home
+                </Text>
+              </View>
+            ),
+            headerShown: false,
+            headerTitle: () => <UserHeader />,
+          }}
+        />
+        {/* <BottomTab.Screen
           name="Quests"
           component={QuestScreen}
           options={{
@@ -330,7 +346,7 @@ const BottomTabNavigation = () => {
             headerRight: () => <QuestUserPointPanel />,
             //tabBarBadge: newMsgCountStr,
           }}
-        />
+        /> */}
         <BottomTab.Screen
           name="Wallet"
           component={WalletScreen}
