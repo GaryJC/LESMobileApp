@@ -20,16 +20,16 @@ export const renderPlatformIcon = (platform, size) => {
   }
 };
 
-export const renderCommunityIcon = (socialId, size) => {
+export const renderCommunityIcon = (socialId) => {
   switch (socialId) {
     case Constants.SocialId.Discord:
-      return <MaterialIcons name="telegram" size={24} color="white" />;
+      return require("../../assets/img/discord.png");
     case Constants.SocialId.Telegram:
-      return <MaterialIcons name="telegram" size={24} color="white" />;
+      return require("../../assets/img/telegram.png");
     case Constants.SocialId.Twitter:
-      return <FontAwesome name="twitter" size={24} color="white" />;
+      return require("../../assets/img/twitter_X.png");
     default:
-      return <Ionicons name="browsers-outline" size={size} color="white" />;
+      return require("../../assets/img/web.png");
   }
 };
 

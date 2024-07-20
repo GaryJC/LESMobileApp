@@ -6,6 +6,7 @@ import {
   Pressable,
   Image,
   SafeAreaView,
+  ScrollView,
 } from "react-native";
 // import { StatusBar } from "expo-status-bar";
 import { ActivitiesData } from "../Data/dummyData";
@@ -13,6 +14,7 @@ import { NewsData } from "../Data/dummyData";
 import { useEffect, useState } from "react";
 import NewsCarousel from "../Components/Home/NewsCarousel";
 import LaunchpadList from "../Components/Home/LaunchpadList";
+import QuestList from "../Components/Home/QuestList";
 
 // add onPress event handler
 const Activity = ({ activityImg, activityIntro, activityTitle }) => (
@@ -54,9 +56,13 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView>
-      <View className="w-full">
+      <ScrollView className="w-full">
         <NewsCarousel />
-        <LaunchpadList />
+        <View className="px-3">
+          <LaunchpadList />
+          <QuestList />
+        </View>
+
         {/* <View>
         <FlatList
           // data={ActivitiesData}
@@ -89,7 +95,7 @@ export default function HomeScreen() {
           keyExtractor={(item) => item.newsId.toString()}
         />
       </View> */}
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

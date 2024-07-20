@@ -329,7 +329,7 @@ const BottomTabNavigation = () => {
             headerTitle: () => <UserHeader />,
           }}
         />
-        {/* <BottomTab.Screen
+        <BottomTab.Screen
           name="Quests"
           component={QuestScreen}
           options={{
@@ -346,7 +346,7 @@ const BottomTabNavigation = () => {
             headerRight: () => <QuestUserPointPanel />,
             //tabBarBadge: newMsgCountStr,
           }}
-        /> */}
+        />
         <BottomTab.Screen
           name="Wallet"
           component={WalletScreen}

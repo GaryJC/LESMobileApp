@@ -39,12 +39,12 @@ const QuestBtnId = {
   DiscordJoin: "discord_join",
   DiscordJoinVerify: "discord_join_verify",
 
-  MetaVirusLaunch: "metavirus_launch"
+  MetaVirusLaunch: "metavirus_launch",
 };
 
 const verifyCooldown = 60;
 
-const QuestScreen = ({ }) => {
+const QuestScreen = ({}) => {
   /**
    * @type {[quest:QuestData]} p
    */
@@ -88,7 +88,6 @@ const QuestScreen = ({ }) => {
     };
     nav.addListener("focus", focusListener);
     nav.addListener("blur", focusListener);
-
   }, []);
 
   useEffect(() => {
@@ -220,7 +219,8 @@ const QuestScreen = ({ }) => {
 
   const qp = questProgress ? questProgress[0] : null;
 
-  const style = Platform.OS == "ios" ? "flex-1 px-[5vw] pb-3 mt-2" : "flex-1 px-[5vw] pb-3";
+  const style =
+    Platform.OS == "ios" ? "flex-1 px-[5vw] pb-3 mt-2" : "flex-1 px-[5vw] pb-3";
 
   return (
     <View className={style}>
@@ -253,12 +253,8 @@ const QuestScreen = ({ }) => {
     </View>
   );
 };
-/**
- *
- * @param {{quest:QuestData}} params
- * @returns
- */
-const QuestTitle = ({ quest }) => {
+
+export const formatTxtTime = (quest) => {
   let txtTime = "";
   if (quest == null) {
     return <></>;
@@ -266,11 +262,15 @@ const QuestTitle = ({ quest }) => {
   if (quest.startTime > 0) {
     const startDate = new Date(quest.startTime);
     txtTime = formatDate(startDate, {
+      // year: "numeric",
+      // month: "short",
+      // day: "2-digit",
+      // hour: "2-digit",
+      // timeZoneName: "short",
       year: "numeric",
-      month: "short",
+      month: "2-digit",
       day: "2-digit",
       hour: "2-digit",
-      timeZoneName: "short",
     });
   }
   if (quest.endTime > 0) {
@@ -286,6 +286,16 @@ const QuestTitle = ({ quest }) => {
   } else if (txtTime != "") {
     txtTime += " ~ N/A";
   }
+  return txtTime;
+};
+
+/**
+ *
+ * @param {{quest:QuestData}} params
+ * @returns
+ */
+export const QuestTitle = ({ quest }) => {
+  const txtTime = formatTxtTime(quest);
 
   const timeDom =
     txtTime == "" ? (
@@ -300,6 +310,9 @@ const QuestTitle = ({ quest }) => {
 
   return (
     <View className="flex">
+      <Text className="text-clr-light text-xl font-bold px-1 pb-1">
+        {quest?.questName}
+      </Text>
       <View className="flex flex-row">
         <View className="flex flex-row m-1 py-[2px] px-2 bg-clr-emphasize-light border border-clr-emphasize rounded-full">
           <View>
@@ -308,9 +321,6 @@ const QuestTitle = ({ quest }) => {
         </View>
         {timeDom}
       </View>
-      <Text className="text-clr-light text-xl font-bold px-1 pb-1">
-        {quest?.questName}
-      </Text>
     </View>
   );
 };
@@ -580,15 +590,16 @@ const EntryButtons = ({ entry, entryProgress, onEntryBtnPressed }) => {
         const appInfo = AppInfoMap.getAppByName("MetaVirus");
         dom = (
           <View className="flex flex-row items-center">
-            <View className="p-1 rounded-full" style={{ backgroundColor: appInfo.iconBorder }}>
+            <View
+              className="p-1 rounded-full"
+              style={{ backgroundColor: appInfo.iconBorder }}
+            >
               <Image
                 source={Constants.Icons.getSystemIcon(appInfo.icon)}
                 className="w-[30px] h-[30px] rounded-full"
               />
             </View>
-            <GameButton
-              game={appInfo}
-            />
+            <GameButton game={appInfo} />
             {/* <HighlightButton
               icon={
                 <Image
@@ -638,7 +649,7 @@ const RewardPanel = ({ quest, questProgress }) => {
 
   useEffect(() => {
     setRewardClaimed(questProgress?.rewardClaimed ?? false);
-  }, [questProgress])
+  }, [questProgress]);
 
   return (
     <View className="bg-clr-bglight flex p-2 rounded-md">
