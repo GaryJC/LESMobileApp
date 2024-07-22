@@ -19,10 +19,10 @@ const { width: windowWidth } = Dimensions.get("window");
 const NewsGenre = Constants.News.Genre.News;
 
 const NewsCard = ({ title, image }) => (
-  <Pressable className="w-full">
+  <Pressable className="w-full rounded-xl overflow-hidden">
     <ImageBackground
       source={{ uri: API.fetchImage(image) }}
-      resizeMode="cover"
+      resizeMode="contain"
       className="w-full h-full relative"
     >
       <View className="w-[100%] h-[30%] bg-[#182634]/[0.8] absolute bottom-[0] justify-evenly">
@@ -76,6 +76,10 @@ const NewsCarousel = () => {
 
   return (
     <View>
+      <View className="flex-row justify-between items-end px-3">
+        <Text className="text-white text-2xl font-bold">News</Text>
+        <Text className="text-white text-lg font-bold">View all</Text>
+      </View>
       <FlatList
         ref={flatListRef}
         data={newsData}
@@ -85,8 +89,8 @@ const NewsCarousel = () => {
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
           <View
-            className="flex justify-center items-center rounded-xl overflow-hidden"
-            style={{ width: windowWidth, height: 250 }}
+            className="flex justify-center items-center px-3"
+            style={{ width: windowWidth, height: 200 }}
           >
             <NewsCard image={item.image} title={item.title} />
           </View>
