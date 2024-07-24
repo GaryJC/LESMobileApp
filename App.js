@@ -1,4 +1,6 @@
 // import { StatusBar } from "expo-status-bar";
+import "@walletconnect/react-native-compat";
+
 import "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -63,6 +65,56 @@ import NotificationDetailScreen from "./src/Screens/NotificationDetailScreen";
 import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
 import ButtonAddPopover from "./src/Components/Chat/ButtonPopover";
 import DeepUrlProcessor from "./src/Components/DeepUrl/DeepUrlProcessor";
+
+import {
+  createWeb3Modal,
+  defaultConfig,
+  W3mButton,
+  Web3Modal,
+} from "@web3modal/ethers-react-native";
+
+// 1. Get projectId from https://cloud.walletconnect.com
+const projectId = "8b953fd5bcfaaa9c8b2270267d326f68";
+
+// 2. Create config
+const metadata = {
+  name: "AppKit RN",
+  description: "AppKit RN Example",
+  url: "https://walletconnect.com",
+  icons: ["https://avatars.githubusercontent.com/u/37784886"],
+  redirect: {
+    native: "YOUR_APP_SCHEME://",
+  },
+};
+
+const config = defaultConfig({ metadata, extraConnectors: [] });
+
+// 3. Define your chains
+const mainnet = {
+  chainId: 1,
+  name: "Ethereum",
+  currency: "ETH",
+  explorerUrl: "https://etherscan.io",
+  rpcUrl: "https://cloudflare-eth.com",
+};
+
+const polygon = {
+  chainId: 137,
+  name: "Polygon",
+  currency: "MATIC",
+  explorerUrl: "https://polygonscan.com",
+  rpcUrl: "https://polygon-rpc.com",
+};
+
+const chains = [mainnet, polygon];
+
+// 4. Create modal
+createWeb3Modal({
+  projectId,
+  chains,
+  config,
+  enableAnalytics: true, // Optional - defaults to your Cloud configuration
+});
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -383,6 +435,7 @@ export default function App({ isHeadless }) {
   }
   return (
     <>
+      {/* <Web3Modal /> */}
       <App_ />
       <Toast config={toastConfig} />
     </>

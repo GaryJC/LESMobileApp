@@ -12,20 +12,23 @@
       "resizeMode": "contain",
       "backgroundColor": "#080F14"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "associatedDomains": [
-        "applinks:nexgami.com"
-      ],
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": [
+          "metamask",
+          "trust",
+          "safe",
+          "rainbow",
+          "uniswap"
+        ]
+      },
+      "associatedDomains": ["applinks:nexgami.com"],
       "supportsTablet": true,
       "bitcode": false,
       "googleServicesFile": "./GoogleService-Info.plist",
       "entitlements": {
-        "com.apple.developer.associated-domains": [
-          "applinks:nexgami.com"
-        ]
+        "com.apple.developer.associated-domains": ["applinks:nexgami.com"]
       }
     },
     "android": {
@@ -34,15 +37,13 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.nexgami.im.mobile",
-      "googleServicesFile": "./google-services.json",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "sdkVersion": "48.0.0",
-    "plugins": [
-      "@react-native-google-signin/google-signin"
-    ],
+    "plugins": ["@react-native-google-signin/google-signin"],
     "extra": {
       "eas": {
         "projectId": "5f44be01-64a4-4fe0-b442-d9f92dd68282"

@@ -31,10 +31,12 @@ import MyProfileButton from "./UserDrawer/MyProfileButton";
 import UserBottomSheetHeader from "./UserBottomSheetHeader";
 import SocialMedia from "./UserDrawer/SocialMediaButton";
 import AvatarBottomSheet from "./AvatarBottomSheet";
-import { getDrawerStatusFromState } from '@react-navigation/drawer';
+import { getDrawerStatusFromState } from "@react-navigation/drawer";
 import Constants from "expo-constants";
-import * as Application from 'expo-application';
+import * as Application from "expo-application";
 import notifee from "@notifee/react-native";
+// import { W3ConnectButton } from "../services/Web3Service/WalleService";
+import { Web3Modal } from "@web3modal/ethers-react-native";
 
 const userOptions = [
   { id: 1, title: "Account", link: "" },
@@ -96,8 +98,13 @@ export default function UserDrawer(props) {
     const updateUnreadCountHandler = () => {
       const count = DataCenter.notifications?.unreadCount() ?? 0;
       //邀请的数量
-      const invCount = (DataCenter.notifications?.unreadCount(IMNotificationType.FriendInvitation) ?? 0)
-        + (DataCenter.notifications?.unreadCount(IMNotificationType.GroupInvitation) ?? 0);
+      const invCount =
+        (DataCenter.notifications?.unreadCount(
+          IMNotificationType.FriendInvitation
+        ) ?? 0) +
+        (DataCenter.notifications?.unreadCount(
+          IMNotificationType.GroupInvitation
+        ) ?? 0);
       let unreadCount = 0;
       let unrespondCount = 0;
       if (count > 0) {
@@ -144,17 +151,18 @@ export default function UserDrawer(props) {
       retriveUserInfoHandler
     );
 
-    const unsubscribe = props.navigation?.addListener('state', e => {
-      const isDrawerOpen = getDrawerStatusFromState(props.navigation.getState()) === 'open';
+    const unsubscribe = props.navigation?.addListener("state", (e) => {
+      const isDrawerOpen =
+        getDrawerStatusFromState(props.navigation.getState()) === "open";
       if (!isDrawerOpen) {
         //drawer关闭时，如果设置有修改，将设置数据上传给服务器
-        console.log(DataCenter.userInfo.userSetting)
+        console.log(DataCenter.userInfo.userSetting);
         LesPlatformCenter.IMFunctions.setSetting({
           ...DataCenter.userInfo.userSetting.notificationSetting,
-          ...DataCenter.userInfo.userSetting.privacySetting
+          ...DataCenter.userInfo.userSetting.privacySetting,
         });
       }
-    })
+    });
 
     return () => {
       unsubscribe();
@@ -191,9 +199,7 @@ export default function UserDrawer(props) {
     notifee.setBadgeCount(0);
     navigation.reset({
       index: 0,
-      routes: [
-        { name: "Login" }
-      ]
+      routes: [{ name: "Login" }],
     });
     //navigation.navigate("Login");
   };
@@ -282,6 +288,8 @@ export default function UserDrawer(props) {
             )} */}
             <Account />
             <MyProfileButton />
+            {/* <W3ConnectButton /> */}
+            {/* <Web3Modal /> */}
             <NotiSettings />
             <SocialMedia />
           </View>
@@ -294,8 +302,9 @@ export default function UserDrawer(props) {
           </TouchableHighlight>
           <View className="h-[30px]"></View>
 
-          <Text className="text-white text-base mb-8">v{Constants.expoConfig.runtimeVersion}({buildNo})</Text>
-
+          <Text className="text-white text-base mb-8">
+            v{Constants.expoConfig.runtimeVersion}({buildNo})
+          </Text>
         </View>
         {/* The bottom sheet that is used to switch the user status */}
       </ScrollView>

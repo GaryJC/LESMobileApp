@@ -53,6 +53,15 @@ const API = {
 
     getGameNews: (id) => `${Address.PlatformServer}/news/game?id=${id}`,
   },
+
+  Web3Api: {
+    getMyVestings: (address) =>
+      `${Address.PlatformServer}/web3/token_vesting/${address}`,
+    getStakingList: () => `${Address.PlatformServer}/web3/token_staking_list`,
+    getTokenList: () => `${Address.PlatformServer}/web3/token_list`,
+    getUserStakingInfo: (address, chainId, contract) =>
+      `${Address.PlatformServer}/web3/staking?address=${address}&chainId=${chainId}&contract=${contract}`,
+  },
 };
 
 export default API;
