@@ -14,7 +14,7 @@ import { GameDetailsData, GamesData } from "../Data/dummyData";
 import { Ionicons } from "@expo/vector-icons";
 import { AppInfoMap } from "../modules/AppInfo";
 import Constants from "../modules/Constants";
-import { renderPlatformIcon } from "../utils/renderIcon";
+import { renderPlatformIcon } from "../utils/render";
 
 const PrimaryButton = ({ title, icon, onPress }) => (
   <TouchableHighlight

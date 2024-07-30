@@ -1,6 +1,4 @@
 // import { StatusBar } from "expo-status-bar";
-import "@walletconnect/react-native-compat";
-
 import "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -65,16 +63,19 @@ import NotificationDetailScreen from "./src/Screens/NotificationDetailScreen";
 import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
 import ButtonAddPopover from "./src/Components/Chat/ButtonPopover";
 import DeepUrlProcessor from "./src/Components/DeepUrl/DeepUrlProcessor";
+import NewsListScreen from "./src/Screens/News/NewsListScreen";
+
+import "@walletconnect/react-native-compat";
 
 import {
   createWeb3Modal,
   defaultConfig,
-  W3mButton,
   Web3Modal,
 } from "@web3modal/ethers-react-native";
+import LaunchpadDetailScreen from "./src/Screens/Launchpad/LaunchpadDetailScreen";
 
 // 1. Get projectId from https://cloud.walletconnect.com
-const projectId = "8b953fd5bcfaaa9c8b2270267d326f68";
+const projectId = "49863707aded31242302c75f3498f5ca";
 
 // 2. Create config
 const metadata = {
@@ -87,33 +88,46 @@ const metadata = {
   },
 };
 
-const config = defaultConfig({ metadata, extraConnectors: [] });
+const config = defaultConfig({ metadata });
 
 // 3. Define your chains
-const mainnet = {
-  chainId: 1,
-  name: "Ethereum",
-  currency: "ETH",
-  explorerUrl: "https://etherscan.io",
-  rpcUrl: "https://cloudflare-eth.com",
+const polygon_amoy = {
+  chainId: 80002,
+  name: "Polygon Amoy Testnet",
+  currency: "Matic",
+  explorerUrl: "https://amoy.polygonscan.com/",
+  // rpcUrl: 'https://rpc-amoy.polygon.technology'
+  rpcUrl:
+    "https://polygon-amoy.g.alchemy.com/v2/JK6hdshYZv4VIqA0eZ4WujN_5XorUMxY",
 };
-
-const polygon = {
+const polygon_mainnet = {
   chainId: 137,
   name: "Polygon",
-  currency: "MATIC",
-  explorerUrl: "https://polygonscan.com",
-  rpcUrl: "https://polygon-rpc.com",
+  currency: "Matic",
+  explorerUrl: "https://polygonscan.com/",
+  rpcUrl:
+    "https://polygon-mainnet.g.alchemy.com/v2/tmugFNVs_zwqkoLEI-YpM3o_3oSJg3o3",
 };
 
-const chains = [mainnet, polygon];
+// const chains =
+//   process.env.NODE_ENV == "production"
+//     ? [polygon_mainnet]
+//     : [polygon_amoy, polygon_mainnet];
+export const chains = [polygon_amoy, polygon_mainnet];
 
 // 4. Create modal
-createWeb3Modal({
+export const w3Modal = createWeb3Modal({
   projectId,
   chains,
   config,
   enableAnalytics: true, // Optional - defaults to your Cloud configuration
+  featuredWalletIds: [
+    "c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96",
+    "ad2eff108bf828a39e5cb41331d95861c9cc516aede9cb6a95d75d98c206e204",
+    "971e689d0a5be527bac79629b4ee9b925e82208e5168b733496a09c0faed0709",
+    "38f5d18bd8522c244bdd70cb4a68e0e718865155811c043f052fb9f1c51de662",
+    "15c8b91ade1a4e58f3ce4e7a0dd7f42b47db0c8df7e0d84f63eb39bcb96c4e0f",
+  ],
 });
 
 const BottomTab = createBottomTabNavigator();
@@ -435,7 +449,7 @@ export default function App({ isHeadless }) {
   }
   return (
     <>
-      {/* <Web3Modal /> */}
+      <Web3Modal />
       <App_ />
       <Toast config={toastConfig} />
     </>
@@ -604,6 +618,7 @@ function App_() {
                 headerTitleStyle: {
                   color: "white",
                 },
+                headerBackTitleVisible: "false",
                 // headerTintColor: "white",
                 contentStyle: { backgroundColor: "#080F14" },
               }}
@@ -732,6 +747,20 @@ function App_() {
                 component={NotificationDetailScreen}
                 options={{
                   headerTitle: "Notification",
+                }}
+              />
+              <Stack.Screen
+                name="NewsList"
+                component={NewsListScreen}
+                options={{
+                  headerTitle: "News",
+                }}
+              />
+              <Stack.Screen
+                name="LaunchpadDetails"
+                component={LaunchpadDetailScreen}
+                options={{
+                  headerTitle: "??",
                 }}
               />
             </Stack.Navigator>

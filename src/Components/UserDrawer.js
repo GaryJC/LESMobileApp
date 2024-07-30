@@ -35,8 +35,8 @@ import { getDrawerStatusFromState } from "@react-navigation/drawer";
 import Constants from "expo-constants";
 import * as Application from "expo-application";
 import notifee from "@notifee/react-native";
+// import { W3mButton, W3mNetworkButton } from "@web3modal/ethers-react-native";
 // import { W3ConnectButton } from "../services/Web3Service/WalleService";
-import { Web3Modal } from "@web3modal/ethers-react-native";
 
 const userOptions = [
   { id: 1, title: "Account", link: "" },
@@ -288,8 +288,9 @@ export default function UserDrawer(props) {
             )} */}
             <Account />
             <MyProfileButton />
+
             {/* <W3ConnectButton /> */}
-            {/* <Web3Modal /> */}
+
             <NotiSettings />
             <SocialMedia />
           </View>

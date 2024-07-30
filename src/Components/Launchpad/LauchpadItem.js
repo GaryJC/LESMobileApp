@@ -16,7 +16,7 @@ import {
   renderCommunityIcon,
   renderPrice,
   renderTotoalRaised,
-} from "../../utils/renderIcon";
+} from "../../utils/render";
 import { Linking } from "react-native";
 
 const { fetchImage } = API;
@@ -63,7 +63,7 @@ const LaunchpadItem = ({ item }) => {
       <TouchableOpacity
         onPress={() =>
           idoPlatform.name === "NexGami"
-            ? navigation.navigate("LaunchpadDetail", { id: item.id })
+            ? navigation.navigate("LaunchpadDetails", { id: item.id })
             : null
         }
         className="relative"

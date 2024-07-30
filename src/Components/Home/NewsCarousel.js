@@ -13,6 +13,7 @@ import { ActivitiesData } from "../../Data/dummyData";
 import Constants from "../../modules/Constants";
 import API from "../../modules/Api";
 import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
 
 const { width: windowWidth } = Dimensions.get("window");
 
@@ -41,6 +42,8 @@ const NewsCarousel = () => {
   const scrollX = useRef(new Animated.Value(0)).current;
   const flatListRef = useRef(null);
   const index = useRef(0);
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -76,10 +79,13 @@ const NewsCarousel = () => {
 
   return (
     <View>
-      <View className="flex-row justify-between items-end px-3">
+      <Pressable
+        className="flex-row justify-between items-end px-3"
+        onPress={() => navigation.navigate("NewsList")}
+      >
         <Text className="text-white text-2xl font-bold">News</Text>
         <Text className="text-white text-lg font-bold">View all</Text>
-      </View>
+      </Pressable>
       <FlatList
         ref={flatListRef}
         data={newsData}
