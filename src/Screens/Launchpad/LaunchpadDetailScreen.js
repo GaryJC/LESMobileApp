@@ -13,9 +13,7 @@ import {
 import { getSpecificLaunchpadData } from "../../Components/Launchpad/handler";
 import CountdownBoard from "../../Components/Launchpad/CountdownBoard";
 import SwapBoard from "../../Components/Launchpad/SwapBoard";
-// import SwapBoard from "./SwapBoard";
-// import SwapBoard from "../../Components/Launchpad/SwapBoard";
-// import TokenSaleBoard from "./TokenSaleBoard";
+import TokenSaleBoard from "../../Components/Launchpad/TokenSaleBoard";
 
 const { fetchImage } = API;
 
@@ -138,9 +136,9 @@ export default function LaunchpadDetailScreen({ route }) {
       <ScrollView>
         <View className="">
           {data && <MainBoard data={data} />}
-          {data && <CountdownBoard data={data} />}
-          {/* {data && <SwapBoard data={data} />} */}
-          {/* {data && <SwapBoard data={data} />} */}
+          {/* {data && <CountdownBoard data={data} />} */}
+          {data && <SwapBoard data={data} />}
+          {data && <TokenSaleBoard data={data} />}
           {/* {data && <TokenSaleBoard data={data} />}
           {data && <ContentBoard desc={data.idoInfo.desc} />}  */}
         </View>

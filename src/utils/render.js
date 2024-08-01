@@ -6,10 +6,13 @@ import Matic from "../../assets/img/chain/matic.svg";
 import Eth from "../../assets/img/chain/eth.svg";
 import Avax from "../../assets/img/chain/avax.svg";
 import Bnb from "../../assets/img/chain/bnb.svg";
-// import USD from "../../assets/img/coin/usd.svg";
-import USDT from "../../assets/img/coin/usdt.svg";
-import USDC from "../../assets/img/coin/usdc.svg";
+import USD from "../../assets/img/usd.svg";
+import USDT from "../../assets/img/usdt.svg";
+import USDC from "../../assets/img/usdc.svg";
+
 import { Image } from "react-native";
+
+const Launchpad = Constants.Launchpad;
 
 export const renderPlatformIcon = (platform, size) => {
   switch (platform) {
@@ -144,32 +147,102 @@ export const renderChainName = (chain) => {
   }
 };
 
-export const renderCoinIcon = (coin, w, h) => {
+// export const renderCoinIcon = (coin, w = 20, h = 20) => {
+//   switch (coin) {
+//     case Launchpad.SwappableCoins.USDC:
+//       return <USDC width={w} height={h} />;
+//     case Launchpad.SwappableCoins.USDT:
+//       return <USDT width={w} height={h} />;
+//     case Launchpad.SwappableCoins.NEXG:
+//       return (
+//         <Image
+//           source={require("../../assets/img/nexgami.png")}
+//           width={w}
+//           height={h}
+//         />
+//       );
+//     case Launchpad.SwappableCoins.NEXU:
+//       return (
+//         <Image
+//           source={require("../../assets/img/coin/nexu.png")}
+//           width={w}
+//           height={h}
+//         />
+//       );
+//     default:
+//       return "";
+//   }
+// };
+
+//error: src/utils/render.js: src/utils/render.js:Invalid call at line 193: require(`../../assets${coin}`)
+export const renderCoinIcon = (coin, w = 20, h = 20) => {
   switch (coin) {
-    case Launchpad.SwappableCoins.USDC:
+    case "/img/usd.svg":
+    case "USD":
+      return <USD width={w} height={h} />;
+    case "/img/usdc.svg":
+    case "USDC":
       return <USDC width={w} height={h} />;
-    case Launchpad.SwappableCoins.USDT:
+    case "/img/usdt.svg":
+    case "USDT":
       return <USDT width={w} height={h} />;
-    case Launchpad.SwappableCoins.NEXG:
+    case "NEXG":
+    case "/img/nexgami.png":
       return (
         <Image
           source={require("../../assets/img/nexgami.png")}
-          width={w}
-          height={h}
+          style={{
+            width: w,
+            height: h,
+          }}
         />
       );
-    case Launchpad.SwappableCoins.NEXU:
+    case "/img/nexu.png":
+    case "NEXU":
       return (
         <Image
-          source={require("../../assets/img/coin/nexu.png")}
-          width={w}
-          height={h}
+          source={require("../../assets/img/nexu.png")}
+          style={{
+            width: w,
+            height: h,
+          }}
         />
       );
     default:
-      return "";
+      return (
+        // <Image
+        //   source={require("../../assets/img/unknown.png")}
+        //   style={{
+        //     width: w,
+        //     height: h,
+        //   }}
+        // />
+        <></>
+      );
   }
 };
+
+// export const renderCoinIcon = (source, width = 20, height = 20) => {
+//   // Determine the file extension
+//   const fileExtension = source.split(".").pop().toLowerCase();
+
+//   // Render SVG if the file extension is 'svg'
+//   if (fileExtension === "svg") {
+//     return (
+//       // <SvgUri width={width} height={height} source={`../../assets${source}`} />
+//       <></>
+//     );
+//   }
+
+//   // Otherwise, render the image as a regular <Image /> component
+//   return (
+//     // <Image
+//     //   source={require(`../../assets${source}`)}
+//     //   style={{ width, height }}
+//     // />
+//     <></>
+//   );
+// };
 
 // export const renderChainIcon = (chain) => {
 //   switch (chain) {

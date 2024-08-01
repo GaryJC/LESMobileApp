@@ -1,4 +1,11 @@
-import React, { useEffect, useState, useMemo, memo, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useMemo,
+  memo,
+  useCallback,
+  useRef,
+} from "react";
 import {
   View,
   Text,
@@ -10,8 +17,9 @@ import {
 } from "react-native";
 // import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"; // Note: You'll need a suitable replacement for PayPal in React Native
 // import ArrowDownwardIcon from "react-native-vector-icons/MaterialIcons";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import WebView from "react-native-webview";
-// import Contracts from "../../services/Web3Service/Contracts";
+import Contracts from "../../services/Web3Service/Contracts";
 import {
   W3Button,
   getContract,
@@ -27,59 +35,61 @@ import API from "../../modules/Api";
 import axios from "axios";
 // // import { useAccount } from "@/src/app/Services/LoginService";
 // import USDCoin from "../../../assets/img/coin/usd.svg";
+import { renderCoinIcon } from "../../utils/render";
+import { SelectBottomSheet } from "../SelectBottomSheet";
+import { useBottomSheet } from "@gorhom/bottom-sheet";
+import { set } from "lodash";
 
 const PaypalApi = API.PaypalApi;
 
-// const USD = {
-//   name: "USD",
-//   type: "Currency",
-//   icon: "/img/usd.svg",
-// };
+const USD = {
+  name: "USD",
+  type: "Currency",
+  //   icon: require("@/assets/usd.png"), // Use a local image or import image from assets
+  icon: "/img/usd.svg",
+};
 
-// const CoinsFrom = {
-//   USDT: Contracts.get("USDT"),
-//   USD,
-// };
+const CoinsFrom = {
+  USDT: Contracts.get("USDT"),
+  USD,
+};
 
 const SwapBoard = ({ data }) => {
-  //   const [fromToken, setFromToken] = useState("USDT");
+  const [fromToken, setFromToken] = useState("USDT");
+  const [swapTip, setSwapTip] = useState("");
+  const [toToken, setToToken] = useState("NEXU");
+  const [loading, setLoading] = useState(false);
+  const accountInfo = useWeb3ModalAccount();
+  const [tokenBalance, setTokenBalance] = useState({});
+  const [payAmount, setPayAmount] = useState("");
+  const [buyAmount, setBuyAmount] = useState("");
+  const [swapRatio, setSwapRatio] = useState(1); // Default ratio is 1:1
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState("error");
+  const [approvalUrl, setApprovalUrl] = useState(null);
+  //   const [userInfo, isLoggedIn] = useAccount();
 
-  //   const [swapTip, setSwapTip] = useState("");
+  const [bottomSheetContent, setBottomSheetContent] = useState(null);
 
-  //   const [toToken, setToToken] = useState("NEXU");
+  const bottomSheetRef = useRef(null);
 
-  //   const [loading, setLoading] = useState(false);
+  const openBottomSheet = () => {
+    bottomSheetRef.current?.present();
+  };
 
-  //   //   const accountInfo = useWeb3ModalAccount();
+  const closeBottomSheet = () => {
+    bottomSheetRef.current?.dismiss();
+  };
 
-  //   const [tokenBalance, setTokenBalance] = useState({});
-
-  //   const [payAmount, setPayAmount] = useState("");
-
-  //   const [buyAmount, setBuyAmount] = useState("");
-
-  //   const [swapRatio, setSwapRatio] = useState(1); // Default ratio is 1:1
-
-  //   const [alertMessage, setAlertMessage] = useState("");
-
-  //   const [alertSeverity, setAlertSeverity] = useState("error");
-
-  //   //   const [userInfo, isLoggedIn] = useAccount();
-
-  //   const { phase } = data.idoInfo;
-
-  /*
-
-  // 获取活动阶段的索引，目前根据标题为"Buy NUEX"来判断
-  const activityPhaseIndex = useMemo(() => {
-    return data.idoInfo.phase.findIndex((phase) => {
-      return phase.title === "Buy NEXU";
-    });
-  }, [data.idoInfo.phase]);
+  const { phase } = data.idoInfo;
+  const activityPhaseIndex = useMemo(
+    () => data.idoInfo.phase.findIndex((phase) => phase.title === "Buy NEXU"),
+    [data.idoInfo.phase]
+  );
 
   useEffect(() => {
-    // refreshSwapTip();
-    // updateBalance();
+    refreshSwapTip();
+    updateBalance();
   }, [
     fromToken,
     toToken,
@@ -89,7 +99,6 @@ const SwapBoard = ({ data }) => {
   ]);
 
   const createOrder = async () => {
-    console.log("createorder===", buyAmount);
     const walletInfo = currentWalletInfo();
     const resp = await axios.get(
       PaypalApi.createOrder(
@@ -99,11 +108,10 @@ const SwapBoard = ({ data }) => {
         buyAmount
       )
     );
-    return resp.data.order_id;
+    setApprovalUrl(resp.data.approval_url);
   };
 
   const onApprove = async (data) => {
-    console.log("order approved:", data, data.orderID);
     const resp = await axios.get(PaypalApi.confirmOrder(data.orderID));
     const txHash = resp.data;
     if (txHash != "") {
@@ -119,59 +127,40 @@ const SwapBoard = ({ data }) => {
   const updateBalance = async () => {
     const ft = Contracts.get(fromToken);
     const tt = Contracts.get(toToken);
-
-    console.log("---------", ft, tt);
-
     const walletInfo = currentWalletInfo();
     let fb = 0;
     let tb = 0;
     if (walletInfo.isConnected) {
-      if (ft == null) {
-        fb = 0;
-      } else {
-        fb = await getBalance(ft, walletInfo.address);
-      }
+      fb = ft ? await getBalance(ft, walletInfo.address) : 0;
       tb = await getBalance(tt, walletInfo.address);
     }
-    const b = { ...tokenBalance };
-    b[fromToken] = fb;
-    b[toToken] = tb;
-    setTokenBalance(b);
+    setTokenBalance({ ...tokenBalance, [fromToken]: fb, [toToken]: tb });
   };
 
   const refreshSwapTip = () => {
     const tf = CoinsFrom[fromToken];
     const tt = Contracts.get(toToken);
-    const tip = (
-      <div className="flex flex-row">
+    setSwapTip(
+      <View className="flex-row">
         <W3TokenLabel amount={1} token={tf} />
-        =
+        <Text> = </Text>
         <W3TokenLabel amount={swapRatio} token={tt} />
-      </div>
+      </View>
     );
-    setSwapTip(tip);
   };
 
-  const handleFromTokenChange = (event) => {
-    setFromToken(event.target.value);
-  };
+  const handleFromTokenChange = (token) => setFromToken(token);
 
-  const handleToTokenChange = (event) => {
-    setToToken(event.target.value);
-  };
+  const handleToTokenChange = (token) => setToToken(token);
 
-  const handlePayAmountChange = (event) => {
-    // bug: does not allow to delete the last number
-    // const value = parseInt(event.target.value, 10);
-    const value = event.target.value;
+  const handlePayAmountChange = (value) => {
     if (!isNaN(value) && value >= 0) {
       setPayAmount(value);
       setBuyAmount(value * swapRatio); // Update buy amount based on swap ratio
     }
   };
 
-  const handleBuyAmountChange = (event) => {
-    const value = event.target.value;
+  const handleBuyAmountChange = (value) => {
     if (!isNaN(value) && value >= 0) {
       setBuyAmount(value);
       setPayAmount(value / swapRatio); // Update pay amount based on swap ratio
@@ -184,7 +173,6 @@ const SwapBoard = ({ data }) => {
       setAlertSeverity("error");
       return false;
     }
-
     if (
       Number.isInteger(parseFloat(payAmount)) === false ||
       Number.isInteger(parseFloat(buyAmount)) === false
@@ -193,7 +181,6 @@ const SwapBoard = ({ data }) => {
       setAlertSeverity("error");
       return false;
     }
-
     if (payAmount <= 0 || buyAmount <= 0) {
       setAlertMessage("Amounts must be greater than 0.");
       setAlertSeverity("error");
@@ -204,11 +191,6 @@ const SwapBoard = ({ data }) => {
       setAlertSeverity("error");
       return false;
     }
-    // if (buyAmount > tokenBalance[toToken]) {
-    //   setAlertMessage("Insufficient " + toToken + " balance");
-    //   setAlertSeverity("error");
-    //   return false;
-    // }
     setAlertMessage("");
     return true;
   };
@@ -249,22 +231,48 @@ const SwapBoard = ({ data }) => {
     }
   };
 
-  const getswapMenu = () => {
-    return Object.entries(CoinsFrom).map(([k, v]) => (
-      <MenuItem key={v.name} value={v.name}>
-        <Image
-          src={v.icon}
-          width={25}
-          height={25}
-          className="mr-2 object-contain"
-          alt={v.name}
-        />
-        {v.name}
-      </MenuItem>
-    ));
+  const SwapMenu = () => (
+    <View className="bg-gray w-full">
+      {Object.entries(CoinsFrom).map(([k, v]) => (
+        <TouchableOpacity
+          key={v.name}
+          onPress={() => {
+            handleFromTokenChange(v.name);
+            closeBottomSheet();
+          }}
+          className="flex-row gap-1 justify-center items-center my-2"
+        >
+          {renderCoinIcon(v.icon)}
+          <Text>{v.name}</Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+
+  const openPayBottomSheet = () => {
+    setBottomSheetContent(<SwapMenu />);
+    openBottomSheet();
   };
 
-  //   const toTokenContract = Contracts.get("NEXU");
+  const openBuyBottomSheet = (token) => {
+    const BuyTokenList = () => (
+      <TouchableOpacity
+        className="flex-row gap-1"
+        onPress={() => {
+          handleToTokenChange(toTokenContract.name);
+          closeBottomSheet();
+        }}
+      >
+        {renderCoinIcon(toTokenContract.icon)}
+        <Text>{toTokenContract.name}</Text>
+      </TouchableOpacity>
+    );
+
+    setBottomSheetContent(<BuyTokenList />);
+    openBottomSheet();
+  };
+
+  const toTokenContract = Contracts.get("NEXU");
 
   const {
     isActionDisabled = false,
@@ -272,7 +280,208 @@ const SwapBoard = ({ data }) => {
     color,
     status,
   } = usePhaseTiming(phase, activityPhaseIndex);
-    */
-  return <></>;
+
+  return (
+    <View style={{ padding: 10, backgroundColor: "white", borderRadius: 8 }}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 10,
+        }}
+      >
+        <Text
+          style={{
+            paddingHorizontal: 8,
+            paddingVertical: 4,
+            borderRadius: 8,
+            backgroundColor: color,
+            color: "white",
+            fontWeight: "bold",
+          }}
+        >
+          {status}
+        </Text>
+        <Text style={{ fontSize: 18, fontWeight: "bold", color: "#4893F0" }}>
+          Buy NEXU
+        </Text>
+      </View>
+
+      <Text
+        style={{
+          textAlign: "center",
+          backgroundColor: "#A7AFCF",
+          color: "white",
+          borderRadius: 8,
+          padding: 4,
+        }}
+      >
+        {typoTime}
+      </Text>
+      <View
+        style={{
+          backgroundColor: "#f0f0f0",
+          padding: 10,
+          borderRadius: 8,
+          marginTop: 10,
+        }}
+      >
+        <Text style={{ color: "gray" }}>Pay</Text>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <TextInput
+            style={{
+              flex: 1,
+              borderBottomWidth: 1,
+              borderColor: "gray",
+              paddingVertical: 4,
+            }}
+            keyboardType="numeric"
+            value={payAmount.toString()}
+            onChangeText={handlePayAmountChange}
+          />
+          {/* <View>{getswapMenu()}</View> */}
+          <TouchableOpacity
+            onPress={openPayBottomSheet}
+            className="flex-row gap-1"
+          >
+            {renderCoinIcon(fromToken)}
+            <Text>{fromToken}</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={{ textAlign: "right", color: "gray" }}>
+          Balance: {tokenBalance[fromToken]}
+        </Text>
+      </View>
+      <View
+        style={{
+          alignItems: "center",
+          justifyContent: "center",
+          maxHeight: 10,
+        }}
+      >
+        <View style={{ padding: 4, backgroundColor: "white", borderRadius: 8 }}>
+          <View
+            style={{ padding: 4, backgroundColor: "#f0f0f0", borderRadius: 8 }}
+          >
+            <AntDesign
+              name="arrowdown"
+              size={18}
+              color="black"
+              style={{ minHeight: 20, zIndex: 2 }}
+            />
+          </View>
+        </View>
+      </View>
+      <View
+        style={{
+          backgroundColor: "#f0f0f0",
+          padding: 10,
+          borderRadius: 8,
+          zIndex: -1,
+        }}
+      >
+        <Text style={{ color: "gray" }}>Buy</Text>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <TextInput
+            style={{
+              flex: 1,
+              borderBottomWidth: 1,
+              borderColor: "gray",
+              paddingVertical: 4,
+            }}
+            keyboardType="numeric"
+            value={buyAmount.toString()}
+            onChangeText={handleBuyAmountChange}
+          />
+          <TouchableOpacity
+            // onPress={() => handleToTokenChange(toTokenContract.name)}
+            onPress={() => openBuyBottomSheet(toTokenContract)}
+            className="flex-row gap-1"
+          >
+            {renderCoinIcon(toTokenContract.icon)}
+            <Text>{toTokenContract.name}</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={{ textAlign: "right", color: "gray" }}>
+          Balance: {tokenBalance[toToken]}
+        </Text>
+      </View>
+      <View style={{ marginTop: 10 }}>{swapTip}</View>
+      {alertMessage ? (
+        <Text
+          style={{
+            marginTop: 10,
+            color: alertSeverity === "error" ? "red" : "green",
+          }}
+        >
+          {alertMessage}
+        </Text>
+      ) : null}
+      {fromToken === "USD" && !isActionDisabled ? (
+        approvalUrl ? (
+          <WebView
+            source={{ uri: approvalUrl }}
+            style={{ flex: 1, height: 400 }}
+            onNavigationStateChange={async (event) => {
+              if (event.url.includes("success")) {
+                const orderId = event.url.split("orderID=")[1];
+                await onApprove({ orderID: orderId });
+              }
+            }}
+          />
+        ) : (
+          <TouchableOpacity
+            onPress={createOrder}
+            style={{ marginTop: 10 }}
+            className="bg-blue-500 p-2 rounded"
+          >
+            <Text className="text-white text-center font-bold">
+              {loading ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                "Create PayPal Order"
+              )}
+            </Text>
+          </TouchableOpacity>
+        )
+      ) : (
+        <W3Button
+          text={"buy"}
+          style={"w-full bg-blue-500 p-2 rounded mt-2"}
+          loading={loading}
+          onClick={handleBuyClick}
+          disabled={isActionDisabled}
+        />
+      )}
+      <SelectBottomSheet
+        bottomSheetRef={bottomSheetRef}
+        bottomSheetContent={bottomSheetContent}
+      />
+    </View>
+  );
 };
+
+// SwapFeature.displayName = "SwapFeature";
+
 export default SwapBoard;
+
+{
+  /* <TouchableOpacity
+          onPress={handleBuyClick}
+          disabled={isActionDisabled}
+          style={{ marginTop: 10 }}
+        >
+          <Text
+            style={{
+              backgroundColor: "#007bff",
+              color: "white",
+              padding: 10,
+              borderRadius: 8,
+              textAlign: "center",
+            }}
+          >
+            {loading ? <ActivityIndicator color="white" /> : "Buy"}
+          </Text>
+        </TouchableOpacity> */
+}

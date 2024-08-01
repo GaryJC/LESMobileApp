@@ -113,12 +113,12 @@ const polygon_mainnet = {
 //   process.env.NODE_ENV == "production"
 //     ? [polygon_mainnet]
 //     : [polygon_amoy, polygon_mainnet];
-export const chains = [polygon_amoy, polygon_mainnet];
+export const Chains = [polygon_amoy, polygon_mainnet];
 
 // 4. Create modal
 export const w3Modal = createWeb3Modal({
   projectId,
-  chains,
+  Chains,
   config,
   enableAnalytics: true, // Optional - defaults to your Cloud configuration
   featuredWalletIds: [
