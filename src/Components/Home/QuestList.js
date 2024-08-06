@@ -10,10 +10,13 @@ import {
 import QuestService from "../../services/QuestService";
 import { FlatList } from "react-native-gesture-handler";
 import { formatTxtTime, QuestTitle } from "../../Screens/QuestScreen";
+import { useNavigation } from "@react-navigation/native";
 
 const windowWidth = Dimensions.get("window").width;
 
 const QuestListCard = ({ quest, community }) => {
+  const navigation = useNavigation();
+
   const logo =
     community.logoUrl == "" ? require("../../../assets/icon.png") : logo;
 
@@ -25,23 +28,26 @@ const QuestListCard = ({ quest, community }) => {
   const unit = "Points";
 
   return (
-    <View className="bg-[#292A2F] rounded-xl overflow-hidden mr-5">
-      <TouchableOpacity
-      // onPress={() =>
-      //   idoPlatform.name === "NexGami"
-      //     ? navigation.navigate("LaunchpadDetail", { id: item.id })
-      //     : null
-      // }
-      >
-        <Image
-          source={require("../../../assets/img/gameDetailsBg.jpg")}
-          style={{
-            width: windowWidth * 0.65,
-            height: "auto",
-            aspectRatio: 16 / 10,
-          }}
-        />
-      </TouchableOpacity>
+    <TouchableOpacity
+      className="bg-[#292A2F] rounded-xl overflow-hidden mr-5"
+      onPress={() => navigation.navigate("Quests")}
+    >
+      {/* <TouchableOpacity
+      onPress={() =>
+        idoPlatform.name === "NexGami"
+          ? navigation.navigate("LaunchpadDetail", { id: item.id })
+          : null
+      }
+      > */}
+      <Image
+        source={require("../../../assets/img/gameDetailsBg.jpg")}
+        style={{
+          width: windowWidth * 0.65,
+          height: "auto",
+          aspectRatio: 16 / 10,
+        }}
+      />
+      {/* </TouchableOpacity> */}
       <View className="p-2 text-white">
         <View className="flex-row items-center">
           <Text className="text-2xl font-bold text-white">
@@ -64,7 +70,7 @@ const QuestListCard = ({ quest, community }) => {
           <Text>{`${quest.getRewardPoints()} ${unit}`}</Text>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

@@ -14,6 +14,7 @@ import { getSpecificLaunchpadData } from "../../Components/Launchpad/handler";
 import CountdownBoard from "../../Components/Launchpad/CountdownBoard";
 import SwapBoard from "../../Components/Launchpad/SwapBoard";
 import TokenSaleBoard from "../../Components/Launchpad/TokenSaleBoard";
+import Markdown from "react-native-markdown-display";
 
 const { fetchImage } = API;
 
@@ -102,19 +103,14 @@ const MainBoard = memo(({ data }) => {
 
 MainBoard.displayName = "MainBoard";
 
-// const ContentBoard = memo(({ desc }) => {
-//   const markdownText = formatMarkdown(desc);
-//   return (
-//     <View className="bg-white rounded-lg shadow-md p-4">
-//       <View className="p-5">
-//         <Text
-//           className="markdown"
-//           dangerouslySetInnerHTML={{ __html: markdownText }}
-//         />
-//       </View>
-//     </View>
-//   );
-// });
+const ContentBoard = memo(({ desc }) => {
+  //   const markdownText = formatMarkdown(desc);
+  return (
+    <View className="bg-white rounded-lg shadow-md p-4">
+      <Markdown>{desc}</Markdown>
+    </View>
+  );
+});
 
 // ContentBoard.displayName = "ContentBoard";
 
@@ -134,13 +130,12 @@ export default function LaunchpadDetailScreen({ route }) {
   return (
     <SafeAreaView className="">
       <ScrollView>
-        <View className="">
+        <View style={{ gap: 15 }}>
           {data && <MainBoard data={data} />}
           {/* {data && <CountdownBoard data={data} />} */}
           {data && <SwapBoard data={data} />}
           {data && <TokenSaleBoard data={data} />}
-          {/* {data && <TokenSaleBoard data={data} />}
-          {data && <ContentBoard desc={data.idoInfo.desc} />}  */}
+          {data && <ContentBoard desc={data.idoInfo.desc} />}
         </View>
       </ScrollView>
     </SafeAreaView>

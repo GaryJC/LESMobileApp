@@ -1,43 +1,41 @@
 import React, { useState, useRef, useEffect } from "react";
 import {
-  SafeAreaView,
-  FlatList,
   View,
-  ImageBackground,
   Text,
+  FlatList,
+  ImageBackground,
   Animated,
   Pressable,
   Dimensions,
+  TouchableOpacity,
 } from "react-native";
-import { ActivitiesData } from "../../Data/dummyData";
+import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
 import Constants from "../../modules/Constants";
 import API from "../../modules/Api";
-import axios from "axios";
-import { useNavigation } from "@react-navigation/native";
 
 const { width: windowWidth } = Dimensions.get("window");
-
 const NewsGenre = Constants.News.Genre.News;
 
+// NewsCard component to render each news item
 const NewsCard = ({ title, image }) => (
-  <Pressable className="w-full rounded-xl overflow-hidden">
+  <View className="w-full rounded-xl overflow-hidden">
     <ImageBackground
       source={{ uri: API.fetchImage(image) }}
-      resizeMode="contain"
+      resizeMode="cover" // Changed to 'cover' for better image fit
       className="w-full h-full relative"
     >
-      <View className="w-[100%] h-[30%] bg-[#182634]/[0.8] absolute bottom-[0] justify-evenly">
+      <View className="w-full h-[30%] bg-[#182634]/[0.8] absolute bottom-0 justify-center">
         <Text className="text-white text-[16px] font-bold mx-[5vw]">
           {title}
         </Text>
-        {/* <Text className="text-white text-[12px] mx-[5vw]">{activityDate}</Text> */}
+        {/* You can add more content here if needed */}
       </View>
     </ImageBackground>
-  </Pressable>
+  </View>
 );
 
 const NewsCarousel = () => {
-  //   const [activitiesData, setActivitiesData] = useState([]);
   const [newsData, setNewsData] = useState([]);
   const scrollX = useRef(new Animated.Value(0)).current;
   const flatListRef = useRef(null);
@@ -46,15 +44,18 @@ const NewsCarousel = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
+    // Function to automatically scroll through the news items
     const interval = setInterval(() => {
-      index.current = (index.current + 1) % newsData.length;
-      flatListRef.current.scrollToOffset({
-        offset: index.current * windowWidth,
-        animated: true,
-      });
+      if (newsData.length > 0) {
+        index.current = (index.current + 1) % newsData.length;
+        flatListRef.current.scrollToOffset({
+          offset: index.current * windowWidth,
+          animated: true,
+        });
+      }
     }, 3000);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(interval); // Cleanup the interval on component unmount
   }, [newsData.length]);
 
   useEffect(() => {
@@ -62,8 +63,8 @@ const NewsCarousel = () => {
       try {
         const res = await axios.get(API.News.getNewsList(NewsGenre));
         const data = res.data;
-        if (data.code == 0) {
-          const newsData = data.data.slice(0, 5);
+        if (data.code === 0) {
+          const newsData = data.data.slice(0, 5); // Take the first 5 items
           setNewsData(newsData);
         } else {
           console.log("Error fetching news data:", res.msg);
@@ -79,13 +80,13 @@ const NewsCarousel = () => {
 
   return (
     <View>
-      <Pressable
-        className="flex-row justify-between items-end px-3"
-        onPress={() => navigation.navigate("NewsList")}
-      >
+      <View className="flex-row justify-between items-end px-3 mb-2">
         <Text className="text-white text-2xl font-bold">News</Text>
-        <Text className="text-white text-lg font-bold">View all</Text>
-      </Pressable>
+        <TouchableOpacity onPress={() => navigation.navigate("NewsList")}>
+          <Text className="text-white text-lg font-bold">View all</Text>
+        </TouchableOpacity>
+      </View>
+
       <FlatList
         ref={flatListRef}
         data={newsData}
@@ -94,18 +95,26 @@ const NewsCarousel = () => {
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
-          <View
+          <Pressable
             className="flex justify-center items-center px-3"
             style={{ width: windowWidth, height: 200 }}
+            onPress={() => {
+              if (!item.link) {
+                navigation.navigate("NewsDetail", { id: item.id });
+              } else {
+                Linking.openURL(item.link);
+              }
+            }}
           >
             <NewsCard image={item.image} title={item.title} />
-          </View>
+          </Pressable>
         )}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
           { useNativeDriver: false }
         )}
       />
+
       <View className="flex-row justify-center items-center mt-2">
         {newsData.map((_, i) => {
           const inputRange = [

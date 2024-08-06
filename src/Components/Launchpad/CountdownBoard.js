@@ -7,8 +7,8 @@ import "nativewind";
 export const TimeCountDownBlock = ({ time, type }) => {
   return (
     <View className="bg-black rounded-2xl w-1/5 p-1 items-center justify-center">
-      <Text className="text-2xl text-white text-center">{time}</Text>
-      <Text className="uppercase text-white font-normal">{type}</Text>
+      <Text className="text-2xl text-white text-center font-bold">{time}</Text>
+      <Text className="uppercase text-white font-normal font-bold">{type}</Text>
     </View>
   );
 };

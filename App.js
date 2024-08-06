@@ -21,6 +21,7 @@ import LoginScreen from "./src/Screens/LoginScreen";
 import InitialScreen from "./src/Screens/InitialScreen";
 import ServiceCenter from "./src/services/ServiceCenter";
 import LoginService from "./src/services/LoginService";
+import StakingScreen from "./src/Screens/Invest/StakingScreen";
 import NotificationScreen from "./src/Screens/NotificationScreen";
 import FriendRequestScreen from "./src/Screens/FriendRequestScreen";
 import FriendSearchScreen from "./src/Screens/FriendsSearchScreen";
@@ -49,7 +50,7 @@ import auth, { firebase } from "@react-native-firebase/auth";
 import { VerifyEmailScreen } from "./src/Screens/VerifyEmailScreen";
 import { useNavigation } from "@react-navigation/native";
 import ChatScreenV2 from "./src/Screens/ChatScreenV2";
-import WalletScreen from "./src/Screens/WalletScreen";
+import WalletScreen from "./src/Screens/Invest/WalletScreen";
 import HighlightButton from "./src/Components/HighlightButton";
 import QuestScreen from "./src/Screens/QuestScreen";
 import QuestUserPointPanel from "./src/Components/Quest/QuestUserPointPanel";
@@ -64,71 +65,9 @@ import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
 import ButtonAddPopover from "./src/Components/Chat/ButtonPopover";
 import DeepUrlProcessor from "./src/Components/DeepUrl/DeepUrlProcessor";
 import NewsListScreen from "./src/Screens/News/NewsListScreen";
-
-import "@walletconnect/react-native-compat";
-
-import {
-  createWeb3Modal,
-  defaultConfig,
-  Web3Modal,
-} from "@web3modal/ethers-react-native";
 import LaunchpadDetailScreen from "./src/Screens/Launchpad/LaunchpadDetailScreen";
-
-// 1. Get projectId from https://cloud.walletconnect.com
-const projectId = "49863707aded31242302c75f3498f5ca";
-
-// 2. Create config
-const metadata = {
-  name: "AppKit RN",
-  description: "AppKit RN Example",
-  url: "https://walletconnect.com",
-  icons: ["https://avatars.githubusercontent.com/u/37784886"],
-  redirect: {
-    native: "YOUR_APP_SCHEME://",
-  },
-};
-
-const config = defaultConfig({ metadata });
-
-// 3. Define your chains
-const polygon_amoy = {
-  chainId: 80002,
-  name: "Polygon Amoy Testnet",
-  currency: "Matic",
-  explorerUrl: "https://amoy.polygonscan.com/",
-  // rpcUrl: 'https://rpc-amoy.polygon.technology'
-  rpcUrl:
-    "https://polygon-amoy.g.alchemy.com/v2/JK6hdshYZv4VIqA0eZ4WujN_5XorUMxY",
-};
-const polygon_mainnet = {
-  chainId: 137,
-  name: "Polygon",
-  currency: "Matic",
-  explorerUrl: "https://polygonscan.com/",
-  rpcUrl:
-    "https://polygon-mainnet.g.alchemy.com/v2/tmugFNVs_zwqkoLEI-YpM3o_3oSJg3o3",
-};
-
-// const chains =
-//   process.env.NODE_ENV == "production"
-//     ? [polygon_mainnet]
-//     : [polygon_amoy, polygon_mainnet];
-export const Chains = [polygon_amoy, polygon_mainnet];
-
-// 4. Create modal
-export const w3Modal = createWeb3Modal({
-  projectId,
-  Chains,
-  config,
-  enableAnalytics: true, // Optional - defaults to your Cloud configuration
-  featuredWalletIds: [
-    "c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96",
-    "ad2eff108bf828a39e5cb41331d95861c9cc516aede9cb6a95d75d98c206e204",
-    "971e689d0a5be527bac79629b4ee9b925e82208e5168b733496a09c0faed0709",
-    "38f5d18bd8522c244bdd70cb4a68e0e718865155811c043f052fb9f1c51de662",
-    "15c8b91ade1a4e58f3ce4e7a0dd7f42b47db0c8df7e0d84f63eb39bcb96c4e0f",
-  ],
-});
+import { Web3Modal } from "@web3modal/ethers-react-native";
+import InvestScreen from "./src/Screens/Invest/InvestScreen";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -136,7 +75,7 @@ const Drawer = createDrawerNavigator();
 
 const deviceHeight = Dimensions.get("screen").height;
 const bottomTabHeight =
-  Platform.OS == "ios" ? deviceHeight * 0.1 : deviceHeight * 0.08;
+  Platform.OS == "ios" ? deviceHeight * 0.09 : deviceHeight * 0.08;
 
 const onAppInit = async () => {
   await ServiceCenter.Inst.loadAllServices();
@@ -249,7 +188,11 @@ const BottomTabNavigation = () => {
             backgroundColor: "#131F2A",
             height: bottomTabHeight,
           },
-          tabBarShowLabel: false,
+          // tabBarShowLabel: false,
+          tabBarLabelStyle: {
+            fontWeight: "bold",
+            fontSize: 12,
+          },
           headerStyle: {
             backgroundColor: "#080F14",
           },
@@ -292,12 +235,7 @@ const BottomTabNavigation = () => {
           component={FriendsScreen}
           options={({ navigation }) => ({
             tabBarIcon: ({ color, size }) => (
-              <View className="flex justify-center items-center  min-w-[45px]">
-                <Ionicons name="people-outline" color={color} size={size} />
-                <Text className="text-white text-xs" style={{ color: color }}>
-                  Social
-                </Text>
-              </View>
+              <Ionicons name="people" color={color} size={size} />
             ),
             headerTitle: () => <UserHeader />,
             headerShown: true,
@@ -345,38 +283,9 @@ const BottomTabNavigation = () => {
           component={ChatScreenV2}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <View className="flex justify-center items-center min-w-[45px]">
-                <Ionicons
-                  name="chatbubbles-outline"
-                  color={color}
-                  size={size}
-                />
-                <Text className="text-white text-xs" style={{ color: color }}>
-                  Chats
-                </Text>
-              </View>
+              <Ionicons name="chatbubbles" color={color} size={size} />
             ),
             tabBarBadge: newMsgCountStr,
-          }}
-        />
-        <BottomTab.Screen
-          name="Games"
-          component={GamesScreen}
-          options={{
-            tabBarIcon: ({ color, size }) => (
-              <View className="flex justify-center items-center min-w-[45px]">
-                <Ionicons
-                  name="game-controller-outline"
-                  color={color}
-                  size={size}
-                />
-                <Text className="text-white text-xs" style={{ color: color }}>
-                  Games
-                </Text>
-              </View>
-            ),
-            headerShown: true,
-            headerTitle: () => <UserHeader />,
           }}
         />
         <BottomTab.Screen
@@ -384,18 +293,24 @@ const BottomTabNavigation = () => {
           component={HomeScreen}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <View className="flex justify-center items-center min-w-[45px]">
-                <Ionicons name="home-outline" color={color} size={size} />
-                <Text className="text-white text-xs" style={{ color: color }}>
-                  Home
-                </Text>
-              </View>
+              <Ionicons name="home" color={color} size={size} />
             ),
             headerShown: false,
             headerTitle: () => <UserHeader />,
           }}
         />
         <BottomTab.Screen
+          name="Games"
+          component={GamesScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="game-controller" color={color} size={size} />
+            ),
+            headerShown: true,
+            headerTitle: () => <UserHeader />,
+          }}
+        />
+        {/* <BottomTab.Screen
           name="Quests"
           component={QuestScreen}
           options={{
@@ -412,8 +327,8 @@ const BottomTabNavigation = () => {
             headerRight: () => <QuestUserPointPanel />,
             //tabBarBadge: newMsgCountStr,
           }}
-        />
-        <BottomTab.Screen
+        /> */}
+        {/* <BottomTab.Screen
           name="Wallet"
           component={WalletScreen}
           options={{
@@ -428,7 +343,29 @@ const BottomTabNavigation = () => {
             headerShown: true,
             headerTitle: () => <UserHeader />,
           }}
+        /> */}
+        <BottomTab.Screen
+          name="Invest"
+          component={InvestScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <MaterialIcons name="attach-money" size={size} color={color} />
+            ),
+            headerShown: true,
+          }}
         />
+        {/* <BottomTab.Screen
+          name="Staking"
+          component={StakingScreen}
+          options={{
+            // tabBarIcon: ({ color, size }) => (
+            //   <Ionicons name="people-outline" color={color} size={size} />
+            // ),
+            title: "One-Click Staking",
+            headerShown: true,
+          }}
+        /> */}
+
         {/* <BottomTab.Screen
         name="User"
         component={UserScreen}
@@ -633,17 +570,16 @@ function App_() {
                 component={DrawerNavigation}
                 options={{ headerShown: false, gestureEnabled: false }}
               />
-              {/* <Stack.Screen
-              name="BottomTab"
-              component={BottomTabNavigation}
-              options={{ headerShown: false }}
-            /> */}
+              <Stack.Screen
+                name="Quests"
+                component={QuestScreen}
+                options={{ headerShown: true, gestureEnabled: false }}
+              />
               <Stack.Screen
                 name="GameDetails"
                 component={GameDetailsScreen}
                 options={{ headerShown: false, gestureEnabled: false }}
               />
-              {/* <Stack.Screen name="Signup" component={SignupScreen} /> */}
               <Stack.Screen
                 name="Login"
                 component={LoginScreen}
@@ -663,13 +599,6 @@ function App_() {
                   headerLeft: () => {
                     const navigation = useNavigation();
                     return (
-                      // <Button
-                      //   title="Sign in"
-                      //   onPress={() => {
-                      //     navigation.navigate("Login");
-                      //     firebase.auth().signOut();
-                      //   }}
-                      // />
                       <HighlightButton
                         type="opacity"
                         text="Go to Sign in"
@@ -759,9 +688,9 @@ function App_() {
               <Stack.Screen
                 name="LaunchpadDetails"
                 component={LaunchpadDetailScreen}
-                options={{
-                  headerTitle: "??",
-                }}
+                options={({ route }) => ({
+                  headerTitle: route.params?.title || "Details",
+                })}
               />
             </Stack.Navigator>
           </NavigationContainer>

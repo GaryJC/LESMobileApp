@@ -6,10 +6,12 @@ import { View, Text, ScrollView, Button } from "react-native";
 // import { getContract } from './Web3Service/WalleService'; // 适配这个导入到你的项目结构
 import { getContract, W3Button } from "../../services/Web3Service/WalleService";
 import usePhaseTiming from "./usePhaseTiming";
-import { useWeb3ModalAccount } from "@web3modal/ethers-react-native";
+import { useWeb3ModalAccount, W3mButton } from "@web3modal/ethers-react-native";
 import Contracts from "../../services/Web3Service/Contracts";
 import { renderPrice, renderTotoalRaised } from "../../utils/render";
-import TokenSaleModal from "./TokenSaleModa";
+import TokenSaleModal from "./TokenSaleModal";
+import ClaimModal from "./ClaimModal";
+import { formatEther } from "ethers";
 
 const ItemLayout = ({ title, val }) => (
   <View className="flex-row justify-between">
@@ -65,7 +67,8 @@ const TokenSaleBoard = ({ data }) => {
   const TicketAndStakingContract = getPhaseContract();
 
   const updateSaleInfo = async () => {
-    if (!accountInfo.isConnected) return;
+    if (accountInfo.isConnected == false) return;
+
     const r = await TicketAndStakingContract.getStakingInfo();
     setSaleInfo({
       totalRaised: parseFloat(formatEther(r[0])),
@@ -132,7 +135,7 @@ const TokenSaleBoard = ({ data }) => {
 
   return (
     <ScrollView>
-      <View className="p-4 border border-gray-200 rounded-lg bg-white mb-4">
+      <View className="p-4 border border-gray-200 rounded-lg bg-white">
         <View className="flex-row justify-between items-center mb-2">
           <Text
             className={`px-2 py-1 rounded-lg ${color} text-white font-bold uppercase`}
@@ -190,6 +193,7 @@ const TokenSaleBoard = ({ data }) => {
               saleInfo.totalRaised == idoInfo.totalRaised)
           }
         />
+        {/* <W3mButton /> */}
       </View>
       <TokenSaleModal
         open={open}
@@ -200,7 +204,11 @@ const TokenSaleBoard = ({ data }) => {
           TicketAndStakingContract,
         }}
       />
-      {/* <ClaimModal claimOpen={claimOpen} onClaimClose={onClaimClose} data={{ saleInfo, TicketAndStakingContract }} /> */}
+      <ClaimModal
+        claimOpen={claimOpen}
+        onClaimClose={onClaimClose}
+        data={{ saleInfo, TicketAndStakingContract }}
+      />
     </ScrollView>
   );
 };

@@ -37,8 +37,6 @@ import axios from "axios";
 // import USDCoin from "../../../assets/img/coin/usd.svg";
 import { renderCoinIcon } from "../../utils/render";
 import { SelectBottomSheet } from "../SelectBottomSheet";
-import { useBottomSheet } from "@gorhom/bottom-sheet";
-import { set } from "lodash";
 
 const PaypalApi = API.PaypalApi;
 
@@ -54,6 +52,9 @@ const CoinsFrom = {
   USD,
 };
 
+const paypalUrl = (orderId) =>
+  `https://www.paypal.com/checkoutnow?token=${orderId}`;
+
 const SwapBoard = ({ data }) => {
   const [fromToken, setFromToken] = useState("USDT");
   const [swapTip, setSwapTip] = useState("");
@@ -66,7 +67,8 @@ const SwapBoard = ({ data }) => {
   const [swapRatio, setSwapRatio] = useState(1); // Default ratio is 1:1
   const [alertMessage, setAlertMessage] = useState("");
   const [alertSeverity, setAlertSeverity] = useState("error");
-  const [approvalUrl, setApprovalUrl] = useState(null);
+  // const [approvalUrl, setApprovalUrl] = useState(null);
+  const [orderId, setOrderId] = useState(null);
   //   const [userInfo, isLoggedIn] = useAccount();
 
   const [bottomSheetContent, setBottomSheetContent] = useState(null);
@@ -100,19 +102,26 @@ const SwapBoard = ({ data }) => {
 
   const createOrder = async () => {
     const walletInfo = currentWalletInfo();
-    const resp = await axios.get(
-      PaypalApi.createOrder(
-        walletInfo.address,
-        walletInfo.chainId,
-        "NEXU",
-        buyAmount
-      )
-    );
-    setApprovalUrl(resp.data.approval_url);
+    console.log("walletInfo", walletInfo);
+    try {
+      const resp = await axios.get(
+        PaypalApi.createOrder(
+          walletInfo.address,
+          walletInfo.chainId,
+          "NEXU",
+          buyAmount
+        )
+      );
+      console.log("createOrder", resp);
+      // setApprovalUrl(paypalUrl(resp.data.order_id));
+      setOrderId(resp.data.order_id);
+    } catch (e) {
+      console.log("createOrder error", e);
+    }
   };
 
-  const onApprove = async (data) => {
-    const resp = await axios.get(PaypalApi.confirmOrder(data.orderID));
+  const onApprove = async () => {
+    const resp = await axios.get(PaypalApi.confirmOrder(orderId));
     const txHash = resp.data;
     if (txHash != "") {
       setAlertMessage(<W3TxHashLabel label="Waiting Tx:" txHash={txHash} />);
@@ -292,14 +301,15 @@ const SwapBoard = ({ data }) => {
         }}
       >
         <Text
-          style={{
-            paddingHorizontal: 8,
-            paddingVertical: 4,
-            borderRadius: 8,
-            backgroundColor: color,
-            color: "white",
-            fontWeight: "bold",
-          }}
+          // style={{
+          //   paddingHorizontal: 8,
+          //   paddingVertical: 4,
+          //   borderRadius: 8,
+          //   backgroundColor: color,
+          //   color: "white",
+          //   fontWeight: "bold",
+          // }}
+          className={`px-2 py-1 rounded-lg ${color} uppercase text-white font-bold`}
         >
           {status}
         </Text>
@@ -419,13 +429,13 @@ const SwapBoard = ({ data }) => {
         </Text>
       ) : null}
       {fromToken === "USD" && !isActionDisabled ? (
-        approvalUrl ? (
+        orderId ? (
           <WebView
-            source={{ uri: approvalUrl }}
+            source={{ uri: paypalUrl(orderId) }}
             style={{ flex: 1, height: 400 }}
             onNavigationStateChange={async (event) => {
               if (event.url.includes("success")) {
-                const orderId = event.url.split("orderID=")[1];
+                // const orderId = event.url.split("orderID=")[1];
                 await onApprove({ orderID: orderId });
               }
             }}

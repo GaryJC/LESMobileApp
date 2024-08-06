@@ -1,7 +1,8 @@
 // WalleService.js
 
 import { useEffect, useState } from "react";
-import { w3Modal, Chains } from "../../../App";
+// import { w3Modal, chains } from "../../../App";
+import { w3Modal, Chains } from "./InitWalletConnect";
 import {
   useWeb3Modal,
   useWalletInfo,
@@ -206,7 +207,10 @@ const W3Button = ({ text, onClick, style, disabled, loading, variant, sx }) => {
 
   return (
     <TouchableOpacity
-      className={style || "w-full bg-blue-500 p-2 rounded"}
+      className={style || "w-full p-2 rounded"}
+      style={
+        disabled ? { backgroundColor: "#ccc" } : { backgroundColor: "#2196F3" }
+      }
       disabled={disabled}
       onPress={onBtnClicked}
     >
@@ -436,61 +440,6 @@ const sleep = async (ms) => {
   });
 };
 
-const _Contracts = {
-  TokenSwap: TokenSwapContract,
-  TicketAndStaking: TicketAndStakingContract,
-};
-
-/**
- * Get contract operations object
- * @param {string} name - Contract name
- * @param {Map<number, string>} addresses - Contract addresses
- * @returns {object|null}
- */
-const getContract = (name, addresses) => {
-  const _C = _Contracts[name];
-  if (_C == null) {
-    return null;
-  }
-  if (addresses != null && Object.entries(addresses).length > 0) {
-    updateContractAddress(name, addresses);
-  }
-  return _C;
-};
-
-/**
- * Web3 result object
- */
-class Web3Result {
-  success;
-  txHash;
-  error;
-
-  static Succ = (txHash) => {
-    const r = new Web3Result();
-    r.success = true;
-    r.txHash = txHash;
-    r.error = null;
-    return r;
-  };
-
-  static Err = (error) => {
-    const r = new Web3Result();
-    r.success = false;
-    r.txHash = null;
-    r.error = error;
-    return r;
-  };
-
-  static Exception = (exception) => {
-    const r = new Web3Result();
-    r.success = false;
-    r.txHash = null;
-    r.error = parseEtherException(exception);
-    return r;
-  };
-}
-
 const TokenSwapContract = {
   contractName: "TokenSwap",
   contract: Contracts.get("TokenSwap"),
@@ -632,6 +581,61 @@ const TicketAndStakingContract = {
     return r;
   },
 };
+
+const _Contracts = {
+  TokenSwap: TokenSwapContract,
+  TicketAndStaking: TicketAndStakingContract,
+};
+
+/**
+ * Get contract operations object
+ * @param {string} name - Contract name
+ * @param {Map<number, string>} addresses - Contract addresses
+ * @returns {object|null}
+ */
+const getContract = (name, addresses) => {
+  const _C = _Contracts[name];
+  if (_C == null) {
+    return null;
+  }
+  if (addresses != null && Object.entries(addresses).length > 0) {
+    updateContractAddress(name, addresses);
+  }
+  return _C;
+};
+
+/**
+ * Web3 result object
+ */
+class Web3Result {
+  success;
+  txHash;
+  error;
+
+  static Succ = (txHash) => {
+    const r = new Web3Result();
+    r.success = true;
+    r.txHash = txHash;
+    r.error = null;
+    return r;
+  };
+
+  static Err = (error) => {
+    const r = new Web3Result();
+    r.success = false;
+    r.txHash = null;
+    r.error = error;
+    return r;
+  };
+
+  static Exception = (exception) => {
+    const r = new Web3Result();
+    r.success = false;
+    r.txHash = null;
+    r.error = parseEtherException(exception);
+    return r;
+  };
+}
 
 export {
   Web3Result,

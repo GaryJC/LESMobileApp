@@ -18,7 +18,7 @@ import {
 import { ProgressBar } from "./TokenSaleBoard";
 import Contracts from "../../services/Web3Service/Contracts";
 import { formatEther } from "ethers";
-import { renderTotoalRaised } from "../../utils/render";
+import { renderCoinIcon, renderTotoalRaised } from "../../utils/render";
 import { useWeb3ModalAccount } from "@web3modal/ethers-react-native";
 
 const StakeCap = 10000;
@@ -61,6 +61,7 @@ const TokenSaleModal = ({ open, onClose, data }) => {
   };
 
   useEffect(() => {
+    console.log("=====open======", open);
     if (!open) {
       resetState();
     } else {
@@ -230,6 +231,35 @@ const TokenSaleModal = ({ open, onClose, data }) => {
     doStake();
   };
 
+  const AlertMessage = ({ alert }) => {
+    let alertDom = <></>;
+    console.log("alert:", alert.severity);
+    switch (alert.severity) {
+      case "info":
+        alertDom = (
+          <View className="bg-blue-200 p-2 mt-2 rounded">
+            <Text className="text-blue-500">{alert.message}</Text>
+          </View>
+        );
+        break;
+      case "success":
+        alertDom = (
+          <View className="bg-green-200 p-2 mt-2 rounded">
+            <Text className="text-green-500">{alert.message}</Text>
+          </View>
+        );
+        break;
+      case "error":
+        alertDom = (
+          <View className="bg-red-200 p-2 mt-2 rounded">
+            <Text className="text-red-500">{alert.message}</Text>
+          </View>
+        );
+        break;
+    }
+    return alertDom;
+  };
+
   return (
     <Modal
       visible={open}
@@ -249,12 +279,9 @@ const TokenSaleModal = ({ open, onClose, data }) => {
           <Text className="text-lg font-bold mb-4">Token Sale</Text>
           <View className="mb-4">
             <Text className="uppercase text-gray-500 mb-1">Total Raised</Text>
-            <View className="flex items-center gap-2">
-              {/* <Image
-              source={require("./img/usdt.svg")}
-              style={{ width: 25, height: 25 }}
-            /> */}
-              <Text className="text-xl">
+            <View className="flex-row items-center gap-2">
+              {renderCoinIcon("USDT", 25, 25)}
+              <Text className="text-xl font-bold">
                 {renderTotoalRaised(fundraisingGoal) || "--"} USDT
               </Text>
             </View>
@@ -265,6 +292,7 @@ const TokenSaleModal = ({ open, onClose, data }) => {
                 `${renderTotoalRaised(v, true)}/${renderTotoalRaised(m)} USDT`
               }
             />
+
             <View className="flex flex-col items-start p-5 rounded-lg bg-gray-200 mt-2">
               <Text>Staked {tokenSaleInfo.myStaking} NEXU</Text>
               <Text className="text-gray-500">
@@ -274,64 +302,66 @@ const TokenSaleModal = ({ open, onClose, data }) => {
               <ClaimInfo />
             </View>
           </View>
-          <View className="flex justify-between">
+          <View className="flex-row items-center justify-between">
             <Text className="uppercase text-gray-500 mb-1">Service Fee</Text>
-            <View className="flex flex-row items-center mb-2">
-              <Text className="text-xl">
-                <W3TokenLabel amount={100} token={"NEXG"} />
-              </Text>
-              <View className="w-full h-[2px] my-2 bg-gray-400" />
-              <Text className="text-gray-500 mb-4">
-                Balance: {approveBalance.toFixed(2)}
-              </Text>
-            </View>
+            <W3TokenLabel amount={100} token={"NEXG"} />
           </View>
+          <View className="w-full h-[2px] my-1 bg-gray-400" />
+          <Text className="text-gray-500 mb-4 self-end">
+            Balance: {approveBalance.toFixed(2)}
+          </Text>
           <W3Button
             text={approvalSuccess ? "Approved" : "Approve"}
             loading={approvalLoading}
             disabled={approvalSuccess || tokenSaleInfo.myStaking >= StakeCap}
             onClick={handleApprove}
-            className="w-full"
           />
           {approvalAlert && (
-            <View className="mt-2">
+            /* <View className="mt-2">
               <Text className="text-red-500">{approvalAlert.message}</Text>
-            </View>
+            </View> */
+
+            <AlertMessage alert={approvalAlert} />
           )}
+
           {approvalSuccess && (
-            <View className="flex justify-between mt-2">
-              <Text className="uppercase text-gray-500 mb-1">
-                Stake ({min}-{cap} NEXU)
-              </Text>
-              <View className="flex flex-row items-center mb-2">
-                <TextInput
-                  className="border p-2 flex-1"
-                  keyboardType="number-pad"
-                  value={stakeAmount.toString()}
-                  onChangeText={(text) => setStakeAmount(parseInt(text))}
-                />
-                {/* <Image
+            <>
+              <View className="flex justify-between mt-2">
+                <Text className="uppercase text-gray-500 mb-1">
+                  Stake ({min}-{cap} NEXU)
+                </Text>
+                <View className="flex flex-row items-center mb-2">
+                  <TextInput
+                    className="border p-2 flex-1"
+                    keyboardType="number-pad"
+                    value={stakeAmount.toString()}
+                    onChangeText={(text) => setStakeAmount(parseInt(text))}
+                  />
+                  {/* <Image
                 source={require("./img/nexu.png")}
                 style={{ width: 25, height: 25 }}
               /> */}
-                <Text className="text-xl">NEXU</Text>
+                  {renderCoinIcon("NEXU", 25, 25)}
+                  <Text className="text-xl">NEXU</Text>
+                </View>
+                <Text className="text-gray-500 mb-4">
+                  Balance: {stakeBalance.toFixed(2)}
+                </Text>
               </View>
-              <Text className="text-gray-500 mb-4">
-                Balance: {stakeBalance.toFixed(2)}
-              </Text>
-            </View>
+              <W3Button
+                text={stakeSuccess ? "Approved" : "Approve"}
+                loading={stakeLoading}
+                disabled={stakeSuccess}
+                onClick={handleStakeApprove}
+              />
+            </>
           )}
-          <W3Button
-            text={stakeSuccess ? "Approved" : "Approve"}
-            loading={stakeLoading}
-            disabled={stakeSuccess}
-            onClick={handleStakeApprove}
-            className="w-full"
-          />
+
           {stakeAlert && (
-            <View className="mt-2">
+            /* <View className="mt-2">
               <Text className="text-red-500">{stakeAlert.message}</Text>
-            </View>
+            </View> */
+            <AlertMessage alert={stakeAlert} />
           )}
           {stakeSuccess && (
             <View className="mt-2">
@@ -343,13 +373,14 @@ const TokenSaleModal = ({ open, onClose, data }) => {
               />
             </View>
           )}
-          {buyAlert && (
-            <View className="mt-2">
+          {/* <View className="mt-2">
               <Text className="text-red-500">{buyAlert.message}</Text>
-            </View>
-          )}
+            </View> */}
+          {buyAlert && <AlertMessage alert={buyAlert} />}
           <TouchableOpacity onPress={onClose}>
-            <Text className="text-blue-500 mt-4">Close</Text>
+            <Text className="text-blue-500 font-bold mt-4 uppercase self-end">
+              Close
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

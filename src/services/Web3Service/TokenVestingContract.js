@@ -1,7 +1,7 @@
 import { useWeb3ModalAccount } from "@web3modal/ethers-react-native";
 import { useEffect, useState } from "react";
 // import w3Modal, { Chains } from "./InitWalletConnect";
-import { w3Modal, chains } from "../../../App";
+import { w3Modal, Chains } from "./InitWalletConnect";
 import API from "../../modules/Api";
 // import { fetchWithRevalidate } from "../../modules/Api";
 import { Web3Result, waitTransaction } from "./WalleService";

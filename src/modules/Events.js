@@ -4,7 +4,8 @@ import ChatGroup from "../Models/ChatGroup";
 import FriendData from "../Models/Friends";
 import MessageData from "../Models/MessageData";
 import Constants from "./Constants";
-const { IMUserState, IMUserOnlineState, IMMessageType, SocialType } = LesConstants;
+const { IMUserState, IMUserOnlineState, IMMessageType, SocialType } =
+  LesConstants;
 const { ReloginState } = Constants;
 export const DataEvents = {
   /**
@@ -143,7 +144,7 @@ export const DataEvents = {
      * 解绑了社交媒体
      * @type {socialType:SocialType}
      */
-    SocialMedia_Unbound: "DATA_EVENT_SocialMedia_Unbound"
+    SocialMedia_Unbound: "DATA_EVENT_SocialMedia_Unbound",
   },
 
   Saving: {
@@ -153,6 +154,10 @@ export const DataEvents = {
      * 携带参数为 PBLesIMTimelineData
      */
     SavingState_Message: "DATA_EVENT_SavingState_Message",
+  },
+
+  Staking: {
+    StakingState_Updated: "EVENT_StakingState_Updated",
   },
 };
 
@@ -266,6 +271,6 @@ export const UIEvents = {
   },
 
   Drawer: {
-    Drawer_Open: "UI_EVENT_Drawer_Open"
-  }
+    Drawer_Open: "UI_EVENT_Drawer_Open",
+  },
 };

@@ -63,7 +63,10 @@ const LaunchpadItem = ({ item }) => {
       <TouchableOpacity
         onPress={() =>
           idoPlatform.name === "NexGami"
-            ? navigation.navigate("LaunchpadDetails", { id: item.id })
+            ? navigation.navigate("LaunchpadDetails", {
+                id: item.id,
+                title: item.name,
+              })
             : null
         }
         className="relative"

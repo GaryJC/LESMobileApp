@@ -1,8 +1,8 @@
 import { useWeb3ModalAccount } from "@web3modal/ethers-react-native";
 import { useEffect, useState } from "react";
-import { w3Modal } from "../../../App";
+import { w3Modal } from "./InitWalletConnect";
 import API from "../../modules/Api";
-import { fetchWithRevalidate } from "../../modules/Api";
+// import { fetchWithRevalidate } from "../../modules/Api";
 import { Web3Result, waitTransaction } from "./WalleService";
 import Contracts from "./Contracts";
 import Constants from "../../modules/Constants";
@@ -16,7 +16,7 @@ import {
   parseUnits,
 } from "ethers";
 
-const { Web3Api } = API;
+const { Web3Api, fetchWithRevalidate } = API;
 
 const TokenStakingContract = {
   abi: [
