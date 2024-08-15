@@ -1,9 +1,10 @@
-import { FlatList, Text, View } from "react-native";
+import { FlatList, Pressable, Text, View } from "react-native";
 import { useState, useEffect } from "react";
 import LaunchpadItem from "../Launchpad/LauchpadItem";
 import Constants from "../../modules/Constants";
 import API from "../../modules/Api";
 import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
 
 const LaunchpadGenre = Constants.Launchpad.Genre.Token;
 const LaunchpadStatus = Constants.Launchpad.IDOStatus.Upcoming;
@@ -15,6 +16,8 @@ const queryString = new URLSearchParams({
 
 const LaunchpadList = () => {
   const [launchpadData, setLaunchpadData] = useState([]);
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchLaunchpadData = async () => {
@@ -42,11 +45,20 @@ const LaunchpadList = () => {
     <View className="my-3">
       <View className="flex-row justify-between items-end mb-2">
         <Text className="text-white text-2xl font-bold">Launchpad</Text>
-        <Text className="text-white text-lg font-bold">View all</Text>
+        <Pressable
+          onPress={() => navigation.navigate("LaunchpadList")}
+          className="border-gray-400 border-2 rounded-lg p-2"
+        >
+          <Text className="text-gray-300">More</Text>
+        </Pressable>
       </View>
       <FlatList
         data={launchpadData}
-        renderItem={({ item }) => <LaunchpadItem item={item} />}
+        renderItem={({ item }) => (
+          <View className="mr-5">
+            <LaunchpadItem item={item} />
+          </View>
+        )}
         keyExtractor={(item) => item.id.toString()}
         horizontal={true}
       />

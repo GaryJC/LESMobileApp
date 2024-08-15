@@ -271,6 +271,30 @@ const Constants = {
       NEXU: 4,
     },
   },
+
+  Games: {
+    Genre: {
+      RPG: 1,
+      FPS: 2,
+      PVP: 3,
+      MMORPG: 4,
+      CARD: 5,
+      ACTION: 6,
+      SHOOTER: 7,
+    },
+    Status: {
+      Playable: 1,
+      Alpha: 2,
+      Beta: 3,
+      InDev: 4,
+    },
+    Tabs: {
+      GameGuide: "Game Guide",
+      UserReview: "User Review",
+      News: "News",
+      CommunityData: "Community Data",
+    },
+  },
 };
 
 console.log(

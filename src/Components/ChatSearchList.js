@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useEffect, useState } from "react";
 import IMUserInfoService from "../services/IMUserInfoService";
-import formatDate from "../utils/formatDate";
+import formatDate from "../utils/formate";
 import DataCenter from "../modules/DataCenter";
 import DatabaseService from "../services/DatabaseService";
 import { MessageCaches } from "../Models/MessageCaches";

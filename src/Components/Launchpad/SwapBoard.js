@@ -17,7 +17,7 @@ import {
 } from "react-native";
 // import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"; // Note: You'll need a suitable replacement for PayPal in React Native
 // import ArrowDownwardIcon from "react-native-vector-icons/MaterialIcons";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import WebView from "react-native-webview";
 import Contracts from "../../services/Web3Service/Contracts";
 import {
@@ -102,7 +102,7 @@ const SwapBoard = ({ data }) => {
 
   const createOrder = async () => {
     const walletInfo = currentWalletInfo();
-    console.log("walletInfo", walletInfo);
+    validateAmounts();
     try {
       const resp = await axios.get(
         PaypalApi.createOrder(
@@ -353,10 +353,11 @@ const SwapBoard = ({ data }) => {
           {/* <View>{getswapMenu()}</View> */}
           <TouchableOpacity
             onPress={openPayBottomSheet}
-            className="flex-row gap-1"
+            className="flex-row gap-1 items-center"
           >
             {renderCoinIcon(fromToken)}
             <Text>{fromToken}</Text>
+            <MaterialIcons name="arrow-drop-down" size={20} color="black" />
           </TouchableOpacity>
         </View>
         <Text style={{ textAlign: "right", color: "gray" }}>
@@ -374,8 +375,8 @@ const SwapBoard = ({ data }) => {
           <View
             style={{ padding: 4, backgroundColor: "#f0f0f0", borderRadius: 8 }}
           >
-            <AntDesign
-              name="arrowdown"
+            <MaterialIcons
+              name="arrow-downward"
               size={18}
               color="black"
               style={{ minHeight: 20, zIndex: 2 }}
@@ -407,10 +408,11 @@ const SwapBoard = ({ data }) => {
           <TouchableOpacity
             // onPress={() => handleToTokenChange(toTokenContract.name)}
             onPress={() => openBuyBottomSheet(toTokenContract)}
-            className="flex-row gap-1"
+            className="flex-row gap-1 items-center"
           >
             {renderCoinIcon(toTokenContract.icon)}
             <Text>{toTokenContract.name}</Text>
+            <MaterialIcons name="arrow-drop-down" size={20} color="black" />
           </TouchableOpacity>
         </View>
         <Text style={{ textAlign: "right", color: "gray" }}>

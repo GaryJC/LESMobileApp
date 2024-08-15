@@ -10,6 +10,7 @@ import {
   useWeb3ModalProvider,
   useWeb3ModalEvents,
   W3mNetworkButton,
+  W3mAccountButton,
 } from "@web3modal/ethers-react-native";
 
 import {
@@ -162,10 +163,21 @@ async function swapNexu(token, amount) {
 }
 
 const W3ConnectButton = () => {
-  const accountInfo = useWeb3ModalAccount();
+  const { walletInfo } = useWalletInfo();
+  // const accountInfo = useWeb3ModalAccount();
   const { provider } = useWeb3ModalProvider();
   const events = useWeb3ModalEvents();
-  return <ConnectButton />;
+  // return <ConnectButton />;
+  const { address, chainId, isConnected } = useWeb3ModalAccount();
+  console.log("W3ConnectButton", address, chainId, isConnected);
+  let btnDom = null;
+  if (!isConnected) {
+    btnDom = <ConnectButton />;
+  } else {
+    btnDom = <W3mAccountButton />;
+  }
+
+  return btnDom;
 };
 
 const W3NetworkButton = () => {
@@ -178,10 +190,10 @@ const ConnectButton = () => {
 
   return (
     <TouchableOpacity
-      className="flex items-center py-1 px-2 rounded-2xl z-50 font-bold bg-[#211627] drop-shadow-[0_3px_0px_rgba(72,147,240,1)] cursor-pointer hover:bg-[#4893F0]"
+      className="flex items-center px-4 py-2 rounded-2xl font-bold bg-blue-500"
       onPress={() => open()}
     >
-      <Text className="text-white">Connect Wallet</Text>
+      <Text className="text-white font-bold">Connect Wallet</Text>
     </TouchableOpacity>
   );
 };

@@ -37,6 +37,7 @@ import * as Application from "expo-application";
 import notifee from "@notifee/react-native";
 // import { W3mButton, W3mNetworkButton } from "@web3modal/ethers-react-native";
 import { W3ConnectButton } from "../services/Web3Service/WalleService";
+import { useWalletInfo } from "@web3modal/ethers-react-native";
 
 const userOptions = [
   { id: 1, title: "Account", link: "" },
@@ -72,6 +73,9 @@ export default function UserDrawer(props) {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [unrespondCount, setUnrespondCount] = useState(0);
+
+  const { walletInfo } = useWalletInfo();
+  console.log("walletInfo====", walletInfo);
 
   const navigation = useNavigation();
 
@@ -275,6 +279,8 @@ export default function UserDrawer(props) {
             <Divider />
           </View>
 
+          <W3ConnectButton />
+
           <FriendButton
             title="You Have Pending Requests"
             icon="emoji-people"
@@ -289,7 +295,6 @@ export default function UserDrawer(props) {
             <Account />
             <MyProfileButton />
 
-            <W3ConnectButton />
             {/* <W3mButton /> */}
 
             <NotiSettings />

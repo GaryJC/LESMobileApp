@@ -59,7 +59,7 @@ const LaunchpadItem = ({ item }) => {
   );
 
   return (
-    <View className="bg-[#292A2F] rounded-xl overflow-hidden mr-5">
+    <View className="bg-[#292A2F] rounded-xl overflow-hidden">
       <TouchableOpacity
         onPress={() =>
           idoPlatform.name === "NexGami"
@@ -73,7 +73,11 @@ const LaunchpadItem = ({ item }) => {
       >
         <Image
           source={{ uri: fetchImage(item.image) }}
-          style={{ width: windowWidth * 0.65, aspectRatio: 8 / 5 }}
+          style={{
+            aspectRatio: 8 / 5,
+            // width: "100%",
+            // height: "auto",
+          }}
         />
         <Flag />
       </TouchableOpacity>

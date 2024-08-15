@@ -70,6 +70,16 @@ const API = {
       `${Address.PlatformServer}/paypal/confirm_order?order_id=${orderId}`,
   },
 
+  CoinMarketAPI: {
+    /**
+     * 获取指定代币的市场数据
+     * @param {[string]} symbol
+     * @returns
+     */
+    getSpecificCoinQuote: (symbol) =>
+      `${Address.PlatformServer}/coinmarket/quote?coins=${symbol}`,
+  },
+
   /**
    *
    * @param {string} api api url

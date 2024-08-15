@@ -5,12 +5,12 @@ import {
   Pressable,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import Constants from "../modules/Constants";
 import DataCenter from "../modules/DataCenter";
 import IMUserInfoService from "../services/IMUserInfoService";
-import formatDate from "../utils/formatDate";
+import formatDate from "../utils/formate";
 import Avatar from "./Avatar";
 
 const showTimestamp = (preMessage, message) => {
@@ -140,7 +140,13 @@ const TimeStamp = ({ date }) => (
 //   );
 // };
 
-const Bubble = ({ isOwn, senderUserInfo, message, onAvatarPressed, onContentLongPressed }) => {
+const Bubble = ({
+  isOwn,
+  senderUserInfo,
+  message,
+  onAvatarPressed,
+  onContentLongPressed,
+}) => {
   const fontSize = DataCenter.userInfo.userSetting.getChatFontSize();
 
   // const [ownProfileVisible, setOwnProfileVisible] = useState(false);
@@ -223,19 +229,23 @@ const Bubble = ({ isOwn, senderUserInfo, message, onAvatarPressed, onContentLong
         </View>
         <Pressable onLongPress={onContentLongPressed}>
           <View className="flex flex-row">
-            {!isOwn && <View style={{
-              width: 0,
-              height: 0,
-              marginTop: 7,
-              borderTopWidth: 6,
-              borderTopColor: 'transparent',
-              borderRightWidth: 6,
-              borderRightColor: '#445465',
-              borderLeftWidth: 3,
-              borderLeftColor: 'transparent',
-              borderBottomWidth: 6,
-              borderBottomColor: 'transparent',
-            }} />}
+            {!isOwn && (
+              <View
+                style={{
+                  width: 0,
+                  height: 0,
+                  marginTop: 7,
+                  borderTopWidth: 6,
+                  borderTopColor: "transparent",
+                  borderRightWidth: 6,
+                  borderRightColor: "#445465",
+                  borderLeftWidth: 3,
+                  borderLeftColor: "transparent",
+                  borderBottomWidth: 6,
+                  borderBottomColor: "transparent",
+                }}
+              />
+            )}
             <View
               className={
                 isOwn
@@ -260,29 +270,39 @@ const Bubble = ({ isOwn, senderUserInfo, message, onAvatarPressed, onContentLong
                 />
               )}
             </View>
-            {isOwn && <View style={{
-              width: 0,
-              height: 0,
-              marginTop: 7,
-              borderTopWidth: 6,
-              borderTopColor: 'transparent',
-              borderRightWidth: 3,
-              borderRightColor: 'transparent',
-              borderLeftWidth: 6,
-              borderLeftColor: '#5EB857',
-              borderBottomWidth: 6,
-              borderBottomColor: 'transparent',
-            }} />}
+            {isOwn && (
+              <View
+                style={{
+                  width: 0,
+                  height: 0,
+                  marginTop: 7,
+                  borderTopWidth: 6,
+                  borderTopColor: "transparent",
+                  borderRightWidth: 3,
+                  borderRightColor: "transparent",
+                  borderLeftWidth: 6,
+                  borderLeftColor: "#5EB857",
+                  borderBottomWidth: 6,
+                  borderBottomColor: "transparent",
+                }}
+              />
+            )}
           </View>
         </Pressable>
-        {msg.quote != null && msg.quote.length > 0 ?
-          <View className={ //#202A32
-            isOwn
-              ? "mr-[10px] mt-1 rounded bg-[#1D2730] max-w-[52vw] p-2"
-              : "ml-[10px] mt-1 rounded bg-[#1D2730] max-w-[52vw] p-2"
-          }>
+        {msg.quote != null && msg.quote.length > 0 ? (
+          <View
+            className={
+              //#202A32
+              isOwn
+                ? "mr-[10px] mt-1 rounded bg-[#1D2730] max-w-[52vw] p-2"
+                : "ml-[10px] mt-1 rounded bg-[#1D2730] max-w-[52vw] p-2"
+            }
+          >
             <Text className="text-clr-gray-light">{msg.quote}</Text>
-          </View> : <></>}
+          </View>
+        ) : (
+          <></>
+        )}
         {/* {menuVisible && <BubbleMenu />} */}
       </View>
 
@@ -339,7 +359,6 @@ export const ChatBubbleV2 = React.memo(
             }}
           />
         )}
-
       </>
     );
   },

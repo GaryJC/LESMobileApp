@@ -57,8 +57,17 @@ export default function HomeScreen() {
   return (
     <SafeAreaView>
       <ScrollView className="w-full">
-        <NewsCarousel />
-        <View className="px-3">
+        <View className="mx-[2.5vw]">
+          {/* <Image
+            source={require("../../assets/img/logo-nexg.png")}
+            style={{
+              width: 250,
+              height: 100,
+              // alignContent: "center",
+              // alignSelf: "center",
+            }}
+          /> */}
+          <NewsCarousel />
           <LaunchpadList />
           <QuestList />
         </View>

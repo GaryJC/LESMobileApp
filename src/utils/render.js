@@ -9,12 +9,17 @@ import Bnb from "../../assets/img/chain/bnb.svg";
 import USD from "../../assets/img/usd.svg";
 import USDT from "../../assets/img/usdt.svg";
 import USDC from "../../assets/img/usdc.svg";
+import Alpha from "../../assets/img/gameStatus/alpha.svg";
+import Beta from "../../assets/img/gameStatus/beta.svg";
+import InDevelopment from "../../assets/img/gameStatus/indevelopment.svg";
+import Playable from "../../assets/img/gameStatus/playable.svg";
 
 import { Image } from "react-native";
 
-const Launchpad = Constants.Launchpad;
+// const Launchpad = Constants.Launchpad;
+const Games = Constants.Games;
 
-export const renderPlatformIcon = (platform, size) => {
+export const renderPlatformIcon = (platform, size = 20) => {
   switch (platform) {
     case Constants.PlatformId.Android:
       return <Ionicons name="logo-android" size={size} color="white" />;
@@ -75,16 +80,16 @@ export const renderGameStatusName = (status) => {
   }
 };
 
-export const renderGameStatusIcon = (status) => {
+export const renderGameStatusIcon = (status, w = 20, h = 20) => {
   switch (status) {
     case Games.Status.Alpha:
-      return "/img/alpha.svg";
+      return <Alpha width={w} height={h} color="white" />;
     case Games.Status.Beta:
-      return "/img/beta.svg";
+      return <Beta width={w} height={h} color="white" />;
     case Games.Status.InDev:
-      return "/img/indevelopment.svg";
+      return <InDevelopment width={w} height={h} color="white" />;
     case Games.Status.Playable:
-      return "/img/playable.svg";
+      return <Playable width={w} height={h} color="white" />;
     default:
       return "";
   }
@@ -111,7 +116,7 @@ export const renderGameGenreName = (genre) => {
   }
 };
 
-export const renderChainIcon = (chain, w, h) => {
+export const renderChainIcon = (chain, w = 20, h = 20) => {
   switch (chain) {
     case Constants.ChainID.Polygon:
     case Constants.ChainID.PolygonTest:
@@ -125,7 +130,15 @@ export const renderChainIcon = (chain, w, h) => {
     case Constants.ChainID.BNBTest:
       return <Bnb width={w} height={h} />;
     default:
-      return "/img/unknown.png";
+      return (
+        <Image
+          source={"../../assets/img/unknown.png"}
+          style={{
+            width: w,
+            height: h,
+          }}
+        />
+      );
   }
 };
 
@@ -144,6 +157,72 @@ export const renderChainName = (chain) => {
       return "BNB";
     default:
       return "";
+  }
+};
+
+export const renderGameGenre = (genres) => {
+  const genresList = genres.map((genre) => renderGameGenreName(genre));
+  if (genresList.length > 3) {
+    return genresList.slice(0, 3).join(", ") + " ...";
+  } else {
+    return genresList.join(", ");
+  }
+};
+
+export const renderTokenIcon = (token, w = 30, h = 30) => {
+  if (token.icon) {
+    return (
+      <Image source={{ uri: token.icon }} style={{ width: w, height: h }} />
+    );
+  }
+
+  switch (token.symbol) {
+    case "USDC":
+      return <USDC width={w} height={h} />;
+    case "USDT":
+      return <USDT width={w} height={h} />;
+    case "USD":
+      return <USD width={w} height={h} />;
+    case "NEXG":
+      return (
+        <Image
+          source={require("../../assets/img/nexgami.png")}
+          style={{
+            width: w,
+            height: h,
+          }}
+        />
+      );
+    case "NEXU":
+      return (
+        <Image
+          source={require("../../assets/img/nexu.png")}
+          style={{
+            width: w,
+            height: h,
+          }}
+        />
+      );
+    case "MVT":
+      return (
+        <Image
+          source={require("../../assets/img/mvt.png")}
+          style={{
+            width: w,
+            height: h,
+          }}
+        />
+      );
+    default:
+      return (
+        <Image
+          source={require("../../assets/img/unknown.png")}
+          style={{
+            width: w,
+            height: h,
+          }}
+        />
+      );
   }
 };
 

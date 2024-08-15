@@ -8,7 +8,7 @@ import IMUserInfoService from "../../services/IMUserInfoService";
 import ChatGroupService from "../../services/ChatGroupService";
 import JSEvent from "../../utils/JSEvent";
 import { UIEvents } from "../../modules/Events";
-import formatDate from "../../utils/formatDate";
+import formatDate from "../../utils/formate";
 import FriendListChatButton from "../SocialListChatButton";
 import { truncate } from "lodash";
 import { useNavigation } from "@react-navigation/native";
@@ -20,30 +20,32 @@ const GroupListItem = ({ groupData }) => {
     ChatGroupService.Inst.getCachedChatGroup(groupData.targetId)
   );
 
-  const [lastSender, setLastSender] = useState(null)
+  const [lastSender, setLastSender] = useState(null);
   console.log("groupInfo: ", groupInfo);
 
   const navigation = useNavigation();
   useEffect(() => {
-    IMUserInfoService.Inst.getUser(groupData.latestMessageSenderId).then(user => {
-      if (user.length > 0) {
-        setLastSender(user[0]);
+    IMUserInfoService.Inst.getUser(groupData.latestMessageSenderId).then(
+      (user) => {
+        if (user.length > 0) {
+          setLastSender(user[0]);
+        }
       }
-    });
-  }, [])
+    );
+  }, []);
 
   const onGroupInfoOpen = () => {
     navigation.navigate("GroupInfo", { targetId: groupData.targetId });
   };
 
-
   const countBadgeClass =
     "absolute bottom-[-2px] right-[-5px] rounded-full w-[20px] h-[20px] bg-[#FF3737] justify-center items-center";
 
-
-  const latestMsg = groupData.latestMessage.length > 0 ?
-    (lastSender == null ? "" : lastSender.name + ": ") + groupData.latestMessage
-    : ""
+  const latestMsg =
+    groupData.latestMessage.length > 0
+      ? (lastSender == null ? "" : lastSender.name + ": ") +
+        groupData.latestMessage
+      : "";
 
   return (
     <View className="mb-[10px] flex-row justify-between">
@@ -75,7 +77,11 @@ const GroupListItem = ({ groupData }) => {
               </Text>
             </View>
           </View>
-          <Text className="text-clr-gray-light mt-2" ellipsizeMode="tail" numberOfLines={1}>
+          <Text
+            className="text-clr-gray-light mt-2"
+            ellipsizeMode="tail"
+            numberOfLines={1}
+          >
             {latestMsg}
           </Text>
         </View>

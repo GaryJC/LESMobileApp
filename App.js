@@ -68,6 +68,9 @@ import NewsListScreen from "./src/Screens/News/NewsListScreen";
 import LaunchpadDetailScreen from "./src/Screens/Launchpad/LaunchpadDetailScreen";
 import { Web3Modal } from "@web3modal/ethers-react-native";
 import InvestScreen from "./src/Screens/Invest/InvestScreen";
+import LaunchpadListScreen from "./src/Screens/Launchpad/LaunchpadListScreen";
+import GameScreen_new from "./src/Screens/Games_new/GameScreen_new";
+import GameDetailScreen from "./src/Screens/Games_new/GameDetailScreen";
 
 const BottomTab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -295,13 +298,25 @@ const BottomTabNavigation = () => {
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="home" color={color} size={size} />
             ),
-            headerShown: false,
+            headerShown: true,
             headerTitle: () => <UserHeader />,
           }}
         />
-        <BottomTab.Screen
+        {/* <BottomTab.Screen
           name="Games"
           component={GamesScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="game-controller" color={color} size={size} />
+            ),
+            headerShown: true,
+            headerTitle: () => <UserHeader />,
+          }}
+        /> */}
+
+        <BottomTab.Screen
+          name="GamesNew"
+          component={GameScreen_new}
           options={{
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="game-controller" color={color} size={size} />
@@ -581,6 +596,14 @@ function App_() {
                 options={{ headerShown: false, gestureEnabled: false }}
               />
               <Stack.Screen
+                name="GameDetails_new"
+                component={GameDetailScreen}
+                // options={{ headerShown: true, gestureEnabled: false }}
+                options={({ route }) => ({
+                  headerTitle: route.params?.title || "Game Details",
+                })}
+              />
+              <Stack.Screen
                 name="Login"
                 component={LoginScreen}
                 options={{
@@ -692,10 +715,17 @@ function App_() {
                   headerTitle: route.params?.title || "Details",
                 })}
               />
+              <Stack.Screen
+                name="LaunchpadList"
+                component={LaunchpadListScreen}
+                options={{
+                  headerTitle: "Launchpad",
+                }}
+              />
             </Stack.Navigator>
           </NavigationContainer>
           {isLoading && (
-            <View className="h-[5vh] items-center justify-center bg-[#1F4168] flex-row">
+            <View className="absolute bottom-0 w-full h-[5vh] items-center justify-center bg-[#1F4168] flex-row">
               <Text className="text-white pr-[10px]">Reconnecting</Text>
               <ActivityIndicator size={"small"} color={"#CACACA"} />
             </View>

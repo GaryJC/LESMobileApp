@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   Text,
   Dimensions,
+  Pressable,
 } from "react-native";
 import QuestService from "../../services/QuestService";
 import { FlatList } from "react-native-gesture-handler";
@@ -29,7 +30,7 @@ const QuestListCard = ({ quest, community }) => {
 
   return (
     <TouchableOpacity
-      className="bg-[#292A2F] rounded-xl overflow-hidden mr-5"
+      className="bg-[#292A2F] rounded-xl overflow-hidden"
       onPress={() => navigation.navigate("Quests")}
     >
       {/* <TouchableOpacity
@@ -42,9 +43,9 @@ const QuestListCard = ({ quest, community }) => {
       <Image
         source={require("../../../assets/img/gameDetailsBg.jpg")}
         style={{
-          width: windowWidth * 0.65,
+          width: "100%",
           height: "auto",
-          aspectRatio: 16 / 10,
+          aspectRatio: 8 / 5,
         }}
       />
       {/* </TouchableOpacity> */}
@@ -93,7 +94,9 @@ const QuestList = () => {
     <View className="my-3">
       <View className="flex-row justify-between items-end mb-2">
         <Text className="text-white text-2xl font-bold">Quests</Text>
-        <Text className="text-white text-lg font-bold">View all</Text>
+        <Pressable className="border-gray-400 border-2 rounded-lg p-2">
+          <Text className="text-gray-300">More</Text>
+        </Pressable>
       </View>
       <FlatList
         data={quest}

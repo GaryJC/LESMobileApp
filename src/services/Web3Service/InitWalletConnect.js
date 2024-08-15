@@ -17,7 +17,7 @@ const polygon_amoy = {
   explorerUrl: "https://amoy.polygonscan.com/",
   // rpcUrl: 'https://rpc-amoy.polygon.technology'
   rpcUrl:
-    "https://polygon-amoy.g.alchemy.com/v2/JK6hdshYZv4VIqA0eZ4WujN_5XorUMxY",
+    "https://polygon-amoy.g.alchemy.com/v2/MGTI5UJp9S-THDimDiZNglq3DC3nR5W5 ",
 };
 const polygon_mainnet = {
   chainId: 137,

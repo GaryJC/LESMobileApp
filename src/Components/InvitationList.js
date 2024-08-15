@@ -4,7 +4,7 @@ import NotificationService from "../services/NotificationService";
 import Constants from "../modules/Constants";
 import { Entypo } from "@expo/vector-icons";
 import Avatar from "./Avatar";
-import formatDate from "../utils/formatDate";
+import formatDate from "../utils/formate";
 import NotificationRespondButton from "./NotificationRespondButton";
 import { useState } from "react";
 

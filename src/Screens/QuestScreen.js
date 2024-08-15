@@ -19,7 +19,7 @@ import {
 } from "../Models/Quest";
 import DataCenter from "../modules/DataCenter";
 import QuestService from "../services/QuestService";
-import formatDate from "../utils/formatDate";
+import formatDate from "../utils/formate";
 import SocialMediaService from "../services/SocialMediaService";
 import { LesConstants } from "les-im-components";
 import { DiscordConnector } from "../Components/SocialAuth/DiscordSheets";

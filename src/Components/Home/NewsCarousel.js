@@ -1,35 +1,32 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
-  FlatList,
-  ImageBackground,
-  Animated,
   Pressable,
+  Linking,
   Dimensions,
-  TouchableOpacity,
+  ImageBackground,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import Constants from "../../modules/Constants";
 import API from "../../modules/Api";
+import Carousel from "../Carousel";
 
 const { width: windowWidth } = Dimensions.get("window");
 const NewsGenre = Constants.News.Genre.News;
 
-// NewsCard component to render each news item
 const NewsCard = ({ title, image }) => (
-  <View className="w-full rounded-xl overflow-hidden">
+  <View style={{ width: windowWidth }} className="rounded-xl overflow-hidden">
     <ImageBackground
       source={{ uri: API.fetchImage(image) }}
-      resizeMode="cover" // Changed to 'cover' for better image fit
-      className="w-full h-full relative"
+      resizeMode="cover"
+      style={{ width: "100%", height: "100%" }}
     >
       <View className="w-full h-[30%] bg-[#182634]/[0.8] absolute bottom-0 justify-center">
         <Text className="text-white text-[16px] font-bold mx-[5vw]">
           {title}
         </Text>
-        {/* You can add more content here if needed */}
       </View>
     </ImageBackground>
   </View>
@@ -37,26 +34,9 @@ const NewsCard = ({ title, image }) => (
 
 const NewsCarousel = () => {
   const [newsData, setNewsData] = useState([]);
-  const scrollX = useRef(new Animated.Value(0)).current;
-  const flatListRef = useRef(null);
-  const index = useRef(0);
-
   const navigation = useNavigation();
 
-  useEffect(() => {
-    // Function to automatically scroll through the news items
-    const interval = setInterval(() => {
-      if (newsData.length > 0) {
-        index.current = (index.current + 1) % newsData.length;
-        flatListRef.current.scrollToOffset({
-          offset: index.current * windowWidth,
-          animated: true,
-        });
-      }
-    }, 3000);
-
-    return () => clearInterval(interval); // Cleanup the interval on component unmount
-  }, [newsData.length]);
+  console.log("NewsData:", newsData);
 
   useEffect(() => {
     const getNewsData = async () => {
@@ -76,66 +56,40 @@ const NewsCarousel = () => {
     getNewsData();
   }, []);
 
-  console.log("newsData:", newsData);
+  const renderItem = ({ item }) => (
+    <Pressable
+      style={{ width: windowWidth, height: 200 }}
+      onPress={() => {
+        if (!item.link) {
+          navigation.navigate("NewsDetail", { id: item.id });
+        } else {
+          Linking.openURL(item.link);
+        }
+      }}
+    >
+      <NewsCard image={item.image} title={item.title} />
+    </Pressable>
+  );
 
   return (
-    <View>
-      <View className="flex-row justify-between items-end px-3 mb-2">
+    <View className="">
+      <View className="flex-row justify-between items-end mb-2">
         <Text className="text-white text-2xl font-bold">News</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("NewsList")}>
-          <Text className="text-white text-lg font-bold">View all</Text>
-        </TouchableOpacity>
+        <Pressable
+          onPress={() => navigation.navigate("NewsList")}
+          className="border-gray-400 border-2 rounded-lg p-2"
+        >
+          <Text className="text-gray-300">More</Text>
+        </Pressable>
       </View>
 
-      <FlatList
-        ref={flatListRef}
+      <Carousel
         data={newsData}
+        renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        renderItem={({ item }) => (
-          <Pressable
-            className="flex justify-center items-center px-3"
-            style={{ width: windowWidth, height: 200 }}
-            onPress={() => {
-              if (!item.link) {
-                navigation.navigate("NewsDetail", { id: item.id });
-              } else {
-                Linking.openURL(item.link);
-              }
-            }}
-          >
-            <NewsCard image={item.image} title={item.title} />
-          </Pressable>
-        )}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: false }
-        )}
+        autoScroll={true}
+        autoScrollInterval={3000}
       />
-
-      <View className="flex-row justify-center items-center mt-2">
-        {newsData.map((_, i) => {
-          const inputRange = [
-            (i - 1) * windowWidth,
-            i * windowWidth,
-            (i + 1) * windowWidth,
-          ];
-          const scale = scrollX.interpolate({
-            inputRange,
-            outputRange: [0.8, 1.2, 0.8],
-            extrapolate: "clamp",
-          });
-          return (
-            <Animated.View
-              key={i}
-              style={{ transform: [{ scale }] }}
-              className="h-[10px] w-[10px] bg-white rounded-full mx-1"
-            />
-          );
-        })}
-      </View>
     </View>
   );
 };
